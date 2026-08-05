@@ -144,13 +144,24 @@ def daemon_prerequisite(kind: str, daemon_names: list[str]) -> dict[str, Any]:
     else:
         # Absence of an error is not proof that HTTPChaos can install its
         # transparent-proxy rules. Require an explicit positive signal and
-        # fail closed when logs are unavailable or inconclusive.
-        positive_tproxy = re.search(
-            r"(?:tproxy|ebtables).*(?:ready|available|enabled|supported|loaded|success|ok)",
-            combined,
+        # fail closed when logs are unavailable or inconclusive. Signals are
+        # matched per line and lines containing negation words are rejected,
+        # so phrases like "tproxy not supported" or "ebtables unavailable"
+        # can never satisfy the positive-evidence check.
+        positive_signal = re.compile(
+            r"\b(?:tproxy|ebtables)\b.*\b(?:ready|available|enabled|supported|loaded|success|ok)\b",
             re.IGNORECASE,
         )
-        if successful_logs and positive_tproxy:
+        negation_signal = re.compile(
+            r"\b(?:not|no|unavailable|unsupported|disabled|missing|failed|error|cannot|can't|unable|without)\b",
+            re.IGNORECASE,
+        )
+        has_positive_evidence = any(
+            positive_signal.search(line) and not negation_signal.search(line)
+            for line in combined.splitlines()
+            if line.strip()
+        )
+        if successful_logs and has_positive_evidence:
             result.update(
                 status="pass",
                 evidence="Chaos Daemon logs contain positive tproxy/ebtables readiness evidence.",
@@ -165,7 +176,22 @@ def daemon_prerequisite(kind: str, daemon_names: list[str]) -> dict[str, Any]:
 
 
 def check_mutation(path: Path) -> dict[str, Any]:
-    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    try:
+        raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        return {
+            "mutation": str(path).replace("\\", "/"),
+            "kind": None,
+            "namespace": None,
+            "name": None,
+            "decision": "blocked",
+            "checks": {},
+            "errors": [f"mutation YAML is not parseable: {exc}"],
+            "interpretation": {
+                "selected_is_not_injected": True,
+                "defense_conclusion_allowed": False,
+            },
+        }
     if not isinstance(raw, dict):
         return {"mutation": str(path), "decision": "blocked", "errors": ["YAML root is not a mapping"]}
 

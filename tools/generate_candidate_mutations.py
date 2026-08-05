@@ -55,7 +55,10 @@ def generate(candidate: dict[str, Any], args: argparse.Namespace) -> tuple[dict[
         return None, "candidate has no target_app"
     metadata = raw.setdefault("metadata", {})
     spec = raw.setdefault("spec", {})
-    rank = int(candidate.get("rank", 0) or 0)
+    try:
+        rank = int(candidate.get("rank", 0) or 0)
+    except (TypeError, ValueError):
+        return None, f"candidate rank is not a number: {candidate.get('rank')!r}"
     base_name = str(candidate.get("raw_name") or metadata.get("name") or candidate.get("test_id") or kind)
     metadata["name"] = safe_name(f"{base_name}-candidate-r{rank}")
     metadata["namespace"] = args.namespace

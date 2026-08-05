@@ -260,6 +260,7 @@ NON_EXECUTION_CLASSIFICATIONS = {
     "platform_or_preflight_blocked",
     "not_applicable",
     "invalid_not_injected",
+    "invalid_request_configuration",
     "apply_failed",
     "runner_error",
 }

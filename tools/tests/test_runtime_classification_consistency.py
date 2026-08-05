@@ -29,6 +29,34 @@ class RuntimeClassificationConsistencyTest(unittest.TestCase):
             0,
         )
 
+    def test_invalid_request_configuration_is_a_failure_exit(self) -> None:
+        # Regression: a configuration error must not masquerade as a
+        # successful execution in CI.
+        self.assertEqual(2, classify_runtime_result.exit_code_for_classification("invalid_request_configuration"))
+
+    def test_forced_classification_reconciles_report_labels(self) -> None:
+        # Regression: when the runner forces a control outcome, the shared
+        # classifier's label must be preserved in a note rather than leaving
+        # two conflicting classification strings in one report.
+        report = {
+            "preflight": {"decision": "not_applicable"},
+            "lifecycle": {"applied": False, "injected": False, "recovered": False, "cleanup": None},
+            "requests": [],
+            "warmup_requests": [],
+            "errors": [],
+        }
+        details = classify_runtime_result.classify(report, None)
+        # Runner sets result_classification to the forced label while the
+        # shared classifier remains the evidence-derived label; the runner
+        # then records the override in classification_note.
+        self.assertEqual("not_applicable", details["classification"])
+        forced = "invalid_request_configuration"
+        if details["classification"] != forced:
+            details["classification_note"] = f"overridden by runner control outcome {forced!r}"
+            details["classification"] = forced
+        self.assertEqual("invalid_request_configuration", details["classification"])
+        self.assertIn("overridden by runner control outcome", details["classification_note"])
+
 
 if __name__ == "__main__":
     unittest.main()

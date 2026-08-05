@@ -147,6 +147,20 @@ def mutation_constraints(kind: str, node: str, service: str) -> dict[str, Any]:
     return constraints
 
 
+def primary_test_node(nodes: set[str] | list[str]) -> str:
+    """Return a stable representative node for a slice.
+
+    The generic 'selector' node is skipped when a business-specific node is
+    present (e.g. 'stress_cpu', 'network_delay'), so runtime-evidence matching
+    and candidate output are not misdirected to the generic node. Ordering is
+    deterministic regardless of set iteration order.
+    """
+    ordered = sorted(nodes)
+    if len(ordered) > 1 and "selector" in ordered:
+        ordered = [value for value in ordered if value != "selector"]
+    return ordered[0] if ordered else ""
+
+
 def score_candidate(
     slice_item: dict[str, Any],
     cards: list[dict[str, Any]],
@@ -158,7 +172,7 @@ def score_candidate(
     matching_cards = [card for card in cards if card_matches(card, kind, service)]
     # Use a stable representative when a slice has multiple abstract nodes;
     # set iteration must not affect candidate ranking.
-    primary_node = nodes[0] if nodes else ""
+    primary_node = primary_test_node(nodes)
     matching_runtime = runtime_matches(runtime_records, service, primary_node)
     score = 0
     reasons: list[str] = []
@@ -225,6 +239,9 @@ def select_candidates(
         app = ((slice_item.get("selector") or {}).get("labels") or {}).get("app")
         if service and app != service:
             continue
+        # Stable representative for the slice's own test nodes; set iteration
+        # order must not leak into candidate output.
+        primary_node = primary_test_node(nodes)
         score, decision, reasons, card_summaries = score_candidate(slice_item, cards, runtime_records)
         source_path = ROOT / str(slice_item.get("source", "")).replace("\\", "/")
         raw: dict[str, Any] = {}
@@ -255,8 +272,8 @@ def select_candidates(
                     "blast_radius_flag": bool(slice_item.get("blast_radius_flag")),
                 },
                 "knowledge_cards": card_summaries,
-                "runtime_matches": runtime_matches(runtime_records, app or "", node or ""),
-                "mutation_constraints": mutation_constraints(str(slice_item.get("kind")), node or "", app or ""),
+                "runtime_matches": runtime_matches(runtime_records, app or "", primary_node),
+                "mutation_constraints": mutation_constraints(str(slice_item.get("kind")), primary_node, app or ""),
             }
         )
     selected.sort(key=lambda item: (-int(item["rank_score"]), str(item.get("test_id"))))

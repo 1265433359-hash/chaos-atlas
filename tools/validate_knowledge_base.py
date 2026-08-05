@@ -28,6 +28,9 @@ FORBIDDEN_VALUE_PATTERNS = [
 ]
 
 
+ROOT = Path(__file__).resolve().parents[1]
+
+
 def load_json(path: Path) -> Any:
     with path.open("r", encoding="utf-8") as handle:
         return json.load(handle)
@@ -97,8 +100,15 @@ def validate(root: Path) -> dict[str, Any]:
             if missing_node:
                 errors.append(f"{card_id}: missing test_node fields {missing_node}")
             source_yaml = test_node.get("source_yaml")
-            if source_yaml and not (Path(source_yaml).exists() or (root.parent.parent / source_yaml).exists()):
-                warnings.append(f"{card_id}: source_yaml is not present in the current workspace: {source_yaml}")
+            source_checked = False
+            if source_yaml:
+                source_path = root.resolve() / source_yaml.replace("\\", "/")
+                if source_path.exists():
+                    source_checked = True
+                elif (ROOT / source_yaml.replace("\\", "/")).exists():
+                    source_checked = True
+                if not source_checked:
+                    warnings.append(f"{card_id}: source_yaml is not present in the current workspace: {source_yaml}")
         graph = card.get("test_node_centered_graph")
         if not isinstance(graph, dict) or not graph.get("nodes") or not graph.get("edges"):
             errors.append(f"{card_id}: test_node_centered_graph must contain nodes and edges")
@@ -130,6 +140,18 @@ def validate(root: Path) -> dict[str, Any]:
         "index": str(index_path).replace("\\", "/"),
         "card_count": len(cards),
         "validated_cards": validated,
+        "checks_ran": sorted(
+            {
+                "index_and_card_path_resolution",
+                "required_card_fields",
+                "required_test_node_fields",
+                "source_yaml_presence",
+                "test_node_centered_graph",
+                "four_layer_validation",
+                "next_evidence",
+                "sensitive_value_scan",
+            }
+        ),
         "errors": errors,
         "warnings": sorted(set(warnings)),
         "card_checks": card_checks,
@@ -141,8 +163,8 @@ def main() -> int:
     parser.add_argument(
         "--root",
         type=Path,
-        default=Path("artifacts/train-ticket/knowledge_base"),
-        help="knowledge_base directory",
+        default=ROOT / "artifacts/train-ticket/knowledge_base",
+        help="knowledge_base directory (absolute or relative to the repo root)",
     )
     parser.add_argument("--report", type=Path, help="optional JSON report path")
     args = parser.parse_args()

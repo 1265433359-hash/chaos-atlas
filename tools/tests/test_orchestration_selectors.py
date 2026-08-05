@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -36,6 +37,18 @@ class OrchestrationSelectorTest(unittest.TestCase):
                     "spec": {"selector": {"namespaces": ["default"], "labelSelectors": {"app": "demo"}}},
                 }
             )
+
+    def test_resource_exists_treats_only_not_found_as_absent(self) -> None:
+        # Regression: only an explicit NotFound must be treated as "absent".
+        # A transient/RBAC failure must raise so the parent fallback cleanup
+        # cannot be skipped on a failed lookup.
+        with patch.object(run_stress_with_cgroup, "run_kubectl", return_value=(1, "", "not found")):
+            self.assertFalse(run_stress_with_cgroup.resource_exists("StressChaos", "train-ticket-lab", "x"))
+        with patch.object(run_stress_with_cgroup, "run_kubectl", return_value=(0, "", "")):
+            self.assertTrue(run_stress_with_cgroup.resource_exists("StressChaos", "train-ticket-lab", "x"))
+        with patch.object(run_stress_with_cgroup, "run_kubectl", return_value=(1, "", "Error from server (Forbidden)")):
+            with self.assertRaises(RuntimeError):
+                run_stress_with_cgroup.resource_exists("StressChaos", "train-ticket-lab", "x")
 
 
 if __name__ == "__main__":

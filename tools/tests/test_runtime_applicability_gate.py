@@ -74,6 +74,35 @@ class RuntimeGateTest(unittest.TestCase):
             result = gate.daemon_prerequisite("HTTPChaos", ["daemon"])
         self.assertEqual("pass", result["status"])
 
+    def test_http_prerequisite_negation_fragments_never_pass(self) -> None:
+        # Regression: the positive-evidence regex must not match negated
+        # phrases; a daemon reporting that tproxy is NOT available must never
+        # be treated as positive evidence for HTTPChaos injection.
+        negated_fragments = [
+            "tproxy not supported on this kernel",
+            "ebtables unavailable",
+            "ERROR: tproxy support is not enabled",
+            "ebtables missing; cannot apply HTTPChaos rules",
+            "tproxy failed to load",
+        ]
+        for fragment in negated_fragments:
+            with self.subTest(fragment=fragment), patch.object(
+                gate, "run_kubectl", return_value=(0, fragment, "")
+            ):
+                result = gate.daemon_prerequisite("HTTPChaos", ["daemon"])
+                self.assertEqual("blocked", result["status"], fragment)
+                self.assertEqual("http_tproxy_positive_evidence_missing", result["blocker"], fragment)
+
+    def test_check_mutation_malformed_yaml_is_blocked_not_crash(self) -> None:
+        # Regression: yaml.safe_load failures must produce a blocked decision
+        # instead of an unhandled traceback escaping check_mutation.
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "broken.yaml"
+            path.write_text("kind: StressChaos\n  bad_indent: [unclosed\n", encoding="utf-8")
+            result = gate.check_mutation(path)
+        self.assertEqual("blocked", result["decision"])
+        self.assertTrue(any("not parseable" in error for error in result["errors"]))
+
 
 if __name__ == "__main__":
     unittest.main()

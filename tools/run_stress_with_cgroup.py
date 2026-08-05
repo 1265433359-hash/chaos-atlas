@@ -116,14 +116,25 @@ def cleanup_mutation(kind: str, namespace: str, name: str) -> dict[str, Any]:
 
 
 def resource_exists(kind: str, namespace: str, name: str) -> bool:
+    """Return True only when the resource exists; return False for NotFound.
+
+    Any non-zero `kubectl get` result other than an explicit NotFound (RBAC
+    Forbidden, API-server timeout, ...) raises so callers do not mistake a
+    failed lookup for a confirmed-absent resource and skip cleanup.
+    """
     plural = RESOURCE_BY_KIND.get(kind)
     if not plural:
         return False
-    try:
-        code, _, _ = run_kubectl(["get", plural, name, "-n", namespace], timeout=30)
-    except (OSError, subprocess.TimeoutExpired):
+    code, stdout, stderr = run_kubectl(["get", plural, name, "-n", namespace], timeout=30)
+    if code == 0:
+        return True
+    combined = (stdout or "") + "\n" + (stderr or "")
+    if "not found" in combined.lower():
         return False
-    return code == 0
+    raise RuntimeError(
+        f"cannot determine existence of {kind}/{namespace}/{name}: "
+        f"kubectl exit {code}: {(stderr or stdout).strip()}"
+    )
 
 
 def main() -> int:
@@ -151,7 +162,11 @@ def main() -> int:
     args = parser.parse_args()
 
     mutation = str(args.mutation).replace("\\", "/")
-    mutation_doc = yaml.safe_load(args.mutation.read_text(encoding="utf-8"))
+    try:
+        mutation_doc = yaml.safe_load(args.mutation.read_text(encoding="utf-8"))
+    except yaml.YAMLError as exc:
+        print(json.dumps({"tool": "run_stress_with_cgroup", "error": f"mutation YAML is not parseable: {exc}", "mutation": mutation}))
+        return 2
     mutation_name = ((mutation_doc.get("metadata") or {}).get("name") if isinstance(mutation_doc, dict) else None)
     if not mutation_name:
         raise SystemExit("mutation metadata.name is required")
@@ -271,7 +286,15 @@ def main() -> int:
                 runner.wait(timeout=5)
         # The parent owns a final, idempotent cleanup attempt. This covers a
         # runner killed during its recovery/finally block.
-        if resource_exists(mutation_kind, mutation_namespace, str(mutation_name)):
+        try:
+            resource_present = resource_exists(mutation_kind, mutation_namespace, str(mutation_name))
+        except RuntimeError as exc:
+            # Cannot determine existence (e.g. RBAC or API timeout). Attempt
+            # cleanup anyway so a transient lookup failure cannot orphan the
+            # mutation resource.
+            errors.append(f"parent cleanup existence check failed: {exc}")
+            resource_present = True
+        if resource_present:
             cleanup_fallback = cleanup_mutation(mutation_kind, mutation_namespace, str(mutation_name))
         else:
             cleanup_fallback = {

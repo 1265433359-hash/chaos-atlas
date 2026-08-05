@@ -382,7 +382,7 @@ def main() -> int:
                         report["requests"].extend(batch)
                         if batch_start + len(batch) < request_count:
                             time.sleep(max(0.0, args.request_interval))
-    except (OSError, RuntimeError, TimeoutError, ValueError) as exc:
+    except (OSError, RuntimeError, TimeoutError, ValueError, yaml.YAMLError) as exc:
         report["errors"].append(str(exc))
         forced_classification = "runner_error"
     finally:
@@ -408,6 +408,16 @@ def main() -> int:
     classification_details = classify_runtime_result(report, None)
     report["classification_details"] = classification_details
     report["result_classification"] = forced_classification or classification_details["classification"]
+    report["classification_source"] = "runner_forced" if forced_classification else "shared_classifier"
+    if forced_classification and classification_details["classification"] != forced_classification:
+        # Keep the shared classifier's label as the evidence-derived view, but
+        # record the forced outcome explicitly so the two never look like a
+        # contradiction in the same report.
+        classification_details["classification_note"] = (
+            f"overridden by runner control outcome {forced_classification!r}; "
+            f"classifier-derived label was {classification_details['classification']!r}"
+        )
+        classification_details["classification"] = forced_classification
     report["defense_conclusion"] = {
         "allowed": bool(report["lifecycle"].get("injected")) and bool(report["requests"]),
         "rule": "The runner records effect evidence; defense interpretation still requires baseline, path evidence and outcome-specific analysis.",

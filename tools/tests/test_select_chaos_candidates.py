@@ -14,6 +14,7 @@ def make_slice() -> dict:
     return {
         "kind": "NetworkChaos",
         "test_nodes": ["network_delay", "selector"],
+        "source": "raw_yaml/NetworkChaos/does-not-exist.yaml",
         "selector": {"labels": {"app": "ts-station-service"}},
         "target_matches": ["deployment"],
         "service_matches": ["service"],
@@ -69,6 +70,15 @@ class CandidateDecisionTest(unittest.TestCase):
             selector.runtime_matches = original
         self.assertEqual(["network_delay"], observed)
 
+    def test_primary_test_node_skips_generic_selector(self) -> None:
+        # Regression: 'selector' is a generic node; when a business-specific
+        # node is present it must be the stable representative, otherwise
+        # runtime-evidence matching lands on the wrong node.
+        self.assertEqual("stress_cpu", selector.primary_test_node({"selector", "stress_cpu"}))
+        self.assertEqual("network_delay", selector.primary_test_node({"network_delay", "selector"}))
+        self.assertEqual("selector", selector.primary_test_node({"selector"}))
+        self.assertEqual("", selector.primary_test_node(set()))
+
     def test_legacy_records_use_fuzzy_fallback_only_without_target_service(self) -> None:
         records = [
             {"id": "TT-NETWORK-BASIC-LEGACY", "test_node": "network_delay"},
@@ -76,6 +86,30 @@ class CandidateDecisionTest(unittest.TestCase):
         ]
         matches = selector.runtime_matches(records, "ts-basic-service", "network_delay")
         self.assertEqual(["TT-NETWORK-BASIC-LEGACY"], [record["id"] for record in matches])
+
+    def test_output_runtime_matches_uses_slice_node_not_cli_node(self) -> None:
+        # Regression: the per-candidate runtime_matches output must use the
+        # slice's own test node, not the CLI --node filter. The internal
+        # scoring call already did; the emitted field must match.
+        records = [
+            {
+                "id": "TT-NETWORK-STATION-DELAY-001",
+                "test_node": "network_delay",
+                "target_service": "ts-station-service",
+                "classification": "client_timeout_observed",
+            }
+        ]
+        selected = selector.select_candidates(
+            slices=[make_slice()],  # test_nodes = network_delay, selector
+            node=None,
+            kind=None,
+            service=None,
+            limit=10,
+            cards=[],
+            runtime_records=records,
+        )
+        self.assertEqual(1, len(selected))
+        self.assertEqual(["TT-NETWORK-STATION-DELAY-001"], [m["id"] for m in selected[0]["runtime_matches"]])
 
 
 if __name__ == "__main__":
