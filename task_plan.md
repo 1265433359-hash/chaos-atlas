@@ -1,6 +1,7 @@
 # 真实 YAML 测试节点知识库与项目影响子图计划
 
 ## Latest execution status
+- 2026-08-05 收尾：第一项目（train-ticket）运行时循环已全部关闭；阶段 4/7/8/9 标记 complete，阶段 10 进入 in_progress（P0 回归集已定义）。统计重复实验（Station 延迟、Basic CPU 各 2-3 次）已补跑并输出置信区间。薄弱点报告（Order refresh 禁用下游调用 + Station 无超时/熔断防御）已整理。
 - Paper-preparation checkpoint completed: `artifacts/train-ticket/paper_prep_stage_summary.md` records the current method, evidence, claims, limitations, and next-stage acceptance criteria.
 - Current phase conclusion: the first runtime case-study loop is complete for Station NetworkChaos; the next phase is statistical repetition, local CFG/DFG standardization, and an LLM decision benchmark.
 - Completed fixed-warmup repetition for the Basic CPU success and not-found oracles; both formal ten-request windows preserved their response contracts under measurable CPU throttling.
@@ -58,13 +59,13 @@
 | 1. 真实 YAML 语料抽取 | complete | YAML 清单、AST/IR、有效性分层 | 已生成逐文件清单、hash、字段、风险和 34 个语义形状问题记录 |
 | 2. 测试节点知识库 | complete | 测试节点词典、频率、共现图、测试模式卡片 | 已生成候选节点频率和共现目录；外部语义验证和人工审核仍属于后续增强 |
 | 3. Train Ticket 项目映射 | complete | 服务/配置/调用/观测资源图 | 已完成 selector -> Deployment/Service 和 source module/function 候选；运行 Trace 可达性作为阶段 4 输入 |
-| 4. 测试节点中心影响子图 | in_progress | 每类测试的局部 CFG/DFG/调用/数据/控制关系 | 已补 Basic->Station 的运行时可达子图；Order->Station 原始候选仍明确标记不可达，其他节点继续补 Trace |
-| 5. 存在性与测试必要性 | complete | 节点存在/可达/重要性/覆盖矩阵 | 已实现 `runtime_applicability_gate.py`；HTTP 节点被阻断、CPU 节点可注入的结论均有真实运行证据 |
-| 6. 相关资料采集 | pending | 官方语义、源码规则、故障模式、版本差异 | 外部规则有来源、版本、适用边界和项目证据 |
-| 7. LLM 注入与观测 | in_progress | 变异 YAML、实验记录、基线和结果时间线 | 已完成候选选择器生成的 Network YAML 回放；运行器强制等待真实注入并自动恢复/清理，HTTPChaos 仍被 ebtables 阻断 |
-| 8. 防御解释与根因 | in_progress | 防御/未防御/无效分类、影响子图证据、根因树 | 已加入结果分类器，区分平台阻断、未注入、响应保持/延迟退化和客户端超时；下一步补服务端最终响应与重试放大证据 |
-| 9. 知识库闭环 | in_progress | 经验/反例/测试配方、置信度和检索索引 | Network Basic->Station 卡已升至 v3，完成候选选择→生成→运行→分类回放；下一步做 CPU 候选回放和跨服务边界回归 |
-| 10. 回归与评估 | pending | P0 回归集、LLM 决策评估、漂移和治理报告 | 知识可复现、可迁移、不过度泛化，版本变化可发现 |
+| 4. 测试节点中心影响子图 | complete | 每类测试的局部 CFG/DFG/调用/数据/控制关系 | 已补 Basic->Station 的运行时可达子图；Station 网络延迟子图（含超时边界）已运行时闭环；Order->Station 原始候选明确标记不可达并保留为反例 |
+| 5. 存在性与测试必要性 | complete | 节点存在/可达/重要性/覆盖矩阵 | 已实现 `runtime_applicability_gate.py`；HTTP 节点被阻断、CPU/Network 节点可注入的结论均有真实运行证据；54 样本验证状态矩阵见收尾产物 |
+| 6. 相关资料采集 | in_progress | 官方语义、源码规则、故障模式、版本差异 | 已完成 GitHub 候选调研快照；Chaos Mesh/项目源码规则按需采集；官方语义与版本差异卡片仍未系统化 |
+| 7. LLM 注入与观测 | complete | 变异 YAML、实验记录、基线和结果时间线 | 第一轮闭环：Station 延迟阶梯与超时边界、Basic/Order/Station CPU、Basic->Station 网络均已注入并观测；HTTPChaos 被 ebtables 平台阻断（非防御结论）；所有运行自动恢复/清理 |
+| 8. 防御解释与根因 | complete | 防御/未防御/无效分类、影响子图证据、根因树 | 分类器区分平台阻断、未注入、响应保持/延迟退化和客户端超时；Station 超时边界根因（无应用级 timeout/retry/fallback/熔断配置）已记录；分类索引 0 mismatch |
+| 9. 知识库闭环 | complete | 经验/反例/测试配方、置信度和检索索引 | 7 张卡片（4 张 runtime_observed），停止规则反向影响选择器（closed_runtime_boundary_no_reinjection）；验证 0 error；选择器回归测试通过 |
+| 10. 回归与评估 | in_progress | P0 回归集、LLM 决策评估、漂移和治理报告 | P0 回归集已定义（见收尾产物）；统计重复实验与置信区间已补跑；LLM 决策基准与独立标注集待后续 |
 
 ## 关键问题
 1. 配置项是否真实存在、是否被加载、是否影响行为？

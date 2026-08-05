@@ -1,0 +1,317 @@
+{
+  "schema_version": 1,
+  "tool": "run_chaos_experiment",
+  "started_at": "2026-08-05T04:35:08.033017+00:00",
+  "mutation": "C:/APP/project/chaos/artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r2.yaml",
+  "request_config": {
+    "service": "ts-station-service",
+    "remote_port": 12345,
+    "local_port": 30345,
+    "path": "/api/v1/stationservice/stations/id/shanghai",
+    "method": "GET",
+    "request_timeout_sec": 5.0,
+    "request_count": 10,
+    "request_concurrency": 1,
+    "warmup_count": 3,
+    "warmup_interval_sec": 0.5
+  },
+  "preflight": {
+    "checked_at": "2026-08-05T04:35:08.459018+00:00",
+    "mutation": "C:/APP/project/chaos/artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r2.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "train-ticket-lab",
+    "name": "station-network-delay-candidate-r2",
+    "selector": {
+      "namespaces": [
+        "train-ticket-lab"
+      ],
+      "labelSelectors": {
+        "app": "ts-station-service"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "requested_namespaces": [
+          "train-ticket-lab"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "train-ticket-lab",
+          "name": "ts-station-service-76b45695b4-87rs2",
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            12345
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"station-network-delay-candidate-r2\" not found\n"
+  },
+  "lifecycle": {
+    "applied": true,
+    "injected": true,
+    "recovered": true,
+    "cleanup": {
+      "delete_command_ok": true,
+      "delete_output": "networkchaos.chaos-mesh.org \"station-network-delay-candidate-r2\" deleted from train-ticket-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"station-network-delay-candidate-r2\" not found"
+    },
+    "injected_status": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-05T04:35:08Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "train-ticket-lab/ts-station-service-76b45695b4-87rs2",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-05T04:35:08Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    },
+    "recovered_status": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-05T04:35:08Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-05T04:35:28Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "train-ticket-lab/ts-station-service-76b45695b4-87rs2",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-05T04:35:08Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-05T04:35:28Z"
+      ],
+      "desired_phase": "Stop"
+    },
+    "recovery_wait_completed": true
+  },
+  "requests": [
+    {
+      "sample": 1,
+      "observed_at": "2026-08-05T04:35:14.172823+00:00",
+      "status_code": 200,
+      "latency_ms": 1022.031,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 2,
+      "observed_at": "2026-08-05T04:35:15.696007+00:00",
+      "status_code": 200,
+      "latency_ms": 1013.161,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 3,
+      "observed_at": "2026-08-05T04:35:17.210286+00:00",
+      "status_code": 200,
+      "latency_ms": 1027.979,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 4,
+      "observed_at": "2026-08-05T04:35:18.739316+00:00",
+      "status_code": 200,
+      "latency_ms": 1034.318,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 5,
+      "observed_at": "2026-08-05T04:35:20.274818+00:00",
+      "status_code": 200,
+      "latency_ms": 1037.173,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 6,
+      "observed_at": "2026-08-05T04:35:21.812942+00:00",
+      "status_code": 200,
+      "latency_ms": 1013.548,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 7,
+      "observed_at": "2026-08-05T04:35:23.327781+00:00",
+      "status_code": 200,
+      "latency_ms": 1026.607,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 8,
+      "observed_at": "2026-08-05T04:35:24.855743+00:00",
+      "status_code": 200,
+      "latency_ms": 1021.188,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 9,
+      "observed_at": "2026-08-05T04:35:26.378072+00:00",
+      "status_code": 200,
+      "latency_ms": 1017.349,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 10,
+      "observed_at": "2026-08-05T04:35:27.896670+00:00",
+      "status_code": 200,
+      "latency_ms": 754.707,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    }
+  ],
+  "warmup_requests": [
+    {
+      "sample": 1,
+      "observed_at": "2026-08-05T04:35:10.100645+00:00",
+      "status_code": 200,
+      "latency_ms": 1040.19,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 2,
+      "observed_at": "2026-08-05T04:35:11.641521+00:00",
+      "status_code": 200,
+      "latency_ms": 1016.579,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 3,
+      "observed_at": "2026-08-05T04:35:13.158399+00:00",
+      "status_code": 200,
+      "latency_ms": 1013.944,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    }
+  ],
+  "errors": [],
+  "apply": {
+    "return_code": 0,
+    "stdout": "networkchaos.chaos-mesh.org/station-network-delay-candidate-r2 created",
+    "stderr": ""
+  },
+  "port_forward": {
+    "return_code": 1,
+    "stopped_by_runner": true,
+    "stdout": "Forwarding from 127.0.0.1:30345 -> 12345\nForwarding from [::1]:30345 -> 12345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345\nHandling connection for 30345",
+    "stderr": ""
+  },
+  "classification_details": {
+    "schema_version": 1,
+    "tool": "classify_runtime_result",
+    "classified_at": "2026-08-05T04:35:29.095974+00:00",
+    "run_report": "C:/APP/project/chaos/artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r2.yaml",
+    "baseline_report": null,
+    "classification": "response_observed",
+    "evidence_state": "runtime_effect_observed",
+    "confidence": "B",
+    "root_cause_labels": [],
+    "observations": {
+      "request_count": 10,
+      "observed_median_latency_ms": 1021.61,
+      "baseline_median_latency_ms": null,
+      "latency_delta_ms": null,
+      "injected": true,
+      "recovered": true,
+      "cleanup_confirmed": true
+    },
+    "interpretation": {
+      "defense_claim": "not_derived",
+      "reason": "The classifier records evidence state; defense requires the test-node graph, baseline, path evidence and outcome-specific reasoning."
+    },
+    "evidence_refs": [
+      "C:/APP/project/chaos/artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r2.yaml",
+      {
+        "return_code": 0,
+        "stdout": "networkchaos.chaos-mesh.org/station-network-delay-candidate-r2 created",
+        "stderr": ""
+      },
+      {
+        "delete_command_ok": true,
+        "delete_output": "networkchaos.chaos-mesh.org \"station-network-delay-candidate-r2\" deleted from train-ticket-lab namespace",
+        "resource_absent_after_delete": true,
+        "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"station-network-delay-candidate-r2\" not found"
+      }
+    ]
+  },
+  "result_classification": "response_observed",
+  "classification_source": "shared_classifier",
+  "defense_conclusion": {
+    "allowed": true,
+    "rule": "The runner records effect evidence; defense interpretation still requires baseline, path evidence and outcome-specific analysis."
+  },
+  "finished_at": "2026-08-05T04:35:29.095998+00:00"
+}

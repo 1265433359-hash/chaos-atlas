@@ -168,3 +168,11 @@
 - Candidate ranking is deterministic, blast-radius metadata is present in every Train Ticket slice, and the evidence index now matches every referenced classification report. The Station line report has an explicit top-level classification.
 - Knowledge-base validation now emits per-card checks. HTTP platform-blocked vocabulary is canonicalized as `blocked_by_platform_prerequisite`.
 - Initialized the workspace Git repository with baseline commit `3836b8a` and an ignore policy that keeps the pinned nested source checkout and generated logs out of workspace history.
+
+## 2026-08-05 第一项目收尾（阶段 A/B/C）
+- 文档/状态收尾：task_plan 阶段表更新（4/7/8/9 -> complete，10 -> in_progress）；新增 54 样本验证状态矩阵 `runtime/coverage_matrix.{csv,md}`；定义 P0 回归集 `runtime/p0_regression_set.md`（7 项，含命令与变更检测规则）。
+- 工具链审计缺口关闭（commit `029e454`）：HTTPChaos fail-closed 正则不再被否定句穿透（`not supported`/`unavailable` 实测 blocked）；`yaml.YAMLError` 三处处理（gate/runner/stress，畸形 YAML 产出 blocked 报告而非崩溃）；`resource_exists` 仅把显式 NotFound 当不存在、RBAC/超时抛异常并触发兜底删除；`invalid_request_configuration` 退出码 2；runner 强制分类与共享分类器标签通过 `classification_note` 调和；`runtime_matches`/`mutation_constraints` 输出改用 slice 自身 primary test node；新增 `primary_test_node` 跳过通用 `selector` 节点（修复 basic-stress-cpu 匹配 5 条运行时记录）；重新生成 refined/graph slices 使 blast_radius_flag 覆盖默认输入（53/54，零内容漂移）；validator 根锚定 + checks_ran；WARMUP-001 分类对齐。回归测试 12 -> 19，全绿。
+- 覆盖矩阵结论：54 样本中 5 条实验线 verified（Station 延迟阶梯/边界、Basic/Order/Station CPU、Basic->Station 网络）、30 HTTPChaos 平台阻断、1 Order->Station 不可达（项目缺陷）、1 Workflow 静态高爆炸半径、17 个未运行（12 network_delay + 5 stress_cpu，跨服务扩展空间）。
+- 薄弱点清单：见 `reporting/train-ticket/issues/`（Order refresh 禁用下游调用草稿 + Station 无超时/熔断防御草稿）。
+- 统计重复实验（2026-08-05）：Station 延迟 100ms x3（中位 216.2-228.6ms，均值 224.2ms，95% CI [206.9,241.6]）、500ms x3（1019.5-1023.3ms，均值 1021.5ms，CI [1016.8,1026.2]，重复性极高）、Basic CPU r1 x3（40.9-63.6ms，均值 51.4ms，CI [23.1,79.8]，方差较大属预期——CPU throttling 效应）。全部 HTTP 200、注入/恢复/清理确认。产物：`runtime/stat_repeat/experiment_matrix.csv` + `summary.json` + `batch.log`。修复了 runner 缺失 `import yaml` 的回归（commit 内含，新增静态回归测试）。
+- 薄弱点报告：`reporting/train-ticket/issues/README.md`（清单）+ `2026-08-05_disabled-downstream-call-in-refresh.md`（静态）+ `2026-08-05_station-no-timeout-defense.md`（运行时证据，含统计重复数据）。两份均为 DRAFT，待人工审核后提交。

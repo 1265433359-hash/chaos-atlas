@@ -57,6 +57,14 @@ class RuntimeClassificationConsistencyTest(unittest.TestCase):
         self.assertEqual("invalid_request_configuration", details["classification"])
         self.assertIn("overridden by runner control outcome", details["classification_note"])
 
+    def test_runner_imports_yaml_before_referencing_it(self) -> None:
+        # Regression: the runner's except clause references yaml.YAMLError;
+        # a missing `import yaml` raises NameError at runtime instead of
+        # producing a report. Statically assert the name is imported.
+        source = Path(run_chaos_experiment.__file__).read_text(encoding="utf-8")
+        if "yaml.YAMLError" in source:
+            self.assertIn("import yaml", source)
+
 
 if __name__ == "__main__":
     unittest.main()

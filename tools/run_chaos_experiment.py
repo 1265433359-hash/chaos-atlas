@@ -15,6 +15,8 @@ from typing import Any
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
+import yaml
+
 try:
     from runtime_applicability_gate import RESOURCE_BY_KIND, check_mutation
     from classify_runtime_result import classify as classify_runtime_result, exit_code_for_classification
