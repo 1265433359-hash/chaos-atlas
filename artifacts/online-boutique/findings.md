@@ -38,6 +38,33 @@
 - adservice 构建失败（`services.gradle.org` 本机网络不可达）→ 未完成广告路径注入实验；但以 ImagePullBackOff 状态验证了降级路径（附带实验 4）
 - Artifact Registry / github.com git 协议本机不可达 → 被迫本地构建镜像
 
+## HTTPChaos 解锁调查结论（2026-08-05，路径二）
+
+**背景**：Docker Desktop（WSL2）下 HTTPChaos 因 ebtables 缺失被阻断。为解锁，走"路径二"创建 kind 集群，完整验证后得到**决定性结论**。
+
+**过程**：
+- 下载 kind v0.32.0（api.github.com 下载，SHA256 校验通过）→ 创建 `chaos-kind` 集群（本地 kindest/node:v1.36.1 镜像）
+- kind 节点内 legacy ebtables 和 ebtables-nft **均正常列出 Bridge filter 表**（比 Docker Desktop 表现好）
+- 通过本地 registry（host.docker.internal:5000）+ ctr --plain-http 将 4 个 chaos-mesh 镜像载入 kind → Helm 部署 Chaos Mesh 2.8.3 成功（4 组件 Running）
+- 部署最小 frontend 目标 → 注入 HTTPChaos（replace.code:404）
+
+**最终根因（chaos-daemon 日志确证）**：
+```
+chaos_tproxy: modprobe: FATAL: Module ebtables not found in directory
+             /lib/modules/6.18.33.2-microsoft-standard-WSL2
+The kernel doesn't support the ebtables 'broute' table.
+The kernel doesn't support the ebtables 'nat' table.
+```
+HTTPChaos 的 tproxy 需要 legacy ebtables 的 **broute** 和 **nat** 表。kind 节点容器与 Docker Desktop 运行**同一个 WSL2 内核**（`6.18.33.2-microsoft-standard`），该内核未编译这两个 legacy 模块 → **换集群类型无法解锁，障碍是 WSL2 内核本身**。
+
+**结论**：
+- `ebtables -L`（filter 表）正常 ≠ HTTPChaos 可用（它需要 broute/nat 表）——两层验证都通过才解锁
+- kind 集群在这里与 Docker Desktop 无差异（共享宿主内核），**换集群不解决内核级缺失**
+- 真正解锁 HTTPChaos 只有两条路：① 换非 WSL2 环境（原生 Linux VM / CI / 云），② 自定义编译带 ebtables 模块的 WSL2 内核（成本高，维护难）
+- **方法论收获**：环境前置条件验证要验证"故障工具真正需要的层"（tproxy→broute/nat），而不是"命令存在"（ebtables 在，但表不支持）；`platform_instrumentation_prerequisite_missing` 分类在 kind 上也成立
+
+**遗留**：kind 集群 `chaos-kind` 保留（含 Chaos Mesh 2.8.3），可复用为干净实验环境（NetworkChaos/StressChaos/PodChaos 在此可用）；本地 registry 容器保留。
+
 ## 诚实评估（报告决策依据）
 
 - Online Boutique 定位 = "演示云产品"的 demo（product-requirements.md 要求 preserve simplicity）
