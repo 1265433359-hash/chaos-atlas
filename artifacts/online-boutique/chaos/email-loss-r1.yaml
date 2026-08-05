@@ -1,14 +1,18 @@
 apiVersion: chaos-mesh.org/v1alpha1
-kind: PodChaos
+kind: NetworkChaos
 metadata:
-  name: ob-productcatalog-kill-r1
+  name: ob-email-loss-r1
   namespace: online-boutique-lab
 spec:
-  action: pod-kill
+  action: loss
   mode: all
   selector:
     namespaces:
       - online-boutique-lab
     labelSelectors:
-      app: productcatalogservice
+      app: emailservice
+  loss:
+    loss: "100"
+    correlation: "100"
   duration: "30s"
+  direction: to

@@ -1,0 +1,109 @@
+{
+  "id": "KB-OB-CHECKOUT-PAYMENT-DELAY-001",
+  "version": 1,
+  "status": "validated_runtime_statistical_repetition",
+  "evidence_state": "runtime_observed",
+  "project": "GoogleCloudPlatform/microservices-demo",
+  "project_commit": "9a4616e77f0f9cbcbecaf27d711c38890dda1404",
+  "test_node": {
+    "family": "NetworkChaos",
+    "operation": "delay",
+    "latency": "2000ms",
+    "direction": "to",
+    "mode": "all",
+    "duration": "20s",
+    "selector": {
+      "namespace": "online-boutique-lab",
+      "label": {
+        "app": "paymentservice"
+      }
+    },
+    "source_yaml": "generated (no matching corpus sample)",
+    "mutation_yaml": "artifacts/online-boutique/chaos/payment-delay-stat.yaml"
+  },
+  "test_node_centered_graph": {
+    "nodes": [
+      {
+        "id": "test.network.delay.payment",
+        "kind": "TestNode",
+        "evidence": "NetworkChaos delay 2000ms applied to paymentservice, AllInjected confirmed"
+      },
+      {
+        "id": "deploy.paymentservice",
+        "kind": "TargetDeployment",
+        "evidence": "Ready Pod, gRPC 50051"
+      },
+      {
+        "id": "call.checkout.chargeCard",
+        "kind": "DownstreamCall",
+        "source": "checkoutservice/main.go:369-375",
+        "evidence": "chargeCard calls PaymentService.Charge with ctx, no WithTimeout"
+      },
+      {
+        "id": "response.placeorder",
+        "kind": "BusinessOutcome",
+        "evidence": "PlaceOrder returns order_id + tracking_id; latency 2021.5ms median under 2s injection"
+      },
+      {
+        "id": "observe.checkout.latency",
+        "kind": "Observation",
+        "evidence": "gRPC client latency measurement (ob_client.py)"
+      },
+      {
+        "id": "recover.network.cleanup",
+        "kind": "Recovery",
+        "evidence": "chaos resource deleted, latency returns to baseline ~26ms"
+      }
+    ],
+    "edges": [
+      {
+        "from": "test.network.delay.payment",
+        "to": "deploy.paymentservice",
+        "type": "selects",
+        "confidence": "confirmed_runtime"
+      },
+      {
+        "from": "deploy.paymentservice",
+        "to": "call.checkout.chargeCard",
+        "type": "calls",
+        "confidence": "confirmed_runtime"
+      },
+      {
+        "from": "call.checkout.chargeCard",
+        "to": "response.placeorder",
+        "type": "flows_to",
+        "confidence": "confirmed_runtime"
+      }
+    ]
+  },
+  "four_layer_validation": {
+    "yaml_valid": true,
+    "schema_valid": true,
+    "semantic_valid": true,
+    "runtime_reachable": true
+  },
+  "hypothesis": "checkout chargeCard has no timeout/retry/fallback; downstream delay propagates 1:1 to end-to-end order latency",
+  "runtime_result": {
+    "classification": "response_preserved_latency_degradation",
+    "defense_claim": "not_derived",
+    "baseline_median_ms": 26.4,
+    "injected_median_ms": 2021.5,
+    "injected_std_ms": 3.1,
+    "samples": 9,
+    "outcome": "all_orders_succeeded_no_timeout"
+  },
+  "root_cause": "missing_timeout_on_downstream_call",
+  "confidence": "A",
+  "scope": {
+    "versions": ["v0.10.6"],
+    "environments": ["kind-chaos-kind", "docker-desktop"],
+    "exclusions": ["no production SLO claim", "single endpoint PlaceOrder only"]
+  },
+  "next_evidence": [
+    "checkout->shipping separate fault injection",
+    "client-side deadline sweep to find gRPC default deadline boundary"
+  ],
+  "evidence": [
+    {"artifact": "stat_repetition_result.json", "source_span": "baseline+injected arrays", "run_id": "stat-repetition-kind", "timestamp": "2026-08-05"}
+  ]
+}

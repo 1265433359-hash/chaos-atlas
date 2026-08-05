@@ -1,0 +1,102 @@
+{
+  "id": "KB-OB-FRONTEND-PRODUCTCATALOG-FAILURE-001",
+  "version": 1,
+  "status": "validated_runtime",
+  "evidence_state": "runtime_observed",
+  "project": "GoogleCloudPlatform/microservices-demo",
+  "project_commit": "9a4616e77f0f9cbcbecaf27d711c38890dda1404",
+  "test_node": {
+    "family": "NetworkChaos/PodChaos",
+    "operation": "delay_loss_podkill",
+    "direction": "to",
+    "mode": "all",
+    "duration": "30s",
+    "selector": {
+      "namespace": "online-boutique-lab",
+      "label": {
+        "app": "productcatalogservice"
+      }
+    },
+    "source_yaml": "generated",
+    "mutation_yaml": "artifacts/online-boutique/chaos/productcatalog-delay-r1.yaml, productcatalog-loss-r1.yaml, productcatalog-kill-r1.yaml"
+  },
+  "test_node_centered_graph": {
+    "nodes": [
+      {
+        "id": "test.productcatalog.failure",
+        "kind": "TestNode",
+        "evidence": "delay/loss/podkill applied to productcatalogservice"
+      },
+      {
+        "id": "call.frontend.getProducts",
+        "kind": "DownstreamCall",
+        "source": "frontend/rpc.go:45-49",
+        "evidence": "getProducts calls ProductCatalogService.ListProducts with ctx, no WithTimeout"
+      },
+      {
+        "id": "handler.frontend.homeHandler",
+        "kind": "ControlFlow",
+        "source": "frontend/handlers.go:67-71",
+        "evidence": "getProducts error -> renderHTTPError 500, no fallback"
+      },
+      {
+        "id": "response.homepage",
+        "kind": "BusinessOutcome",
+        "evidence": "homepage GET / behavior under productcatalog failure"
+      },
+      {
+        "id": "observe.frontend.http",
+        "kind": "Observation",
+        "evidence": "HTTP status + latency of GET /"
+      }
+    ],
+    "edges": [
+      {
+        "from": "test.productcatalog.failure",
+        "to": "call.frontend.getProducts",
+        "type": "calls",
+        "confidence": "confirmed_runtime"
+      },
+      {
+        "from": "call.frontend.getProducts",
+        "to": "handler.frontend.homeHandler",
+        "type": "controls",
+        "confidence": "confirmed_runtime"
+      },
+      {
+        "from": "handler.frontend.homeHandler",
+        "to": "response.homepage",
+        "type": "flows_to",
+        "confidence": "confirmed_runtime"
+      }
+    ]
+  },
+  "four_layer_validation": {
+    "yaml_valid": true,
+    "schema_valid": true,
+    "semantic_valid": true,
+    "runtime_reachable": true
+  },
+  "hypothesis": "frontend core data path (products) has no timeout/fallback; productcatalog failure cascades to whole-homepage 500",
+  "runtime_result": {
+    "classification": "full_cascade_failure_after_hang",
+    "defense_claim": "not_derived",
+    "delay_case": {"latency_ms": 2033, "http": 200, "note": "2s delay fully propagates to homepage, no timeout"},
+    "loss_case": {"first_hang_ms": 26745, "then_http": 500, "note": "100% loss: first request hangs 26.7s (no gRPC deadline) then 500"},
+    "kill_case": {"http": 200, "note": "pod rebuild fast (~12s) hides kill window; not defense, timing artifact"}
+  },
+  "root_cause": "missing_timeout_and_fallback_on_core_data_path",
+  "confidence": "A",
+  "scope": {
+    "versions": ["v0.10.6"],
+    "environments": ["kind-chaos-kind"],
+    "exclusions": ["homepage only, not product detail or search"]
+  },
+  "next_evidence": [
+    "repeat loss case with controlled client deadline to bound hang",
+    "verify product detail page under same failure"
+  ],
+  "evidence": [
+    {"artifact": "experiment_results.md", "source_span": "experiment 2 + direction 2b", "run_id": "kind-direction-2b", "timestamp": "2026-08-05"}
+  ]
+}

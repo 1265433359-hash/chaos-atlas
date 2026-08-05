@@ -1,14 +1,19 @@
 apiVersion: chaos-mesh.org/v1alpha1
-kind: PodChaos
+kind: NetworkChaos
 metadata:
-  name: ob-productcatalog-kill-r1
+  name: ob-email-delay-r1
   namespace: online-boutique-lab
 spec:
-  action: pod-kill
+  action: delay
   mode: all
   selector:
     namespaces:
       - online-boutique-lab
     labelSelectors:
-      app: productcatalogservice
+      app: emailservice
+  delay:
+    latency: "2000ms"
+    correlation: "100"
+    jitter: "0ms"
   duration: "30s"
+  direction: to
