@@ -90,7 +90,11 @@ def runtime_matches(records: list[dict[str, Any]], service: str, node: str) -> l
         if record_node and record_node != node:
             continue
         target_service = record.get("target_service")
-        if target_service:
+        if target_service is not None:
+            # Current records are exact service evidence. The branch below is
+            # deliberately reserved for legacy records that predate the
+            # target_service field; it must never fuzzy-match an explicit
+            # service mismatch.
             if target_service == service:
                 matches.append(record)
             continue

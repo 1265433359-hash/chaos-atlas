@@ -17,7 +17,7 @@ from urllib.request import Request, urlopen
 
 try:
     from runtime_applicability_gate import RESOURCE_BY_KIND, check_mutation
-    from classify_runtime_result import classify as classify_runtime_result
+    from classify_runtime_result import classify as classify_runtime_result, exit_code_for_classification
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("run this script from the repository with tools/ on the import path") from exc
 
@@ -416,13 +416,7 @@ def main() -> int:
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
     print(json.dumps(report, indent=2, ensure_ascii=True))
-    return 0 if report.get("result_classification") not in {
-        "platform_or_preflight_blocked",
-        "not_applicable",
-        "invalid_not_injected",
-        "apply_failed",
-        "runner_error",
-    } else 2
+    return exit_code_for_classification(str(report.get("result_classification")))
 
 
 if __name__ == "__main__":

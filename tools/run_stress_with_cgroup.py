@@ -115,6 +115,17 @@ def cleanup_mutation(kind: str, namespace: str, name: str) -> dict[str, Any]:
     }
 
 
+def resource_exists(kind: str, namespace: str, name: str) -> bool:
+    plural = RESOURCE_BY_KIND.get(kind)
+    if not plural:
+        return False
+    try:
+        code, _, _ = run_kubectl(["get", plural, name, "-n", namespace], timeout=30)
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+    return code == 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("mutation", type=Path)
@@ -149,6 +160,8 @@ def main() -> int:
     mutation_namespace, target_selector, mutation_kind = mutation_target(mutation_doc)
     if mutation_namespace != args.namespace:
         raise SystemExit(f"--namespace {args.namespace} does not match mutation namespace {mutation_namespace}")
+    if resource_exists(mutation_kind, mutation_namespace, str(mutation_name)):
+        raise SystemExit(f"mutation already exists: {mutation_namespace}/{mutation_name}")
     process_budget = max(
         args.process_timeout,
         args.injection_timeout
@@ -258,7 +271,14 @@ def main() -> int:
                 runner.wait(timeout=5)
         # The parent owns a final, idempotent cleanup attempt. This covers a
         # runner killed during its recovery/finally block.
-        cleanup_fallback = cleanup_mutation(mutation_kind, mutation_namespace, str(mutation_name))
+        if resource_exists(mutation_kind, mutation_namespace, str(mutation_name)):
+            cleanup_fallback = cleanup_mutation(mutation_kind, mutation_namespace, str(mutation_name))
+        else:
+            cleanup_fallback = {
+                "attempted": False,
+                "confirmed": True,
+                "reason": "mutation resource is already absent; no parent delete required",
+            }
         if not cleanup_fallback.get("confirmed"):
             errors.append("parent cleanup did not confirm mutation absence")
         runner_out.close()

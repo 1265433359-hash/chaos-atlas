@@ -172,8 +172,14 @@ def check_mutation(path: Path) -> dict[str, Any]:
     kind = raw.get("kind")
     metadata = raw.get("metadata") or {}
     spec = raw.get("spec") or {}
+    if not isinstance(metadata, dict):
+        metadata = {}
+    if not isinstance(spec, dict):
+        spec = {}
     namespace = metadata.get("namespace")
     selector = spec.get("selector") or {}
+    if not isinstance(selector, dict):
+        selector = {}
     labels = selector.get("labelSelectors") or {}
     raw_namespaces = selector.get("namespaces")
     namespaces = raw_namespaces if isinstance(raw_namespaces, list) else ([namespace] if namespace else [])
@@ -259,9 +265,10 @@ def check_mutation(path: Path) -> dict[str, Any]:
             port_number is not None and pods and all(port_number in ports_for_pod(pod) for pod in pods)
         )
 
-    resource_code, _, resource_error = run_kubectl(
-        ["get", resource or "unknown", metadata.get("name", ""), "-n", namespace]
-    )
+    resource_args = ["get", resource or "unknown", str(metadata.get("name") or "")]
+    if namespace:
+        resource_args.extend(["-n", str(namespace)])
+    resource_code, _, resource_error = run_kubectl(resource_args)
     checks["mutation_name_available"] = resource_code != 0
     if resource_code == 0:
         errors.append(f"mutation already exists: {namespace}/{metadata.get('name')}")

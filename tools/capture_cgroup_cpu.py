@@ -34,10 +34,10 @@ def choose_pod(namespace: str, selector: str) -> str:
         condition.get("type") == "Ready" and condition.get("status") == "True"
         for condition in pod.get("status", {}).get("conditions", [])
     )]
-    if len(ready) > 1:
+    if len(ready) > 1 or (len(pods) > 1 and len(ready) != 1):
         raise RuntimeError(
-            f"selector matched multiple Ready Pods in {namespace}: "
-            + ", ".join(pod.get("metadata", {}).get("name", "<unknown>") for pod in ready)
+            f"selector did not identify exactly one Ready Pod in {namespace}: "
+            + ", ".join(pod.get("metadata", {}).get("name", "<unknown>") for pod in pods)
         )
     return (ready or pods)[0]["metadata"]["name"]
 

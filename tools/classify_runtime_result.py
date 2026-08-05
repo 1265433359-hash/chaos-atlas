@@ -256,6 +256,20 @@ def classify(run: dict[str, Any], baseline: dict[str, Any] | None) -> dict[str, 
     }
 
 
+NON_EXECUTION_CLASSIFICATIONS = {
+    "platform_or_preflight_blocked",
+    "not_applicable",
+    "invalid_not_injected",
+    "apply_failed",
+    "runner_error",
+}
+
+
+def exit_code_for_classification(classification: str) -> int:
+    """Return one canonical process status for runner and offline CLI."""
+    return 2 if classification in NON_EXECUTION_CLASSIFICATIONS else 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", type=Path, required=True, help="runner or manually normalized runtime JSON")
@@ -271,7 +285,7 @@ def main() -> int:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
     print(json.dumps(result, indent=2, ensure_ascii=True))
-    return 0 if result["classification"] not in {"platform_or_preflight_blocked", "not_applicable", "invalid_not_injected"} else 2
+    return exit_code_for_classification(result["classification"])
 
 
 if __name__ == "__main__":

@@ -24,6 +24,10 @@ class RuntimeClassificationConsistencyTest(unittest.TestCase):
             None,
         )
         self.assertEqual("client_timeout_observed", result["classification"])
+        self.assertEqual(
+            classify_runtime_result.exit_code_for_classification("server_error_observed"),
+            0,
+        )
 
 
 if __name__ == "__main__":

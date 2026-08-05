@@ -162,3 +162,8 @@
 - The strongest case-study result is not “HTTP 200 means defense”; it is a timed causal distinction between response preservation, latency degradation, client timeout and later server-side completion.
 - The current evidence supports a runtime-configured Station datasource peer (`train-ticket-mysql:3306`) but not packet-level Trace attribution or a production SLO claim.
 - The paper-prep report lists the next evaluation requirements: repeated runs, confidence intervals, P0 local graph coverage, independent LLM labels, and a reachable Order workflow.
+## Audit verification and remediation
+
+The external review was substantially correct about the runtime safety risks. The namespace and mode checks were previously generator-only, HTTP prerequisite detection was fail-open, and the stress orchestrator could kill its runner before cleanup. Those paths are now enforced in the runtime gate and parent orchestration layer. Classification is centralized, candidate ranking is stable, and the compatibility fuzzy matcher is explicitly limited to legacy records with no `target_service` field.
+
+Artifact checks found nine classification-index mismatches rather than three; all now match their referenced reports. The line report has a canonical classification field, the HTTP blocked vocabulary is normalized, and validation output includes one audit object per card. The workspace now has a root Git baseline while preserving the pinned `train-ticket` repository as an independent nested checkout.

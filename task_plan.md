@@ -196,3 +196,6 @@ status: candidate|reviewed|validated|deprecated
 | 错误 | 尝试 | 处理 |
 |---|---|---|
 | 上一轮执行被用户中断 | 1 | 本轮从只读基线和持久化计划恢复 |
+## Audit remediation checkpoint (2026-08-05)
+
+The first implementation audit is closed for the current Train Ticket scope. Runtime injection is namespace- and mode-scoped, HTTP prerequisites fail closed, runner and parent cleanup are bounded and verified, classification/exit codes are shared, candidate selection is deterministic, slices carry blast-radius flags, and the evidence validator reports per-card detail. Regression tests cover these boundaries; future changes must update the root Git history and rerun the test and knowledge-base validation commands.

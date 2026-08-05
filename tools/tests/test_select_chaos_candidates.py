@@ -69,6 +69,14 @@ class CandidateDecisionTest(unittest.TestCase):
             selector.runtime_matches = original
         self.assertEqual(["network_delay"], observed)
 
+    def test_legacy_records_use_fuzzy_fallback_only_without_target_service(self) -> None:
+        records = [
+            {"id": "TT-NETWORK-BASIC-LEGACY", "test_node": "network_delay"},
+            {"id": "TT-NETWORK-ORDER-EXPLICIT", "test_node": "network_delay", "target_service": "ts-order-service"},
+        ]
+        matches = selector.runtime_matches(records, "ts-basic-service", "network_delay")
+        self.assertEqual(["TT-NETWORK-BASIC-LEGACY"], [record["id"] for record in matches])
+
 
 if __name__ == "__main__":
     unittest.main()

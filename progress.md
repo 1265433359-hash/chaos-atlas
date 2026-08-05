@@ -159,3 +159,12 @@
 - 已生成跨服务静态图：`train_ticket_service_graph.json`、`train_ticket_test_slices_graph.json`、`service_graph_summary.json`、`service_graph_report.md`；46 个服务模块、172 条候选调用边，`ts-order-service -> ts-station-service` 已定位到生产源码 `OrderServiceImpl.java:211`。
 - 当前证据链分三层：selector->Deployment（静态清单）、Deployment->函数/下游服务（静态源码）、函数->真实请求（运行 Trace 待补）。只有第三层完成后才进入注入决策。
 - 运行前置检查：Kubectl v1.36.1 和 Docker CLI 29.6.1 存在；Helm/Maven/Kind/Minikube 缺失；无 kubectl context，Docker server 无响应。因此本轮不部署、不生成运行时结论。
+## DeepSeek audit remediation (2026-08-05)
+
+- Verified the supplied audit against source and artifacts. Findings 1-5 and 7-12 were confirmed; finding 6 was partly a false positive because fuzzy matching is a deliberate compatibility path for legacy records without `target_service`.
+- `runtime_applicability_gate.py` now enforces `train-ticket-lab`, `mode: one`, selector namespace equality, and HTTPChaos positive tproxy/ebtables evidence. Unknown HTTP prerequisites fail closed.
+- `run_chaos_experiment.py` and `classify_runtime_result.py` share one classifier and one exit-code policy. Injection-unconfirmed runs delete immediately instead of waiting through the recovery budget.
+- `run_stress_with_cgroup.py` now derives the cgroup selector from the mutation, rejects pre-existing mutation names, computes a recovery-aware process budget, and performs verified parent cleanup after runner termination. Multi-Ready-Pod cgroup selection is rejected.
+- Candidate ranking is deterministic, blast-radius metadata is present in every Train Ticket slice, and the evidence index now matches every referenced classification report. The Station line report has an explicit top-level classification.
+- Knowledge-base validation now emits per-card checks. HTTP platform-blocked vocabulary is canonicalized as `blocked_by_platform_prerequisite`.
+- Initialized the workspace Git repository with baseline commit `3836b8a` and an ignore policy that keeps the pinned nested source checkout and generated logs out of workspace history.
