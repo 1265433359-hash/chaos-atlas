@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: ob-payment-delay-r1
+  namespace: online-boutique-lab
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+      - online-boutique-lab
+    labelSelectors:
+      app: paymentservice
+  delay:
+    latency: "2000ms"
+    correlation: "100"
+    jitter: "0ms"
+  duration: "60s"
+  direction: to
