@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: scada-gateway-network-loss
+  namespace: chaos-testing
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+    - signalgrid-grid-ops
+    labelSelectors:
+      app.kubernetes.io/name: scada-gateway
+  loss:
+    loss: '10'
+    correlation: '25'
+  duration: 5m

@@ -1,0 +1,12 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-all-services
+  namespace: cloudmare
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - cloudmare
+  duration: 30s

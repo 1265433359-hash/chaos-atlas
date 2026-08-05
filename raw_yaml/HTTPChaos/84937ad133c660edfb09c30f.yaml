@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-error-order
+  namespace: chaos-testing
+  labels:
+    experiment-type: http-error
+    target-service: order-service
+    risk-level: medium
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - microservices-staging
+    labelSelectors:
+      app.kubernetes.io/name: order-service
+  target: Response
+  port: 3000
+  path: /orders
+  method: POST
+  code: 503
+  percent: 20
+  duration: 5m

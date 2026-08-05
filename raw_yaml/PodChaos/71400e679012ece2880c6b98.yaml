@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pf-carts-r08-pod-failure
+  namespace: sock-shop
+spec:
+  action: pod-failure
+  mode: one
+  duration: 3m
+  selector:
+    namespaces:
+    - sock-shop
+    pods:
+      sock-shop:
+      - carts-58999c57d4-bsst5

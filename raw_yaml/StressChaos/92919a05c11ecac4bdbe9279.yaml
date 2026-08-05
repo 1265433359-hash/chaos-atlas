@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: eval-engine-cpu-stress
+  namespace: sentinel
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - sentinel
+    labelSelectors:
+      app: eval-engine
+  stressors:
+    cpu:
+      workers: 1
+      load: 80
+  duration: 3m

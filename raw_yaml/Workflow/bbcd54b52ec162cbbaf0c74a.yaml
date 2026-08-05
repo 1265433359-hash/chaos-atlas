@@ -1,0 +1,67 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: cache-failover-test
+  namespace: chaos-testing
+spec:
+  entry: cache-chaos-workflow
+  templates:
+  - name: cache-chaos-workflow
+    templateType: Serial
+    deadline: 20m
+    children:
+    - cache-delay
+    - cache-error
+    - cache-purge
+    - cache-recovery
+  - name: cache-delay
+    templateType: TCPChaos
+    deadline: 5m
+    tcpChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: redis-cache
+      mode: one
+      action: delay
+      delay: 200ms
+      percent: '30'
+      target:
+        selector:
+          namespaces:
+          - production
+          labelSelectors:
+            app: api-gateway
+        port: 6379
+  - name: cache-error
+    templateType: TCPChaos
+    deadline: 3m
+    tcpChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: redis-cache
+      mode: one
+      action: abort
+      percent: '10'
+  - name: cache-purge
+    templateType: IOChaos
+    deadline: 2m
+    ioChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: redis-cache
+      mode: one
+      action: errno
+      errno: '1'
+      percent: '100'
+      path: /data
+      volumePath: /data
+  - name: cache-recovery
+    templateType: Duration
+    deadline: 5m
+    duration: 5m

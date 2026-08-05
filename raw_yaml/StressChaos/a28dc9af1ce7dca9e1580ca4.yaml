@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: employee-service-memory-stress
+  namespace: chaos-mesh
+  labels:
+    experiment: memory-stress
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - employee-platform
+    labelSelectors:
+      app: employee-service
+  stressors:
+    memory:
+      workers: 2
+      size: 256MB
+  duration: 2m

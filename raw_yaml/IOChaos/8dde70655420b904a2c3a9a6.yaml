@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-errno
+  namespace: chaos-testing
+spec:
+  action: errno
+  mode: one
+  selector:
+    namespaces:
+    - llm-marketplace
+    labelSelectors:
+      app: ml-recommendations
+  volumePath: /app/models
+  path: /app/models/*.pkl
+  errno: 5
+  percent: 30
+  duration: 2m

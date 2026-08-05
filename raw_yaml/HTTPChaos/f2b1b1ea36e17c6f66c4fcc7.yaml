@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-delay-experiment
+  namespace: qbitel
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - qbitel
+    labelSelectors:
+      app: qbitel
+  target: Request
+  port: 8080
+  path: /api/v1/*
+  delay: 2s
+  duration: 3m

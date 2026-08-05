@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: consciousness-pod-kill
+  namespace: load-testing
+spec:
+  action: pod-kill
+  mode: random-max-percent
+  value: '30'
+  selector:
+    namespaces:
+    - terrafusion-cosmic
+    labelSelectors:
+      app: consciousness-service
+  gracePeriod: 0

@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: time-clock-jump
+  namespace: chaos-demo
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaos-demo
+    labelSelectors:
+      app: backend
+  timeOffset: 24h
+  clockIds:
+  - CLOCK_REALTIME
+  duration: 2m

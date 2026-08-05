@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: template-io-bottleneck
+  namespace: chaos-experiments
+  labels:
+    template: io-bottleneck
+    severity: medium
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      tier: storage
+  mode: one
+  action: io
+  stressors:
+    io:
+      workers: 4

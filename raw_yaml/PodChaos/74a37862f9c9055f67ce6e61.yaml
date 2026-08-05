@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-api
+  namespace: default
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: salesflow-api
+  duration: 10s
+  scheduler:
+    cron: '@every 3m'

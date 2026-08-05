@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-experiment
+  namespace: chaos-testing
+  labels:
+    experiment: cpu-stress
+    severity: medium
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - ecommerce-prod
+    labelSelectors:
+      app: core-service
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 5m

@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: eshop-network-delay
+  namespace: eshop
+spec:
+  action: delay
+  mode: all
+  duration: 180s
+  selector:
+    namespaces:
+    - eshop
+  delay:
+    latency: 2s
+    correlation: '100'
+    jitter: 0ms

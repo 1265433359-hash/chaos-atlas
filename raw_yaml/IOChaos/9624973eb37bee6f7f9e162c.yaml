@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-stress
+spec:
+  action: latency
+  mode: all
+  selector:
+    labelSelectors:
+      app: mysql
+  volumePath: /var/lib/mysql
+  path: /var/lib/mysql/**/*
+  delay: 100ms
+  percent: 50
+  duration: 300s

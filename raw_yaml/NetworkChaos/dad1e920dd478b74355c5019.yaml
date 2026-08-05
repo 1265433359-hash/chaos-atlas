@@ -1,0 +1,26 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: delay-fapi-to-dbconnector
+  namespace: fapi
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - fapi
+    labelSelectors:
+      app: fapi-api
+  delay:
+    latency: 3000ms
+    correlation: '100'
+    jitter: 0ms
+  duration: 2m
+  direction: to
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - fapi
+      labelSelectors:
+        app: db-connector

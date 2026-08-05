@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: backend-http-abort
+  namespace: chaos-testing
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: smart-ai-tutor
+      component: backend
+  port: 8000
+  method: POST
+  path: /api/v1/*
+  abort: true
+  abortStatus: '503'
+  duration: 30s
+  scheduler:
+    cron: '@every 24h'

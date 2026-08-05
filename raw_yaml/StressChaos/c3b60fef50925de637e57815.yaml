@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-netflix
+  namespace: chaos-testing
+  labels:
+    app.kubernetes.io/part-of: sentinels
+    experiment-type: cpu-stress
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - netflix
+    labelSelectors:
+      app.kubernetes.io/part-of: netflix-clone
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 60s

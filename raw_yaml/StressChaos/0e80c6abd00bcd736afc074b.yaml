@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: epic8-memory-pressure-test
+  namespace: epic8-prod
+  labels:
+    epic8.platform/experiment: memory-pressure
+    epic8.platform/component: chaos-engineering
+    epic8.platform/validation: vpa-recommendations
+spec:
+  mode: fixed
+  value: '1'
+  duration: 450s
+  stressors:
+    memory:
+      workers: 1
+      size: 1GB
+  selector:
+    namespaces:
+    - epic8-prod
+    labelSelectors:
+      epic8.platform/service: cache

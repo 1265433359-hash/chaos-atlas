@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: promotion-pod-kill
+  namespace: chaos-testing
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - circleguard-stage
+    labelSelectors:
+      app: promotion-service
+  scheduler:
+    cron: '@every 2m'

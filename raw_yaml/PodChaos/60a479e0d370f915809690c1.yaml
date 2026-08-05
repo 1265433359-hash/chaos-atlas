@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: redis-master-failure
+  namespace: chaos-testing
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - redis
+    labelSelectors:
+      app: redis-cluster
+      role: master
+  duration: 1m
+  scheduler:
+    cron: '@every 10m'

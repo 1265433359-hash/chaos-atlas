@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: rabbitmq-cpu-stress
+  namespace: chaos-testing
+spec:
+  mode: fixed-percent
+  value: '40'
+  selector:
+    namespaces:
+    - rabbitmq
+    labelSelectors:
+      app: rabbitmq-consumer
+  stressors:
+    cpu:
+      workers: 4
+      load: 90
+  duration: 3m
+  scheduler:
+    cron: '@every 25m'

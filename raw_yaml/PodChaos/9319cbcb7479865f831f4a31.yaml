@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: relibank-scheduler-service-test
+  namespace: relibank
+  labels:
+    app: relibank
+    experiment-type: pod-chaos
+    target-flow: event-scheduling
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - relibank
+    labelSelectors:
+      app: scheduler-service
+  duration: 45s
+  gracePeriod: 0

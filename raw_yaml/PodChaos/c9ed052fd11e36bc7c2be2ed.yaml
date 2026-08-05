@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: backend-pod-kill
+  namespace: chrono-synth
+  annotations:
+    chaos.runbook: docs/operations/disaster-recovery-runbook.md#pod-kill-drill
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - chrono-synth
+    labelSelectors:
+      app.kubernetes.io/name: backend
+  scheduler:
+    cron: 0 */4 * * *
+  duration: 5s

@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-latency-example
+  namespace: chaos-mesh
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - apps
+    labelSelectors:
+      app: my-app
+      chaos-testing: enabled
+  delay:
+    latency: 100ms
+    correlation: '100'
+    jitter: 0ms
+  duration: 1m
+  scheduler:
+    cron: '@every 10m'

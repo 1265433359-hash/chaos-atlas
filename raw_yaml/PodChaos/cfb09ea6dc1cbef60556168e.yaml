@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-go-api
+  namespace: go-api
+  labels:
+    app.kubernetes.io/part-of: chaos-engineering
+    experiment: pod-kill
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - go-api
+    labelSelectors:
+      app: go-api
+  duration: 30s

@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: redis-io-delay
+  namespace: chaos-engineering
+  labels:
+    experiment-type: io-delay
+    target-service: redis
+    severity: medium
+    automation: enabled
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - rust-security-dev
+    labelSelectors:
+      app: redis
+  volumePath: /data
+  path: /data/**/*
+  delay: 100ms
+  percent: 50
+  duration: 2m
+  scheduler:
+    cron: 30 2 * * 1,3,5

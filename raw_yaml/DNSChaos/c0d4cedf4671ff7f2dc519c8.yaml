@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-failure-netflix
+  namespace: chaos-testing
+  labels:
+    app.kubernetes.io/part-of: sentinels
+    experiment-type: dns-failure
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - netflix
+    labelSelectors:
+      app: api-gateway
+  duration: 30s

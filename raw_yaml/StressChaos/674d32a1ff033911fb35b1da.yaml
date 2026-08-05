@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: file-descriptor-exhaustion
+  namespace: chaos-demo
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaos-demo
+    labelSelectors:
+      app: backend
+  stressors:
+    filesystem:
+      workers: 2
+      size: 500Mi
+  duration: 2m

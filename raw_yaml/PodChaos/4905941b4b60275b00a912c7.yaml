@@ -1,0 +1,32 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  namespace: his-hope
+  name: pod-kill-every-6h
+  labels:
+    app.kubernetes.io/part-of: his-hope
+    chaos-mesh/experiment-type: pod-kill
+    chaos-mesh/schedule: routine
+  annotations:
+    description: Kills a single random pod in the his-hope namespace every 6 hours
+      to test resilience and self-healing
+    maintainer: his-hope-sre@hishop.com
+    game-day-scope: weekly-chaos-wednesday
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - his-hope
+    labelSelectors:
+      app.kubernetes.io/part-of: his-hope
+    fieldSelectors:
+    - metadata.name!=patient-service-0
+    - metadata.name!=clinical-service-0
+    - metadata.name!=redis-0
+    - metadata.name!=postgres-0
+    - metadata.name!=rabbitmq-0
+  duration: 30s
+  scheduler:
+    cron: '@every 6h'
+  gracePeriod: 30

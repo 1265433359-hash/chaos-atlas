@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-product-service
+  namespace: mini-ecommerce
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - mini-ecommerce
+    labelSelectors:
+      app: product-service
+  duration: 30s

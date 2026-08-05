@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-scm-auth
+  namespace: scm-prod
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - scm-prod
+    labelSelectors:
+      app: scm-auth
+  scheduler:
+    cron: '@every 1h'

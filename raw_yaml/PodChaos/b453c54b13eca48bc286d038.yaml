@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: ewat-crash-loop
+  namespace: ewat
+  labels:
+    ewat.scenario: crash_loop
+    ewat.category: hard
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - ewat
+    labelSelectors:
+      app.kubernetes.io/component: cart
+  gracePeriod: 0
+  duration: 2m

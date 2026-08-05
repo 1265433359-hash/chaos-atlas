@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: template-critical-path-latency
+  namespace: chaos-experiments
+  labels:
+    template: critical-path
+    severity: high
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      tier: frontend
+  mode: all
+  action: delay
+  delay:
+    latency: 100ms
+    jitter: 20ms
+  direction: both
+  duration: 5m

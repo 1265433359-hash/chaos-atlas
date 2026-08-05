@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: clock-skew
+  namespace: helios
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - helios
+    labelSelectors:
+      app.kubernetes.io/component: edge
+  timeOffset: 300s
+  duration: 120s
+  scheduler:
+    cron: '@every 30m'

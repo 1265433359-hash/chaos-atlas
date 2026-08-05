@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "tool": "select_chaos_candidates",
+  "project": "FudanSELab/train-ticket",
+  "commit": "313886e99befb94be6cd45f085c98e0019f59829",
+  "selection_policy": {
+    "center": "test_node",
+    "static_evidence": "selector -> target -> function candidates",
+    "runtime_evidence": "knowledge card and classification index",
+    "safety_rule": "This report proposes candidates only; use run_chaos_experiment.py for injection.",
+    "decision_labels": [
+      "ready_candidate_with_runner",
+      "needs_runtime_gate",
+      "defer_unreachable_or_unproven_path",
+      "blocked_by_platform_prerequisite",
+      "defer_missing_selector"
+    ]
+  },
+  "filters": {
+    "node": "stress_cpu",
+    "kind": null,
+    "service": "ts-basic-service",
+    "limit": 1
+  },
+  "catalog_context": {
+    "source_file_count": 1935,
+    "node_count": 77
+  },
+  "candidate_count": 1,
+  "candidates": [
+    {
+      "rank_score": 85,
+      "decision": "ready_candidate_with_runner",
+      "reasons": [
+        "selector matches a project Deployment",
+        "selector matches a project Service",
+        "static function candidates exist",
+        "runtime knowledge card KB-TT-STRESS-BASIC-CPU-001 exists",
+        "runtime classification evidence exists for this service family"
+      ],
+      "test_id": "basic-stress-cpu",
+      "test_nodes": [
+        "selector",
+        "stress_cpu"
+      ],
+      "kind": "StressChaos",
+      "source_yaml": "raw_yaml/StressChaos/27e24dfe4fb46964bad2692a.yaml",
+      "source_sha256": "9d94c6f1cad11442417b4c47ef6dbf68c09bcaa6af6b089f1de21bd754650683",
+      "raw_name": "basic-stress-cpu",
+      "raw_namespace": "train-ticket",
+      "target_app": "ts-basic-service",
+      "static_slice": {
+        "target_matches": 3,
+        "service_matches": 4,
+        "function_candidates": 32,
+        "code_modules": [
+          "train-ticket\\ts-basic-service"
+        ],
+        "blast_radius_flag": false
+      },
+      "knowledge_cards": [
+        {
+          "id": "KB-TT-STRESS-BASIC-CPU-001",
+          "version": 2,
+          "status": "validated_runtime_selector_pipeline",
+          "evidence_state": "runtime_observed",
+          "runtime_status": "validated_runtime_selector_pipeline",
+          "business_path_status": "confirmed_runtime_downstream_call",
+          "selector_app": "ts-basic-service",
+          "next_evidence": [
+            "Repeat success and not-found oracles with a fixed warm-up and larger sample window.",
+            "Sweep workers/load around the first latency and timeout boundary.",
+            "Correlate readiness, application logs, cgroup and downstream response timing."
+          ]
+        }
+      ],
+      "runtime_matches": [
+        {
+          "id": "TT-STRESS-BASIC-CPU-SUCCESS-001",
+          "test_node": "stress_cpu",
+          "target_service": "ts-basic-service",
+          "run_report": "artifacts/train-ticket/runtime/generated_basic_stress_success_result.json",
+          "runner_report": "artifacts/train-ticket/runtime/generated_basic_stress_success_runner_result.json",
+          "classification_report": "artifacts/train-ticket/runtime/generated_basic_stress_success_classification.json",
+          "classification": "successful_downstream_response_preserved_with_cgroup_throttling",
+          "evidence_state": "runtime_effect_observed",
+          "confidence": "A",
+          "root_cause_labels": [
+            "resource_throttling_observed",
+            "success_oracle_preserved",
+            "latency_variance_requires_repeat"
+          ],
+          "selection_report": "artifacts/train-ticket/runtime/stress_basic_candidate_selection.json",
+          "generation_plan": "artifacts/train-ticket/runtime/stress_basic_mutation_generation_plan.json",
+          "applicability_gate": "artifacts/train-ticket/runtime/stress_basic_success_gate.json",
+          "cgroup_report": "artifacts/train-ticket/runtime/generated_basic_stress_success_cgroup.json",
+          "log_evidence": "artifacts/train-ticket/runtime/generated_basic_stress_success_log_evidence.json",
+          "orchestration_report": "artifacts/train-ticket/runtime/generated_basic_stress_success_orchestration.json"
+        },
+        {
+          "id": "TT-STRESS-BASIC-CPU-DOWNSTREAM-001",
+          "test_node": "stress_cpu",
+          "target_service": "ts-basic-service",
+          "run_report": "artifacts/train-ticket/runtime/generated_basic_stress_result.json",
+          "runner_report": "artifacts/train-ticket/runtime/generated_basic_stress_runner_result.json",
+          "classification_report": "artifacts/train-ticket/runtime/generated_basic_stress_classification.json",
+          "classification": "downstream_response_preserved_with_latency_degradation_and_cpu_throttling",
+          "evidence_state": "runtime_effect_observed",
+          "confidence": "A",
+          "root_cause_labels": [
+            "resource_throttling_observed",
+            "latency_degradation",
+            "controlled_not_found_oracle"
+          ],
+          "selection_report": "artifacts/train-ticket/runtime/stress_basic_candidate_selection.json",
+          "generation_plan": "artifacts/train-ticket/runtime/stress_basic_mutation_generation_plan.json",
+          "applicability_gate": "artifacts/train-ticket/runtime/stress_basic_gate.json",
+          "cgroup_report": "artifacts/train-ticket/runtime/generated_basic_stress_cgroup.json",
+          "log_evidence": "artifacts/train-ticket/runtime/generated_basic_stress_log_evidence.json",
+          "orchestration_report": "artifacts/train-ticket/runtime/generated_basic_stress_orchestration.json"
+        }
+      ],
+      "mutation_constraints": {
+        "namespace": "train-ticket-lab",
+        "mode": "one",
+        "selector": {
+          "labelSelectors": {
+            "app": "ts-basic-service"
+          }
+        },
+        "duration": "bounded_and_explicit",
+        "require_runner": "tools/run_chaos_experiment.py",
+        "require_injection_status": "status.experiment.containerRecords[].injectedCount >= 1",
+        "require_recovery_status": "recoveredCount >= injectedCount",
+        "stressor": "cpu",
+        "first_profile": {
+          "workers": 1,
+          "load_percent": 80,
+          "duration": "45s"
+        },
+        "strong_profile": {
+          "workers": 4,
+          "load_percent": 100,
+          "duration": "60s"
+        },
+        "observation": "cgroup-v2 cpu.stat plus read-only request and readiness"
+      },
+      "rank": 1
+    }
+  ]
+}

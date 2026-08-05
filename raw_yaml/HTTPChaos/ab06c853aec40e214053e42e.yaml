@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-error-500
+  namespace: chaos-demo
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - chaos-demo
+    labelSelectors:
+      app: backend
+  target: Response
+  port: 5001
+  path: /data
+  method: GET
+  replace:
+    code: 500
+    body: '{"error":"Internal Server Error","chaos":"injected"}'
+    headers:
+      Content-Type: application/json
+  duration: 2m

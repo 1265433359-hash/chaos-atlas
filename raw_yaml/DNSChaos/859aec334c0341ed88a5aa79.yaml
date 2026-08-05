@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-failure-test
+  namespace: chaos-testing
+  labels:
+    experiment: resilience
+    type: dns-failure
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - app-team-a-dev
+    labelSelectors:
+      app: api-gateway
+  patterns:
+  - order-service.app-team-a-dev.svc.cluster.local
+  duration: 2m

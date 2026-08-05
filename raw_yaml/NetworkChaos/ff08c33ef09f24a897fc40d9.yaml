@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: template-cache-partition
+  namespace: chaos-experiments
+  labels:
+    template: cache-failure
+    severity: medium
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      component: cache
+  mode: all
+  action: partition
+  direction: both
+  target:
+    selector:
+      namespaces:
+      - production
+      labelSelectors:
+        app: application
+  duration: 5m

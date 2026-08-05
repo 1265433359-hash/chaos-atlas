@@ -1,0 +1,28 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: vernemq-network-latency
+  namespace: chaos-mesh
+  labels:
+    experiment-type: performance
+    target-service: vernemq
+    severity: low
+    storage.samcloud.online/tier: standard
+spec:
+  action: netem
+  mode: fixed
+  value: '1'
+  duration: 15m
+  selector:
+    namespaces:
+    - storage
+    labelSelectors:
+      app.kubernetes.io/name: vernemq
+  netem:
+    delay:
+      latency: 200ms
+      correlation: '25'
+      jitter: 50ms
+  direction: both
+  scheduler:
+    cron: 0 15 * * TUE

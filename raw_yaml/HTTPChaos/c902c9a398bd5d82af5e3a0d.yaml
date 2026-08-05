@@ -1,0 +1,26 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: provider-api-errors
+  namespace: chaos-testing
+spec:
+  mode: fixed-percent
+  value: '30'
+  selector:
+    namespaces:
+    - inference-gateway
+    labelSelectors:
+      app: azure-openai-provider
+  target: Request
+  port: 8080
+  path: /v1/chat/completions
+  method: POST
+  duration: 20m
+  abort: false
+  delay: 10s
+  replace:
+    code: 503
+    body: '{"error": {"message": "Service temporarily unavailable", "type": "service_unavailable",
+      "code": "rate_limit_exceeded"}}'
+  scheduler:
+    cron: 0 */3 * * *

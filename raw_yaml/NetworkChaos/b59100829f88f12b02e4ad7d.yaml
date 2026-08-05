@@ -1,0 +1,20 @@
+kind: NetworkChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: default
+  name: network-delay0940
+spec:
+  selector:
+    namespaces:
+    - default
+    pods:
+      default:
+      - curl-pod
+  mode: all
+  action: delay
+  duration: 120s
+  delay:
+    latency: 100ms
+    correlation: '0'
+    jitter: 0ms
+  direction: to

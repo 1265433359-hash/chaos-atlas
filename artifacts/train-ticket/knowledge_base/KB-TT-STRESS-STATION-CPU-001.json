@@ -1,0 +1,176 @@
+{
+    "id":  "KB-TT-STRESS-STATION-CPU-001",
+    "version":  1,
+    "status":  "validated_runtime_selector_pipeline",
+    "evidence_state":  "runtime_observed",
+    "project":  "FudanSELab/train-ticket",
+    "project_commit":  "313886e99befb94be6cd45f085c98e0019f59829",
+    "test_node":  {
+                      "family":  "StressChaos",
+                      "operation":  "cpu",
+                      "workers":  1,
+                      "load_percent":  80,
+                      "mode":  "one",
+                      "duration":  "45s",
+                      "selector":  {
+                                       "namespace":  "train-ticket-lab",
+                                       "label":  {
+                                                     "app":  "ts-station-service"
+                                                 }
+                                   },
+                      "source_yaml":  "raw_yaml/StressChaos/5b343bc4bceb93b92dc24d72.yaml",
+                      "mutation_yaml":  "artifacts/train-ticket/runtime/generated_mutations/stress-station/station-stress-cpu-candidate-r1.yaml"
+                  },
+    "test_node_centered_graph":  {
+                                     "nodes":  [
+                                                   {
+                                                       "id":  "test.stress.cpu.station",
+                                                       "kind":  "TestNode",
+                                                       "evidence":  "selector candidate passed runtime gate and injected"
+                                                   },
+                                                   {
+                                                       "id":  "deploy.ts-station-service",
+                                                       "kind":  "TargetDeployment",
+                                                       "evidence":  "Ready Pod and port 12345 confirmed"
+                                                   },
+                                                   {
+                                                       "id":  "controller.StationController.queryForStationId",
+                                                       "kind":  "ControllerPath",
+                                                       "source":  "StationController.java:60"
+                                                   },
+                                                   {
+                                                       "id":  "service.StationServiceImpl.queryForId",
+                                                       "kind":  "BusinessExecution",
+                                                       "source":  "StationServiceImpl.java:90-101"
+                                                   },
+                                                   {
+                                                       "id":  "repository.StationRepository.findByName",
+                                                       "kind":  "DataFlow",
+                                                       "evidence":  "service implementation calls repository.findByName"
+                                                   },
+                                                   {
+                                                       "id":  "response.station.success",
+                                                       "kind":  "BusinessOutcome",
+                                                       "evidence":  "HTTP 200, status=1, seeded UUID"
+                                                   },
+                                                   {
+                                                       "id":  "observe.station.cgroup.latency",
+                                                       "kind":  "Observation",
+                                                       "evidence":  "cgroup-v2, request latency and response contract"
+                                                   },
+                                                   {
+                                                       "id":  "recover.station.stress.cleanup",
+                                                       "kind":  "Recovery",
+                                                       "evidence":  "recoveredCount=1 and resource absent"
+                                                   }
+                                               ],
+                                     "edges":  [
+                                                   {
+                                                       "from":  "test.stress.cpu.station",
+                                                       "to":  "deploy.ts-station-service",
+                                                       "type":  "selects",
+                                                       "confidence":  "confirmed_runtime"
+                                                   },
+                                                   {
+                                                       "from":  "deploy.ts-station-service",
+                                                       "to":  "controller.StationController.queryForStationId",
+                                                       "type":  "routes_to",
+                                                       "confidence":  "confirmed_runtime_by_endpoint"
+                                                   },
+                                                   {
+                                                       "from":  "controller.StationController.queryForStationId",
+                                                       "to":  "service.StationServiceImpl.queryForId",
+                                                       "type":  "calls",
+                                                       "confidence":  "confirmed_static"
+                                                   },
+                                                   {
+                                                       "from":  "service.StationServiceImpl.queryForId",
+                                                       "to":  "repository.StationRepository.findByName",
+                                                       "type":  "reads",
+                                                       "confidence":  "confirmed_static"
+                                                   },
+                                                   {
+                                                       "from":  "repository.StationRepository.findByName",
+                                                       "to":  "response.station.success",
+                                                       "type":  "produces",
+                                                       "confidence":  "confirmed_runtime_contract"
+                                                   },
+                                                   {
+                                                       "from":  "response.station.success",
+                                                       "to":  "observe.station.cgroup.latency",
+                                                       "type":  "observed_by",
+                                                       "confidence":  "confirmed_runtime"
+                                                   },
+                                                   {
+                                                       "from":  "test.stress.cpu.station",
+                                                       "to":  "recover.station.stress.cleanup",
+                                                       "type":  "restores",
+                                                       "confidence":  "confirmed_runtime"
+                                                   }
+                                               ]
+                                 },
+    "four_layer_validation":  {
+                                  "yaml_syntax":  "confirmed_static",
+                                  "target_exists":  "confirmed_static_and_runtime",
+                                  "business_path_reachable":  "confirmed_runtime_direct_station_endpoint",
+                                  "runtime_injection":  "confirmed_runtime",
+                                  "cpu_pressure_effect":  "confirmed_runtime_with_cgroup_throttling",
+                                  "business_response":  "confirmed_runtime_http_200_seeded_success",
+                                  "defense_observed":  "bounded_station_node_resilience",
+                                  "recovery_observed":  "confirmed_runtime"
+                              },
+    "test_value_hypothesis":  {
+                                  "current":  "high_for_isolating_downstream_resource_pressure",
+                                  "reason":  "Direct Station injection separates downstream node behavior from the previously tested upstream Basic injection while using the same seeded business oracle.",
+                                  "boundary":  "The Station response stayed correct and median latency increased by 13.162ms; fresh Station log capture was unavailable, so the result is bounded to HTTP, cgroup and lifecycle evidence.",
+                                  "safe_next_injection":  "Compare direct Station CPU with Basic upstream CPU under the same oracle, then add controlled concurrency only after defining an SLO."
+                              },
+    "result_classification":  {
+                                  "classification":  "station_success_response_preserved_with_small_latency_increase",
+                                  "defense_experience":  "The same business UUID can remain correct when the downstream Station node is stressed. Test-node location matters: Basic-upstream and Station-direct injections are separate hypotheses.",
+                                  "root_cause_hypothesis":  "The Station container\u0027s CPU limit and injected worker caused cgroup throttling, producing a small latency increase without changing the response contract.",
+                                  "counterexample_to_avoid":  "Do not transfer Basic-upstream evidence to Station-direct behavior, and do not call HTTP 200 proof of timeout/retry/fallback defense."
+                              },
+    "evidence":  [
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/stress_station_gate.json",
+                         "purpose":  "Runtime applicability gate for the direct Station candidate"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_stress_success_result.json",
+                         "purpose":  "Unified direct Station CPU result and upstream comparison"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_stress_success_warmup_runner_result.json",
+                         "purpose":  "Injection lifecycle and ten formal HTTP observations"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_stress_success_warmup_cgroup.json",
+                         "purpose":  "25 cgroup-v2 samples and throttling counters"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_stress_success_warmup_classification.json",
+                         "purpose":  "Automated response-preserved classification"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/baseline_station_success.json",
+                         "purpose":  "Read-only direct Station baseline"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_basic_stress_warmup_result.json",
+                         "purpose":  "Upstream Basic CPU comparison"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/basic_station_injection_location_comparison.json",
+                         "purpose":  "Comparison with Basic-upstream injection location"
+                     }
+                 ],
+    "next_evidence":  [
+                          "Capture fresh Station logs during a direct injection when log permission is available.",
+                          "Compare Station-direct and Basic-upstream results under the same fixed oracle and profile.",
+                          "Define a Station endpoint latency SLO before increasing concurrency or CPU pressure."
+                      ],
+    "secrets":  {
+                    "redaction":  "No credentials or secret values are stored in this card."
+                }
+}

@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-errno
+  namespace: chaos-mesh
+spec:
+  action: fault
+  mode: one
+  selector:
+    namespaces:
+    - nebula-production
+    labelSelectors:
+      app: postgres
+  volumePath: /var/lib/postgresql/data
+  path: /var/lib/postgresql/data/**/*
+  errno: 5
+  percent: 10
+  duration: 1m

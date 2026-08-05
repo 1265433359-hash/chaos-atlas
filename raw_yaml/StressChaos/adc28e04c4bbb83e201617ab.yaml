@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: mimir-cpu-stress
+  namespace: mimir-production
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - mimir-production
+    labelSelectors:
+      app: mimir-worker
+  duration: 300s
+  stressors:
+    cpu:
+      workers: 1
+      load: 80
+  scheduler:
+    cron: 0 3 * * 2

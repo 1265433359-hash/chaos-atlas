@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: entmoot-bus-loss
+  namespace: entmoot
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+    - entmoot
+    labelSelectors:
+      app: entmoot
+  loss:
+    loss: '10'
+    correlation: '25'
+  duration: 60s

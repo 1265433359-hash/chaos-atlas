@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: data-plane-http-abort
+  namespace: govsecure
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - govsecure
+    labelSelectors:
+      app: data-plane
+  target: Request
+  port: 8080
+  path: /api/*
+  abort: true
+  duration: 10s
+  scheduler:
+    cron: '@every 12h'

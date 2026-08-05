@@ -1,0 +1,44 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: complex-chaos-workflow
+  namespace: qbitel
+spec:
+  entry: entry
+  templates:
+  - name: entry
+    templateType: Serial
+    deadline: 10m
+    children:
+    - network-delay-step
+    - pod-failure-step
+    - recovery-validation-step
+  - name: network-delay-step
+    templateType: NetworkChaos
+    deadline: 3m
+    networkChaos:
+      action: delay
+      mode: one
+      selector:
+        namespaces:
+        - qbitel
+        labelSelectors:
+          app: qbitel
+      delay:
+        latency: 200ms
+      duration: 2m
+  - name: pod-failure-step
+    templateType: PodChaos
+    deadline: 2m
+    podChaos:
+      action: pod-failure
+      mode: one
+      selector:
+        namespaces:
+        - qbitel
+        labelSelectors:
+          app: qbitel
+      duration: 1m
+  - name: recovery-validation-step
+    templateType: Suspend
+    deadline: 1m

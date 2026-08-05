@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: random-pod-failure
+  namespace: chaos-testing
+spec:
+  action: pod-kill
+  mode: random-max-percent
+  value: '30'
+  duration: 5m
+  selector:
+    namespaces:
+    - skalean-system
+    labelSelectors:
+      tier: backend
+  scheduler:
+    cron: '@every 30m'

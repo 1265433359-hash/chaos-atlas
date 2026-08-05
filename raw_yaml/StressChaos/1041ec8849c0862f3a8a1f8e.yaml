@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: druid-memory-stress
+  namespace: chaos-mesh
+  labels:
+    experiment-type: resource
+    target-service: druid
+    severity: high
+spec:
+  mode: fixed
+  value: '1'
+  duration: 20m
+  selector:
+    namespaces:
+    - data-science
+    labelSelectors:
+      app.kubernetes.io/name: druid
+      app.kubernetes.io/component: broker
+  stressors:
+    memory:
+      workers: 2
+      size: 1GB
+  scheduler:
+    cron: 0 16 * * WED

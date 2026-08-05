@@ -1,0 +1,12 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PhysicalMachineChaos
+metadata:
+  name: node-failure
+  namespace: default
+spec:
+  action: vm-stop
+  mode: one
+  selector:
+    namespaces:
+    - default
+  duration: 5m

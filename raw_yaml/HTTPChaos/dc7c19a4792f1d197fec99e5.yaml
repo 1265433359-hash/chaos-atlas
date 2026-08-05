@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-error-ts-travel
+  namespace: chaos-mesh
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - ts
+    labelSelectors:
+      app: ts-travel-service
+  target: Response
+  port: 8080
+  replace:
+    code: 500
+  duration: 3m

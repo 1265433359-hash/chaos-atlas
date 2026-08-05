@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: dns
+spec:
+  action: random
+  mode: all
+  patterns:
+  - google.com
+  - chaos-mesh.*
+  - github.?om
+  selector:
+    namespaces:
+    - podinfo
+    labelSelectors:
+      app.kubernetes.io/name: podinfo

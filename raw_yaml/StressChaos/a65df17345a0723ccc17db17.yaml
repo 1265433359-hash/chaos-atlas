@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-stress-example
+  namespace: chaos-mesh
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - stress-app
+    labelSelectors:
+      app: postgres
+  stressors:
+    memory:
+      workers: 8
+      size: 8560MB

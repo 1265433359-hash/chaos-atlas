@@ -1,0 +1,13 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: sock-shop
+  name: el-e11-pod-kill-carts
+spec:
+  selector:
+    namespaces:
+    - sock-shop
+    labelSelectors:
+      name: carts
+  mode: one
+  action: pod-kill

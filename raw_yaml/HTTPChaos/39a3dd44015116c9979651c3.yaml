@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-delay-chaos
+  namespace: elevatediq-production
+  labels:
+    app.kubernetes.io/name: chaos-experiment
+    app.kubernetes.io/component: http-delay
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - elevatediq-production
+    labelSelectors:
+      app.kubernetes.io/name: ml-forecasting
+  target: Response
+  port: 8081
+  path: /api/v1/forecast/*
+  method: POST
+  delay: 2s
+  percent: 25
+  duration: 120s

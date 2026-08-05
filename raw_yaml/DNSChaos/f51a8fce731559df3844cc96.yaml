@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-failure
+  namespace: chaos-testing
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: ergo-web
+  patterns:
+  - postgres.*
+  - redis.*
+  duration: 30s

@@ -1,0 +1,42 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: sentiment-scheduled-chaos
+  namespace: default
+spec:
+  schedule: '@every 6h'
+  type: Workflow
+  historyLimit: 10
+  concurrencyPolicy: Forbid
+  workflowSpec:
+    entry: entry
+    templates:
+    - name: entry
+      templateType: Serial
+      deadline: 20m
+      children:
+      - random-chaos
+      - wait
+      - health-check
+    - name: random-chaos
+      templateType: PodChaos
+      deadline: 5m
+      podChaos:
+        action: pod-kill
+        mode: one
+        selector:
+          namespaces:
+          - default
+          labelSelectors:
+            app.kubernetes.io/name: mlops-sentiment
+        duration: 30s
+    - name: wait
+      templateType: Suspend
+      deadline: 2m
+      suspend:
+        duration: 1m
+    - name: health-check
+      templateType: Suspend
+      deadline: 1m
+      suspend:
+        duration: 30s

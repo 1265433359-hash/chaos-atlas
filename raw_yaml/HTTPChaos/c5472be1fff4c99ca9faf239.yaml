@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: template-service-error
+  namespace: chaos-experiments
+  labels:
+    template: service-degradation
+    severity: medium
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: payment-service
+  mode: percentage
+  percent: 25
+  action: abort
+  target: service
+  abort:
+    code: 503
+  duration: 5m

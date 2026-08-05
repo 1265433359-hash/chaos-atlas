@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-fault-chaos
+  namespace: staging
+  labels:
+    app.kubernetes.io/part-of: gp-chaos-engineering
+spec:
+  action: fault
+  mode: all
+  selector:
+    namespaces:
+    - staging
+    labelSelectors:
+      app.kubernetes.io/part-of: my-app
+  volumePath: /data
+  path: '*'
+  errno: 5
+  percent: 50
+  duration: 60s

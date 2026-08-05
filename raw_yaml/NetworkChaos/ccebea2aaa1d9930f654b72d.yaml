@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-delay-loyalty
+  namespace: chaos-testing
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - beans
+    labelSelectors:
+      app: loyalty
+  delay:
+    latency: 500ms
+    correlation: '100'
+    jitter: 50ms
+  duration: 1m

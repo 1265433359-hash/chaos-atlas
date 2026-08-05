@@ -1,0 +1,26 @@
+kind: HTTPChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace:
+    namespace: null
+  name:
+    name: null
+spec:
+  selector:
+    namespaces:
+    - namespace: null
+    labelSelectors:
+      app:
+        app: null
+    pods:
+      default:
+        pods: null
+  mode: all
+  target: Request
+  delay:
+    delay: null
+  port:
+    port: null
+  path: '*'
+  duration:
+    duration: null

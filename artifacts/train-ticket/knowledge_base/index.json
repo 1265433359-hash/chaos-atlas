@@ -1,0 +1,76 @@
+{
+    "schema_version":  1,
+    "project":  "FudanSELab/train-ticket",
+    "cards":  [
+                  {
+                      "id":  "KB-TT-STRESS-BASIC-CPU-001",
+                      "path":  "KB-TT-STRESS-BASIC-CPU-001.json",
+                      "test_family":  "StressChaos",
+                      "operation":  "cpu",
+                      "target":  "app=ts-basic-service",
+                      "business_path_status":  "confirmed_runtime_downstream_call",
+                      "runtime_status":  "validated_runtime_selector_pipeline_concurrency_observed",
+                      "injection_recommendation":  "define_slo_then_bounded_concurrency_or_timeout_boundary"
+                  },
+                  {
+                      "id":  "KB-TT-NETWORK-BASIC-STATION-001",
+                      "path":  "KB-TT-NETWORK-BASIC-STATION-001.json",
+                      "test_family":  "NetworkChaos",
+                      "operation":  "delay",
+                      "target":  "app=ts-basic-service",
+                      "business_path_status":  "confirmed_runtime",
+                      "runtime_status":  "validated_runtime_selector_pipeline",
+                      "injection_recommendation":  "sweep_timeout_boundary"
+                  },
+                  {
+                      "id":  "KB-TT-NETWORK-ORDER-STATION-001",
+                      "path":  "KB-TT-NETWORK-ORDER-STATION-001.json",
+                      "test_family":  "NetworkChaos",
+                      "operation":  "delay",
+                      "target":  "app=ts-order-service",
+                      "business_path_status":  "not_reachable_in_current_source",
+                      "runtime_status":  "pending",
+                      "injection_recommendation":  "defer"
+                  },
+                  {
+                      "id":  "KB-TT-HTTP-ORDER-RESPONSE-404-001",
+                      "path":  "KB-TT-HTTP-ORDER-RESPONSE-404-001.json",
+                      "test_family":  "HTTPChaos",
+                      "operation":  "replace_response",
+                      "target":  "app=ts-order-service:12031",
+                      "business_path_status":  "candidate_controller_paths",
+                      "runtime_status":  "blocked_by_platform_prerequisite",
+                      "injection_recommendation":  "retry_after_http_instrumentation_fix"
+                  },
+                  {
+                      "id":  "KB-TT-STRESS-ORDER-CPU-001",
+                      "path":  "KB-TT-STRESS-ORDER-CPU-001.json",
+                      "test_family":  "StressChaos",
+                      "operation":  "cpu",
+                      "target":  "app=ts-order-service",
+                      "business_path_status":  "candidate_listener_and_resource_path",
+                      "runtime_status":  "validated_bounded_strong_and_generated_profile",
+                      "injection_recommendation":  "test_downstream_business_path_with_cgroup_telemetry"
+                  },
+                  {
+                      "id":  "KB-TT-STRESS-STATION-CPU-001",
+                      "path":  "KB-TT-STRESS-STATION-CPU-001.json",
+                      "test_family":  "StressChaos",
+                      "operation":  "cpu",
+                      "target":  "app=ts-station-service",
+                      "business_path_status":  "confirmed_runtime_direct_station_endpoint",
+                      "runtime_status":  "validated_runtime_selector_pipeline",
+                      "injection_recommendation":  "compare_with_basic_upstream_then_define_slo"
+                  },
+                  {
+                      "id":  "KB-TT-NETWORK-STATION-DELAY-001",
+                      "path":  "KB-TT-NETWORK-STATION-DELAY-001.json",
+                      "test_family":  "NetworkChaos",
+                      "operation":  "delay",
+                      "target":  "app=ts-station-service",
+                      "business_path_status":  "confirmed_runtime_direct_station_endpoint",
+                      "runtime_status":  "validated_runtime_selector_pipeline_timeout_boundary_confirmed",
+                      "injection_recommendation":  "stop_delay_after_timeout_boundary_require_slo_for_production_claim"
+                  }
+              ]
+}

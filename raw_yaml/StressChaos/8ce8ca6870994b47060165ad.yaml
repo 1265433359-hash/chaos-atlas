@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: burn-cpu
+  namespace: chaos-testing
+spec:
+  mode: fixed
+  value: '5'
+  selector:
+    namespaces:
+    - default
+  stressors:
+    cpu:
+      workers: 5
+      load: 100

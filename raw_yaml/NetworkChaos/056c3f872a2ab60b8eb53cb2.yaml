@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: oscp-network-partition
+  namespace: oscp-prod
+spec:
+  action: partition
+  mode: fixed-percent
+  selector:
+    namespaces:
+    - oscp-prod
+    labelSelectors:
+      app: oscp-toolkit
+  direction: both
+  partition:
+    partitions:
+    - 192.168.0.0/16
+    - 10.0.0.0/8
+  duration: 300s
+  scheduler:
+    cron: '*/30 * * * *'

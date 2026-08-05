@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: db-connection-delay
+  namespace: security-monitor
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - security-monitor
+    labelSelectors:
+      app: security-monitor
+  delay:
+    latency: 500ms
+    jitter: 100ms
+  duration: 5m
+  direction: to
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - security-monitor
+      labelSelectors:
+        app: postgres

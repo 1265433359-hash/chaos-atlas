@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: postgres-partition
+  namespace: chrono-synth
+  annotations:
+    chaos.runbook: docs/operations/disaster-recovery-runbook.md#db-partition-drill
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - chrono-synth
+    labelSelectors:
+      app.kubernetes.io/name: backend
+  direction: to
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - chrono-synth
+      labelSelectors:
+        app.kubernetes.io/name: postgres
+  duration: 60s

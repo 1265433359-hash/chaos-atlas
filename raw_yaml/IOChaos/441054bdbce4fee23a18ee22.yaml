@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-mixed-errors
+  namespace: chaos-testing
+  labels:
+    experiment: io-mixed
+    severity: high
+spec:
+  selector:
+    namespaces:
+    - production
+  mode: all
+  action: mixed
+  delay: 200ms
+  percent: '20'
+  loss: '5'
+  errno: '28'
+  path: /tmp
+  volumePath: /tmp
+  duration: 3m

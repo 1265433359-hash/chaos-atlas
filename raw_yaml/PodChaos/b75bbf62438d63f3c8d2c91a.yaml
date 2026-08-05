@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pesitwizard-random-failure
+  namespace: staging
+  labels:
+    app: pesitwizard
+    chaos-type: pod-failure
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - staging
+    labelSelectors:
+      app: pesitwizard-server
+  duration: 60s
+  scheduler:
+    cron: 0 */2 * * *

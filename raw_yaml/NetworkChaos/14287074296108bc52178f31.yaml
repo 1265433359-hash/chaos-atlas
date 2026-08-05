@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: packet-corruption-test
+  namespace: chaos-engineering
+  labels:
+    experiment-type: corrupt
+    target-service: policy-service
+    severity: medium
+    automation: enabled
+spec:
+  action: corrupt
+  mode: one
+  selector:
+    namespaces:
+    - rust-security-dev
+    labelSelectors:
+      app: policy-service
+  corrupt:
+    corrupt: 1%
+    correlation: '25'
+  duration: 2m
+  scheduler:
+    cron: 0 6 * * 5

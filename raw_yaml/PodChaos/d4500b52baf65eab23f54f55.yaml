@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: auth-service-pod-kill
+  namespace: chaos-engineering
+  labels:
+    experiment-type: pod-kill
+    target-service: auth-service
+    severity: high
+    automation: enabled
+spec:
+  action: pod-kill
+  mode: random-max-percent
+  value: 50%
+  selector:
+    namespaces:
+    - rust-security-dev
+    labelSelectors:
+      app: auth-service
+  duration: 30s
+  scheduler:
+    cron: 0 1 * * 1-5
+    historyLimit: 7

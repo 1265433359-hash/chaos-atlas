@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: kill-one-catalog
+  namespace: bookstore
+  labels:
+    app.kubernetes.io/part-of: bookstore
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - bookstore
+    labelSelectors:
+      app: catalog

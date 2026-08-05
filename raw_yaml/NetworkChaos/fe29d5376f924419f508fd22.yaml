@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-corrupt
+  namespace: security-monitor
+spec:
+  action: corrupt
+  mode: one
+  selector:
+    namespaces:
+    - security-monitor
+    labelSelectors:
+      app: security-monitor
+  corrupt:
+    corrupt: '5'
+    correlation: '0'
+  duration: 2m

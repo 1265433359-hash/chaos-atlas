@@ -1,0 +1,28 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-delay-test
+  namespace: chaos-system
+  labels:
+    app: chaos-experiment
+    scenario: advanced
+spec:
+  action: delay
+  mode: one
+  duration: 10m
+  scheduler:
+    cron: 0 19 * * 3
+  selector:
+    namespaces:
+    - database
+    labelSelectors:
+      app: pake-postgresql
+    expressionSelectors:
+    - key: chaos-test
+      operator: In
+      values:
+      - enabled
+  volumePath: /var/lib/postgresql/data
+  path: /var/lib/postgresql/data/**/*
+  delay: 100ms
+  percent: 50

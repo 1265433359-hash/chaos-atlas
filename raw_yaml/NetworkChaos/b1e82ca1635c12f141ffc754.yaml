@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: automatic-agent-redis-disconnect
+spec:
+  action: partition
+  mode: all
+  selector:
+    labelSelectors:
+      app.kubernetes.io/name: automatic-agent
+  direction: to
+  target:
+    selector:
+      labelSelectors:
+        app.kubernetes.io/name: redis
+    mode: all
+  duration: 60s

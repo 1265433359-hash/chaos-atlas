@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "test_node_family": "StressChaos.cpu",
+  "business_oracle": {
+    "station_name": "shanghai",
+    "station_id": "80fad31f-143a-4906-a816-622098aef3d1",
+    "fixture_mutated": false
+  },
+  "shared_controls": {
+    "workers": 1,
+    "load_percent": 80,
+    "duration": "45s",
+    "warmup_count": 3,
+    "formal_request_count": 10,
+    "request_interval_sec": 0.5,
+    "request_timeout_sec": 5,
+    "cgroup_samples": 25,
+    "same_namespace": "train-ticket-lab"
+  },
+  "injection_locations": [
+    {
+      "name": "basic_upstream",
+      "target_service": "ts-basic-service",
+      "path": "BasicController.queryForStationId -> BasicServiceImpl.queryForStationId -> ts-station-service",
+      "baseline_median_latency_ms": 27.378,
+      "chaos_median_latency_ms": 32.581,
+      "latency_delta_ms": 5.203,
+      "status_codes": [200],
+      "response_data_preserved": true,
+      "cgroup_nr_throttled_delta": 434,
+      "result_artifact": "artifacts/train-ticket/runtime/generated_basic_stress_warmup_result.json"
+    },
+    {
+      "name": "station_direct_downstream",
+      "target_service": "ts-station-service",
+      "path": "StationController.queryForStationId -> StationServiceImpl.queryForId -> StationRepository.findByName",
+      "baseline_median_latency_ms": 30.146,
+      "chaos_median_latency_ms": 43.308,
+      "latency_delta_ms": 13.162,
+      "status_codes": [200],
+      "response_data_preserved": true,
+      "cgroup_nr_throttled_delta": 406,
+      "result_artifact": "artifacts/train-ticket/runtime/generated_station_stress_success_result.json"
+    }
+  ],
+  "llm_lesson": {
+    "valid_inference": "The same seeded business oracle can remain correct when CPU stress is injected at either the upstream Basic node or the downstream Station node.",
+    "location_effect": "The observed latency deltas differ by injection location, so target service and test-node location are part of the causal hypothesis.",
+    "invalid_inference": "Do not transfer Basic-upstream resilience or latency evidence to Station-direct tests, and do not treat response preservation as a timeout/retry/fallback defense claim.",
+    "next_control": "Capture fresh logs for both locations when permitted and define a latency SLO before increasing pressure or concurrency."
+  }
+}

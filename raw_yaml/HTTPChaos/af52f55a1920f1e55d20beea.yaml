@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: backend-http-delay
+  namespace: chaos-testing
+spec:
+  mode: fixed-percent
+  value: '20'
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: smart-ai-tutor
+      component: backend
+  port: 8000
+  method: GET
+  path: /api/v1/*
+  delay: 2s
+  duration: 2m
+  scheduler:
+    cron: '@every 12h'

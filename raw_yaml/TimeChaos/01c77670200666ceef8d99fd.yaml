@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: time-backward-experiment
+  namespace: chaos-mesh
+spec:
+  mode: random-max-percent
+  value: '50'
+  selector:
+    namespaces:
+    - microservices
+    labelSelectors:
+      app: order-service
+  timeOffset: -10m
+  duration: 5m

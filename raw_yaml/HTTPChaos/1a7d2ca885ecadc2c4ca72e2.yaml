@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-delay-experiment
+  namespace: default
+spec:
+  mode: all
+  selector:
+    labelSelectors:
+      app: api-gateway
+  target: Request
+  port: 3000
+  path: /api/users*
+  delay: 3s
+  duration: 60s

@@ -1,0 +1,18 @@
+kind: HTTPChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: default
+  name: 503-injection
+spec:
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      service: catalog-0
+  mode: all
+  target: Response
+  replace:
+    code: 503
+  port: 8082
+  path: '*'
+  duration: 20m

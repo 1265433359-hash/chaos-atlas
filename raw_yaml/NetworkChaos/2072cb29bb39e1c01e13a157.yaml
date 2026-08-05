@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: tcc-network-chaos
+  namespace: chaos-testing
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - app-tcc
+    labelSelectors:
+      app: tcc-api
+  delay:
+    latency: 500ms
+    correlation: '25'
+    jitter: 100ms
+  duration: 180s

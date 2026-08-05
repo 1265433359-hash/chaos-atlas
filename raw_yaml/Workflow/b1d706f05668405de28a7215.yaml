@@ -1,0 +1,106 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: nexus-iptv-failure-simulation
+  namespace: chaos-testing
+spec:
+  entry: iptv-chaos-sequence
+  templates:
+  - name: iptv-chaos-sequence
+    templateType: Serial
+    deadline: 30m
+    children:
+    - name: inject-packet-loss
+    - name: inject-latency-spike
+    - name: kill-transcode-pods
+    - name: partition-nginx-nodes
+    - name: fill-disk-cache
+    - name: stress-gpu-memory
+  - name: inject-packet-loss
+    templateType: NetworkChaos
+    networkChaos:
+      action: loss
+      mode: all
+      selector:
+        namespaces:
+        - nexus-prod
+        labelSelectors:
+          app.kubernetes.io/component: iptv-transcode
+      loss:
+        loss: '10'
+        correlation: '100'
+      duration: 5m
+  - name: inject-latency-spike
+    templateType: NetworkChaos
+    networkChaos:
+      action: delay
+      mode: all
+      selector:
+        namespaces:
+        - nexus-prod
+        labelSelectors:
+          app.kubernetes.io/component: streaming-edge
+      delay:
+        latency: 500ms
+        correlation: '50'
+        jitter: 200ms
+      duration: 5m
+  - name: kill-transcode-pods
+    templateType: PodChaos
+    podChaos:
+      action: pod-kill
+      mode: fixed-percent
+      value: '30'
+      selector:
+        namespaces:
+        - nexus-prod
+        labelSelectors:
+          app.kubernetes.io/component: iptv-transcode
+      duration: 3m
+  - name: partition-nginx-nodes
+    templateType: NetworkChaos
+    networkChaos:
+      action: partition
+      mode: all
+      selector:
+        namespaces:
+        - nexus-prod
+        labelSelectors:
+          app.kubernetes.io/component: streaming-edge
+      direction: both
+      target:
+        mode: all
+        selector:
+          namespaces:
+          - nexus-prod
+          labelSelectors:
+            app.kubernetes.io/component: origin-backend
+      duration: 5m
+  - name: fill-disk-cache
+    templateType: StressChaos
+    stressChaos:
+      mode: one
+      selector:
+        namespaces:
+        - nexus-prod
+        labelSelectors:
+          app.kubernetes.io/component: streaming-edge
+      stressors:
+        disk:
+          workers: 4
+          size: 50GiB
+      duration: 5m
+  - name: stress-gpu-memory
+    templateType: StressChaos
+    stressChaos:
+      mode: all
+      selector:
+        namespaces:
+        - nexus-prod
+        labelSelectors:
+          app.kubernetes.io/component: iptv-transcode
+      stressors:
+        memory:
+          workers: 2
+          size: 90%
+      duration: 5m

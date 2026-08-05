@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: data-plane-pod-kill
+  namespace: govsecure
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - govsecure
+    labelSelectors:
+      app: data-plane
+  scheduler:
+    cron: '@every 24h'

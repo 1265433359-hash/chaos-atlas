@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-experiment
+  namespace: chaos-testing
+spec:
+  action: pod-kill
+  selector:
+    namespaces:
+    - default
+    - production
+    labelSelectors:
+      app: api-service
+      resilience-test: 'true'
+    nodes:
+    - '0'
+    podPhaseSelectors:
+    - Running
+  duration: 5m
+  startingDeadlineSeconds: 60
+  scheduler:
+    cron: 0 2 * * *

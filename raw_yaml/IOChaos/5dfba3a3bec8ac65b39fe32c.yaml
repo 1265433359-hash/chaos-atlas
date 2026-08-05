@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: openstack-storage-latency
+  namespace: chaos-engineering
+  labels:
+    experiment: storage-latency
+    service: cinder-storage
+spec:
+  action: latency
+  mode: all
+  selector:
+    namespaces:
+    - openstack-blue
+    - openstack-green
+    labelSelectors:
+      component: cinder
+  volumePath: /var/lib/cinder
+  path: '**/*'
+  delay: 100ms
+  percent: 50
+  duration: 15m
+  scheduler:
+    cron: 0 4 * * 3

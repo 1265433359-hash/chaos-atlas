@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-payment
+  namespace: production
+  labels:
+    experiment: pod-kill
+    app: cloud-incident-simulator
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: payment-service
+  duration: 60s

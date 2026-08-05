@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: packet-loss-20pct
+  namespace: mesh-system
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+    - mesh-system
+    labelSelectors:
+      app.kubernetes.io/component: mesh-node
+  loss:
+    loss: '20'
+    correlation: '25'
+  duration: 60s
+  direction: both

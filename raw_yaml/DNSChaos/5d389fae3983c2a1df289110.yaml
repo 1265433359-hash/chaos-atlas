@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-delay
+spec:
+  action: random
+  mode: all
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app.kubernetes.io/name: frontend-podinfo
+  patterns:
+  - backend-podinfo.default.svc.cluster.local
+  duration: 120s

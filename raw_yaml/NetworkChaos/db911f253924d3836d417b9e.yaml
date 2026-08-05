@@ -1,0 +1,29 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: crawler-network-delay
+  namespace: ipf
+  labels:
+    app.kubernetes.io/part-of: ipf-chaos-suite
+    chaos-type: network-delay
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - ipf
+    labelSelectors:
+      app: crawler-worker
+  delay:
+    latency: 200ms
+    jitter: 50ms
+    correlation: '25'
+  direction: to
+  target:
+    selector:
+      namespaces:
+      - ipf
+      labelSelectors:
+        app: mega-simulator
+    mode: all
+  duration: 5m

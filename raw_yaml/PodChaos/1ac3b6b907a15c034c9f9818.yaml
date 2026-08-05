@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: redis-failure-simulation
+  namespace: swiftguard
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - swiftguard
+    labelSelectors:
+      app: redis
+  duration: 60s
+  scheduler:
+    cron: '@every 168h'

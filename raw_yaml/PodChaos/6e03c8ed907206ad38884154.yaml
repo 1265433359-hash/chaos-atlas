@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: snapshot-controller-chaos
+  namespace: storage
+  labels:
+    app.kubernetes.io/name: snapshot-controller
+    app.kubernetes.io/component: chaos-testing
+spec:
+  action: pod-failure
+  mode: one
+  duration: 5m
+  selector:
+    namespaces:
+    - storage
+    labelSelectors:
+      app.kubernetes.io/name: snapshot-controller
+  scheduler:
+    cron: '@every 24h'

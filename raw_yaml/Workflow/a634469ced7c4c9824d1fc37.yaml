@@ -1,0 +1,121 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: bookstore-platform-quarterly-gameday
+  namespace: chaos-mesh-experiments
+  labels:
+    app.kubernetes.io/name: bookstore-platform-quarterly-gameday
+    app.kubernetes.io/instance: bookstore-platform-quarterly-gameday
+    app.kubernetes.io/part-of: bookstore-platform
+    app.kubernetes.io/component: chaos-gameday
+    app.kubernetes.io/version: 1.0.0
+spec:
+  entry: gameday-q
+  templates:
+  - name: gameday-q
+    templateType: Serial
+    deadline: 4h
+    children:
+    - experiment-1-pod-kill-payments
+    - observation-1
+    - experiment-2-network-delay-catalog
+    - observation-2
+    - experiment-3-io-stress-cnpg
+    - observation-3
+    - experiment-4-region-dns-loss
+    - observation-4
+    - experiment-5-payments-failure
+    - observation-5
+  - name: experiment-1-pod-kill-payments
+    templateType: PodChaos
+    deadline: 5m
+    podChaos:
+      action: pod-kill
+      mode: one
+      selector:
+        namespaces:
+        - bookstore-platform-acme-books
+        labelSelectors:
+          app: payments-gateway
+  - name: observation-1
+    templateType: Suspend
+    deadline: 10m
+  - name: experiment-2-network-delay-catalog
+    templateType: NetworkChaos
+    deadline: 5m
+    networkChaos:
+      action: delay
+      mode: all
+      selector:
+        namespaces:
+        - bookstore-platform-acme-books
+        labelSelectors:
+          app: catalog
+      delay:
+        latency: 200ms
+        correlation: '25'
+        jitter: 10ms
+      target:
+        mode: all
+        selector:
+          namespaces:
+          - bookstore-platform-acme-books
+          labelSelectors:
+            app: orders
+      duration: 5m
+  - name: observation-2
+    templateType: Suspend
+    deadline: 10m
+  - name: experiment-3-io-stress-cnpg
+    templateType: StressChaos
+    deadline: 5m
+    stressChaos:
+      mode: one
+      selector:
+        namespaces:
+        - cnpg-system
+        labelSelectors:
+          cnpg.io/cluster: bookstore-platform-cnpg
+          cnpg.io/instanceRole: primary
+      stressors:
+        io:
+          workers: 4
+      duration: 2m
+  - name: observation-3
+    templateType: Suspend
+    deadline: 10m
+  - name: experiment-4-region-dns-loss
+    templateType: DNSChaos
+    deadline: 5m
+    dnsChaos:
+      action: error
+      mode: all
+      selector:
+        labelSelectors:
+          app.kubernetes.io/part-of: bookstore-platform
+      patterns:
+      - '*.bookstore-platform.example.com'
+  - name: observation-4
+    templateType: Suspend
+    deadline: 10m
+  - name: experiment-5-payments-failure
+    templateType: HTTPChaos
+    deadline: 5m
+    httpChaos:
+      mode: all
+      selector:
+        namespaces:
+        - bookstore-platform-acme-books
+        labelSelectors:
+          app: payments-webhook-receiver
+      target: Response
+      port: 8080
+      path: /stripe/webhook
+      method: POST
+      percent: 30
+      replace:
+        code: 500
+      duration: 3m
+  - name: observation-5
+    templateType: Suspend
+    deadline: 10m

@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-error
+  namespace: llmchat
+spec:
+  action: error
+  mode: one
+  selector:
+    namespaces:
+    - llmchat
+    labelSelectors:
+      app: llmchat-backend
+  patterns:
+  - '*.fastgpt.com'
+  duration: 2m

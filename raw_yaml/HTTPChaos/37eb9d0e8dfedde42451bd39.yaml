@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-delay-chaos
+  namespace: staging
+  labels:
+    app.kubernetes.io/part-of: gp-chaos-engineering
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - staging
+    labelSelectors:
+      app.kubernetes.io/part-of: my-app
+  target: Response
+  port: 8080
+  path: '*'
+  delay: 2s
+  duration: 60s

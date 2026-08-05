@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: JVMChaos
+metadata:
+  name: neural-jvm-exception
+  namespace: load-testing
+spec:
+  action: exception
+  mode: all
+  selector:
+    namespaces:
+    - terrafusion-cosmic
+    labelSelectors:
+      runtime: jvm
+      app: neural-processor
+  class: io.terrafusion.neural.NeuralProcessor
+  method: processQuantumData
+  exception: io.terrafusion.exceptions.QuantumCoherenceException
+  duration: 1m

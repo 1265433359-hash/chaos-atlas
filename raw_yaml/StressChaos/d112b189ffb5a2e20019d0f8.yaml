@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-leak-sim
+  namespace: chaos-testing
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - llm-marketplace
+    labelSelectors:
+      app: ml-recommendations
+  stressors:
+    memory:
+      workers: 1
+      size: 100MB
+      options:
+      - --vm-hang
+      - '120'
+  duration: 10m
+  scheduler:
+    cron: '@every 4h'

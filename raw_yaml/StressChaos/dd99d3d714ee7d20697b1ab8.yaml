@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: mysql-cpu-stress
+  namespace: judgex
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - judgex
+    labelSelectors:
+      app: mysql
+  stressors:
+    cpu:
+      workers: 4
+      load: 80
+  duration: 3m

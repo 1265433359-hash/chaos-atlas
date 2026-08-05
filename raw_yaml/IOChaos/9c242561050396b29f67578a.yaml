@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: kafka-io-chaos-3
+  namespace: myproject
+spec:
+  action: fault
+  mode: one
+  delay: 100ms
+  errno: 5
+  selector:
+    pods:
+      myproject:
+      - my-cluster-kafka-1
+  volumePath: /var/lib/kafka
+  path: /var/lib/kafka/data*/*
+  percent: 50
+  duration: 10m

@@ -1,0 +1,102 @@
+{
+    "schema_version":  1,
+    "experiment_id":  "TT-NETWORK-STATION-DELAY-BOUNDARY-001",
+    "project":  "FudanSELab/train-ticket",
+    "project_commit":  "313886e99befb94be6cd45f085c98e0019f59829",
+    "test_node":  {
+                      "family":  "NetworkChaos",
+                      "operation":  "delay",
+                      "target_service":  "ts-station-service",
+                      "selector":  "app=ts-station-service",
+                      "namespace":  "train-ticket-lab",
+                      "direction":  "to",
+                      "mode":  "one"
+                  },
+    "shared_oracle":  {
+                          "path":  "/api/v1/stationservice/stations/id/shanghai",
+                          "response_data":  "80fad31f-143a-4906-a816-622098aef3d1",
+                          "baseline_median_latency_ms":  30.146
+                      },
+    "profiles":  [
+                     {
+                         "name":  "r1",
+                         "nominal_delay":  "100ms",
+                         "duration":  "20s",
+                         "formal_request_count":  10,
+                         "chaos_median_latency_ms":  216.022,
+                         "latency_delta_ms":  185.876,
+                         "status_codes":  [
+                                              200
+                                          ],
+                         "classification":  "response_preserved_latency_degradation",
+                         "result_artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_result.json"
+                     },
+                     {
+                         "name":  "r2",
+                         "nominal_delay":  "500ms",
+                         "duration":  "20s",
+                         "formal_request_count":  10,
+                         "chaos_median_latency_ms":  1021.227,
+                         "latency_delta_ms":  991.081,
+                         "status_codes":  [
+                                              200
+                                          ],
+                         "classification":  "response_preserved_latency_degradation",
+                         "result_artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_r2_runner_result.json"
+                     },
+                     {
+                         "name":  "r3",
+                         "nominal_delay":  "2s",
+                         "duration":  "60s",
+                         "formal_request_count":  5,
+                         "chaos_median_latency_ms":  4020.903,
+                         "latency_delta_ms":  3990.757,
+                         "status_codes":  [
+                                              200
+                                          ],
+                         "classification":  "response_preserved_latency_degradation",
+                         "result_artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_r3_runner_result.json"
+                     }
+                 ],
+    "boundary":  {
+                     "client_observation_timeout_sec":  5,
+                     "timeout_observed":  false,
+                     "last_successful_median_latency_ms":  4020.903,
+                     "next_delay_not_run":  "No further delay was injected because the next step could confound cleanup and exceed the observation budget.",
+                     "interpretation":  "Technical observation boundary only; no application SLO or timeout-defense claim."
+                 },
+    "lifecycle":  {
+                      "r1_recovered":  1,
+                      "r2_recovered":  1,
+                      "r3_recovered":  1,
+                      "cleanup_confirmed":  true
+                  },
+    "result":  {
+                   "classification":  "network_latency_boundary_approached_without_timeout",
+                   "evidence_state":  "runtime_effect_observed",
+                   "confidence":  "A",
+                   "root_cause_labels":  [
+                                             "network_delay_effect_reproduced",
+                                             "latency_monotonic_with_nominal_delay",
+                                             "response_contract_preserved",
+                                             "technical_timeout_boundary_approached"
+                                         ],
+                   "defense_conclusion":  "No timeout defense conclusion; client observation budget was approached while response remained correct.",
+                   "what_system_preserved":  "HTTP 200 and seeded UUID through 2s nominal delay with observed median about 4.02s.",
+                   "what_system_did_not_preserve":  "Baseline latency behavior; latency increased by about 3.99s.",
+                   "what_remains_unproven":  [
+                                                 "application timeout/retry/fallback/circuit-breaker behavior",
+                                                 "operator-defined SLO",
+                                                 "exact delayed dependency without runtime logs/trace"
+                                             ]
+               },
+    "next_experiment":  {
+                            "action":  "Stop network-delay escalation. Obtain an operator-defined SLO or trace/log access before any new boundary run; use the 2s result as a stopping example.",
+                            "guardrails":  [
+                                               "no further delay escalation without SLO",
+                                               "one target Pod",
+                                               "automatic recovery and cleanup",
+                                               "stop on timeout, 5xx, restart or failed recovery"
+                                           ]
+                        }
+}

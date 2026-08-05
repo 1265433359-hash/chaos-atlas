@@ -1,0 +1,32 @@
+kind: Schedule
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: default
+  name: network-delay1831
+  annotations:
+    experiment.chaos-mesh.org/pause: 'false'
+spec:
+  schedule: '*/1 * * * *'
+  startingDeadlineSeconds: 3
+  concurrencyPolicy: Forbid
+  historyLimit: 2
+  type: NetworkChaos
+  networkChaos:
+    selector:
+      namespaces:
+      - default
+      labelSelectors:
+        app: nginx
+    mode: all
+    action: delay
+    duration: 30s
+    delay:
+      latency: 200ms
+    direction: to
+    target:
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app: curl-pod-label
+      mode: all

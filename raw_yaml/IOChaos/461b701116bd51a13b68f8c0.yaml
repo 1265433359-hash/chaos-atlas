@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-delay-experiment
+  namespace: estatewise
+spec:
+  action: latency
+  mode: one
+  selector:
+    namespaces:
+    - estatewise
+    labelSelectors:
+      app: mongodb
+  volumePath: /var/lib/mongodb/data
+  path: /**/*
+  delay: 100ms
+  percent: 50
+  duration: 1m
+  scheduler:
+    cron: '@weekly'

@@ -1,0 +1,34 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  namespace: his-hope
+  name: bulk-pod-kill-game-day
+  labels:
+    app.kubernetes.io/part-of: his-hope
+    chaos-mesh/experiment-type: pod-kill
+    chaos-mesh/schedule: game-day
+  annotations:
+    description: 'Game Day experiment: kills 30% of pods simultaneously to test bulk
+      recovery and system degradation behavior'
+    maintainer: his-hope-sre@hishop.com
+    game-day-scope: monthly-full-chaos
+    recovery-plan: kubernetes will reschedule killed pods; monitor recovery time
+spec:
+  action: pod-kill
+  mode: fixed-percent
+  value: '30'
+  selector:
+    namespaces:
+    - his-hope
+    labelSelectors:
+      app.kubernetes.io/part-of: his-hope
+    fieldSelectors:
+    - metadata.name!=patient-service-0
+    - metadata.name!=clinical-service-0
+    - metadata.name!=redis-0
+    - metadata.name!=postgres-0
+    - metadata.name!=rabbitmq-0
+  duration: 60s
+  scheduler:
+    cron: 0 3 * * 0
+  gracePeriod: 15

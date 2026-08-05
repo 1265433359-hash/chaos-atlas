@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: policy-service-cpu-stress
+  namespace: chaos-engineering
+  labels:
+    experiment-type: cpu-stress
+    target-service: policy-service
+    severity: medium
+    automation: enabled
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - rust-security-dev
+    labelSelectors:
+      app: policy-service
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 4m
+  scheduler:
+    cron: 15 2 * * 2,4,6

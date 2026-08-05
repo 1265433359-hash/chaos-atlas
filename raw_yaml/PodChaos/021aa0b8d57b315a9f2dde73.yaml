@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: data-plane-pod-failure
+  namespace: govsecure
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - govsecure
+    labelSelectors:
+      app: data-plane
+  duration: 30s
+  scheduler:
+    cron: '@every 24h'

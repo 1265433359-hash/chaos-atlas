@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: portal-backend-cpu-stress
+  namespace: chaos-testing
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - elevatediq
+    labelSelectors:
+      app: portal-backend
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 3m
+  scheduler:
+    cron: 0 3 * * 0

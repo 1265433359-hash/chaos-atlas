@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: openstack-api-failures
+  namespace: chaos-engineering
+  labels:
+    experiment: api-failures
+    service: keystone-api
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - openstack-blue
+    - openstack-green
+    labelSelectors:
+      component: keystone
+  target: Request
+  port: 5000
+  method: GET
+  path: /v3/auth/tokens
+  abort: true
+  duration: 5m
+  scheduler:
+    cron: 0 6 * * 5

@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: scoopdope-network-latency
+  namespace: default
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: scoopdope-backend
+  delay:
+    latency: 100ms
+    jitter: 10ms
+  duration: 5m
+  scheduler:
+    cron: '@hourly'

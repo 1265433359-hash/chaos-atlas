@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PhysicalMachineChaos
+metadata:
+  name: stress-cpu-active-1697106799
+  namespace: default
+spec:
+  action: stress-cpu
+  address:
+  - https://128.140.36.203:31768
+  duration: 10m
+  mode: all
+  selector: {}
+  stress-cpu:
+    load: 100
+    workers: 100

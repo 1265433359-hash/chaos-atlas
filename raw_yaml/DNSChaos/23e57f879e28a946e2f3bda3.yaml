@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: openstack-dns-chaos
+  namespace: chaos-engineering
+  labels:
+    experiment: dns-chaos
+    service: service-discovery
+spec:
+  action: random
+  mode: all
+  selector:
+    namespaces:
+    - openstack-blue
+    - openstack-green
+  patterns:
+  - keystone-api.openstack-blue.svc.cluster.local
+  - nova-api.openstack-blue.svc.cluster.local
+  - neutron-api.openstack-blue.svc.cluster.local
+  duration: 3m
+  scheduler:
+    cron: 0 7 * * 6

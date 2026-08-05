@@ -1,0 +1,48 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: nats-chaos-workflow
+  namespace: votingapp
+spec:
+  entry: nats-chaos
+  templates:
+  - name: nats-chaos
+    templateType: Parallel
+    deadline: 5m
+    children:
+    - stress-nats
+    - network-delay-nats
+  - name: stress-nats
+    templateType: Serial
+    children:
+    - stress-chaos
+  - name: stress-chaos
+    templateType: StressChaos
+    stressChaos:
+      selector:
+        namespaces:
+        - votingapp
+        - votingapp-nats
+        labelSelectors:
+          chaosType: stress
+      mode: one
+      stressors:
+        cpu:
+          load: 95
+          workers: 1
+        memory:
+          workers: 1
+          size: 500MB
+  - name: network-delay-nats
+    templateType: NetworkChaos
+    networkChaos:
+      selector:
+        namespaces:
+        - votingapp
+        - votingapp-nats
+        labelSelectors:
+          chaosType: stress
+      mode: all
+      action: delay
+      delay:
+        latency: 200ms

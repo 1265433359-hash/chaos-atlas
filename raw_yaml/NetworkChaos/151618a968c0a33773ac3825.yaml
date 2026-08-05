@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-latency
+  namespace: chaos-testing
+  labels:
+    app.kubernetes.io/part-of: chaos-engineering-toolkit
+    experiment: network-latency
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: target-service
+  delay:
+    latency: 200ms
+    jitter: 50ms
+    correlation: 25
+  direction: both
+  duration: 5m

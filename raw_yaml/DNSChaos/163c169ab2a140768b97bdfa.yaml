@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: crawler-dns-failure
+  namespace: ipf
+  labels:
+    app.kubernetes.io/part-of: ipf-chaos-suite
+    chaos-type: dns-failure
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - ipf
+    labelSelectors:
+      app: crawler-worker
+  patterns:
+  - mega-simulator.ipf.svc.cluster.local
+  duration: 2m

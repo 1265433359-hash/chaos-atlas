@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: argo-mlflow-partition
+  namespace: chaos-testing
+  labels:
+    app: chaos-testing
+    experiment: network-partition
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - argo
+    labelSelectors:
+      app.kubernetes.io/name: argo-workflows
+  direction: both
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - mlflow
+      labelSelectors:
+        app.kubernetes.io/name: mlflow
+  duration: 2m

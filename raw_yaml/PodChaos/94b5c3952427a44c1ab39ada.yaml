@@ -1,0 +1,14 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: default
+  name: cartservices-all-pods-not-available
+spec:
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: cartservice
+  mode: all
+  action: pod-failure
+  duration: 5m

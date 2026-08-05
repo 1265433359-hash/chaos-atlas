@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "experiment_id": "TT-STRESS-BASIC-CPU-DOWNSTREAM-001",
+  "namespace": "train-ticket-lab",
+  "time_window": {
+    "request_start": "2026-08-04T02:31:05.089386+00:00",
+    "request_end": "2026-08-04T02:31:10.434000+00:00"
+  },
+  "upstream": {
+    "pod": "ts-basic-service-b974d68cb-cmvpw",
+    "controller": "BasicController.queryForStationId",
+    "service": "BasicServiceImpl.queryForStationId",
+    "observed_request_count": 10,
+    "observed_error_messages": ["Not exists"]
+  },
+  "downstream": {
+    "service": "ts-station-service",
+    "pod": "ts-station-service-76b45695b4-87rs2",
+    "controller": "StationController.queryForId",
+    "service_method": "StationServiceImpl.queryForId",
+    "observed_request_count": 10,
+    "observed_outcome": "Station not found"
+  },
+  "path_confirmation": {
+    "basic_to_station_call_observed": true,
+    "request_count_matches_downstream_log_count": true,
+    "response_contract": "{\"status\":0,\"msg\":\"Not exists\",\"data\":null}"
+  },
+  "evidence_scope": "Log correlation confirms execution of the selected Basic-to-Station path; it does not prove a successful station lookup or all downstream business workflows."
+}

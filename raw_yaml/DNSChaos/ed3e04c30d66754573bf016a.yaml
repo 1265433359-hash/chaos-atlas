@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-chaos-experiment
+  namespace: qbitel
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - qbitel
+    labelSelectors:
+      app: qbitel
+  patterns:
+  - '*.qbitel.svc.cluster.local'
+  duration: 1m

@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill
+  namespace: chaos-testing
+  labels:
+    app.kubernetes.io/part-of: chaos-engineering-toolkit
+    experiment: pod-kill
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: target-service
+  gracePeriod: 0
+  duration: 3m

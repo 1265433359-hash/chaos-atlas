@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: tenant-isolation-network-chaos
+  namespace: chaos-testing
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - tenant-alice
+    - tenant-bob
+  duration: 30m
+  direction: both
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - tenant-charlie
+      - tenant-dave

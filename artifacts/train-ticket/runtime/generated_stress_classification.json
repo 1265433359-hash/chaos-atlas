@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "tool": "classify_runtime_result",
+  "classified_at": "2026-08-03T16:56:39.839601+00:00",
+  "run_report": "artifacts/train-ticket/runtime/generated_stress_runner_result.json",
+  "baseline_report": "artifacts/train-ticket/runtime/baseline_order_service.json",
+  "classification": "response_observed",
+  "evidence_state": "runtime_effect_observed",
+  "confidence": "A",
+  "root_cause_labels": [],
+  "observations": {
+    "request_count": 8,
+    "observed_median_latency_ms": 42.058,
+    "baseline_median_latency_ms": 92.0,
+    "latency_delta_ms": -49.942,
+    "injected": true,
+    "recovered": true,
+    "cleanup_confirmed": true
+  },
+  "interpretation": {
+    "defense_claim": "not_derived",
+    "reason": "The classifier records evidence state; defense requires the test-node graph, baseline, path evidence and outcome-specific reasoning."
+  },
+  "evidence_refs": [
+    "artifacts/train-ticket/runtime/generated_mutations/stress/order-stress-cpu-candidate-r1.yaml",
+    {
+      "return_code": 0,
+      "stdout": "stresschaos.chaos-mesh.org/order-stress-cpu-candidate-r1 created",
+      "stderr": ""
+    },
+    {
+      "delete_command_ok": true,
+      "delete_output": "stresschaos.chaos-mesh.org \"order-stress-cpu-candidate-r1\" deleted from train-ticket-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): stresschaos.chaos-mesh.org \"order-stress-cpu-candidate-r1\" not found"
+    }
+  ]
+}

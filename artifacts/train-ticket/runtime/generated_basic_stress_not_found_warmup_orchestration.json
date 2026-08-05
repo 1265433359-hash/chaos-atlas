@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "tool": "run_stress_with_cgroup",
+  "started_at": "2026-08-04T03:20:59.939868+00:00",
+  "mutation": "artifacts/train-ticket/runtime/generated_mutations/stress-basic/basic-stress-cpu-candidate-r1.yaml",
+  "runner_report": "artifacts/train-ticket/runtime/generated_basic_stress_not_found_warmup_runner_result.json",
+  "cgroup_report": "artifacts/train-ticket/runtime/generated_basic_stress_not_found_warmup_cgroup.json",
+  "injected_status_before_sampling": {
+    "injected_count": 1,
+    "recovered_count": 0,
+    "all_recovered": false,
+    "records": [
+      {
+        "events": [
+          {
+            "operation": "Apply",
+            "timestamp": "2026-08-04T03:20:05Z",
+            "type": "Succeeded"
+          }
+        ],
+        "id": "train-ticket-lab/ts-basic-service-b974d68cb-cmvpw/ts-basic-service",
+        "injectedCount": 1,
+        "phase": "Injected",
+        "recoveredCount": 0,
+        "selectorKey": "."
+      }
+    ]
+  },
+  "runner_exit": 0,
+  "cgroup_exit": 0,
+  "errors": [],
+  "safety": {
+    "cgroup_started_only_after_injected": true,
+    "runner_owns_recovery_and_cleanup": true
+  },
+  "finished_at": "2026-08-04T03:20:59.939906+00:00"
+}

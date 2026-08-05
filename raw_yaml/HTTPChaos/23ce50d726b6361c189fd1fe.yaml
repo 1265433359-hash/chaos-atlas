@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: recommendation-http-latency
+  namespace: quickpizza
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - quickpizza
+    labelSelectors:
+      app.k8s.io/name: quickpizza
+      app.kubernetes.io/component: service
+      app.kubernetes.io/instance: catalog
+  target: Request
+  port: 3333
+  path: /api/*
+  delay: 10s
+  duration: 5m

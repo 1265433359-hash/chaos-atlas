@@ -1,0 +1,60 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: envoy-gateway-ha-validation
+  namespace: chaos-mesh
+spec:
+  entry: serial-ha-tests
+  templates:
+  - name: serial-ha-tests
+    templateType: Serial
+    deadline: 10m
+    children:
+    - kill-gateway-controller
+    - recovery-pause-1
+    - kill-envoy-proxy
+    - recovery-pause-2
+    - degrade-proxy-network
+  - name: kill-gateway-controller
+    templateType: PodChaos
+    deadline: 90s
+    podChaos:
+      action: pod-kill
+      mode: one
+      selector:
+        namespaces:
+        - envoy-gateway-system
+        labelSelectors:
+          app.kubernetes.io/name: envoy-gateway
+  - name: recovery-pause-1
+    templateType: Suspend
+    deadline: 30s
+  - name: kill-envoy-proxy
+    templateType: PodChaos
+    deadline: 90s
+    podChaos:
+      action: pod-kill
+      mode: one
+      selector:
+        namespaces:
+        - envoy-gateway-system
+        labelSelectors:
+          gateway.envoyproxy.io/owning-gateway-name: craftedspecially-gateway
+  - name: recovery-pause-2
+    templateType: Suspend
+    deadline: 30s
+  - name: degrade-proxy-network
+    templateType: NetworkChaos
+    deadline: 90s
+    networkChaos:
+      action: delay
+      mode: all
+      selector:
+        namespaces:
+        - envoy-gateway-system
+        labelSelectors:
+          gateway.envoyproxy.io/owning-gateway-name: craftedspecially-gateway
+      delay:
+        latency: 100ms
+        jitter: 20ms
+        correlation: '50'

@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-header-chaos
+  namespace: elevatediq-production
+  labels:
+    app.kubernetes.io/name: chaos-experiment
+    app.kubernetes.io/component: http-headers
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - elevatediq-production
+    labelSelectors:
+      app.kubernetes.io/name: elite-scanner
+  target: Request
+  port: 8080
+  patch:
+    headers:
+    - - X-Forwarded-For
+      - 192.168.1.1
+    - - X-Chaos-Test
+      - 'true'
+  duration: 120s

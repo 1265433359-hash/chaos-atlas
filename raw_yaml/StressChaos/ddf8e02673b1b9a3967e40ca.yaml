@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-productcatalog
+  namespace: chaos-mesh
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - hipster
+    labelSelectors:
+      app: productcatalogservice
+  stressors:
+    cpu:
+      workers: 1
+      load: 80
+  duration: 120s

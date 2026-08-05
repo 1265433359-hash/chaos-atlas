@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: data-plane-dns-error
+  namespace: govsecure
+spec:
+  action: error
+  mode: one
+  selector:
+    namespaces:
+    - govsecure
+    labelSelectors:
+      app: data-plane
+  patterns:
+  - audit-service.govsecure.svc.cluster.local
+  duration: 30s
+  scheduler:
+    cron: '@every 24h'

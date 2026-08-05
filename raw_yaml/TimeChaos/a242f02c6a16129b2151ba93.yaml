@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: template-time-skew
+  namespace: chaos-experiments
+  labels:
+    template: time-skew
+    severity: low
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: scheduler
+  mode: one
+  timeOffset: -60s
+  duration: 2m

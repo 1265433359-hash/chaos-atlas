@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: kafka-network-loss
+  namespace: ai-testops
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+    - ai-testops
+    labelSelectors:
+      app: kafka
+  loss:
+    loss: '10'
+    correlation: '25'
+  duration: 1m
+  direction: both

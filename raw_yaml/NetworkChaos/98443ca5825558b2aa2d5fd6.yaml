@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition-experiment
+  namespace: qbitel
+spec:
+  action: partition
+  mode: one
+  selector:
+    namespaces:
+    - qbitel
+    labelSelectors:
+      app: qbitel
+      component: dataplane
+  direction: both
+  duration: 2m
+  target:
+    mode: one
+    selector:
+      namespaces:
+      - qbitel
+      labelSelectors:
+        app: qbitel
+        component: controlplane

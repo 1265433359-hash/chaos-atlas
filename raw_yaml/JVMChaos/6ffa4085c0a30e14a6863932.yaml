@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: JVMChaos
+metadata:
+  name: return
+  namespace: helloworld
+spec:
+  action: return
+  class: Main
+  method: getnum
+  value: '9999'
+  mode: all
+  selector:
+    namespaces:
+    - helloworld

@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: clock-skew-forward
+  namespace: chaos-testing
+  labels:
+    chaos.virtengine.com/category: time
+    chaos.virtengine.com/scenario: skew-forward
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - virtengine
+    labelSelectors:
+      app.kubernetes.io/component: validator
+  timeOffset: 1h
+  duration: 120s

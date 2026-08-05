@@ -1,0 +1,14 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: techlab
+  name: v01
+spec:
+  selector:
+    namespaces:
+    - techlab
+    labelSelectors:
+      io.kompose.service: middleware-fastapi
+  mode: all
+  action: pod-failure
+  duration: 35s

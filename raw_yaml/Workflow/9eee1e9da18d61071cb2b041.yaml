@@ -1,0 +1,41 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: failure-under-load
+  namespace: sentinel-system
+spec:
+  entry: load-and-chaos
+  templates:
+  - name: load-and-chaos
+    templateType: Parallel
+    deadline: 10m
+    children:
+    - generate-load
+    - random-pod-failures
+  - name: generate-load
+    templateType: Task
+    deadline: 10m
+    task:
+      container:
+        name: load-generator
+        image: williamyeh/hey:latest
+        command:
+        - hey
+        - -z
+        - 10m
+        - -c
+        - '50'
+        - -q
+        - '10'
+        - http://control-api:8000/api/v1/workloads
+  - name: random-pod-failures
+    templateType: PodChaos
+    deadline: 10m
+    podChaos:
+      action: pod-kill
+      mode: one
+      selector:
+        labelSelectors:
+          app: control-api
+      scheduler:
+        cron: '@every 2m'

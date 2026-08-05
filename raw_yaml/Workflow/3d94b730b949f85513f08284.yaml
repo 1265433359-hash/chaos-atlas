@@ -1,0 +1,76 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: hms-chaos-workflow
+  namespace: chaos-testing
+  labels:
+    app: hospital-management-system
+    component: chaos
+spec:
+  entry: entry
+  templates:
+  - name: entry
+    templateType: Serial
+    deadline: 240s
+    children:
+    - pod-failure-test
+    - network-delay-test
+    - cpu-stress-test
+  - name: pod-failure-test
+    templateType: Task
+    deadline: 60s
+    task:
+      container:
+        name: pod-failure
+        image: curlimages/curl:latest
+        command:
+        - sh
+        - -c
+        - 'chaosctl apply -f /etc/chaos/pod-failure.yaml
+
+          sleep 30
+
+          chaosctl delete -f /etc/chaos/pod-failure.yaml
+
+          '
+        volumeMounts:
+        - name: chaos-config
+          mountPath: /etc/chaos
+    volumes:
+    - name: chaos-config
+      configMap:
+        name: chaos-experiments
+  - name: network-delay-test
+    templateType: Task
+    deadline: 120s
+    task:
+      container:
+        name: network-delay
+        image: curlimages/curl:latest
+        command:
+        - sh
+        - -c
+        - 'chaosctl apply -f /etc/chaos/network-delay.yaml
+
+          sleep 60
+
+          chaosctl delete -f /etc/chaos/network-delay.yaml
+
+          '
+  - name: cpu-stress-test
+    templateType: Task
+    deadline: 180s
+    task:
+      container:
+        name: cpu-stress
+        image: curlimages/curl:latest
+        command:
+        - sh
+        - -c
+        - 'chaosctl apply -f /etc/chaos/cpu-stress.yaml
+
+          sleep 120
+
+          chaosctl delete -f /etc/chaos/cpu-stress.yaml
+
+          '

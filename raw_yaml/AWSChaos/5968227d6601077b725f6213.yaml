@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: AWSChaos
+metadata:
+  name: oscp-ec2-chaos
+  namespace: oscp-prod
+spec:
+  action: instance-stop
+  mode: fixed-percent
+  selector:
+    namespaces:
+    - oscp-prod
+    labelSelectors:
+      service: aws-ec2-nodes
+  awsRegion: eu-north-1
+  instanceSelection:
+    maxInstances: 2
+    instanceTags:
+      oscp-cluster: 'true'
+  duration: 600s

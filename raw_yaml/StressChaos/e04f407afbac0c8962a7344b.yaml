@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: securerag-memory-stress
+  namespace: securerag-hub
+  annotations:
+    feature.securerag.dev/enable-chaos-mesh: 'true'
+    chaos.securerag.dev/category: resource
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - securerag-hub
+    labelSelectors:
+      app.kubernetes.io/name: auth-users
+  stressors:
+    memory:
+      workers: 1
+      size: 256MB
+  duration: 60s

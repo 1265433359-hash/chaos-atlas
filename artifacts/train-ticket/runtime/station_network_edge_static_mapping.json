@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "service": "ts-station-service",
+  "source_paths": [
+    "train-ticket/ts-station-service/src/main/java/fdse/microservice/service/StationServiceImpl.java:90-101",
+    "train-ticket/ts-station-service/src/main/java/fdse/microservice/repository/StationRepository.java:11-15",
+    "train-ticket/ts-station-service/src/main/resources/application.yml:9-12"
+  ],
+  "static_flow": [
+    "StationController.queryForStationId",
+    "StationServiceImpl.queryForId",
+    "StationRepository.findByName",
+    "Spring Data JPA datasource",
+    "${STATION_MYSQL_HOST:ts-station-mysql}:${STATION_MYSQL_PORT:3306}"
+  ],
+  "runtime_configuration": {
+    "host": "train-ticket-mysql",
+    "port": 3306,
+    "database": "ts",
+    "evidence": "Targeted printenv of STATION_MYSQL_HOST, STATION_MYSQL_PORT and STATION_MYSQL_DATABASE in the running Station Pod.",
+    "credentials_read": false
+  },
+  "network_chaos_hypothesis": {
+    "mutation": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r1.yaml",
+    "direction": "to",
+    "hypothesized_edge": "ts-station-service -> train-ticket-mysql:3306",
+    "confidence": "runtime_configuration_confirmed_and_server_log_correlated",
+    "boundary": "No packet-level Trace was collected, so direct packet attribution remains unobserved."
+  },
+  "redaction": "Datasource credentials and Secret values are intentionally omitted."
+}

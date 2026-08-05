@@ -1,0 +1,16 @@
+kind: NetworkChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: chaos-mesh
+  name: exp-latency-0
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - otel
+    labelSelectors:
+      app.kubernetes.io/name: otel-demo-cartservice
+  delay:
+    latency: 500ms
+  duration: 300s

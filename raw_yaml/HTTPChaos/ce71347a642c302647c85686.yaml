@@ -1,0 +1,17 @@
+kind: HTTPChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: train-ticket
+  name: rebook-http-outbound
+spec:
+  selector:
+    namespaces:
+    - train-ticket
+    labelSelectors:
+      app: ts-rebook-service
+  mode: one
+  target: Response
+  delay: 5s
+  port: 18886
+  path: '*'
+  duration: 5m

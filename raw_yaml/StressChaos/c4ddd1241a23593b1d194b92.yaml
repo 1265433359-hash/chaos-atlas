@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: stress-cpu-random
+  namespace: chaos-experiments
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - todoapp
+  stressors:
+    cpu:
+      workers: 4
+      load: 100

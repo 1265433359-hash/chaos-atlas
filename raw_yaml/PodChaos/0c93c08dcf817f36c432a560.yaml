@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: schema-registry-pod-failure
+  namespace: schema-registry
+spec:
+  action: pod-failure
+  mode: one
+  duration: 60s
+  selector:
+    namespaces:
+    - schema-registry
+    labelSelectors:
+      app: schema-registry
+  scheduler:
+    cron: '@every 15m'

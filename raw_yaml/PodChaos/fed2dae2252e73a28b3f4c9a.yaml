@@ -1,0 +1,26 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: random-pod-kill
+  namespace: chaos-system
+  labels:
+    app: chaos-experiment
+    scenario: basic-resilience
+spec:
+  action: pod-kill
+  mode: one
+  duration: 10m
+  scheduler:
+    cron: 0 10 * * *
+  selector:
+    namespaces:
+    - pake-system
+    labelSelectors:
+      app: pake-api,pake-ai,pake-workers-high,pake-workers-medium
+    expressionSelectors:
+    - key: chaos-test
+      operator: In
+      values:
+      - enabled
+  exclusionLabelSelectors:
+    role: critical

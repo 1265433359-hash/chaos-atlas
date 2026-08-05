@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-latency-test
+  namespace: chaos-testing
+  labels:
+    experiment: resilience
+    type: network-latency
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - app-team-a-dev
+    labelSelectors:
+      app: order-service
+  delay:
+    latency: 200ms
+    correlation: '25'
+    jitter: 50ms
+  direction: both
+  duration: 5m

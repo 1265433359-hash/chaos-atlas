@@ -1,0 +1,13 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PhysicalMachineChaos
+metadata:
+  name: physical-stress-mem
+  namespace: chaos-mesh
+spec:
+  action: stress-mem
+  selector:
+    labelSelectors:
+      arch: amd64
+  mode: one
+  stress-mem:
+    size: 100MB

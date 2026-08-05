@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-latency-chaos
+  namespace: staging
+  labels:
+    app.kubernetes.io/part-of: gp-chaos-engineering
+spec:
+  action: latency
+  mode: all
+  selector:
+    namespaces:
+    - staging
+    labelSelectors:
+      app.kubernetes.io/part-of: my-app
+  volumePath: /data
+  path: '*'
+  delay: 100ms
+  percent: 100
+  duration: 60s

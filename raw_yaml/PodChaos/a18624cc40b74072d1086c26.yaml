@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill
+  namespace: chaos-demo
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - chaos-demo
+    labelSelectors:
+      app: chaos-service
+  scheduler: '*/30 * * * * *'

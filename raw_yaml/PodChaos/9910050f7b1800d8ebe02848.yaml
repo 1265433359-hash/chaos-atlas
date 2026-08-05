@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: epic8-pod-failure-test
+  namespace: epic8-prod
+  labels:
+    epic8.platform/experiment: pod-failure
+    epic8.platform/component: chaos-engineering
+    epic8.platform/tier: resilience
+spec:
+  action: pod-kill
+  mode: fixed
+  value: '1'
+  duration: 300s
+  selector:
+    namespaces:
+    - epic8-prod
+    labelSelectors:
+      epic8.platform/service: api-gateway
+  scheduler:
+    cron: '@every 30m'

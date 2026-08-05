@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: KernelChaos
+metadata:
+  name: cosmic-kernel-chaos
+  namespace: load-testing
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - terrafusion-cosmic
+    labelSelectors:
+      cosmic-critical: 'true'
+  failKernRequest:
+    failtype: 0
+    headers:
+    - IFLA_MTU
+    - IFLA_QDISC
+    probability: 10
+  duration: 1m

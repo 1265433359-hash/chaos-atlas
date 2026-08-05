@@ -1,0 +1,13 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-loss-test
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+    - staging
+  loss:
+    loss: '100'
+  duration: 30s

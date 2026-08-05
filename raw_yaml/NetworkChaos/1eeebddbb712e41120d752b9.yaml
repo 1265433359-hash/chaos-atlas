@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: ml-worker-partition
+  namespace: chaos-testing
+  labels:
+    app: ml-scheduler
+    experiment: network-partition
+spec:
+  action: partition
+  mode: one
+  selector:
+    namespaces:
+    - ml-scheduler
+    labelSelectors:
+      app: ml-worker
+  direction: both
+  duration: 30s

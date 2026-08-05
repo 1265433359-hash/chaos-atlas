@@ -1,0 +1,13 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: kill-nats
+  namespace: hopper-system
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - hopper-system
+    labelSelectors:
+      app.kubernetes.io/name: nats

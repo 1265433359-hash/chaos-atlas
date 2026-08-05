@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: high-latency-experiment
+  namespace: selfhealing
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - selfhealing
+    labelSelectors:
+      app: crave-backend
+  delay:
+    latency: 5000ms
+    correlation: '100'
+    jitter: 500ms
+  duration: 3m

@@ -1,0 +1,66 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: e5-io
+  namespace: chaos-mesh
+spec:
+  schedule: 20 6 * * *
+  concurrencyPolicy: Forbid
+  historyLimit: 5
+  type: Workflow
+  workflow:
+    entry: e5
+    templates:
+    - name: e5
+      templateType: Serial
+      deadline: 10m
+      children:
+      - preflight-health
+      - impair-and-watch
+    - name: preflight-health
+      templateType: StatusCheck
+      deadline: 2m
+      statusCheck:
+        mode: Synchronous
+        type: HTTP
+        http:
+          url: https://dev.seqtoid.org/health_check
+          method: GET
+          criteria:
+            statusCode: '200'
+    - name: impair-and-watch
+      templateType: Parallel
+      deadline: 5m
+      children:
+      - slow-local-io
+      - steady-state-during
+    - name: slow-local-io
+      templateType: IOChaos
+      deadline: 3m
+      ioChaos:
+        action: latency
+        mode: one
+        selector:
+          namespaces:
+          - seqtoid-dev
+          labelSelectors:
+            app.kubernetes.io/component: web
+        volumePath: /tmp
+        path: /tmp/**/*
+        delay: 100ms
+        percent: 100
+    - name: steady-state-during
+      templateType: StatusCheck
+      deadline: 4m
+      statusCheck:
+        mode: Continuous
+        type: HTTP
+        duration: 3m
+        intervalSeconds: 2
+        failureThreshold: 3
+        recordsHistoryLimit: 100
+        http:
+          url: https://dev.seqtoid.org/health_check
+          method: GET
+          criteria:
+            statusCode: '200'

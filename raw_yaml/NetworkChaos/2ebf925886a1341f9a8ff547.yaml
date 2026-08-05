@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-loss
+  namespace: security-monitor
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+    - security-monitor
+    labelSelectors:
+      app: security-monitor
+  loss:
+    loss: '10'
+    correlation: '25'
+  duration: 3m
+  direction: both

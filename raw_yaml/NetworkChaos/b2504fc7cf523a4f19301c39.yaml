@@ -1,0 +1,19 @@
+kind: NetworkChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: kube-nurse
+  name: kubenurse-network-loss
+spec:
+  selector:
+    namespaces:
+    - kube-nurse
+    labelSelectors:
+      app.kubernetes.io/name: kubenurse
+    nodes:
+    - ${NODE}
+  mode: one
+  action: loss
+  duration: 60s
+  loss:
+    loss: '80'
+    correlation: '0'

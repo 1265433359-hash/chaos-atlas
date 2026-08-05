@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: chaos-24h-network-corrupt
+  namespace: backend
+spec:
+  schedule: 30 1-23/6 * * *
+  type: NetworkChaos
+  concurrencyPolicy: Forbid
+  historyLimit: 3
+  networkChaos:
+    action: corrupt
+    mode: fixed-percent
+    value: '50'
+    selector:
+      namespaces:
+      - backend
+      labelSelectors:
+        chaos-target: 'true'
+    corrupt:
+      corrupt: '3'
+      correlation: '20'
+    duration: 20m

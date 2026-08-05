@@ -1,0 +1,17 @@
+kind: HTTPChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: ns-chaos-ipa-test-application
+  name: http-delay-chaos
+spec:
+  selector:
+    namespaces:
+    - ns-chaos-ipa-test-application
+    labelSelectors:
+      app: cinema-frontend
+  mode: all
+  target: Response
+  delay: 10s
+  port: 80
+  path: '*'
+  duration: 180s

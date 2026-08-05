@@ -1,0 +1,84 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: nexus-multi-region-outage
+  namespace: chaos-testing
+spec:
+  entry: multi-region-outage
+  templates:
+  - name: multi-region-outage
+    templateType: Serial
+    deadline: 60m
+    children:
+    - name: isolate-us-east-1
+    - name: isolate-eu-west-1
+    - name: dns-failure-simulation
+    - name: cross-region-replication-lag
+    - name: failback-test
+  - name: isolate-us-east-1
+    templateType: NetworkChaos
+    networkChaos:
+      action: partition
+      mode: all
+      selector:
+        namespaces:
+        - nexus-prod
+        labelSelectors:
+          topology.kubernetes.io/region: us-east-1
+      direction: both
+      externalTargets:
+      - api.nexus-platform.com
+      - streaming.nexus-platform.com
+      duration: 15m
+  - name: isolate-eu-west-1
+    templateType: NetworkChaos
+    networkChaos:
+      action: partition
+      mode: all
+      selector:
+        namespaces:
+        - nexus-prod
+        labelSelectors:
+          topology.kubernetes.io/region: eu-west-1
+      direction: both
+      duration: 15m
+  - name: dns-failure-simulation
+    templateType: DNSChaos
+    dnsChaos:
+      action: error
+      mode: all
+      selector:
+        namespaces:
+        - nexus-prod
+      patterns:
+      - '*.nexus-platform.com'
+      duration: 10m
+  - name: cross-region-replication-lag
+    templateType: NetworkChaos
+    networkChaos:
+      action: delay
+      mode: all
+      selector:
+        namespaces:
+        - nexus-prod
+        labelSelectors:
+          app.kubernetes.io/component: database-replica
+      delay:
+        latency: 30s
+        correlation: '100'
+      duration: 10m
+  - name: failback-test
+    templateType: Schedule
+    schedule:
+      type: Once
+      startTime: '2024-01-01T00:00:00Z'
+      concurrencyPolicy: Forbid
+      workflowSpec:
+        entry: verify-failback
+        templates:
+        - name: verify-failback
+          templateType: Serial
+          children:
+          - name: health-check-all-regions
+          - name: data-consistency-check
+          - name: performance-baseline-check

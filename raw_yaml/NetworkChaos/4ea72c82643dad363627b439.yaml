@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: partition-fraud-from-kafka
+  namespace: chaos-mesh
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - bian-risk-compliance
+    labelSelectors:
+      app.kubernetes.io/name: sd-fraud-detection
+  direction: both
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - kafka
+  duration: 1m

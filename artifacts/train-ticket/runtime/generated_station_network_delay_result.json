@@ -1,0 +1,84 @@
+{
+    "schema_version":  1,
+    "experiment_id":  "TT-NETWORK-STATION-DELAY-SUCCESS-001",
+    "project":  "FudanSELab/train-ticket",
+    "project_commit":  "313886e99befb94be6cd45f085c98e0019f59829",
+    "test_node":  {
+                      "family":  "NetworkChaos",
+                      "operation":  "delay",
+                      "mutation_yaml":  "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r1.yaml",
+                      "target_service":  "ts-station-service",
+                      "selector":  "app=ts-station-service",
+                      "namespace":  "train-ticket-lab",
+                      "profile":  {
+                                      "latency":  "100ms",
+                                      "direction":  "to",
+                                      "duration":  "20s",
+                                      "mode":  "one"
+                                  }
+                  },
+    "graph":  {
+                  "entry":  "GET /api/v1/stationservice/stations/id/shanghai",
+                  "controller":  "StationController.queryForStationId",
+                  "business":  "StationServiceImpl.queryForId",
+                  "data":  "StationRepository.findByName",
+                  "network_edge":  "ts-station-service outbound dependency path",
+                  "oracle":  "seeded shanghai UUID"
+              },
+    "control":  {
+                    "warmup_count":  3,
+                    "warmup_interval_sec":  0.5,
+                    "formal_request_count":  10,
+                    "request_interval_sec":  0.5,
+                    "request_timeout_sec":  5
+                },
+    "lifecycle":  {
+                      "runner":  "artifacts/train-ticket/runtime/generated_station_network_delay_runner_result.json",
+                      "injected_count":  1,
+                      "recovered_count":  1,
+                      "cleanup_confirmed":  true
+                  },
+    "business_observation":  {
+                                 "baseline_report":  "artifacts/train-ticket/runtime/baseline_station_success.json",
+                                 "classification_report":  "artifacts/train-ticket/runtime/generated_station_network_delay_classification.json",
+                                 "request_count":  10,
+                                 "warmup_count":  3,
+                                 "status_codes":  [
+                                                      200
+                                                  ],
+                                 "error_count":  0,
+                                 "observed_median_latency_ms":  216.022,
+                                 "baseline_median_latency_ms":  30.146,
+                                 "latency_delta_ms":  185.876,
+                                 "min_latency_ms":  109.724,
+                                 "max_latency_ms":  234.324,
+                                 "p95_latency_ms":  234.324,
+                                 "response_data":  "80fad31f-143a-4906-a816-622098aef3d1",
+                                 "log_evidence":  "not_captured_permission_review_timeout"
+                             },
+    "result":  {
+                   "classification":  "station_success_response_preserved_network_latency_degradation",
+                   "evidence_state":  "runtime_effect_observed",
+                   "confidence":  "A",
+                   "defense_conclusion":  "network_delay_effect_observed_without_response_contract_failure",
+                   "root_cause_labels":  [
+                                             "network_delay_injected",
+                                             "latency_degradation",
+                                             "station_success_oracle_preserved",
+                                             "timeout_boundary_not_reached"
+                                         ],
+                   "why_injection_was_defended":  "The Station endpoint preserved the seeded response envelope and UUID while the injected outbound delay produced a reproducible latency increase and recovery completed.",
+                   "what_was_not_defended":  "Latency increased by 185.876ms median under a nominal 100ms delay; no timeout or 5xx occurred within the five-second observation budget.",
+                   "what_remains_unproven":  [
+                                                 "which exact outbound dependency receives the delay because fresh logs were unavailable",
+                                                 "timeout retry fallback or circuit-breaker behavior",
+                                                 "concurrent network delay and write paths"
+                                             ]
+               },
+    "comparison":  {
+                       "station_cpu_result":  "artifacts/train-ticket/runtime/generated_station_stress_success_result.json",
+                       "station_cpu_latency_delta_ms":  13.162,
+                       "station_network_latency_delta_ms":  185.876,
+                       "lesson":  "The same Station node can preserve its business response under CPU or network delay while the network delay produces a much larger latency effect."
+                   }
+}

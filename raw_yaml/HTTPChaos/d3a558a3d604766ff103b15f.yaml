@@ -1,0 +1,27 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-500-injection
+  namespace: elevatediq-production
+  labels:
+    app.kubernetes.io/name: chaos-experiment
+    app.kubernetes.io/component: http-error
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - elevatediq-production
+    labelSelectors:
+      app.kubernetes.io/name: elite-scanner
+  target: Response
+  port: 8080
+  path: /api/v1/scan/*
+  method: POST
+  replace:
+    code: 500
+    body: '{"error": "Chaos injected server error", "chaos": true}'
+    headers:
+      Content-Type: application/json
+      X-Chaos-Injected: 'true'
+  percent: 5
+  duration: 90s

@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: data-plane-time-skew
+  namespace: govsecure
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - govsecure
+    labelSelectors:
+      app: data-plane
+  timeOffset: -1h
+  duration: 30s
+  scheduler:
+    cron: '@every 24h'

@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-experiment
+  namespace: qbitel
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - qbitel
+    labelSelectors:
+      app: qbitel
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 5m

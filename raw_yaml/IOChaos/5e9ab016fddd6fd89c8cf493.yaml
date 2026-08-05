@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-delay-chaos
+spec:
+  action: latency
+  mode: one
+  selector:
+    labelSelectors:
+      security-test: enabled
+  volumePath: /
+  path: '*'
+  delay: 100ms
+  percent: 50
+  duration: 30s

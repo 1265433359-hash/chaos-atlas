@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: burn-memory
+  namespace: chaos-mesh
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - podinfo
+    labelSelectors:
+      app.kubernetes.io/name: podinfo
+  stressors:
+    memory:
+      workers: 1
+  duration: 30s
+  scheduler:
+    cron: '@every 1m'

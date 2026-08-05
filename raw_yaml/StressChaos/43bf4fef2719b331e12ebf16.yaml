@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: disk-fill
+  namespace: chaos-mesh
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - nebula-production
+    labelSelectors:
+      app: api
+  stressors:
+    hdd:
+      workers: 2
+      size: 10GB
+  duration: 3m

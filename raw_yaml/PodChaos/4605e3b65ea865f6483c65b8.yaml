@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: database-pod-kill
+  namespace: swiftguard
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - swiftguard
+    labelSelectors:
+      app: postgres
+  gracePeriod: 10
+  scheduler:
+    cron: '@monthly'

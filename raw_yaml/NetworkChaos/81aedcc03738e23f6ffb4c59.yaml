@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: inference-mlflow-partition
+  namespace: chaos-testing
+  labels:
+    app: chaos-testing
+    experiment: inference-isolation
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - kserve
+    labelSelectors:
+      component: predictor
+  direction: both
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - mlflow
+  duration: 1m

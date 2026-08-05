@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: kafka-io-chaos-4
+  namespace: chaos-mesh
+spec:
+  action: latency
+  mode: one
+  selector:
+    pods:
+      myproject:
+      - my-cluster-kafka-1
+  volumePath: /var/lib/kafka
+  path: /var/lib/kafka/data*/*
+  delay: 100ms
+  percent: 50
+  duration: 10m

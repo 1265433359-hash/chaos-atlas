@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pg-primary-kill
+  namespace: baalvion
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - baalvion
+    labelSelectors:
+      cnpg.io/cluster: baalvion-pg
+      role: primary

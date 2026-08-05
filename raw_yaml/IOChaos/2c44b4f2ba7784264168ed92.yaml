@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: cosmic-io-delay
+  namespace: load-testing
+spec:
+  action: latency
+  mode: all
+  selector:
+    namespaces:
+    - terrafusion-cosmic
+    labelSelectors:
+      app: cosmic-orchestrator
+  volumePath: /data
+  path: /data/*
+  delay: 100ms
+  percent: 50
+  duration: 5m

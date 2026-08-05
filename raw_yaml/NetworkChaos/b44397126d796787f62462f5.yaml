@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: slave-latency
+spec:
+  action: delay
+  mode: all
+  selector:
+    pods:
+      default:
+      - redis-0
+  target:
+    selector:
+      pods:
+        default:
+        - redis-1
+    mode: all
+  delay:
+    latency: 10ms

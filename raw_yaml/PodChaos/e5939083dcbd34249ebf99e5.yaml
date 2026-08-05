@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: scoopdope-db-failure
+  namespace: default
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: postgres
+  duration: 3m
+  scheduler:
+    cron: 0 1 * * *

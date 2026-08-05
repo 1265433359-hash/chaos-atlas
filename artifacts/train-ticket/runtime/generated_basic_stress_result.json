@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "experiment_id": "TT-STRESS-BASIC-CPU-DOWNSTREAM-001",
+  "project": "FudanSELab/train-ticket",
+  "project_commit": "313886e99befb94be6cd45f085c98e0019f59829",
+  "test_node": {
+    "family": "StressChaos",
+    "operation": "cpu",
+    "source_yaml": "raw_yaml/StressChaos/27e24dfe4fb46964bad2692a.yaml",
+    "mutation_yaml": "artifacts/train-ticket/runtime/generated_mutations/stress-basic/basic-stress-cpu-candidate-r1.yaml",
+    "target_service": "ts-basic-service",
+    "selector": "app=ts-basic-service",
+    "namespace": "train-ticket-lab",
+    "profile": {
+      "workers": 1,
+      "load_percent": 80,
+      "duration": "45s",
+      "mode": "one"
+    }
+  },
+  "test_node_centered_graph": {
+    "nodes": [
+      {"id": "test.stress.cpu.basic", "kind": "TestNode", "evidence": "selector-generated StressChaos candidate"},
+      {"id": "deploy.ts-basic-service", "kind": "TargetDeployment", "evidence": "selector matched Ready Pod ts-basic-service-b974d68cb-cmvpw"},
+      {"id": "container.cpu.limit.200m.basic", "kind": "ResourceGuard", "source": "train-ticket/deployment/kubernetes-manifests/quickstart-k8s-pvc-nfs/quickstart-ts-deployment-part2.yml:268-286", "evidence": "CPU request 50m and limit 200m"},
+      {"id": "listener.basic.15680", "kind": "RuntimeListener", "evidence": "Basic service port 15680"},
+      {"id": "controller.BasicController.queryForStationId", "kind": "ControllerPath", "source": "train-ticket/ts-basic-service/src/main/java/fdse/microservice/controller/BasicController.java:49"},
+      {"id": "service.BasicServiceImpl.queryForStationId", "kind": "BusinessExecution", "source": "train-ticket/ts-basic-service/src/main/java/fdse/microservice/service/BasicServiceImpl.java:324-340"},
+      {"id": "downstream.ts-station-service", "kind": "DownstreamCall", "evidence": "RestTemplate call to /api/v1/stationservice/stations/id/{stationName}"},
+      {"id": "controller.StationController.queryForId", "kind": "DownstreamControllerPath", "source": "train-ticket/ts-station-service/src/main/java/fdse/microservice/controller/StationController.java:55-60"},
+      {"id": "response.basic.not-found", "kind": "BusinessOutcome", "evidence": "HTTP 200 with status=0, msg=Not exists, data=null"},
+      {"id": "observe.cgroup.logs.latency", "kind": "Observation", "evidence": "cgroup-v2, request latency and Basic/Station logs"},
+      {"id": "recover.stress.cleanup", "kind": "Recovery", "evidence": "Chaos Mesh recovered and resource was deleted"}
+    ],
+    "edges": [
+      {"from": "test.stress.cpu.basic", "to": "deploy.ts-basic-service", "type": "selects", "confidence": "confirmed_runtime"},
+      {"from": "test.stress.cpu.basic", "to": "container.cpu.limit.200m.basic", "type": "competes_with", "confidence": "configured_static"},
+      {"from": "container.cpu.limit.200m.basic", "to": "service.BasicServiceImpl.queryForStationId", "type": "constrains", "confidence": "runtime_effect_observed"},
+      {"from": "listener.basic.15680", "to": "controller.BasicController.queryForStationId", "type": "routes", "confidence": "confirmed_runtime"},
+      {"from": "controller.BasicController.queryForStationId", "to": "service.BasicServiceImpl.queryForStationId", "type": "calls", "confidence": "confirmed_runtime"},
+      {"from": "service.BasicServiceImpl.queryForStationId", "to": "downstream.ts-station-service", "type": "calls", "confidence": "confirmed_runtime"},
+      {"from": "downstream.ts-station-service", "to": "controller.StationController.queryForId", "type": "routes", "confidence": "confirmed_runtime"},
+      {"from": "controller.StationController.queryForId", "to": "response.basic.not-found", "type": "returns", "confidence": "confirmed_runtime"},
+      {"from": "response.basic.not-found", "to": "observe.cgroup.logs.latency", "type": "observed_by", "confidence": "confirmed_runtime"},
+      {"from": "test.stress.cpu.basic", "to": "recover.stress.cleanup", "type": "restores", "confidence": "confirmed_runtime"}
+    ]
+  },
+  "candidate_provenance": {
+    "selection_report": "artifacts/train-ticket/runtime/stress_basic_candidate_selection.json",
+    "generation_plan": "artifacts/train-ticket/runtime/stress_basic_mutation_generation_plan.json",
+    "applicability_gate": "artifacts/train-ticket/runtime/stress_basic_gate.json",
+    "source_sha256": "9d94c6f1cad11442417b4c47ef6dbf68c09bcaa6af6b089f1de21bd754650683",
+    "candidate_decision_at_generation": "needs_runtime_gate",
+    "gate_decision": "ready_for_injection",
+    "post_replay_selector_decision": "ready_candidate_with_runner",
+    "generator_applied_resource": false
+  },
+  "lifecycle": {
+    "orchestration_report": "artifacts/train-ticket/runtime/generated_basic_stress_orchestration.json",
+    "runner_report": "artifacts/train-ticket/runtime/generated_basic_stress_runner_result.json",
+    "injected_count": 1,
+    "recovered_count": 1,
+    "apply_confirmed": true,
+    "injection_confirmed_before_sampling": true,
+    "recovery_confirmed": true,
+    "cleanup_confirmed": true,
+    "pod_restarts": 0,
+    "safety": {
+      "cgroup_started_only_after_injected": true,
+      "runner_owned_recovery_and_cleanup": true
+    }
+  },
+  "resource_observation": {
+    "cgroup_report": "artifacts/train-ticket/runtime/generated_basic_stress_cgroup.json",
+    "sample_count": 25,
+    "pod": "ts-basic-service-b974d68cb-cmvpw",
+    "cpu_max": "50000 100000",
+    "active_window_boundary_sample": 21,
+    "usage_usec_delta": 21714258,
+    "nr_throttled_delta": 433,
+    "throttled_usec_delta": 8647513,
+    "post_recovery_nr_throttled_delta": 0,
+    "post_recovery_throttled_usec_delta": 0
+  },
+  "business_observation": {
+    "baseline_report": "artifacts/train-ticket/runtime/network_basic_station_result.json",
+    "classification_report": "artifacts/train-ticket/runtime/generated_basic_stress_classification.json",
+    "log_evidence": "artifacts/train-ticket/runtime/generated_basic_stress_log_evidence.json",
+    "request_count": 10,
+    "status_codes": [200],
+    "error_count": 0,
+    "observed_median_latency_ms": 71.457,
+    "baseline_median_latency_ms": 24.0,
+    "latency_delta_ms": 47.457,
+    "tested_path": "GET /api/v1/basicservice/basic/stationName -> GET /api/v1/stationservice/stations/id/stationName",
+    "downstream_logs_confirmed": true,
+    "response_envelope_preserved": true,
+    "outcome": "controlled_not_found"
+  },
+  "result": {
+    "classification": "downstream_response_preserved_with_latency_degradation_and_cpu_throttling",
+    "evidence_state": "runtime_effect_observed",
+    "confidence": "A",
+    "defense_conclusion": "bounded_downstream_resilience_observed",
+    "root_cause_labels": ["resource_throttling_observed", "latency_degradation", "controlled_not_found_oracle"],
+    "why_injection_was_defended": "The real Basic-to-Station call completed under measurable CPU throttling, preserving HTTP 200 and the expected response envelope; the target recovered without restart.",
+    "what_remains_unproven": [
+      "successful station lookup and non-empty business data path",
+      "timeout, retry, fallback or circuit-breaker behavior under stronger CPU pressure",
+      "service-level SLO behavior under concurrent load or the original long profile"
+    ]
+  },
+  "next_experiment": {
+    "action": "repeat the same downstream path with a valid station fixture or synthetic data, then sweep CPU pressure while correlating cgroup, downstream latency and application outcomes",
+    "guardrails": ["one target Pod", "read-only or synthetic station data", "short duration", "injectedCount gate", "automatic recovery and cleanup"]
+  }
+}

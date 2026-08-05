@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-delay-test
+  namespace: chaos-testing
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - self-healing-prod
+    labelSelectors:
+      app: auth-service
+  delay:
+    latency: 100ms
+    correlation: '25'
+    jitter: 10ms
+  duration: 5m
+  scheduler:
+    cron: '@every 30m'

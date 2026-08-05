@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PhysicalMachineChaos
+metadata:
+  name: stop-health-check-active-1695153718
+  namespace: default
+spec:
+  action: user_defined
+  address:
+  - https://128.140.41.88:31768
+  duration: 10m
+  mode: all
+  selector: {}
+  user_defined:
+    attackCmd: docker stop health_check-health_check-1
+    recoverCmd: docker start health_check-health_check-1

@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: epic8-disk-io-stress-test
+  namespace: epic8-prod
+  labels:
+    epic8.platform/experiment: disk-io-stress
+    epic8.platform/component: chaos-engineering
+    epic8.platform/validation: storage-performance
+spec:
+  mode: fixed
+  value: '1'
+  duration: 300s
+  stressors:
+    io:
+      workers: 2
+      size: 100MB
+      iotime: 60s
+  selector:
+    namespaces:
+    - epic8-prod
+    labelSelectors:
+      epic8.platform/service: retriever

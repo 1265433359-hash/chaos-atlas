@@ -1,0 +1,25 @@
+kind: StressChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: train-ticket-lab
+  name: basic-stress-cpu-candidate-r1
+  annotations:
+    chaos.origin.raw-sha256: 9d94c6f1cad11442417b4c47ef6dbf68c09bcaa6af6b089f1de21bd754650683
+    chaos.origin.source-yaml: raw_yaml/StressChaos/27e24dfe4fb46964bad2692a.yaml
+    chaos.candidate.decision: needs_runtime_gate
+    chaos.candidate.rank: '1'
+  labels:
+    chaos.generated: candidate
+    chaos.test-node: stress_cpu
+spec:
+  selector:
+    namespaces:
+    - train-ticket-lab
+    labelSelectors:
+      app: ts-basic-service
+  mode: one
+  stressors:
+    cpu:
+      workers: 1
+      load: 80
+  duration: 45s

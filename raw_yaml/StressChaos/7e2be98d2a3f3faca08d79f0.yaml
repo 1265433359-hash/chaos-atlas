@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-example
+  namespace: chaos-mesh
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - moodify-staging
+    labelSelectors:
+      app: moodify
+      component: backend
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 5m

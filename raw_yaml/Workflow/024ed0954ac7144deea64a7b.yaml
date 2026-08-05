@@ -1,0 +1,55 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: application-resilience-test
+  namespace: chaos-testing
+spec:
+  entry: serial-app-test
+  templates:
+  - name: serial-app-test
+    templateType: Serial
+    deadline: 1h
+    children:
+    - latency-injection
+    - error-injection
+    - recovery-test
+  - name: latency-injection
+    templateType: HTTPChaos
+    deadline: 20m
+    httpChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: payment-processor
+      mode: one
+      action: delay
+      delay: 300ms
+      percent: '25'
+      target: Service
+      port: 8080
+  - name: error-injection
+    templateType: HTTPChaos
+    deadline: 20m
+    httpChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: auth-service
+      mode: one
+      action: abort
+      target: Service
+      port: 8080
+      percent: '10'
+  - name: recovery-test
+    templateType: PodChaos
+    deadline: 10m
+    podChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: redis-cache
+      mode: one
+      action: pod-failure

@@ -1,0 +1,13 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: ns-chaos-ipa-test-application
+  name: fail-random-application-pods
+spec:
+  selector:
+    namespaces:
+    - ns-chaos-ipa-test-application
+  mode: random-max-percent
+  value: 70
+  action: pod-failure
+  duration: 5m

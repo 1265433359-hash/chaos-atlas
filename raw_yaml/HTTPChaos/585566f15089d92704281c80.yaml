@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: service-error-custom-response
+  namespace: chaos-testing
+  labels:
+    experiment: http-chaos
+    severity: high
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: analytics-engine
+  mode: one
+  action: response
+  target: Service
+  port: 8080
+  path: /api/v1/analytics
+  methods:
+  - GET
+  percent: '15'
+  code: 503
+  body: '{"error": "Service temporarily unavailable", "retry_after": 30}'
+  duration: 5m

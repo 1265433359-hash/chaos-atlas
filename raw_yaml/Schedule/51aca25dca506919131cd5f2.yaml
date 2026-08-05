@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: backend-pod-kill-weekly
+  namespace: chaos-mesh
+spec:
+  schedule: 17 3 * * 1
+  type: PodChaos
+  historyLimit: 5
+  concurrencyPolicy: Forbid
+  podChaos:
+    action: pod-kill
+    mode: one
+    selector:
+      namespaces:
+      - moeys-staging
+      labelSelectors:
+        app.kubernetes.io/name: moeys-backend

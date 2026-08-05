@@ -1,0 +1,97 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: region-failover-test
+  namespace: chaos-system
+  labels:
+    app: chaos-experiment
+    scenario: disaster
+spec:
+  entry: region-failover-entry
+  templates:
+  - name: region-failover-entry
+    templateType: Serial
+    deadline: 2h
+    children:
+    - az-failure-simulation
+    - database-failover-test
+    - application-recovery-test
+    - verification-phase
+  - name: az-failure-simulation
+    templateType: Task
+    deadline: 30m
+    task:
+      container:
+        name: az-failure
+        image: chaos-mesh/chaos-mesh:v2.6.0
+        command:
+        - /bin/sh
+        - -c
+        - 'echo "Simulating AZ failure - cordoning nodes in us-east-1a"
+
+          kubectl cordon -l topology.kubernetes.io/zone=us-east-1a
+
+          kubectl delete pods -n pake-system -l app=pake-api --grace-period=0 --force
+
+          echo "AZ failure simulation complete"
+
+          '
+  - name: database-failover-test
+    templateType: Task
+    deadline: 20m
+    task:
+      container:
+        name: db-failover
+        image: postgres:15-alpine
+        command:
+        - /bin/sh
+        - -c
+        - "echo \"Testing database failover procedures\"\n# Simulate primary database\
+          \ failure\nkubectl scale statefulset pake-postgresql-primary -n database\
+          \ --replicas=0\nsleep 60\n\n# Promote replica\nkubectl exec -n database\
+          \ pake-postgresql-replica-eu-0 -- \\\n  pg_ctl promote -D /var/lib/postgresql/data\n\
+          \necho \"Database failover test complete\"\n"
+  - name: application-recovery-test
+    templateType: Task
+    deadline: 30m
+    task:
+      container:
+        name: app-recovery
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/sh
+        - -c
+        - 'echo "Testing application recovery"
+
+          # Scale applications in secondary region
+
+          kubectl --context=secondary scale deployment pake-api -n pake-system --replicas=10
+
+          kubectl --context=secondary scale deployment pake-ai -n pake-system --replicas=5
+
+
+          # Wait for pods to be ready
+
+          kubectl --context=secondary wait --for=condition=ready pod -l app=pake-api
+          -n pake-system --timeout=300s
+
+
+          echo "Application recovery test complete"
+
+          '
+  - name: verification-phase
+    templateType: Task
+    deadline: 20m
+    task:
+      container:
+        name: verification
+        image: alpine:3.18
+        command:
+        - /bin/sh
+        - -c
+        - "echo \"Verifying system functionality after failover\"\napk add --no-cache\
+          \ curl\n\n# Test API endpoints\nfor i in {1..10}; do\n  if curl -f https://api.pake-system.com/health;\
+          \ then\n    echo \"API health check passed\"\n    break\n  fi\n  sleep 30\n\
+          done\n\n# Test AI endpoints\nfor i in {1..10}; do\n  if curl -f https://ai.pake-system.com/health;\
+          \ then\n    echo \"AI health check passed\"\n    break\n  fi\n  sleep 30\n\
+          done\n\necho \"System verification complete\"\n"

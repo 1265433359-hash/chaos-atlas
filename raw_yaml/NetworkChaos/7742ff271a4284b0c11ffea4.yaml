@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-corrupt-test
+  namespace: chaos-testing
+  labels:
+    experiment: resilience
+    type: network-corrupt
+spec:
+  action: corrupt
+  mode: all
+  selector:
+    namespaces:
+    - app-team-a-dev
+    labelSelectors:
+      app: api-gateway
+  corrupt:
+    corrupt: '5'
+    correlation: '25'
+  direction: both
+  duration: 3m

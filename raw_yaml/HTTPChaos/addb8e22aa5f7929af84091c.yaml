@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: custom-http-failure-experiment
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - chaos-experiment
+    labelSelectors:
+      app: react-app
+  target: Request
+  port: 80
+  method: GET
+  path: /
+  abort: true
+  duration: 10m

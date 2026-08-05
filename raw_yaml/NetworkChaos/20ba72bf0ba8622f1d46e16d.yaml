@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-delay-hat
+  namespace: podtato-kubectl
+spec:
+  action: delay
+  direction: to
+  mode: one
+  selector:
+    labelSelectors:
+      component: podtato-head-hat
+  target:
+    mode: all
+    selector:
+      labelSelectors:
+        component: podtato-head-entry
+  delay:
+    latency: 1000ms
+    correlation: '100'
+    jitter: 0ms

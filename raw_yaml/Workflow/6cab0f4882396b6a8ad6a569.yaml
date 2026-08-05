@@ -1,0 +1,40 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: infra-pod-container-kill
+  namespace: chaos-testing
+spec:
+  entry: container-kill-sequence
+  templates:
+  - name: container-kill-sequence
+    templateType: Serial
+    deadline: 1h
+    children:
+    - container-kill-sidecar
+    - container-kill-init
+  - name: container-kill-sidecar
+    templateType: PodChaos
+    deadline: 15m
+    podChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: api-gateway
+      mode: all
+      action: container-kill
+      containerNames:
+      - istio-proxy
+  - name: container-kill-init
+    templateType: PodChaos
+    deadline: 15m
+    podChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: auth-service
+      mode: one
+      action: container-kill
+      containerNames:
+      - init-config

@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PhysicalMachineChaos
+metadata:
+  name: node-memory-stress
+  namespace: chaos-testing
+  labels:
+    experiment: node-chaos
+    severity: critical
+spec:
+  selector:
+    labelSelectors:
+      node-role.kubernetes.io/worker: ''
+  mode: one
+  action: memory
+  memory: 4GB
+  duration: 5m

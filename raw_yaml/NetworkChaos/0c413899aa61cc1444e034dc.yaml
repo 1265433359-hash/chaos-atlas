@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition-go-api
+  namespace: go-api
+  labels:
+    app.kubernetes.io/part-of: chaos-engineering
+    experiment: network-partition
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - go-api
+    labelSelectors:
+      app: go-api
+  direction: both
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - traefik
+  duration: 60s

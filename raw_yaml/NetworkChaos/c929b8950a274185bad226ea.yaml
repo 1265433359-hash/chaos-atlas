@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: scoopdope-network-partition
+  namespace: default
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: scoopdope-backend
+  direction: both
+  duration: 3m
+  scheduler:
+    cron: '@daily'

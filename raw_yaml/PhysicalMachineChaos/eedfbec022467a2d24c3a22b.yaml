@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PhysicalMachineChaos
+metadata:
+  name: network-loss-health-check-port-to-other-server-inactive-1695502312
+  namespace: default
+spec:
+  action: network-loss
+  address:
+  - https://128.140.41.88:31768
+  duration: 10m
+  mode: all
+  network-loss:
+    device: eth0
+    egress-port: '80'
+    ip-address: 49.12.207.65
+    ip-protocol: tcp
+    percent: '75'
+  selector: {}

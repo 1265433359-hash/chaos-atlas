@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-hog
+  namespace: chaos-production
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaos-production
+    labelSelectors:
+      app: ollama
+  stressors:
+    cpu:
+      workers: 8
+      load: 100

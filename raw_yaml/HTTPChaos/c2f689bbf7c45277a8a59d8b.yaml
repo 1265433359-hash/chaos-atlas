@@ -1,0 +1,28 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  namespace: his-hope
+  name: http-500-errors
+  labels:
+    app.kubernetes.io/part-of: his-hope
+    chaos-mesh/experiment-type: http-fault
+    chaos-mesh/schedule: routine
+  annotations:
+    description: Aborts 10% of HTTP requests to patient-service (port 5002) every
+      4 hours to test client-side retry and error handling
+    maintainer: his-hope-sre@hishop.com
+    game-day-scope: monthly-full-chaos
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - his-hope
+    labelSelectors:
+      app: patient-service
+  target: Request
+  port: 5002
+  abort: true
+  percentage: 10
+  duration: 5m
+  scheduler:
+    cron: '@every 4h'

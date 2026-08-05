@@ -1,0 +1,17 @@
+kind: HTTPChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: default
+  name: http-fault-experiment
+spec:
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app.kubernetes.io/component: checkout
+  mode: all
+  target: Response
+  abort: true
+  port: 8080
+  path: '*'
+  duration: 10m

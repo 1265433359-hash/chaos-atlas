@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: loss-milvus
+  namespace: chaos-mesh
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+    - churn-rag
+    labelSelectors:
+      app: anythingllm
+  loss:
+    loss: '30'
+    correlation: '50'
+  direction: to
+  target:
+    selector:
+      namespaces:
+      - churn-rag
+      labelSelectors:
+        app: milvus
+    mode: all

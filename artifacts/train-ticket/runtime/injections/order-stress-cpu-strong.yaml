@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: order-stress-cpu-strong
+  namespace: train-ticket-lab
+  annotations:
+    chaos.origin.raw-sha256: b415e011e4b45b1dfdca07614f6bfc199097bc930ba906a6e3aab30ad938f3cc
+  labels:
+    chaos.origin: train-ticket-stress
+    chaos.test-node: cpu_stress
+    chaos.profile: strong-short
+spec:
+  selector:
+    namespaces:
+      - train-ticket-lab
+    labelSelectors:
+      app: ts-order-service
+  mode: one
+  stressors:
+    cpu:
+      workers: 4
+      load: 100
+  duration: 60s

@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-chaos-abort-client
+  namespace: chaos-mesh
+spec:
+  mode: all
+  selector:
+    labelSelectors:
+      app: flask-client
+    namespaces:
+    - sample-app
+  target: Request
+  port: 5000
+  path: '*'
+  abort: true
+  duration: 30s

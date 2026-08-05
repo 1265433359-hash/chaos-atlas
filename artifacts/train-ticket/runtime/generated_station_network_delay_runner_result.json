@@ -1,0 +1,265 @@
+{
+  "schema_version": 1,
+  "tool": "run_chaos_experiment",
+  "started_at": "2026-08-04T08:14:24.256278+00:00",
+  "mutation": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r1.yaml",
+  "request_config": {
+    "service": "ts-station-service",
+    "remote_port": 12345,
+    "local_port": 18093,
+    "path": "/api/v1/stationservice/stations/id/shanghai",
+    "method": "GET",
+    "request_timeout_sec": 5.0,
+    "request_count": 10,
+    "request_concurrency": 1,
+    "warmup_count": 3,
+    "warmup_interval_sec": 0.5
+  },
+  "preflight": {
+    "checked_at": "2026-08-04T08:14:24.571207+00:00",
+    "mutation": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r1.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "train-ticket-lab",
+    "name": "station-network-delay-candidate-r1",
+    "selector": {
+      "namespaces": [
+        "train-ticket-lab"
+      ],
+      "labelSelectors": {
+        "app": "ts-station-service"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "train-ticket-lab",
+          "name": "ts-station-service-76b45695b4-87rs2",
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            12345
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"station-network-delay-candidate-r1\" not found\n"
+  },
+  "lifecycle": {
+    "applied": true,
+    "injected": true,
+    "recovered": true,
+    "cleanup": {
+      "delete_command_ok": true,
+      "delete_output": "networkchaos.chaos-mesh.org \"station-network-delay-candidate-r1\" deleted from train-ticket-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"station-network-delay-candidate-r1\" not found"
+    },
+    "injected_status": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-04T08:14:24Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "train-ticket-lab/ts-station-service-76b45695b4-87rs2",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-04T08:14:24Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    },
+    "recovered_status": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-04T08:14:24Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-04T08:14:44Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "train-ticket-lab/ts-station-service-76b45695b4-87rs2",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-04T08:14:24Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-04T08:14:44Z"
+      ],
+      "desired_phase": "Stop"
+    },
+    "recovery_wait_completed": true
+  },
+  "requests": [
+    {
+      "sample": 1,
+      "observed_at": "2026-08-04T08:14:27.826310+00:00",
+      "status_code": 200,
+      "latency_ms": 109.724,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 2,
+      "observed_at": "2026-08-04T08:14:28.437168+00:00",
+      "status_code": 200,
+      "latency_ms": 230.182,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 3,
+      "observed_at": "2026-08-04T08:14:29.168337+00:00",
+      "status_code": 200,
+      "latency_ms": 210.948,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 4,
+      "observed_at": "2026-08-04T08:14:29.880123+00:00",
+      "status_code": 200,
+      "latency_ms": 212.363,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 5,
+      "observed_at": "2026-08-04T08:14:30.593518+00:00",
+      "status_code": 200,
+      "latency_ms": 211.339,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 6,
+      "observed_at": "2026-08-04T08:14:31.305814+00:00",
+      "status_code": 200,
+      "latency_ms": 221.146,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 7,
+      "observed_at": "2026-08-04T08:14:32.027804+00:00",
+      "status_code": 200,
+      "latency_ms": 234.324,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 8,
+      "observed_at": "2026-08-04T08:14:32.763122+00:00",
+      "status_code": 200,
+      "latency_ms": 214.936,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 9,
+      "observed_at": "2026-08-04T08:14:33.479395+00:00",
+      "status_code": 200,
+      "latency_ms": 217.108,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 10,
+      "observed_at": "2026-08-04T08:14:34.197796+00:00",
+      "status_code": 200,
+      "latency_ms": 232.157,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    }
+  ],
+  "warmup_requests": [
+    {
+      "sample": 1,
+      "observed_at": "2026-08-04T08:14:26.134945+00:00",
+      "status_code": 200,
+      "latency_ms": 231.714,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 2,
+      "observed_at": "2026-08-04T08:14:26.867273+00:00",
+      "status_code": 200,
+      "latency_ms": 227.479,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 3,
+      "observed_at": "2026-08-04T08:14:27.595323+00:00",
+      "status_code": 200,
+      "latency_ms": 230.558,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    }
+  ],
+  "errors": [],
+  "apply": {
+    "return_code": 0,
+    "stdout": "networkchaos.chaos-mesh.org/station-network-delay-candidate-r1 created",
+    "stderr": ""
+  },
+  "port_forward": {
+    "return_code": 1,
+    "stopped_by_runner": true,
+    "stdout": "Forwarding from 127.0.0.1:18093 -> 12345\nForwarding from [::1]:18093 -> 12345\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093\nHandling connection for 18093",
+    "stderr": ""
+  },
+  "result_classification": "response_observed",
+  "defense_conclusion": {
+    "allowed": true,
+    "rule": "The runner records effect evidence; defense interpretation still requires baseline, path evidence and outcome-specific analysis."
+  },
+  "finished_at": "2026-08-04T08:14:44.531231+00:00"
+}

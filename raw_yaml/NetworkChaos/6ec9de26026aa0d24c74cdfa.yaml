@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: vortex-redis-partition
+  namespace: vortex
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - vortex
+    labelSelectors:
+      app: vortex
+  direction: both
+  target:
+    selector:
+      namespaces:
+      - vortex
+      labelSelectors:
+        app: redis
+    mode: all
+  duration: 60s

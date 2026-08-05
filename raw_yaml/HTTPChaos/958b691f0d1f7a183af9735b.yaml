@@ -1,0 +1,28 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  namespace: techlab
+  name: tl02
+spec:
+  mode: all
+  selector:
+    labelSelectors:
+      app: nginx
+  target: Request
+  port: 8001
+  method: GET
+  path: /suppliers/*
+  delay: 10s
+  replace:
+    path: /api/v2/
+    method: DELETE
+  patch:
+    headers:
+    - - Token
+      - <one token>
+    - - Token
+      - <another token>
+    body:
+      type: JSON
+      value: '{"foo": "bar"}'
+  duration: 35s

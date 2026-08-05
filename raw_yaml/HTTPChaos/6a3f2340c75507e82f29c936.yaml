@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-delay-test
+  namespace: chaos-testing
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - self-healing-prod
+    labelSelectors:
+      app: auth-service
+  target: Request
+  port: 8080
+  method: POST
+  path: /api/auth/login
+  delay: 2s
+  duration: 5m

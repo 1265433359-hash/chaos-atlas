@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-error-experiment
+  namespace: estatewise
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - estatewise
+    labelSelectors:
+      app: backend
+  patterns:
+  - mongodb.estatewise.svc.cluster.local
+  duration: 10s

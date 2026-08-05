@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress
+  namespace: query-engines
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - query-engines
+    labelSelectors:
+      app.kubernetes.io/name: presto
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 60s
+  scheduler:
+    cron: '@every 20m'

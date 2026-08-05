@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: stress-memory-echo
+  namespace: chaos-mesh
+spec:
+  mode: one
+  duration: 60s
+  selector:
+    namespaces:
+    - playground
+    labelSelectors:
+      app: echo
+  stressors:
+    memory:
+      workers: 1
+      size: 256MB

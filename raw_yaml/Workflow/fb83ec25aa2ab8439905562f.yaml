@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: workflow-test
+  namespace: chaos-mesh
+spec:
+  entry: entry
+  templates:
+  - name: entry
+    templateType: Serial
+    deadline: 1m
+    children:
+    - test
+  - name: test
+    templateType: PhysicalMachineChaos
+    deadline: 1m
+    physicalmachineChaos:
+      action: stress-mem
+      selector:
+        labelSelectors:
+          arch: amd64
+      mode: one
+      stress-mem:
+        size: 100MB

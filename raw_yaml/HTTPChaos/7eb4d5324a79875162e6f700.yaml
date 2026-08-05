@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-abort-test
+  namespace: chaos-testing
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - self-healing-prod
+    labelSelectors:
+      app: data-service
+  target: Request
+  port: 8080
+  method: GET
+  path: /api/data
+  abort: true
+  duration: 3m

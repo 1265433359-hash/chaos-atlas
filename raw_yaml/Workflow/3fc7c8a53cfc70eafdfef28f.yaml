@@ -1,0 +1,72 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: catastrophe
+  namespace: shortener
+spec:
+  entry: main
+  templates:
+  - name: main
+    templateType: Parallel
+    deadline: 15m
+    children:
+    - network-chaos-redis
+    - stress-chaos-shortener
+    - throw-exception-redirector
+  - name: network-chaos-redis
+    templateType: NetworkChaos
+    deadline: 12m
+    networkChaos:
+      action: delay
+      mode: all
+      selector:
+        namespaces:
+        - shortener
+        labelSelectors:
+          app: redirector
+      direction: to
+      target:
+        mode: all
+        selector:
+          namespaces:
+          - shortener
+          labelSelectors:
+            app: redis
+      delay:
+        latency: 8000ms
+        jitter: 500ms
+        correlation: '70'
+  - name: stress-chaos-shortener
+    templateType: StressChaos
+    deadline: 12m
+    stressChaos:
+      selector:
+        namespaces:
+        - shortener
+        labelSelectors:
+          app: shortener
+      mode: all
+      stressors:
+        cpu:
+          workers: 2
+          load: 90
+        memory:
+          workers: 1
+          size: 80MB
+  - name: throw-exception-redirector
+    templateType: JVMChaos
+    deadline: 12m
+    jvmChaos:
+      action: ruleData
+      mode: all
+      selector:
+        namespaces:
+        - shortener
+        labelSelectors:
+          app: redirector
+      containerNames:
+      - redirector
+      ruleData: "# Simulate error when calling getAds with 30% failure\nRULE random-exception-redirector\n\
+        \  CLASS com.example.jredirector.services.ShortCodeService\n  METHOD resolve\n\
+        \  AT ENTRY\n  IF Math.random() < 0.3\n  DO throw new java.lang.RuntimeException(\"\
+        Injected exception (random 30%)\")\nENDRULE\n"

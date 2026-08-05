@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: time-drift-experiment
+  namespace: chaos-mesh
+spec:
+  mode: fixed
+  value: '1'
+  selector:
+    namespaces:
+    - microservices
+    labelSelectors:
+      app: user-service
+  timeOffset: +1h
+  duration: 15m
+  scheduler:
+    cron: '@every 30m'

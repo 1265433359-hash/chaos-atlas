@@ -1,0 +1,55 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: weekly-chaos-testing
+  namespace: govsecure
+spec:
+  schedule: '@weekly'
+  type: Workflow
+  workflowSpec:
+    entry: entry
+    templates:
+    - name: entry
+      templateType: Serial
+      children:
+      - network-chaos
+      - pod-chaos
+      - stress-chaos
+    - name: network-chaos
+      templateType: NetworkChaos
+      networkChaos:
+        action: delay
+        mode: one
+        selector:
+          namespaces:
+          - govsecure
+          labelSelectors:
+            app: data-plane
+        delay:
+          latency: 100ms
+        duration: 1m
+    - name: pod-chaos
+      templateType: PodChaos
+      podChaos:
+        action: pod-failure
+        mode: one
+        selector:
+          namespaces:
+          - govsecure
+          labelSelectors:
+            app: data-plane
+        duration: 30s
+    - name: stress-chaos
+      templateType: StressChaos
+      stressChaos:
+        mode: one
+        selector:
+          namespaces:
+          - govsecure
+          labelSelectors:
+            app: data-plane
+        stressors:
+          cpu:
+            workers: 1
+            load: 50
+        duration: 30s

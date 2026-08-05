@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress
+  namespace: chaos-testing
+  labels:
+    app: chaos-test
+    category: stress
+    severity: medium
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - llm-marketplace
+    labelSelectors:
+      app: graphql-gateway
+      chaos-ready: 'true'
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 5m

@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-random-error
+  namespace: backend
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - backend
+    labelSelectors:
+      chaos-target: 'true'
+  patterns:
+  - kubernetes.default.svc.cluster.local
+  - myapp.backend.svc.cluster.local
+  duration: 20m

@@ -1,0 +1,28 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: solo-chaos-network-netem-eu-to-ap
+  namespace: chaos-mesh
+spec:
+  action: netem
+  mode: all
+  selector:
+    namespaces:
+    - ${NAMESPACE}
+    labelSelectors:
+      solo.hedera.com/type: network-node
+      solo.hedera.com/region: eu
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - ${NAMESPACE}
+      labelSelectors:
+        solo.hedera.com/type: network-node
+        solo.hedera.com/region: ap
+  delay:
+    latency: 150ms
+    correlation: '80'
+    jitter: 30ms
+  rate:
+    rate: 1gbps

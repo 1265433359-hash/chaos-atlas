@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: KernelChaos
+metadata:
+  name: kernel-fault-experiment
+  namespace: ml-platform
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - ml-platform
+    labelSelectors:
+      app: ml-platform-backend
+  failKernRequest:
+    callchain:
+    - funcname: __x64_sys_openat
+    failtype: 0
+    headers:
+    - linux/fs.h
+    - linux/mount.h
+    probability: 1
+    times: 3
+  duration: 2m

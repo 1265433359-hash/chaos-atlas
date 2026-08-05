@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: payroll-service-cpu-stress
+  namespace: chaos-mesh
+  labels:
+    experiment: cpu-stress
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - employee-platform
+    labelSelectors:
+      app: payroll-service
+  stressors:
+    cpu:
+      workers: 4
+      load: 80
+  duration: 3m

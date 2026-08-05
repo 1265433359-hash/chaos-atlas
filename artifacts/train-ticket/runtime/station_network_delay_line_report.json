@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "tool": "classify_runtime_result",
+  "line_id": "TT-NETWORK-STATION-DELAY-LINE-001",
+  "classification": "client_timeout_observed",
+  "evidence_state": "runtime_effect_observed",
+  "confidence": "A",
+  "line_status": "closed_runtime_timeout_boundary_confirmed",
+  "project": "FudanSELab/train-ticket",
+  "project_commit": "313886e99befb94be6cd45f085c98e0019f59829",
+  "test_node": {
+    "family": "NetworkChaos",
+    "operation": "delay",
+    "target_service": "ts-station-service",
+    "selector": "app=ts-station-service",
+    "namespace": "train-ticket-lab",
+    "network_direction": "to"
+  },
+  "graph": {
+    "runtime_entry": "GET /api/v1/stationservice/stations/id/{stationName}",
+    "controller": "StationController.queryForStationId",
+    "business": "StationServiceImpl.queryForId",
+    "data": "StationRepository.findByName",
+    "source_default_network_peer": "ts-station-mysql:3306",
+    "runtime_configured_network_peer": "train-ticket-mysql:3306",
+    "network_peer_confidence": "runtime_configuration_confirmed; packet_attribution_not_collected"
+  },
+  "controls": {
+    "warmup_count": 3,
+    "formal_request_count": 10,
+    "request_interval_sec": 0.5,
+    "request_timeout_sec": 5,
+    "one_target_pod": true,
+    "existing_seeded_data_only": true,
+    "automatic_recovery_and_cleanup": true
+  },
+  "oracle_matrix": {
+    "seeded_success": {
+      "baseline_median_latency_ms": 30.146,
+      "delay_100ms_median_latency_ms": 216.022,
+      "delay_500ms_median_latency_ms": 1021.227,
+      "delay_2s_median_latency_ms": 4020.903,
+      "formal_status_codes": [200],
+      "response_contract_preserved": true,
+      "response_data": "80fad31f-143a-4906-a816-622098aef3d1"
+    },
+    "controlled_not_found": {
+      "baseline_median_latency_ms": 32.038,
+      "delay_100ms_median_latency_ms": 215.359,
+      "formal_status_codes": [200],
+      "response_contract_preserved": true,
+      "response_data": "stationName"
+    },
+    "timeout_boundary_probe": {
+      "nominal_delay": "3s",
+      "client_timeout_sec": 5.0,
+      "client_latency_ms": 5047.049,
+      "client_status_code": null,
+      "client_error": "timed out",
+      "server_branch_completed_after_client_timeout": true,
+      "server_completion_elapsed_ms": 6063.895,
+      "response_branch": "StationServiceImpl.queryForId -> Not exists"
+    }
+  },
+  "lifecycle": {
+    "all_runs_injected": true,
+    "all_runs_recovered": true,
+    "all_runs_cleaned": true,
+    "pod_restarts_observed": 0,
+    "final_health_check": {
+      "station_pod": "1/1 Running",
+      "station_pod_restarts": 0,
+      "active_networkchaos_resources": 0
+    }
+  },
+  "stopping_decision": {
+    "decision": "stop_network_delay_escalation_after_timeout_boundary",
+    "reason": "The 3s nominal delay crossed the 5s client observation budget at 5047.049ms, while Station completed its Not Found branch at 6063.895ms. The boundary is now runtime-confirmed.",
+    "technical_boundary": "client_observation_budget_5s_crossed_with_server_completion_after_timeout",
+    "is_application_defense_claim": false,
+    "required_before_next_injection": [
+      "operator-defined Station latency SLO for any production-facing claim",
+      "runtime trace or network evidence only if packet-level attribution to the configured MySQL peer is required"
+    ]
+  },
+  "knowledge_update": {
+    "card": "KB-TT-NETWORK-STATION-DELAY-001",
+    "card_version": 4,
+    "classification": "client_timeout_server_completion_after_delay",
+    "lesson": "A correct server branch after a client timeout is not client defense; correlate client timing with server logs and keep exact dependency identity separate from static source hypotheses."
+  },
+  "evidence": [
+    "artifacts/train-ticket/runtime/generated_station_network_delay_oracle_comparison.json",
+    "artifacts/train-ticket/runtime/generated_station_network_delay_boundary_comparison.json",
+    "artifacts/train-ticket/runtime/station_network_edge_static_mapping.json",
+    "artifacts/train-ticket/runtime/network_station_gate.json",
+    "artifacts/train-ticket/runtime/network_station_r2_gate.json",
+    "artifacts/train-ticket/runtime/network_station_r3_gate.json",
+    "artifacts/train-ticket/runtime/generated_station_network_delay_runner_result.json",
+    "artifacts/train-ticket/runtime/generated_station_network_not_found_delay_runner_result.json",
+    "artifacts/train-ticket/runtime/generated_station_network_delay_r2_runner_result.json",
+    "artifacts/train-ticket/runtime/generated_station_network_delay_r3_runner_result.json",
+    "artifacts/train-ticket/runtime/generated_station_network_delay_r4_runner_result.json",
+    "artifacts/train-ticket/runtime/generated_station_network_delay_r4_classification.json",
+    "artifacts/train-ticket/runtime/generated_station_network_delay_r4_result.json"
+  ],
+  "secrets": {
+    "redaction": "No credentials or Secret values are stored."
+  }
+}

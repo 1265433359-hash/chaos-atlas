@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: kafka-io-latency
+  namespace: kafka-cluster
+spec:
+  action: latency
+  mode: one
+  selector:
+    namespaces:
+    - kafka-cluster
+    labelSelectors:
+      strimzi.io/cluster: kafka-cluster
+      strimzi.io/kind: Kafka
+  volumePath: /var/lib/kafka/data/kafka-log0
+  path: '*'
+  delay: 100ms
+  percent: 50
+  duration: 2m

@@ -1,0 +1,27 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  namespace: his-hope
+  name: http-delay-billing
+  labels:
+    app.kubernetes.io/part-of: his-hope
+    chaos-mesh/experiment-type: http-fault
+    chaos-mesh/schedule: routine
+  annotations:
+    description: Adds 1s delay to 20% of HTTP requests to billing-service (port 5005)
+      every 6h to test timeout handling
+    maintainer: his-hope-sre@hishop.com
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - his-hope
+    labelSelectors:
+      app: billing-service
+  target: Request
+  port: 5005
+  delay: 1s
+  percentage: 20
+  duration: 3m
+  scheduler:
+    cron: '@every 6h'

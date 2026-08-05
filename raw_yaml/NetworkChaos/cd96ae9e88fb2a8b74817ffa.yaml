@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-loss
+  namespace: chaos-mesh
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+    - nebula-production
+  loss:
+    loss: '25'
+    correlation: '25'
+  duration: 2m

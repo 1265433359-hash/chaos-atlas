@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: time-skew-experiment
+  namespace: chaos-testing
+  labels:
+    app: hospital-management-system
+    component: chaos
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - ultimate-hms
+    labelSelectors:
+      app: hospital-management-system
+      component: security
+  timeOffset: -1h
+  duration: 60s
+  scheduler:
+    cron: '@weekly'

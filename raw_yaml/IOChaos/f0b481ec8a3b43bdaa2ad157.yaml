@@ -1,0 +1,32 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: postgres-write-latency
+  namespace: fabric4l
+  labels:
+    app.kubernetes.io/part-of: fabric4l-chaos
+    chaos-mesh.org/experiment: postgres-write-io-latency
+  annotations:
+    description: Inject {{LATENCY_MS}}ms write latency into PostgreSQL primary
+    owner: sre-team@fabric4l.io
+spec:
+  action: latency
+  mode: all
+  selector:
+    namespaces:
+    - fabric4l
+    labelSelectors:
+      app: postgres
+      role: primary
+  volumePath: /var/lib/postgresql/data
+  path: ''
+  delay: ${LATENCY_MS}ms
+  percent: 100
+  methods:
+  - WRITE
+  - WRITEV
+  - PWRITE
+  - PWRITEV
+  - FSYNC
+  - FDATASYNC
+  duration: 10m

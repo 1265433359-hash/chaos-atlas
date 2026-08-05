@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: mixed-io-chaos
+  namespace: chaos-testing
+spec:
+  action: mixed
+  mode: one
+  selector:
+    namespaces:
+    - llm-marketplace
+  volumePath: /app/data
+  path: /app/data/**/*
+  delay: 100ms
+  errno: 5
+  percent: 50
+  duration: 5m

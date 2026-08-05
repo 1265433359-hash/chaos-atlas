@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: remitflow-fraud-ml-failure
+  namespace: remitflow-staging
+  labels:
+    app.kubernetes.io/part-of: remitflow
+    chaos-type: pod
+    target: fraud-ml
+spec:
+  action: pod-failure
+  mode: all
+  selector:
+    namespaces:
+    - remitflow-staging
+    labelSelectors:
+      app: fraud-ml
+  duration: 3m

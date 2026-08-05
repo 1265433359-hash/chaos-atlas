@@ -1,0 +1,13 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: negative-offset
+spec:
+  mode: all
+  selector:
+    expressionSelectors:
+    - key: bucket
+      operator: In
+      values:
+      - '5'
+  timeOffset: -400ms

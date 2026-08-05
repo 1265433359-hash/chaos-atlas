@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: stress-cpu-worker-a
+  namespace: chaos-mesh
+spec:
+  mode: one
+  selector:
+    nodes:
+    - worker-a
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 5m

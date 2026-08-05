@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: service-overload-experiment
+  namespace: selfhealing
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - selfhealing
+    labelSelectors:
+      app: crave-backend
+  stressors:
+    cpu:
+      workers: 4
+      load: 90
+  duration: 2m

@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: disk-io-content
+  namespace: chaos-testing
+  labels:
+    app.kubernetes.io/part-of: sentinels
+    experiment-type: disk-io
+spec:
+  action: latency
+  mode: one
+  selector:
+    namespaces:
+    - netflix
+    labelSelectors:
+      app: content-service
+  volumePath: /data
+  path: ''
+  delay: 100ms
+  percent: 80
+  duration: 60s

@@ -1,0 +1,89 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: cascading-failure-workflow
+  namespace: chaos-mesh
+spec:
+  entry: entry
+  templates:
+  - name: entry
+    templateType: Serial
+    deadline: 30m
+    children:
+    - network-partition
+    - stress-resources
+    - pod-failures
+    - recovery-validation
+  - name: network-partition
+    templateType: NetworkChaos
+    deadline: 5m
+    networkChaos:
+      action: partition
+      mode: all
+      selector:
+        namespaces:
+        - microservices
+        labelSelectors:
+          tier: backend
+      direction: both
+      target:
+        mode: all
+        selector:
+          namespaces:
+          - microservices
+          labelSelectors:
+            tier: database
+      duration: 3m
+  - name: stress-resources
+    templateType: Parallel
+    deadline: 10m
+    children:
+    - cpu-stress
+    - memory-stress
+  - name: cpu-stress
+    templateType: StressChaos
+    deadline: 5m
+    stressChaos:
+      mode: all
+      selector:
+        namespaces:
+        - microservices
+        labelSelectors:
+          app: api-gateway
+      stressors:
+        cpu:
+          workers: 2
+          load: 90
+      duration: 3m
+  - name: memory-stress
+    templateType: StressChaos
+    deadline: 5m
+    stressChaos:
+      mode: all
+      selector:
+        namespaces:
+        - microservices
+        labelSelectors:
+          app: user-service
+      stressors:
+        memory:
+          workers: 2
+          size: 512MB
+      duration: 3m
+  - name: pod-failures
+    templateType: PodChaos
+    deadline: 5m
+    podChaos:
+      action: pod-kill
+      mode: random-max-percent
+      value: '50'
+      selector:
+        namespaces:
+        - microservices
+        labelSelectors:
+          tier: application
+  - name: recovery-validation
+    templateType: Suspend
+    deadline: 5m
+    suspend:
+      duration: 5m

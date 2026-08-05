@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: kafka-partition-network
+  namespace: bitvelocity
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - bitvelocity
+    labelSelectors:
+      app: kafka
+  direction: both
+  duration: 2m
+  target:
+    selector:
+      namespaces:
+      - bitvelocity
+      labelSelectors:
+        app: order-service
+    mode: all

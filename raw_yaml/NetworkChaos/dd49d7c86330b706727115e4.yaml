@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: drill-burn
+  namespace: reliability-lab
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+    - reliability-lab
+    labelSelectors:
+      app: payments-svc
+  loss:
+    loss: '100'
+    correlation: '0'
+  duration: 3m

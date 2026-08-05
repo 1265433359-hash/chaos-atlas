@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "experiment_id": "TT-NETWORK-STATION-DELAY-004",
+  "project": "FudanSELab/train-ticket",
+  "project_commit": "313886e99befb94be6cd45f085c98e0019f59829",
+  "test_node": {
+    "family": "NetworkChaos",
+    "operation": "delay",
+    "target_service": "ts-station-service",
+    "selector": "app=ts-station-service",
+    "namespace": "train-ticket-lab",
+    "latency": "3s",
+    "duration": "30s",
+    "direction": "to",
+    "mutation_yaml": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r4.yaml"
+  },
+  "oracle": {
+    "type": "controlled_not_found",
+    "station_name": "stationName",
+    "baseline_artifact": "artifacts/train-ticket/runtime/baseline_station_not_found.json",
+    "expected_response_contract": "HTTP 200, status=0, msg=Not exists, data=stationName"
+  },
+  "evaluation_budget": {
+    "kind": "experimental_client_observation_budget",
+    "client_timeout_sec": 5.0,
+    "production_slo_defined": false,
+    "interpretation": "The 5s value is a lab measurement boundary, not an operator-approved production SLO."
+  },
+  "lifecycle": {
+    "runner_report": "artifacts/train-ticket/runtime/generated_station_network_delay_r4_runner_result.json",
+    "applied": true,
+    "injected": true,
+    "recovered": true,
+    "cleanup_confirmed": true,
+    "resource_absent_after_delete": true,
+    "pod_restarts": 0
+  },
+  "client_observation": {
+    "status_code": null,
+    "latency_ms": 5047.049,
+    "error": "timed out",
+    "baseline_median_latency_ms": 32.038,
+    "latency_delta_ms": 5015.011
+  },
+  "runtime_log_evidence": {
+    "station_pod": "ts-station-service-76b45695b4-87rs2",
+    "request_started_at_utc": "2026-08-04T13:15:36.350879533Z",
+    "server_branch_completed_at_utc": "2026-08-04T13:15:42.414248774Z",
+    "server_elapsed_from_request_start_ms": 6063.895,
+    "request_start_log": "[queryForId][Query for station id][StationName: stationName]",
+    "branch_completion_log": "[queryForId][Find station id warn][Station not found][StationName: stationName]",
+    "mysql_log_lines": [],
+    "mysql_observation": "No MySQL container query log was emitted in the captured window; runtime configuration confirms the peer, but packet-level attribution was not collected.",
+    "log_capture_command_scope": "station pod and train-ticket-mysql pod, since 2026-08-04T13:15:30Z",
+    "runtime_datasource_configuration": {
+      "host": "train-ticket-mysql",
+      "port": 3306,
+      "database": "ts",
+      "credentials_read": false
+    }
+  },
+  "interpretation": {
+    "path_status": "confirmed_runtime_station_handler_completed_after_client_timeout",
+    "classification": "client_timeout_server_completion_after_delay",
+    "defense_conclusion": "partial_or_no_client_boundary_defense",
+    "why": "The confirmed 3s outbound delay crossed the 5s client budget. Station logged the post-repository Not Found branch about 1.017s after the client timeout, proving the server continued and completed after the client had already timed out.",
+    "exact_dependency_identity": "runtime_configuration_confirmed_packet_attribution_not_collected",
+    "root_cause_hypothesis": "StationRepository.findByName uses the runtime-configured train-ticket-mysql:3306 datasource. The delayed handler completion follows the expected outbound delay; MySQL query logs were silent and packet-level attribution was not collected.",
+    "confidence": {
+      "client_server_temporal_relationship": "A",
+      "configured_network_peer": "A",
+      "packet_level_attribution": "B"
+    }
+  },
+  "knowledge_lesson": "A correct server-side business branch after a client timeout is not a client defense. Distinguish response correctness, client timeout behavior, server completion, retry/fallback behavior, and dependency identity."
+}

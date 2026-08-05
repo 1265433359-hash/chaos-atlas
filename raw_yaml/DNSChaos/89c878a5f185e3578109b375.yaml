@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: mssql-dns-error-all
+  namespace: chaos-mesh
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - demo
+    labelSelectors:
+      app.kubernetes.io/instance: sqlserver-ag-cluster
+  duration: 3m

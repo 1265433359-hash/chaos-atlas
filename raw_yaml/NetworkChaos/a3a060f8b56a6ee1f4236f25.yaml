@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-latency
+  namespace: chaos-testing
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: ergo-web
+  delay:
+    latency: 300ms
+    correlation: '25'
+    jitter: 100ms
+  duration: 5m
+  scheduler:
+    cron: 0 */6 * * *

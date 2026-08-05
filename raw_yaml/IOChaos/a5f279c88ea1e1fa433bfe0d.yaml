@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: mysql-io-stress
+  namespace: judgex
+spec:
+  action: latency
+  mode: all
+  selector:
+    namespaces:
+    - judgex
+    labelSelectors:
+      app: mysql
+  volumePath: /var/lib/mysql
+  delay: 100ms
+  percent: 50
+  duration: 3m

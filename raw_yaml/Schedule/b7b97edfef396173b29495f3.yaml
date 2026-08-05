@@ -1,0 +1,50 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: daily-chaos-test
+  namespace: chaos-testing
+spec:
+  schedule: 0 2 * * *
+  type: Workflow
+  workflowSpec:
+    entry: entry
+    templates:
+    - name: entry
+      templateType: Serial
+      children:
+      - pod-chaos
+      - network-chaos
+      - stress-chaos
+    - name: pod-chaos
+      templateType: PodChaos
+      podChaos:
+        action: pod-failure
+        mode: fixed
+        value: '1'
+        selector:
+          namespaces:
+          - self-healing-prod
+        duration: 2m
+    - name: network-chaos
+      templateType: NetworkChaos
+      networkChaos:
+        action: delay
+        mode: all
+        selector:
+          namespaces:
+          - self-healing-prod
+        delay:
+          latency: 100ms
+        duration: 3m
+    - name: stress-chaos
+      templateType: StressChaos
+      stressChaos:
+        mode: one
+        selector:
+          namespaces:
+          - self-healing-prod
+        stressors:
+          cpu:
+            workers: 2
+            load: 75
+        duration: 3m

@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: scenario-e-stress
+  namespace: chaos-testing
+  labels:
+    experiment: scenario-e
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - noisy-neighbor
+    labelSelectors:
+      app: cpu-burner
+  stressors:
+    cpu:
+      workers: 4
+      load: 100
+    memory:
+      workers: 2
+      size: 4GB
+  duration: 10m

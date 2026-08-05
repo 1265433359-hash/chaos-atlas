@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: disk-full
+  namespace: chaos-testing
+spec:
+  action: errno
+  mode: one
+  selector:
+    namespaces:
+    - llm-marketplace
+    labelSelectors:
+      app: tenant-management
+  volumePath: /var/log
+  path: /var/log/**/*
+  errno: 28
+  percent: 100
+  methods:
+  - write
+  duration: 2m

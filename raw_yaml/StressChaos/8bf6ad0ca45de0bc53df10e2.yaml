@@ -1,0 +1,44 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: io-throught-9
+  namespace: io-throught-9
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - io-throught-9
+    labelSelectors:
+      app: myapp
+  stressors:
+    cpu:
+      workers: 1
+      load: 20
+  schedule:
+  - duration: 2m
+    config:
+      stressors:
+        cpu:
+          load: 30
+  - duration: 2m
+    config:
+      stressors:
+        cpu:
+          load: 50
+        memory:
+          size: 50MB
+  - duration: 2m
+    config:
+      stressors:
+        cpu:
+          load: 70
+        memory:
+          size: 80MB
+  - duration: 2m
+    config:
+      stressors:
+        cpu:
+          load: 90
+        memory:
+          size: 100MB
+  duration: 8m

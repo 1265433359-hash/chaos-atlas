@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-stress-test
+  namespace: production
+  annotations:
+    description: Inject memory stress to trigger OOMKills
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: recommendation-engine
+  stressors:
+    memory:
+      workers: 4
+      size: 512MB
+      options:
+      - --vm-keep
+  duration: 3m

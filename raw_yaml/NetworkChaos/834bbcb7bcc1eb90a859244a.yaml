@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: upstream-latency
+  namespace: boutique
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - boutique
+    labelSelectors:
+      app: productcatalogservice
+  delay:
+    latency: 300ms
+    jitter: 100ms
+    correlation: '50'
+  duration: 4m

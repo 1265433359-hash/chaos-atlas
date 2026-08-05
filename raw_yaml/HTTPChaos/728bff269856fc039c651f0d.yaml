@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: kafka-ui-delay
+  namespace: kafka-ui
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - kafka-ui
+    labelSelectors:
+      app.kubernetes.io/name: kafka-ui
+  target: Response
+  port: 8080
+  path: /api/*
+  delay: 5s
+  duration: 2m

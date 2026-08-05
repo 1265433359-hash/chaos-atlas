@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-chaos
+  namespace: chaos-testing
+spec:
+  mode: one
+  duration: 600s
+  stressors:
+    cpu:
+      workers: 3
+      load: 70
+  selector:
+    namespaces:
+    - train-ticket

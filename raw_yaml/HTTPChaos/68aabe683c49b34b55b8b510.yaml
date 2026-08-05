@@ -1,0 +1,28 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  namespace: his-hope
+  name: grpc-unavailable
+  labels:
+    app.kubernetes.io/part-of: his-hope
+    chaos-mesh/experiment-type: grpc-fault
+    chaos-mesh/schedule: routine
+  annotations:
+    description: Aborts 5% of gRPC requests to clinical-service (port 5009) every
+      6 hours to test gRPC retry/backoff and resilience
+    maintainer: his-hope-sre@hishop.com
+    game-day-scope: monthly-full-chaos
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - his-hope
+    labelSelectors:
+      app: clinical-service
+  target: Request
+  port: 5009
+  abort: true
+  percentage: 5
+  duration: 3m
+  scheduler:
+    cron: '@every 6h'

@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: kafka-dns-error
+  namespace: kafka-cluster
+spec:
+  action: error
+  mode: one
+  selector:
+    namespaces:
+    - kafka-cluster
+    labelSelectors:
+      strimzi.io/cluster: kafka-cluster
+      strimzi.io/kind: Kafka
+  patterns:
+  - kafka-cluster-kafka-bootstrap*
+  - '*.kafka-cluster.svc.cluster.local'
+  duration: 1m

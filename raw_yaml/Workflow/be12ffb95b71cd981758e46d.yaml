@@ -1,0 +1,63 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: sentiment-disaster-scenario
+  namespace: default
+spec:
+  entry: entry
+  templates:
+  - name: entry
+    templateType: Parallel
+    deadline: 10m
+    children:
+    - pod-failure
+    - network-partition
+    - cpu-stress
+  - name: pod-failure
+    templateType: PodChaos
+    deadline: 5m
+    podChaos:
+      action: pod-failure
+      mode: fixed
+      value: '1'
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/name: mlops-sentiment
+      duration: 5m
+  - name: network-partition
+    templateType: NetworkChaos
+    deadline: 5m
+    networkChaos:
+      action: partition
+      mode: one
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/name: mlops-sentiment
+      direction: to
+      target:
+        mode: all
+        selector:
+          namespaces:
+          - default
+          labelSelectors:
+            app: redis
+      duration: 3m
+  - name: cpu-stress
+    templateType: StressChaos
+    deadline: 5m
+    stressChaos:
+      mode: one
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/name: mlops-sentiment
+      stressors:
+        cpu:
+          workers: 2
+          load: 90
+      duration: 4m

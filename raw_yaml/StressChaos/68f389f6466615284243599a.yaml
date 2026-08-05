@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-payment
+  namespace: production
+  labels:
+    experiment: cpu-stress
+    app: cloud-incident-simulator
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: payment-service
+  stressors:
+    cpu:
+      workers: 2
+      load: 90
+  duration: 120s

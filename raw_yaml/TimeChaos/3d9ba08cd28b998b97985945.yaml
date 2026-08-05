@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: time-skew-experiment
+  namespace: ml-platform
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - ml-platform
+    labelSelectors:
+      app: ml-platform-backend
+  timeOffset: -10m
+  duration: 5m

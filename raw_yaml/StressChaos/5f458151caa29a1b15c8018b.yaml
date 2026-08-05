@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: quantum-cpu-stress
+  namespace: load-testing
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - terrafusion-cosmic
+    labelSelectors:
+      app: holographic-storage
+  stressors:
+    cpu:
+      workers: 4
+      load: 80
+    memory:
+      workers: 4
+      size: 1GB
+  duration: 3m

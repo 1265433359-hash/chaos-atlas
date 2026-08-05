@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: redis-chaos-pod-kill
+  namespace: conductor-prod
+spec:
+  action: pod-kill
+  mode: fixed-percent
+  value: '50'
+  selector:
+    labelSelectors:
+      app: redis-cache
+      tier: backend
+  duration: 60s
+  scheduler:
+    cron: '@every 10m'

@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition
+  namespace: tidb1369682775200136354
+spec:
+  action: partition
+  mode: one
+  selector:
+    labelSelectors:
+      app.kubernetes.io/name: tidb-cluster
+  direction: to
+  target:
+    mode: all
+    selector:
+      labelSelectors:
+        app.kubernetes.io/name: tidb-cluster

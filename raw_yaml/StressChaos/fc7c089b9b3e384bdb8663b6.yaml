@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: product-service-cpu-stress
+  namespace: mini-ecommerce
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - mini-ecommerce
+    labelSelectors:
+      app: product-service
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 60s

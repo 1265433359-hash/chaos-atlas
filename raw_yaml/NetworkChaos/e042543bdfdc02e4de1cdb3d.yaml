@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: service-partition-test
+  namespace: chaos-engineering
+  labels:
+    experiment-type: partition
+    target-service: all-services
+    severity: critical
+    automation: manual
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - rust-security-dev
+    labelSelectors:
+      tier: backend
+  direction: both
+  duration: 2m

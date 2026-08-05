@@ -1,0 +1,88 @@
+{
+  "experiment_id": "TT-NETWORK-BASIC-STATION-002",
+  "source_yaml": "raw_yaml/NetworkChaos/661b0ac8ed245799ce7b5069.yaml",
+  "source_sha256": "b706e36cc61568c10f20e0b4a4d68c0ced84e70174f314ad0388f58ec29512dd",
+  "mutation_yaml": "artifacts/train-ticket/runtime/injections/basic-network-delay-5s-inline.yaml",
+  "applicability_gate": "artifacts/train-ticket/runtime/applicability_gate_network_5s_inline.json",
+  "namespace": "train-ticket-lab",
+  "target": {
+    "upstream_pod": "ts-basic-service-b974d68cb-cmvpw",
+    "upstream_port": 15680,
+    "downstream_service": "ts-station-service",
+    "business_endpoint": "/api/v1/basicservice/basic/stationName",
+    "downstream_endpoint": "/api/v1/stationservice/stations/id/stationName"
+  },
+  "mutation": {
+    "kind": "NetworkChaos",
+    "name": "basic-network-delay-5s-inline",
+    "action": "delay",
+    "direction": "to",
+    "mode": "one",
+    "latency": "5s",
+    "duration": "20s",
+    "execution": "atomic_apply_wait_injected_request_wait_recovery_cleanup"
+  },
+  "chaos_status": {
+    "selected": true,
+    "injected_count": 1,
+    "recovered_count": 1,
+    "all_recovered": true,
+    "injection_started": "2026-08-03T14:18:41Z",
+    "recovery_completed": "2026-08-03T14:19:01Z"
+  },
+  "request_observation": {
+    "client_timeout_sec": 10,
+    "client_status_code": null,
+    "client_latency_ms": 10041,
+    "client_error": "The operation has timed out.",
+    "server_side_logs": {
+      "basic_request_started_local": "2026-08-03 22:18:43.181",
+      "station_handler_started_local": "2026-08-03 22:18:53.185",
+      "basic_result_logged_local": "2026-08-03 22:18:53.190",
+      "result_body_observed_by_server": "{\"status\":0,\"msg\":\"Not exists\",\"data\":null}"
+    },
+    "path_status": "confirmed_runtime",
+    "interpretation": "The request traversed BasicServiceImpl and reached StationController, but the external client timed out at 10 seconds before receiving the eventual server-side business response."
+  },
+  "post_recovery_observation": {
+    "status_code": 200,
+    "latency_ms": 76,
+    "body": "{\"status\":0,\"msg\":\"Not exists\",\"data\":null}",
+    "interpretation": "A read-only request after cleanup returned to the normal response contract, supporting recovery of the application path."
+  },
+  "comparison_to_bounded_profile": {
+    "bounded_profile_artifact": "artifacts/train-ticket/runtime/network_basic_station_result.json",
+    "bounded_profile_latency": "500ms injected delay preserved HTTP 200 and raised repeated samples to 525-532ms",
+    "boundary_profile": "5s injected delay caused a client timeout at the 10s observation limit"
+  },
+  "result_classification": "client_timeout_partial_or_no_defense",
+  "defense_interpretation": {
+    "what_was_defended": "The downstream station handler eventually executed and the service-side code produced its normal business response.",
+    "what_was_not_defended": "The upstream client had no observed fast timeout, retry budget, fallback, or circuit-breaker response before the 10-second limit.",
+    "root_cause_hypothesis": "The injected latency exceeded the effective end-to-end request budget; BasicServiceImpl has no explicit timeout or local recovery branch in the inspected source.",
+    "confidence": "B"
+  },
+  "execution_learning": {
+    "lesson": "kubectl apply and Chaos Mesh injection are asynchronous; a request issued before injectedCount=1 is not an effect observation.",
+    "required_gate": "Wait for status.experiment.containerRecords[].injectedCount >= 1, then issue the request within the duration window, then wait for recoveredCount >= 1.",
+    "invalid_attempts": [
+      "basic-network-delay-5s-short: request ran before controller injection and completed in 65ms",
+      "basic-network-delay-5s-gated: injection completed between tool calls and the resource expired before the next request"
+    ]
+  },
+  "cleanup": {
+    "inline_resource_deleted": true,
+    "previous_gated_resource_deleted": true,
+    "port_forward_stopped": true,
+    "active_networkchaos_remaining": false
+  },
+  "next_evidence": [
+    "Repeat the timeout-boundary run with a client that records the eventual HTTP response separately from the client timeout.",
+    "Inspect the effective RestTemplate request factory and Spring Boot defaults in the running image.",
+    "Test repeated requests after timeout to detect thread, connection-pool, or retry amplification.",
+    "Add tracing or correlation IDs to distinguish outbound delay from response propagation delay."
+  ],
+  "secrets": {
+    "redaction": "No credentials or secret values are stored in this artifact."
+  }
+}

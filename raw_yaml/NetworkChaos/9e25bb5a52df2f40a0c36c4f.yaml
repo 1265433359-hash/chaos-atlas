@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: payments-latency
+  namespace: reliability-lab
+spec:
+  action: delay
+  mode: fixed-percent
+  value: '50'
+  selector:
+    namespaces:
+    - reliability-lab
+    labelSelectors:
+      app: payments-svc
+  delay:
+    latency: 500ms
+    correlation: '25'
+    jitter: 50ms
+  duration: 5m

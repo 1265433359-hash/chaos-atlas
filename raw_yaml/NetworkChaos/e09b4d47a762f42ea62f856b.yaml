@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: securerag-network-latency
+  namespace: securerag-hub
+  annotations:
+    feature.securerag.dev/enable-chaos-mesh: 'true'
+    chaos.securerag.dev/category: network
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - securerag-hub
+    labelSelectors:
+      app.kubernetes.io/name: portal-web
+  delay:
+    latency: 200ms
+    jitter: 50ms
+    correlation: '25'
+  scheduler:
+    cron: '@every 3h'
+  duration: 60s

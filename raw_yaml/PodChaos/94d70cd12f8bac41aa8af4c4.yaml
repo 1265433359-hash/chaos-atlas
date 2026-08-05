@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: brain-storm-pod-kill
+  namespace: default
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: brain-storm-backend
+  duration: 1m
+  scheduler:
+    cron: 0 2 * * *

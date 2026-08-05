@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-test
+  namespace: production
+  annotations:
+    description: Max out CPU to test autoscaling detection
+spec:
+  mode: fixed-percent
+  value: '30'
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: api-server
+  stressors:
+    cpu:
+      workers: 4
+      load: 100
+  duration: 5m

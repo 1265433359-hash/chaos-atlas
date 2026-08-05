@@ -1,0 +1,16 @@
+kind: IOChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: ngx
+  name: io2
+spec:
+  selector:
+    namespaces:
+    - ngx
+    labelSelectors:
+      app: myapp
+  mode: all
+  action: latency
+  delay: 30s
+  percent: 100
+  volumePath: /var/log/nginx

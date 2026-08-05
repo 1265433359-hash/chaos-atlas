@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-partial-failure
+  namespace: chaos-demo
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - chaos-demo
+    labelSelectors:
+      app: backend
+  target: Response
+  port: 5001
+  path: '*'
+  replace:
+    code: 503
+    body: '{"error":"Service Unavailable"}'
+  percent: 50
+  duration: 5m

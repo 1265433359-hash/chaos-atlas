@@ -1,0 +1,14 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: chaos-mesh
+  name: exp-3
+spec:
+  selector:
+    namespaces:
+    - pucminas
+    labelSelectors:
+      app: httpbin
+  mode: fixed
+  value: '4'
+  action: pod-kill

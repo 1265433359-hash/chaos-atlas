@@ -1,0 +1,13 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress
+spec:
+  mode: one
+  selector:
+    labelSelectors:
+      app: test-quarantine
+  stressors:
+    cpu:
+      workers: 1
+      load: 50

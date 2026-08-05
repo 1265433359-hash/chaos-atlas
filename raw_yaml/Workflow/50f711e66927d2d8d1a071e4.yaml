@@ -1,0 +1,85 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: auth-service-resilience-test
+  namespace: chaos-testing
+spec:
+  entry: auth-resilience
+  templates:
+  - name: auth-resilience
+    templateType: Serial
+    deadline: 30m
+    children:
+    - token-service-delay
+    - token-service-error
+    - db-connection-issue
+    - cache-miss-storm
+  - name: token-service-delay
+    templateType: HTTPChaos
+    deadline: 5m
+    httpChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: auth-service
+      mode: one
+      action: delay
+      delay: 1000ms
+      percent: '40'
+      target: Service
+      port: 8080
+      path: /api/v1/auth/token
+      methods:
+      - POST
+  - name: token-service-error
+    templateType: HTTPChaos
+    deadline: 5m
+    httpChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: auth-service
+      mode: one
+      action: abort
+      target: Service
+      port: 8080
+      path: /api/v1/auth/token
+      methods:
+      - POST
+      percent: '10'
+  - name: db-connection-issue
+    templateType: HTTPChaos
+    deadline: 5m
+    httpChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: auth-service
+      mode: one
+      action: delay
+      delay: 500ms
+      percent: '30'
+      target: Service
+      port: 5432
+  - name: cache-miss-storm
+    templateType: TCPChaos
+    deadline: 5m
+    tcpChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: redis-cache
+      mode: all
+      action: loss
+      loss: '20'
+      target:
+        selector:
+          namespaces:
+          - production
+          labelSelectors:
+            app: auth-service
+        port: 6379

@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: policy-service-packet-loss
+  namespace: chaos-engineering
+  labels:
+    experiment-type: packet-loss
+    target-service: policy-service
+    severity: high
+    automation: enabled
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+    - rust-security-dev
+    labelSelectors:
+      app: policy-service
+  loss:
+    loss: 10%
+    correlation: '25'
+  duration: 3m
+  scheduler:
+    cron: 0 2 * * 1
+    historyLimit: 10

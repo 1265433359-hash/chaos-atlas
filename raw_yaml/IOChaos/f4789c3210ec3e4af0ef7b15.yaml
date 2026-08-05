@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: file-attr-chaos
+  namespace: chaos-testing
+spec:
+  action: attrOverride
+  mode: one
+  selector:
+    namespaces:
+    - llm-marketplace
+  volumePath: /etc/config
+  path: /etc/config/*.yaml
+  attr:
+    perm: 292
+  duration: 2m

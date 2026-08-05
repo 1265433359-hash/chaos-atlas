@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: rabbitmq-memory-pressure
+  namespace: chaos-testing
+spec:
+  action: loss
+  mode: fixed-percent
+  value: '20'
+  selector:
+    namespaces:
+    - rabbitmq
+    labelSelectors:
+      app: rabbitmq-server
+  duration: 3m
+  scheduler:
+    cron: '@every 18m'
+  networkLoss:
+    loss: '20'
+    correlation: '100'

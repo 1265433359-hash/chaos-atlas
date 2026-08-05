@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-orders
+  namespace: sock-shop
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - sock-shop
+    labelSelectors:
+      name: orders
+  stressors:
+    cpu:
+      workers: 2
+      load: 80

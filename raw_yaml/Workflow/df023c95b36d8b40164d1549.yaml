@@ -1,0 +1,89 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: data-platform-disaster-recovery
+  namespace: chaos-mesh
+  labels:
+    experiment-type: disaster-recovery
+    severity: critical
+spec:
+  entry: data-platform-failure-simulation
+  templates:
+  - name: data-platform-failure-simulation
+    templateType: Serial
+    deadline: 30m
+    children:
+    - phase-1-clickhouse-failure
+    - phase-2-druid-network-partition
+    - phase-3-superset-resource-exhaustion
+    - phase-4-recovery-validation
+  - name: phase-1-clickhouse-failure
+    templateType: PodChaos
+    deadline: 10m
+    podChaos:
+      action: pod-kill
+      mode: fixed-percent
+      value: '50'
+      selector:
+        namespaces:
+        - data-science
+        labelSelectors:
+          app.kubernetes.io/name: clickhouse
+  - name: phase-2-druid-network-partition
+    templateType: NetworkChaos
+    deadline: 10m
+    networkChaos:
+      action: partition
+      mode: fixed
+      value: '1'
+      direction: both
+      selector:
+        namespaces:
+        - data-science
+        labelSelectors:
+          app.kubernetes.io/name: druid
+          app.kubernetes.io/component: broker
+  - name: phase-3-superset-resource-exhaustion
+    templateType: StressChaos
+    deadline: 10m
+    stressChaos:
+      mode: fixed
+      value: '1'
+      stressors:
+        memory:
+          workers: 4
+          size: 2GB
+        cpu:
+          workers: 2
+          load: 80
+      selector:
+        namespaces:
+        - data-science
+        labelSelectors:
+          app.kubernetes.io/name: superset
+  - name: phase-4-recovery-validation
+    templateType: Task
+    deadline: 5m
+    task:
+      container:
+        name: validation
+        image: curlimages/curl:latest
+        command:
+        - sh
+        args:
+        - -c
+        - "echo \"Validating service recovery...\"\n\n# Test ClickHouse\nclickhouse_response=$(curl\
+          \ -s -o /dev/null -w \"%{http_code}\" https://clickhouse.samcloud.online/ping\
+          \ || echo \"000\")\nif [ \"$clickhouse_response\" = \"200\" ]; then\n  echo\
+          \ \"[SUCCESS] ClickHouse recovered successfully\"\nelse\n  echo \"[FAIL]\
+          \ ClickHouse recovery failed: $clickhouse_response\"\n  exit 1\nfi\n\n#\
+          \ Test Druid\ndruid_response=$(curl -s -o /dev/null -w \"%{http_code}\"\
+          \ https://druid.samcloud.online/status/health || echo \"000\")\nif [ \"\
+          $druid_response\" = \"200\" ]; then\n  echo \"[SUCCESS] Druid recovered\
+          \ successfully\"\nelse\n  echo \"[FAIL] Druid recovery failed: $druid_response\"\
+          \n  exit 1\nfi\n\n# Test Superset\nsuperset_response=$(curl -s -o /dev/null\
+          \ -w \"%{http_code}\" https://superset.samcloud.online/health || echo \"\
+          000\")\nif [ \"$superset_response\" = \"200\" ]; then\n  echo \"[SUCCESS]\
+          \ Superset recovered successfully\"\nelse\n  echo \"[FAIL] Superset recovery\
+          \ failed: $superset_response\"\n  exit 1\nfi\n\necho \"[SUCCESS] All services\
+          \ recovered successfully!\"\n"

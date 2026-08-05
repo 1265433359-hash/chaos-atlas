@@ -1,0 +1,200 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: train-ticket-mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: train-ticket-mysql
+  template:
+    metadata:
+      labels:
+        app: train-ticket-mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mariadb:10.6
+          imagePullPolicy: IfNotPresent
+          args:
+            - --innodb-buffer-pool-size=128M
+            - --max-connections=50
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: train-ticket-db
+                  key: root-password
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: train-ticket-db
+                  key: root-password
+            - name: MYSQL_DATABASE
+              value: ts
+            - name: MARIADB_DATABASE
+              value: ts
+            - name: MYSQL_USER
+              value: ts
+            - name: MARIADB_USER
+              value: ts
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: train-ticket-db
+                  key: password
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: train-ticket-db
+                  key: password
+          ports:
+            - name: mysql
+              containerPort: 3306
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD"
+            initialDelaySeconds: 20
+            periodSeconds: 5
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: train-ticket-mysql
+spec:
+  ports:
+    - name: mysql
+      port: 3306
+      targetPort: 3306
+  selector:
+    app: train-ticket-mysql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nacos
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nacos
+  template:
+    metadata:
+      labels:
+        app: nacos
+    spec:
+      containers:
+        - name: nacos
+          image: nacos/nacos-server:2.0.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MODE
+              value: standalone
+            - name: PREFER_HOST_MODE
+              value: hostname
+            - name: NACOS_AUTH_ENABLE
+              value: "false"
+            - name: JVM_XMS
+              value: "256m"
+            - name: JVM_XMX
+              value: "512m"
+            - name: JVM_XMN
+              value: "256m"
+          ports:
+            - name: http
+              containerPort: 8848
+            - name: grpc
+              containerPort: 9848
+            - name: raft
+              containerPort: 9849
+          readinessProbe:
+            httpGet:
+              path: /nacos/v1/ns/operator/servers
+              port: 8848
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: 300m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nacos
+spec:
+  ports:
+    - name: http
+      port: 8848
+      targetPort: 8848
+    - name: grpc
+      port: 9848
+      targetPort: 9848
+    - name: raft
+      port: 9849
+      targetPort: 9849
+  selector:
+    app: nacos
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: rabbitmq:3
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: amqp
+              containerPort: 5672
+          readinessProbe:
+            tcpSocket:
+              port: 5672
+            initialDelaySeconds: 15
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  ports:
+    - name: amqp
+      port: 5672
+      targetPort: 5672
+  selector:
+    app: rabbitmq

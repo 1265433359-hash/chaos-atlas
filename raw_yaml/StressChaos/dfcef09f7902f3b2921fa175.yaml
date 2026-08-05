@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-percentage-stress
+  namespace: chaos-testing
+spec:
+  mode: fixed-percent
+  value: '50'
+  selector:
+    namespaces:
+    - llm-marketplace
+    labelSelectors:
+      tier: backend
+  stressors:
+    memory:
+      workers: 2
+      size: 512MB
+      time: 180s
+  duration: 3m

@@ -1,0 +1,28 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-patch-experiment
+  namespace: chaos-mesh
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - microservices
+    labelSelectors:
+      app: product-service
+  target: Request
+  port: 8081
+  path: /products/*
+  patch:
+    headers:
+    - - add
+      - X-Chaos-Test
+      - 'true'
+    - - replace
+      - User-Agent
+      - Chaos-Agent/1.0
+    queries:
+    - - add
+      - chaos_test
+      - 'true'
+  duration: 5m

@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: kill-database-pod
+  namespace: rca-sandbox
+  labels:
+    experiment: pod-kill
+    project: rca-research
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - rca-sandbox
+    labelSelectors:
+      app: database
+  gracePeriod: 0

@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: satellite-delay
+  namespace: polaris
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - polaris
+    labelSelectors:
+      app: satellite-apolo
+  delay:
+    latency: 100ms
+    correlation: '100'
+    jitter: 0ms
+  duration: 30s
+  scheduler:
+    cron: '@every 10m'

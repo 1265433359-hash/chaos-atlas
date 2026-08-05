@@ -1,0 +1,13 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  name: pod-failure
+spec:
+  selector:
+    labelSelectors:
+      app: kafka
+  mode: fixed
+  value: '2'
+  action: pod-failure
+  duration: 3600s
+  gracePeriod: 0

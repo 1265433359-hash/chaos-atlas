@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-delay-test
+  namespace: trading-bot
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - trading-bot
+    labelSelectors:
+      app: trading-bot-api
+  delay:
+    latency: 100ms
+    correlation: '25'
+    jitter: 10ms
+  duration: 5m
+  scheduler:
+    cron: '@every 12h'

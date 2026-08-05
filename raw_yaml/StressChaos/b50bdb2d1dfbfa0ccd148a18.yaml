@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: template-cpu-stress
+  namespace: chaos-experiments
+  labels:
+    template: high-load-recovery
+    severity: high
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      tier: api
+  mode: one
+  action: cpu
+  stressors:
+    cpu:
+      workers: 4
+      load: 90
+  duration: 5m

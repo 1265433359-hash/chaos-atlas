@@ -1,0 +1,42 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: chaos-demo-schedule
+  namespace: prism
+spec:
+  schedule: 0 * * * *
+  historyLimit: 5
+  concurrencyPolicy: Forbid
+  type: Workflow
+  workflow:
+    entry: entry
+    templates:
+    - name: entry
+      templateType: Serial
+      children:
+      - pod-failure
+      - network-delay
+    - name: pod-failure
+      templateType: PodChaos
+      duration: 30s
+      podChaos:
+        action: pod-failure
+        mode: one
+        selector:
+          namespaces:
+          - prism
+          labelSelectors:
+            app: service-a
+    - name: network-delay
+      templateType: NetworkChaos
+      duration: 30s
+      networkChaos:
+        action: delay
+        mode: all
+        selector:
+          namespaces:
+          - prism
+          labelSelectors:
+            app: service-b
+        delay:
+          latency: 1000ms

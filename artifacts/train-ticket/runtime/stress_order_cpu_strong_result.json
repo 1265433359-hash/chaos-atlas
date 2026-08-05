@@ -1,0 +1,37 @@
+{
+  "experiment_id": "TT-STRESS-ORDER-CPU-002",
+  "source_yaml": "raw_yaml/StressChaos/0885ce87187120d724117939.yaml",
+  "mutation_yaml": "artifacts/train-ticket/runtime/injections/order-stress-cpu-strong.yaml",
+  "applicability_gate": "artifacts/train-ticket/runtime/applicability_gate_strong.json",
+  "namespace": "train-ticket-lab",
+  "target": "ts-order-service/ts-order-service-5f8ffb4b7b-qdflp",
+  "mutation": {"workers": 4, "load_percent": 100, "duration": "60s"},
+  "chaos_status": {
+    "selected": true,
+    "all_injected": true,
+    "injected_count": 1,
+    "recovered_count": 1,
+    "all_recovered": true,
+    "injection_started": "2026-08-03T13:51:18Z",
+    "recovery_completed": "2026-08-03T13:52:18Z"
+  },
+  "cgroup_observation": {
+    "report": "artifacts/train-ticket/runtime/cgroup_cpu_strong.json",
+    "samples": 50,
+    "cpu_max": "50000 100000",
+    "usage_delta_usec": 30178236,
+    "nr_throttled_delta": 593,
+    "throttled_usec_delta": 183615850,
+    "sampling_errors": 0
+  },
+  "request_observation": {
+    "path": "/api/v1/orderservice/order/00000000-0000-0000-0000-000000000000",
+    "samples": 25,
+    "all_status_200": true,
+    "latency_ms": {"min": 17, "p50": 89, "average": 93.16, "max": 228},
+    "body_contract_preserved": true
+  },
+  "pod_observation": {"ready": true, "restarts": 0},
+  "result_classification": "functional_defense_observed_under_original_intensity_short_duration",
+  "interpretation": "The stress injector reached the selected container and produced measurable CPU throttling. The service kept the read-only response contract and recovered without restart. This supports bounded resilience, not an unconditional claim for five minutes or other endpoints."
+}

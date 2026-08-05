@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: sentiment-io-errno
+  namespace: default
+spec:
+  action: fault
+  mode: one
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app.kubernetes.io/name: mlops-sentiment
+  volumePath: /app/model_cache
+  path: '**/*'
+  errno: 5
+  percent: 10
+  duration: 2m
+  scheduler:
+    cron: '@every 6h'

@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  namespace: camunda
+  name: network-delay-brokers-to-elasticsearch
+spec:
+  selector:
+    labelSelectors:
+      app.kubernetes.io/component: zeebe-broker
+  action: delay
+  mode: all
+  direction: both
+  delay:
+    latency: 5000ms
+    correlation: '100'
+    jitter: '0'
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - camunda
+      labelSelectors:
+        app.kubernetes.io/component: master
+  duration: 180s

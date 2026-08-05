@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: pod-purge
+  namespace: ministry-emergency-events
+spec:
+  schedule: '*/30 * * * *'
+  concurrencyPolicy: Forbid
+  historyLimit: 5
+  type: PodChaos
+  podChaos:
+    action: pod-kill
+    mode: one
+    selector:
+      labelSelectors:
+        republic.io/chaos-eligible: 'true'

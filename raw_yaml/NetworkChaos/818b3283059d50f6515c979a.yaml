@@ -1,0 +1,26 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-latency-inject
+  namespace: chaos-testing
+  labels:
+    experiment: network-latency
+    severity: medium
+spec:
+  selector:
+    namespaces:
+    - production
+  mode: all
+  action: delay
+  delay:
+    latency: 50ms
+    jitter: 10ms
+    correlation: '30'
+  direction: both
+  target:
+    selector:
+      namespaces:
+      - production
+      labelSelectors:
+        app: api-gateway
+  duration: 10m

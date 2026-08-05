@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: asymmetric-delay-incoming
+  namespace: security-monitor
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - security-monitor
+    labelSelectors:
+      app: security-monitor
+  delay:
+    latency: 200ms
+  duration: 5m
+  direction: from

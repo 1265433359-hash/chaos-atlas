@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: dataservice-failure
+  namespace: chaos-demo
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+    - chaos-demo
+    labelSelectors:
+      app: dataservice
+  loss:
+    loss: '100'
+    correlation: '100'
+  direction: to
+  duration: 30s

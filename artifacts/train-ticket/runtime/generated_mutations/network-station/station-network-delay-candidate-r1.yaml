@@ -1,0 +1,25 @@
+kind: NetworkChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: train-ticket-lab
+  name: station-network-delay-candidate-r1
+  annotations:
+    chaos.origin.source-yaml: raw_yaml/NetworkChaos/12dc6229a88844cfed2d9849.yaml
+    chaos.candidate.decision: bounded_candidate_with_runner
+    chaos.candidate.profile: latency-100ms-duration-20s
+  labels:
+    chaos.generated: candidate
+    chaos.test-node: network_delay
+    chaos.profile: bounded
+spec:
+  selector:
+    namespaces:
+    - train-ticket-lab
+    labelSelectors:
+      app: ts-station-service
+  mode: one
+  action: delay
+  duration: 20s
+  direction: to
+  delay:
+    latency: 100ms

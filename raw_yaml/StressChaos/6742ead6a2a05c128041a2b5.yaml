@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: epic8-cpu-stress-hpa-validation
+  namespace: epic8-prod
+  labels:
+    epic8.platform/experiment: cpu-stress
+    epic8.platform/component: chaos-engineering
+    epic8.platform/validation: hpa-scaling
+spec:
+  mode: fixed
+  value: '1'
+  duration: 600s
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  selector:
+    namespaces:
+    - epic8-prod
+    labelSelectors:
+      epic8.platform/service: query-analyzer

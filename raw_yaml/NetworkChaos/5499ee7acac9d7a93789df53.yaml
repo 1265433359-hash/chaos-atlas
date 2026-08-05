@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: provider-latency
+  namespace: baalvion-edge
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - baalvion-edge
+    labelSelectors:
+      app: gateway
+  delay:
+    latency: 800ms
+    jitter: 200ms
+    correlation: '50'
+  direction: to
+  externalTargets:
+  - 1.2.3.0/24
+  duration: 5m

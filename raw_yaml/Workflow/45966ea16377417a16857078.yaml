@@ -1,0 +1,47 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: data-plane-chaos-workflow
+  namespace: govsecure
+spec:
+  entry: entry
+  templates:
+  - name: entry
+    templateType: Serial
+    deadline: 10m
+    children:
+    - network-latency
+    - cpu-stress
+    - recovery-check
+  - name: network-latency
+    templateType: NetworkChaos
+    deadline: 2m
+    networkChaos:
+      action: delay
+      mode: one
+      selector:
+        namespaces:
+        - govsecure
+        labelSelectors:
+          app: data-plane
+      delay:
+        latency: 200ms
+      duration: 1m
+  - name: cpu-stress
+    templateType: StressChaos
+    deadline: 2m
+    stressChaos:
+      mode: one
+      selector:
+        namespaces:
+        - govsecure
+        labelSelectors:
+          app: data-plane
+      stressors:
+        cpu:
+          workers: 2
+          load: 80
+      duration: 1m
+  - name: recovery-check
+    templateType: Suspend
+    deadline: 1m

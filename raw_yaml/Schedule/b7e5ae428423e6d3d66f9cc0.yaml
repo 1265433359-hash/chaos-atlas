@@ -1,0 +1,27 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: mathtrail-network-delay
+  namespace: mathtrail
+  labels:
+    app.kubernetes.io/part-of: mathtrail
+    mathtrail.io/chaos-tier: '2'
+spec:
+  schedule: 30 10 * * 1-5
+  historyLimit: 3
+  concurrencyPolicy: Forbid
+  type: NetworkChaos
+  networkChaos:
+    action: delay
+    mode: one
+    selector:
+      namespaces:
+      - mathtrail
+      labelSelectors:
+        app.kubernetes.io/part-of: mathtrail
+    delay:
+      latency: 200ms
+      jitter: 50ms
+      correlation: '50'
+    duration: 5m
+    direction: both

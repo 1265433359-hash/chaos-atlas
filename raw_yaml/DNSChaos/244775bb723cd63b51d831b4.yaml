@@ -1,0 +1,30 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  namespace: his-hope
+  name: dns-error
+  labels:
+    app.kubernetes.io/part-of: his-hope
+    chaos-mesh/experiment-type: dns-fault
+    chaos-mesh/schedule: routine
+  annotations:
+    description: Returns DNS errors for *.hishop.com and postgres.* patterns targeting
+      identity-service every 12h to test DNS caching and fallback
+    maintainer: his-hope-sre@hishop.com
+    game-day-scope: monthly-full-chaos
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - his-hope
+    labelSelectors:
+      app: identity-service
+  patterns:
+  - '*.hishop.com'
+  - postgres.*
+  - redis.*
+  - rabbitmq.*
+  duration: 2m
+  scheduler:
+    cron: '@every 12h'

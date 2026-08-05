@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: kafka-io-disk-full
+  namespace: kafka-cluster
+spec:
+  action: fault
+  mode: one
+  selector:
+    namespaces:
+    - kafka-cluster
+    labelSelectors:
+      strimzi.io/cluster: kafka-cluster
+      strimzi.io/kind: Kafka
+  volumePath: /var/lib/kafka/data/kafka-log0
+  path: '*'
+  errno: 28
+  percent: 100
+  methods:
+  - write
+  - pwrite
+  duration: 1m

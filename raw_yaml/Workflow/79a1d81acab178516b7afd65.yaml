@@ -1,0 +1,64 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: sentiment-comprehensive-chaos
+  namespace: default
+spec:
+  entry: entry
+  templates:
+  - name: entry
+    templateType: Serial
+    deadline: 30m
+    children:
+    - pod-kill-test
+    - network-delay-test
+    - stress-test
+    - recovery-check
+  - name: pod-kill-test
+    templateType: PodChaos
+    deadline: 5m
+    podChaos:
+      action: pod-kill
+      mode: one
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/name: mlops-sentiment
+      duration: 30s
+  - name: network-delay-test
+    templateType: NetworkChaos
+    deadline: 5m
+    networkChaos:
+      action: delay
+      mode: one
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/name: mlops-sentiment
+      delay:
+        latency: 200ms
+        correlation: '25'
+        jitter: 20ms
+      duration: 3m
+  - name: stress-test
+    templateType: StressChaos
+    deadline: 5m
+    stressChaos:
+      mode: one
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/name: mlops-sentiment
+      stressors:
+        cpu:
+          workers: 2
+          load: 80
+      duration: 3m
+  - name: recovery-check
+    templateType: Suspend
+    deadline: 5m
+    suspend:
+      duration: 2m

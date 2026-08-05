@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-delay
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - podinfo
+    labelSelectors:
+      app.kubernetes.io/name: podinfo
+  target: Request
+  port: 80
+  delay: 2s
+  method: GET
+  path: /
+  duration: 5m

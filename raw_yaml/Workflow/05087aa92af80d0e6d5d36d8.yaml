@@ -1,0 +1,70 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: message-queue-resilience-test
+  namespace: chaos-testing
+spec:
+  entry: mq-chaos-workflow
+  templates:
+  - name: mq-chaos-workflow
+    templateType: Serial
+    deadline: 45m
+    children:
+    - mq-producer-delay
+    - mq-consumer-error
+    - mq-broker-failure
+    - mq-recovery
+  - name: mq-producer-delay
+    templateType: TCPChaos
+    deadline: 10m
+    tcpChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: kafka-broker
+      mode: all
+      action: delay
+      delay: 300ms
+      percent: '20'
+      target:
+        selector:
+          namespaces:
+          - production
+          labelSelectors:
+            app: payment-processor
+        port: 9092
+  - name: mq-consumer-error
+    templateType: TCPChaos
+    deadline: 10m
+    tcpChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: kafka-broker
+      mode: all
+      action: abort
+      percent: '5'
+      target:
+        selector:
+          namespaces:
+          - production
+          labelSelectors:
+            app: transaction-auditor
+        port: 9092
+  - name: mq-broker-failure
+    templateType: PodChaos
+    deadline: 10m
+    podChaos:
+      selector:
+        namespaces:
+        - production
+        labelSelectors:
+          app: kafka-broker
+      mode: one
+      action: pod-failure
+  - name: mq-recovery
+    templateType: Duration
+    deadline: 10m
+    duration: 10m

@@ -1,0 +1,39 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  namespace: team9-ns
+  name: team9-pub-workflow-stress-pod-kill
+spec:
+  entry: entry
+  templates:
+  - name: entry
+    templateType: Serial
+    deadline: 3m
+    children:
+    - pub-stress-cpu
+    - pub-pod-kill
+  - name: pub-stress-cpu
+    templateType: StressChaos
+    deadline: 1m
+    stressChaos:
+      selector:
+        namespaces:
+        - team9-ns
+        labelSelectors:
+          app: team9-publisher
+      mode: all
+      stressors:
+        cpu:
+          workers: 6
+          load: 15
+  - name: pub-pod-kill
+    templateType: PodChaos
+    podChaos:
+      selector:
+        namespaces:
+        - team9-ns
+        labelSelectors:
+          app: team9-publisher
+      mode: one
+      action: pod-kill
+      gracePeriod: 10

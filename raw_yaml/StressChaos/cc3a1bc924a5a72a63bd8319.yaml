@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-leak-block-1
+  namespace: chaos-production
+  labels:
+    chaos-test: oom-memory-ramp
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaos-production
+    labelSelectors:
+      app: ollama
+  stressors:
+    memory:
+      workers: 1
+      size: 2048MB

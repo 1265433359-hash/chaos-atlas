@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: schema-registry-error
+  namespace: schema-registry
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - schema-registry
+    labelSelectors:
+      app: schema-registry
+  target: Response
+  port: 8081
+  path: /subjects/*
+  method: GET
+  replace:
+    code: 500
+    body: eyJlcnJvcl9jb2RlIjo1MDAwMSwibWVzc2FnZSI6IkludGVybmFsIFNlcnZlciBFcnJvciAoY2hhb3MpIn0=
+  duration: 1m

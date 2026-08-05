@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: alter-response-todoapp
+  namespace: chaos-experiments
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - todoapp
+    labelSelectors:
+      app: todoapp
+  target: Response
+  port: 8000
+  path: /api/v1/healthz
+  patch:
+    body:
+      type: JSON
+      value: '{"name": "string", "status": "hacked by Chaos Mesh"}'
+  duration: 2m

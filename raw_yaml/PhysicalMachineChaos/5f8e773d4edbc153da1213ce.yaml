@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PhysicalMachineChaos
+metadata:
+  name: stress-mem-active-1695274336
+  namespace: default
+spec:
+  action: stress-mem
+  address:
+  - https://49.12.207.65:31768
+  duration: 10m
+  mode: all
+  selector: {}
+  stress-mem:
+    size: 1600MB

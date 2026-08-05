@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-failure-test
+  namespace: estatewise
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - estatewise
+    labelSelectors:
+      app: estatewise-backend
+  duration: 30s
+  scheduler:
+    cron: '@every 2h'

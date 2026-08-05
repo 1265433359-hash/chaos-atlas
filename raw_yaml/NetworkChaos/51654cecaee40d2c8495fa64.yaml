@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: inventory-network-latency
+  namespace: apps
+  labels:
+    experiment: network-latency
+    service: inventory-service
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - apps
+    labelSelectors:
+      app: inventory-service
+  delay:
+    latency: 500ms
+    jitter: 50ms
+    correlation: '100'
+  direction: to
+  duration: 120s

@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: redis-master-failure
+  namespace: stage10
+spec:
+  action: pod-kill
+  mode: fixed
+  value: '1'
+  selector:
+    namespaces:
+    - stage10
+    labelSelectors:
+      app: redis-cluster
+      role: master
+  duration: 1m
+  scheduler:
+    cron: '@every 1h'

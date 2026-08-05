@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-delay
+  namespace: chaos-testing
+  labels:
+    app: chaos-test
+    category: io
+    severity: medium
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - llm-marketplace
+    labelSelectors:
+      app: postgres
+  volumePath: /var/lib/postgresql/data
+  path: /var/lib/postgresql/data/**/*
+  delay: 200ms
+  percent: 80
+  duration: 5m

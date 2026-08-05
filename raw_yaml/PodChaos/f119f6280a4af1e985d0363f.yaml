@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-failure-25-percent
+  namespace: addressbook-preprod
+spec:
+  action: pod-failure
+  mode: fixed-percent
+  value: '25'
+  duration: 90s
+  selector:
+    namespaces:
+    - addressbook-preprod
+    labelSelectors:
+      app: addressbook-api
+      environment: preprod

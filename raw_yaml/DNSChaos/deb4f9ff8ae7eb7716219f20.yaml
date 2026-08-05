@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: otel-demo-dns-outage-checkout
+  namespace: chaos-mesh
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - otel-demo-research
+    labelSelectors:
+      app.kubernetes.io/name: checkout
+  patterns:
+  - '*'
+  duration: 900s

@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: KernelChaos
+metadata:
+  name: kernel-io-error-experiment
+  namespace: estatewise
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - estatewise
+    labelSelectors:
+      app: mongodb
+  failKernRequest:
+    callchain:
+    - funcname: bio_submit_bio
+    failtype: 0
+  duration: 10s

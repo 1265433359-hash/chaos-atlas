@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: burn-cpu-2
+  namespace: chaos-sandbox
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaos-sandbox
+    labelSelectors:
+      app: nginx
+  stressors:
+    cpu:
+      workers: 4
+      load: 4
+      options:
+      - jonathan
+      - baraldi
+  duration: 60s
+  scheduler:
+    cron: '@every 60s'

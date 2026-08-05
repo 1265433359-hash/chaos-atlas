@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-delay-test
+  namespace: chaos-testing
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - applications
+    labelSelectors:
+      app: frontend
+  delay:
+    latency: 200ms
+    jitter: 50ms
+  duration: 60s

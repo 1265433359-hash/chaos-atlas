@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: api-temporal-partition
+  namespace: sentinelrag-chaos
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - sentinelrag
+    labelSelectors:
+      app.kubernetes.io/component: api
+      app.kubernetes.io/part-of: sentinelrag
+  direction: to
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - temporal
+      labelSelectors:
+        app.kubernetes.io/component: frontend
+  duration: 3m

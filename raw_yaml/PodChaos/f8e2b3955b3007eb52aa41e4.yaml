@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: presto-pod-failure
+  namespace: query-engines
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - query-engines
+    labelSelectors:
+      app.kubernetes.io/name: presto
+  duration: 30s
+  scheduler:
+    cron: '@every 5m'

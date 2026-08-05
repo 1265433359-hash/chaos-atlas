@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: stress-cpu-flask
+  namespace: default
+spec:
+  mode: one
+  selector:
+    labelSelectors:
+      app: flask
+  stressors:
+    cpu:
+      workers: 4
+      load: 100
+  duration: 10m

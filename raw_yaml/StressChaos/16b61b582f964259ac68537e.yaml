@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: io-throught-6
+  namespace: io-throught-6
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - io-throught-6
+    labelSelectors:
+      app: myapp
+  stressors:
+    cpu:
+      workers: 1
+      load: 40
+  duration: 8m

@@ -1,0 +1,25 @@
+kind: NetworkChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: train-ticket-lab
+  name: basic-network-delay-candidate-r1
+  annotations:
+    chaos.origin.raw-sha256: 20e4df61f733a43dfe6fdce7bfe2f7783c29fa4cb15aafd65e96bae292765a83
+    chaos.origin.source-yaml: raw_yaml/NetworkChaos/3bcece5e00de3ef54d6d6b0f.yaml
+    chaos.candidate.decision: ready_candidate_with_runner
+    chaos.candidate.rank: '1'
+  labels:
+    chaos.generated: candidate
+    chaos.test-node: network_delay
+spec:
+  selector:
+    namespaces:
+    - train-ticket-lab
+    labelSelectors:
+      app: ts-basic-service
+  mode: one
+  action: delay
+  duration: 20s
+  direction: to
+  delay:
+    latency: 100ms

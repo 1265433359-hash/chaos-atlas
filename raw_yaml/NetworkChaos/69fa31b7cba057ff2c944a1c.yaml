@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: backend-nsq-latency
+  namespace: judgex
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - judgex
+    labelSelectors:
+      app: backend
+  delay:
+    latency: 500ms
+    jitter: 200ms
+  duration: 5m
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - judgex
+      labelSelectors:
+        app: nsqd
+  direction: both

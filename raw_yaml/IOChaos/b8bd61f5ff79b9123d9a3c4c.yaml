@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-throught-1
+  namespace: io-throught-1
+spec:
+  action: latency
+  mode: all
+  selector:
+    namespaces:
+    - io-throught-1
+    labelSelectors:
+      app: myapp
+  volumePath: /app/data
+  path: /app/data/**/*
+  methods:
+  - read
+  - write
+  delay: 50ms
+  percent: 20
+  duration: 5m

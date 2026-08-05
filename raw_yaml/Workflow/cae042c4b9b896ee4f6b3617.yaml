@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: full-resilience-drill
+  namespace: chaos-mesh
+spec:
+  entry: resilience-drill
+  templates:
+  - name: resilience-drill
+    templateType: Serial
+    children:
+    - latency-phase
+    - pod-kill-phase
+    - cpu-stress-phase
+  - name: latency-phase
+    templateType: Suspend
+    deadline: 2m
+  - name: pod-kill-phase
+    templateType: Suspend
+    deadline: 1m
+  - name: cpu-stress-phase
+    templateType: Suspend
+    deadline: 3m

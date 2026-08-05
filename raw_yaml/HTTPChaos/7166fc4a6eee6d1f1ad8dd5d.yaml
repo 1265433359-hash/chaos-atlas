@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-response-override-experiment
+  namespace: chaos-mesh
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - microservices
+    labelSelectors:
+      app: user-service
+  target: Response
+  port: 8000
+  method: GET
+  path: /users/*
+  replace:
+    code: 500
+    body: '{"error": "Internal Server Error - Chaos Experiment"}'
+    headers:
+      Content-Type:
+      - application/json
+      X-Chaos-Experiment:
+      - active
+  duration: 2m

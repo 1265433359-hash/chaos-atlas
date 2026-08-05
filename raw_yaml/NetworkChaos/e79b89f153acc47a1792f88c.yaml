@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: db-partition
+  namespace: chaos-testing
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: postgres
+  direction: both
+  target:
+    selector:
+      namespaces:
+      - production
+      labelSelectors:
+        app: ergo-web
+  duration: 30s

@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: KernelChaos
+metadata:
+  namespace: cmv
+  name: bio
+spec:
+  selector:
+    namespaces:
+    - cmv
+    labelSelectors:
+      app: demo
+  mode: all
+  containerNames:
+  - container2
+  failKernRequest:
+    failtype: 2

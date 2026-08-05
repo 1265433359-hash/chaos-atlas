@@ -1,0 +1,236 @@
+{
+    "id":  "KB-TT-NETWORK-STATION-DELAY-001",
+    "version":  4,
+    "status":  "validated_runtime_selector_pipeline_timeout_boundary_confirmed",
+    "evidence_state":  "runtime_observed",
+    "project":  "FudanSELab/train-ticket",
+    "project_commit":  "313886e99befb94be6cd45f085c98e0019f59829",
+    "test_node":  {
+                      "family":  "NetworkChaos",
+                      "operation":  "delay",
+                      "latency":  "100ms",
+                      "direction":  "to",
+                      "mode":  "one",
+                      "duration":  "20s",
+                      "selector":  {
+                                       "namespace":  "train-ticket-lab",
+                                       "label":  {
+                                                     "app":  "ts-station-service"
+                                                 }
+                                   },
+                      "source_yaml":  "raw_yaml/NetworkChaos/12dc6229a88844cfed2d9849.yaml",
+                      "mutation_yaml":  "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r1.yaml"
+                  },
+    "test_node_centered_graph":  {
+                                     "nodes":  [
+                                                   {
+                                                       "id":  "test.network.delay.station",
+                                                       "kind":  "TestNode",
+                                                       "evidence":  "selector candidate passed gate and injected"
+                                                   },
+                                                   {
+                                                       "id":  "deploy.ts-station-service",
+                                                       "kind":  "TargetDeployment",
+                                                       "evidence":  "Ready Pod and port 12345 confirmed"
+                                                   },
+                                                   {
+                                                       "id":  "controller.StationController.queryForStationId",
+                                                       "kind":  "ControllerPath",
+                                                       "source":  "StationController.java:60"
+                                                   },
+                                                   {
+                                                       "id":  "service.StationServiceImpl.queryForId",
+                                                       "kind":  "BusinessExecution",
+                                                       "source":  "StationServiceImpl.java:90-101"
+                                                   },
+                                                   {
+                                                       "id":  "network.station.outbound",
+                                                       "kind":  "NetworkEdge",
+                                                       "evidence":  "NetworkChaos direction=to applied to Station Pod; Station logs confirm delayed handler completion and runtime configuration identifies train-ticket-mysql:3306; packet attribution was not collected"
+                                                   },
+                                                   {
+                                                       "id":  "response.station.success",
+                                                       "kind":  "BusinessOutcome",
+                                                       "evidence":  "HTTP 200, status=1, seeded UUID"
+                                                   },
+                                                   {
+                                                       "id":  "observe.station.latency",
+                                                       "kind":  "Observation",
+                                                       "evidence":  "request latency and response contract"
+                                                   },
+                                                   {
+                                                       "id":  "recover.network.cleanup",
+                                                       "kind":  "Recovery",
+                                                       "evidence":  "recoveredCount=1 and resource absent"
+                                                   }
+                                               ],
+                                     "edges":  [
+                                                   {
+                                                       "from":  "test.network.delay.station",
+                                                       "to":  "deploy.ts-station-service",
+                                                       "type":  "selects",
+                                                       "confidence":  "confirmed_runtime"
+                                                   },
+                                                   {
+                                                       "from":  "deploy.ts-station-service",
+                                                       "to":  "controller.StationController.queryForStationId",
+                                                       "type":  "routes_to",
+                                                       "confidence":  "confirmed_runtime_by_endpoint"
+                                                   },
+                                                   {
+                                                       "from":  "controller.StationController.queryForStationId",
+                                                       "to":  "service.StationServiceImpl.queryForId",
+                                                       "type":  "calls",
+                                                       "confidence":  "confirmed_static"
+                                                   },
+                                                   {
+                                                       "from":  "service.StationServiceImpl.queryForId",
+                                                       "to":  "network.station.outbound",
+                                                       "type":  "crosses",
+                                                       "confidence":  "runtime_server_completion_and_configured_peer_confirmed; packet_attribution_pending"
+                                                   },
+                                                   {
+                                                       "from":  "network.station.outbound",
+                                                       "to":  "response.station.success",
+                                                       "type":  "delays_before",
+                                                       "confidence":  "confirmed_runtime_effect"
+                                                   },
+                                                   {
+                                                       "from":  "response.station.success",
+                                                       "to":  "observe.station.latency",
+                                                       "type":  "observed_by",
+                                                       "confidence":  "confirmed_runtime"
+                                                   },
+                                                   {
+                                                       "from":  "test.network.delay.station",
+                                                       "to":  "recover.network.cleanup",
+                                                       "type":  "restores",
+                                                       "confidence":  "confirmed_runtime"
+                                                   }
+                                               ]
+                                 },
+    "four_layer_validation":  {
+                                  "yaml_syntax":  "confirmed_static",
+                                  "target_exists":  "confirmed_static_and_runtime",
+                                  "business_path_reachable":  "confirmed_runtime_direct_station_endpoint",
+                                  "runtime_injection":  "confirmed_runtime",
+                                  "network_delay_effect":  "confirmed_runtime_by_latency_increase",
+                                  "business_response":  "confirmed_runtime_server_not_found_branch_after_client_timeout",
+                                  "defense_observed":  "client_timeout_with_server_completion_after_delay",
+                                  "recovery_observed":  "confirmed_runtime"
+                              },
+    "test_value_hypothesis":  {
+                                  "current":  "high_for_network_edge_latency_on_a_real_downstream_service",
+                                  "reason":  "The direct Station success oracle remained reachable while a bounded outbound delay produced a large, repeatable latency increase.",
+                                  "boundary":  "The delay ladder was monotonic: 100ms nominal -\u003e 216.022ms median, 500ms -\u003e 1021.227ms, 2s -\u003e 4020.903ms. A 3s controlled not-found probe crossed the 5s client budget at 5047.049ms; Station logged the server branch at 6063.895ms, after client timeout. This is a runtime boundary, not an application SLO.",
+                                  "safe_next_injection":  "Do not escalate network delay further. Require an operator-defined Station latency SLO for production claims; require Trace or network evidence only if packet-level attribution to the configured MySQL peer is required."
+                              },
+    "result_classification":  {
+                                  "classification":  "client_timeout_server_completion_after_delay",
+                                  "defense_experience":  "A client timeout followed by a server-side business log proves the request continued after the client boundary. It is evidence of a missing or ineffective client-side timeout/fallback boundary for this profile, not proof about every caller or production SLO.",
+                                  "root_cause_hypothesis":  "Increasing nominal outbound delay produced monotonic end-to-end latency growth; a 3s probe crossed the 5s client budget and Station completed its repository-backed Not Found branch about 1.017s later. Runtime configuration identifies train-ticket-mysql:3306; packet-level attribution was not collected.",
+                                  "counterexample_to_avoid":  "Do not call a correct server-side branch after client timeout a defense, and do not treat runtime datasource configuration as packet-level Trace evidence."
+                              },
+    "evidence":  [
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/network_station_gate.json",
+                         "purpose":  "Runtime applicability gate"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_result.json",
+                         "purpose":  "Unified direct Station network-delay result"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_runner_result.json",
+                         "purpose":  "NetworkChaos lifecycle and ten formal HTTP observations"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_classification.json",
+                         "purpose":  "Automated response-preserved latency-degradation classification"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/baseline_station_success.json",
+                         "purpose":  "Read-only direct Station baseline"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_stress_success_result.json",
+                         "purpose":  "Same-node CPU comparison"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/baseline_station_not_found.json",
+                         "purpose":  "Read-only direct Station not-found baseline"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_not_found_delay_runner_result.json",
+                         "purpose":  "Network delay lifecycle and ten formal not-found observations"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_not_found_delay_classification.json",
+                         "purpose":  "Automated not-found response-preserved classification"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_oracle_comparison.json",
+                         "purpose":  "Side-by-side success and not-found network oracle comparison"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/station_network_edge_static_mapping.json",
+                         "purpose":  "Redacted source mapping plus runtime datasource configuration for the Station repository-to-MySQL edge"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/network_station_r2_gate.json",
+                         "purpose":  "Gate for 500ms delay profile"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_r2_runner_result.json",
+                         "purpose":  "500ms delay success replay"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_r2_classification.json",
+                         "purpose":  "500ms delay classification"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/network_station_r3_gate.json",
+                         "purpose":  "Gate for 2s boundary probe"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_r3_runner_result.json",
+                         "purpose":  "2s delay success boundary probe"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_r3_classification.json",
+                         "purpose":  "2s boundary classification"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_r4_runner_result.json",
+                         "purpose":  "3s controlled not-found timeout-boundary runner result"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_r4_classification.json",
+                         "purpose":  "Automated client-timeout classification after confirmed injection"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_r4_result.json",
+                         "purpose":  "Correlated Station server log evidence and client timeout interpretation"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/generated_station_network_delay_boundary_comparison.json",
+                         "purpose":  "100ms/500ms/2s delay ladder and stopping decision"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/station_network_delay_line_report.json",
+                         "purpose":  "Complete Station NetworkChaos line report and stopping decision"
+                     },
+                     {
+                         "artifact":  "artifacts/train-ticket/runtime/station_network_delay_line_report.md",
+                         "purpose":  "Human-readable line summary and LLM reuse rule"
+                     }
+                 ],
+    "next_evidence":  [
+                          "Obtain an operator-defined Station latency SLO before making a production-facing latency claim.",
+                          "Use Trace or network-level evidence only if packet-level attribution to the runtime-configured train-ticket-mysql:3306 peer is required.",
+                          "Do not escalate NetworkChaos delay beyond the confirmed 3s timeout boundary."
+                      ],
+    "secrets":  {
+                    "redaction":  "No credentials or secret values are stored in this card."
+                }
+}

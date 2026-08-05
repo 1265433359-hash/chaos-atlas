@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: mimir-pod-failure
+  namespace: mimir-production
+spec:
+  action: pod-failure
+  mode: one
+  duration: 60s
+  selector:
+    namespaces:
+    - mimir-production
+    labelSelectors:
+      app: mimir-web
+  scheduler:
+    cron: '@every 24h'

@@ -1,0 +1,96 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: resilience-validation
+  namespace: sportstix
+  labels:
+    app.kubernetes.io/part-of: sportstix
+  annotations:
+    chaos-mesh.org/description: 'Multi-step resilience test: pod-kill → health verify
+      → latency → health verify'
+    chaos-mesh.org/environment: staging-only
+spec:
+  entry: resilience-test
+  templates:
+  - name: resilience-test
+    templateType: Serial
+    deadline: 600s
+    children:
+    - booking-pod-kill-step
+    - recovery-wait-90s
+    - verify-booking-health
+    - gateway-latency-step
+    - post-latency-wait-30s
+    - verify-gateway-health
+  - name: booking-pod-kill-step
+    templateType: PodChaos
+    deadline: 30s
+    podChaos:
+      action: pod-kill
+      mode: one
+      gracePeriod: 0
+      selector:
+        namespaces:
+        - sportstix
+        labelSelectors:
+          app.kubernetes.io/name: booking
+  - name: recovery-wait-90s
+    templateType: Suspend
+    deadline: 90s
+  - name: verify-booking-health
+    templateType: StatusCheck
+    deadline: 60s
+    statusCheck:
+      mode: Continuous
+      type: HTTP
+      duration: 30s
+      intervalSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+      http:
+        url: http://booking.sportstix.svc.cluster.local:8084/actuator/health/readiness
+        method: GET
+        criteria:
+          statusCode: '200'
+  - name: gateway-latency-step
+    templateType: NetworkChaos
+    deadline: 120s
+    networkChaos:
+      action: delay
+      mode: all
+      selector:
+        namespaces:
+        - sportstix
+        labelSelectors:
+          app.kubernetes.io/name: gateway
+      delay:
+        latency: 150ms
+        jitter: 30ms
+        correlation: '25'
+      direction: to
+      target:
+        selector:
+          namespaces:
+          - sportstix
+          labelSelectors:
+            sportstix.io/tier: backend
+        mode: all
+      duration: 120s
+  - name: post-latency-wait-30s
+    templateType: Suspend
+    deadline: 30s
+  - name: verify-gateway-health
+    templateType: StatusCheck
+    deadline: 60s
+    statusCheck:
+      mode: Continuous
+      type: HTTP
+      duration: 30s
+      intervalSeconds: 5
+      failureThreshold: 3
+      successThreshold: 1
+      http:
+        url: http://gateway.sportstix.svc.cluster.local:8080/actuator/health/readiness
+        method: GET
+        criteria:
+          statusCode: '200'

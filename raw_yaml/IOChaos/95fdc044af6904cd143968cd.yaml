@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-chaos-experiment
+  namespace: chaos-testing
+  labels:
+    app: hospital-management-system
+    component: chaos
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - ultimate-hms
+    labelSelectors:
+      app: hospital-management-system
+      component: database
+  delay: 100ms
+  duration: 30s
+  scheduler:
+    cron: '@every 8h'

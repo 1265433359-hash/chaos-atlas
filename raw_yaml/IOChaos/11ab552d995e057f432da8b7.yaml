@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-error-data-service
+  namespace: chaos-testing
+  labels:
+    experiment: io-error
+    severity: critical
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: postgres-primary
+  mode: one
+  action: errno
+  errno: '5'
+  percent: '5'
+  path: /var/lib/postgresql/data
+  volumePath: /var/lib/postgresql/data
+  duration: 1m

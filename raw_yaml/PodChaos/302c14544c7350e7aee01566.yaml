@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: relibank-database-connection
+  namespace: relibank
+  labels:
+    app: relibank
+    experiment-type: pod-chaos
+    target-flow: database-connectivity
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - relibank
+    labelSelectors:
+      app: accounts-service
+  duration: 90s
+  gracePeriod: 5

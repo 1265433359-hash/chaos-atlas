@@ -1,0 +1,37 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: pesitwizard-daily-chaos
+  namespace: staging
+  labels:
+    app: pesitwizard
+    chaos-type: schedule
+spec:
+  schedule: 0 3 * * *
+  type: Workflow
+  historyLimit: 5
+  concurrencyPolicy: Forbid
+  workflow:
+    entry: failover-sequence
+    templates:
+    - name: failover-sequence
+      templateType: Serial
+      children:
+      - kill-random-pod
+      - wait-recovery
+    - name: kill-random-pod
+      templateType: PodChaos
+      deadline: 5m
+      podChaos:
+        action: pod-kill
+        mode: one
+        selector:
+          namespaces:
+          - staging
+          labelSelectors:
+            app: pesitwizard-server
+    - name: wait-recovery
+      templateType: Suspend
+      deadline: 5m
+      suspend:
+        duration: 3m

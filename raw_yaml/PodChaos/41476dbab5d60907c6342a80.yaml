@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: dependency-pod-failure
+  namespace: default
+spec:
+  action: pod-failure
+  mode: fixed
+  value: '1'
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: downstream-dependency
+  duration: 60s

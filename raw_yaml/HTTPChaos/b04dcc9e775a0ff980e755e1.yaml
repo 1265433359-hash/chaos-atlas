@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: abort-request-mongodb
+  namespace: chaos-experiments
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - todoapp
+    labelSelectors:
+      app: db
+  target: Request
+  port: 27017
+  method: GET
+  path: /task
+  abort: true
+  duration: 2m

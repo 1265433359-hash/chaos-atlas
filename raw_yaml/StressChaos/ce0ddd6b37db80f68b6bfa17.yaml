@@ -1,0 +1,17 @@
+kind: StressChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: cpu-test
+  name: cpu-test2
+  annotations:
+    experiment.chaos-mesh.org/pause: 'false'
+spec:
+  selector:
+    namespaces:
+    - cpu-test
+  mode: all
+  stressors:
+    cpu:
+      workers: 1
+      load: 98
+  duration: 10m

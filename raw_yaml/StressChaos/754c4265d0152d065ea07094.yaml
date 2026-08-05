@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: stress-chaos-knowledge-base
+spec:
+  action: stress
+  mode: one
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: knowledge-base
+  scheduler: '@every 10m'
+  duration: 30s
+  stressors:
+    memory:
+      containerName: knowledge-base
+      size: 50%
+      workers: 1
+    cpu:
+      containerName: knowledge-base
+      workers: 1

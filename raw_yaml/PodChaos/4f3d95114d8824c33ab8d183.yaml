@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: aiflow-pod-failure
+  namespace: agents-staging
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - agents-staging
+    labelSelectors:
+      app: aiflow-social-agent
+  duration: 30s
+  scheduler:
+    cron: '@every 1h'

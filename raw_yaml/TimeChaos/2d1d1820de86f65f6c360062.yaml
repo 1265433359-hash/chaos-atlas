@@ -1,0 +1,10 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: time-skew
+spec:
+  mode: all
+  selector:
+    labelSelectors:
+      run: the-time-cpp
+  timeOffset: -100m

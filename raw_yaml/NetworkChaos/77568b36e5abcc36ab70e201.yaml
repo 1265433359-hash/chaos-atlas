@@ -1,0 +1,23 @@
+kind: NetworkChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: default
+  name: packet-loss
+spec:
+  selector:
+    namespaces:
+    - timeplus
+  mode: all
+  action: loss
+  loss:
+    loss: '10'
+  direction: to
+  target:
+    selector:
+      namespaces:
+      - timeplus
+      labelSelectors:
+        app.kubernetes.io/component: timeplusd
+        app.kubernetes.io/instance: timeplus
+        app.kubernetes.io/name: timeplus-enterprise
+    mode: all

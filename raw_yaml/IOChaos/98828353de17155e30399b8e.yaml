@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: disk-fill-test
+  namespace: chaos-engineering
+  labels:
+    experiment-type: disk-fill
+    target-service: auth-service
+    severity: critical
+    automation: manual
+spec:
+  action: fault
+  mode: one
+  selector:
+    namespaces:
+    - rust-security-dev
+    labelSelectors:
+      app: auth-service
+  volumePath: /tmp
+  path: /tmp/**/*
+  errno: 28
+  percent: 100
+  duration: 30s

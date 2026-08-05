@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-failure-experiment
+  namespace: default
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: user-management
+  duration: 30s
+  scheduler:
+    cron: '@every 5m'

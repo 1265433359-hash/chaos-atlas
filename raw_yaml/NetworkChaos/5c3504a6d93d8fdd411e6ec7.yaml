@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition-chaos
+spec:
+  action: partition
+  mode: one
+  selector:
+    labelSelectors:
+      security-test: enabled
+  direction: to
+  target:
+    selector:
+      labelSelectors:
+        security-test: enabled
+    mode: one
+  duration: 30s

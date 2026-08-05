@@ -1,0 +1,16 @@
+kind: NetworkChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: sock-shop
+  name: el-e8-network-corrupt-orders
+spec:
+  selector:
+    namespaces:
+    - sock-shop
+    labelSelectors:
+      name: orders
+  mode: all
+  action: corrupt
+  corrupt:
+    corrupt: '2'
+    correlation: '0'

@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: aiflow-http-delay
+  namespace: agents-staging
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - agents-staging
+    labelSelectors:
+      app: aiflow-social-agent
+  port: 8000
+  path: /generate_*
+  method: POST
+  delay: 3s
+  duration: 2m

@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: planner-memory-stress
+  namespace: stage10
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - stage10
+    labelSelectors:
+      app: planner
+  stressors:
+    memory:
+      workers: 1
+      size: 1GB
+  duration: 5m
+  scheduler:
+    cron: '@every 4h'

@@ -1,0 +1,12 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    labelSelectors:
+      app: test-quarantine
+  scheduler:
+    cron: '@every 1m'

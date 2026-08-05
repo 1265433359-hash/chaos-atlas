@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: database-connection-error
+  namespace: chaos-testing
+  labels:
+    experiment: database-chaos
+    severity: critical
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: postgres-primary
+  mode: one
+  action: abort
+  target: Service
+  port: 5432
+  percent: '5'
+  duration: 2m

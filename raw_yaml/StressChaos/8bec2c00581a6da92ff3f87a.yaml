@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: sentiment-memory-stress
+  namespace: default
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app.kubernetes.io/name: mlops-sentiment
+  stressors:
+    memory:
+      workers: 2
+      size: 512MB
+  duration: 3m
+  scheduler:
+    cron: '@every 2h'

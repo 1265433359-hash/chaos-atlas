@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: stress-mem-carts
+  namespace: sock-shop
+  labels:
+    experiment: stress-mem-carts
+    project: rca-research
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - sock-shop
+    labelSelectors:
+      name: carts
+  stressors:
+    memory:
+      workers: 1
+      size: 256MB
+  duration: 5m

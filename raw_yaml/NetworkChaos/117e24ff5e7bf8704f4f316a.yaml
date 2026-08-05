@@ -1,0 +1,27 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: clickhouse-network-latency
+  namespace: chaos-mesh
+  labels:
+    experiment-type: performance
+    target-service: clickhouse
+    severity: low
+spec:
+  action: netem
+  mode: fixed
+  value: '1'
+  duration: 10m
+  selector:
+    namespaces:
+    - data-science
+    labelSelectors:
+      app.kubernetes.io/name: clickhouse
+  netem:
+    delay:
+      latency: 100ms
+      correlation: '25'
+      jitter: 10ms
+  direction: to
+  scheduler:
+    cron: 0 14 * * MON

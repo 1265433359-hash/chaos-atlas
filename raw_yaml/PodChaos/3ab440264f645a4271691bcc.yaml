@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: core-api-container-kill
+  namespace: waste-dev
+  labels:
+    app: chaos-testing
+    experiment: container-kill
+spec:
+  action: container-kill
+  mode: one
+  selector:
+    namespaces:
+    - waste-dev
+    labelSelectors:
+      app.kubernetes.io/instance: core-api
+  containerNames:
+  - core-api-base-service
+  scheduler:
+    cron: '@every 3m'

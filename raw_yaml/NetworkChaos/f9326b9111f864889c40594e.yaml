@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: net-bandwidth-limit
+  namespace: backend
+spec:
+  action: bandwidth
+  mode: all
+  selector:
+    namespaces:
+    - backend
+    labelSelectors:
+      chaos-target: 'true'
+  bandwidth:
+    rate: 2mbps
+    limit: 20971520
+    buffer: 10000
+  duration: 35m

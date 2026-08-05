@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: pesitwizard-io-latency
+  namespace: staging
+  labels:
+    app: pesitwizard
+    chaos-type: io-delay
+spec:
+  action: latency
+  mode: one
+  selector:
+    namespaces:
+    - staging
+    labelSelectors:
+      app: pesitwizard-server
+  volumePath: /data
+  delay: 100ms
+  percent: 50
+  duration: 5m

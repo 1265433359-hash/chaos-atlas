@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "tool": "runtime_applicability_gate",
+  "results": [
+    {
+      "checked_at": "2026-08-03T14:16:39.554874+00:00",
+      "mutation": "artifacts/train-ticket/runtime/injections/basic-network-delay-5s-gated.yaml",
+      "kind": "NetworkChaos",
+      "namespace": "train-ticket-lab",
+      "name": "basic-network-delay-5s-gated",
+      "selector": {
+        "namespaces": [
+          "train-ticket-lab"
+        ],
+        "labelSelectors": {
+          "app": "ts-basic-service"
+        }
+      },
+      "decision": "ready_for_injection",
+      "checks": {
+        "yaml_shape": true,
+        "crd_exists": true,
+        "chaos_components_ready": true,
+        "selector_matches": true,
+        "target_pods": [
+          {
+            "namespace": "train-ticket-lab",
+            "name": "ts-basic-service-b974d68cb-cmvpw",
+            "ready": true,
+            "restarts": 0,
+            "ports": [
+              15680
+            ]
+          }
+        ],
+        "target_pods_ready": true,
+        "target_port_exists": true,
+        "mutation_name_available": true,
+        "injector_prerequisite": {
+          "status": "pass",
+          "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+        }
+      },
+      "errors": [],
+      "interpretation": {
+        "selected_is_not_injected": true,
+        "defense_conclusion_allowed": true
+      },
+      "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"basic-network-delay-5s-gated\" not found\n"
+    }
+  ],
+  "summary": {
+    "ready_for_injection": 1,
+    "blocked": 0,
+    "not_applicable": 0
+  }
+}

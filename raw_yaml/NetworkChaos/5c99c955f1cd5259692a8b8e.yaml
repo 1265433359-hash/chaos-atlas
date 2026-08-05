@@ -1,0 +1,29 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: redis-network-delay
+  namespace: chaos-testing
+  labels:
+    app: ml-scheduler
+    experiment: network-delay
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - ml-scheduler
+    labelSelectors:
+      app: api
+  delay:
+    latency: 100ms
+    jitter: 50ms
+    correlation: '50'
+  direction: to
+  target:
+    selector:
+      namespaces:
+      - ml-scheduler
+      labelSelectors:
+        app: redis
+    mode: all
+  duration: 60s

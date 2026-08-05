@@ -1,0 +1,26 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: chaos-24h-disk-latency
+  namespace: backend
+spec:
+  schedule: 0 */6 * * *
+  type: IOChaos
+  concurrencyPolicy: Forbid
+  historyLimit: 3
+  ioChaos:
+    action: latency
+    mode: all
+    selector:
+      namespaces:
+      - backend
+      labelSelectors:
+        chaos-target: 'true'
+    volumePath: /mnt/chaos
+    path: /mnt/chaos/*
+    delay: 60ms
+    percent: 100
+    methods:
+    - READ
+    - WRITE
+    duration: 30m

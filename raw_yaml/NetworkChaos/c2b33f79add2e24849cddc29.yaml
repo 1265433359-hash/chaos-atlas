@@ -1,0 +1,27 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: loss-__CLIENT__
+  namespace: __NS__
+spec:
+  action: loss
+  loss:
+    loss: '100'
+    correlation: '100'
+  mode: all
+  duration: 300s
+  direction: to
+  selector:
+    namespaces:
+    - __NS__
+    labelSelectors:
+      client: __CLIENT__
+      role: server
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - __NS__
+      labelSelectors:
+        client: __CLIENT__
+        role: db

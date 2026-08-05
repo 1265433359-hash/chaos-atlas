@@ -1,0 +1,33 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-random
+  namespace: chaos-testing
+  labels:
+    experiment: pod-kill
+    tier: basic
+    app.kubernetes.io/part-of: self-healing-infra
+  annotations:
+    chaos.selfhealing.io/description: Kill random pods to validate self-healing recovery
+    chaos.selfhealing.io/expected-recovery-seconds: '60'
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - self-healing
+    labelSelectors:
+      app.kubernetes.io/part-of: self-healing-infra
+    expressionSelectors:
+    - key: app.kubernetes.io/name
+      operator: In
+      values:
+      - api-gateway
+      - metrics-collector
+      - anomaly-detector
+      - notification-service
+      - cost-optimizer
+  gracePeriod: 0
+  duration: 30s
+  scheduler:
+    cron: '@every 5m'

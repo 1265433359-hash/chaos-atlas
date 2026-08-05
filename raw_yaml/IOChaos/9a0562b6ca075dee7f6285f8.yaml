@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: mesh-io-delay
+  namespace: x0tta6bl4
+  labels:
+    scenario: io-stress
+spec:
+  action: latency
+  mode: fixed-percent
+  value: '25'
+  selector:
+    namespaces:
+    - x0tta6bl4
+    labelSelectors:
+      app.kubernetes.io/name: x0tta6bl4
+  volumePath: /var/lib/x0tta6bl4
+  path: '*'
+  delay: 50ms
+  percent: 50
+  duration: 120s

@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: mimir-network-delay
+  namespace: mimir-production
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - mimir-production
+    labelSelectors:
+      app: mimir-api
+  delay:
+    latency: 100ms
+    correlation: '100'
+    jitter: 0ms
+  duration: 120s
+  scheduler:
+    cron: 0 2 * * 1

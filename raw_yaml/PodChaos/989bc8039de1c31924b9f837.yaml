@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: mysql-pod-kill
+  namespace: judgex
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - judgex
+    labelSelectors:
+      app: mysql
+  duration: 30s
+  gracePeriod: 5

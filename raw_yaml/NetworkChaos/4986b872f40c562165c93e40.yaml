@@ -1,0 +1,29 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: sp-api-worker-network-delay
+  namespace: spatialpipe
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - spatialpipe
+    labelSelectors:
+      app.kubernetes.io/component: api
+  delay:
+    latency: 200ms
+    jitter: 50ms
+    correlation: '25'
+  loss:
+    loss: '10'
+    correlation: '25'
+  direction: both
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - spatialpipe
+      labelSelectors:
+        app.kubernetes.io/component: worker
+  duration: 120s

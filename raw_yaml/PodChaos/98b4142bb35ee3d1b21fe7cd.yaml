@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: chaos-pod-failure-test
+  namespace: addressbook-preprod
+  annotations:
+    chaos-mesh.org/description: Test chaos CI/CD - arrêt de 25% des pods en preprod
+spec:
+  action: pod-failure
+  mode: fixed-percent
+  value: '25'
+  selector:
+    namespaces:
+    - addressbook-preprod
+    labelSelectors:
+      app: tornado-server
+      environment: preprod
+  duration: 90s

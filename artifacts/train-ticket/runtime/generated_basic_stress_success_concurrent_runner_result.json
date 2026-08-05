@@ -1,0 +1,281 @@
+{
+  "schema_version": 1,
+  "tool": "run_chaos_experiment",
+  "started_at": "2026-08-04T05:54:43.563575+00:00",
+  "mutation": "artifacts/train-ticket/runtime/generated_mutations/stress-basic/basic-stress-cpu-candidate-r1.yaml",
+  "request_config": {
+    "service": "ts-basic-service",
+    "remote_port": 15680,
+    "local_port": 18091,
+    "path": "/api/v1/basicservice/basic/shanghai",
+    "method": "GET",
+    "request_timeout_sec": 5.0,
+    "request_count": 12,
+    "request_concurrency": 4,
+    "warmup_count": 3,
+    "warmup_interval_sec": 0.5
+  },
+  "preflight": {
+    "checked_at": "2026-08-04T05:54:43.954667+00:00",
+    "mutation": "artifacts/train-ticket/runtime/generated_mutations/stress-basic/basic-stress-cpu-candidate-r1.yaml",
+    "kind": "StressChaos",
+    "namespace": "train-ticket-lab",
+    "name": "basic-stress-cpu-candidate-r1",
+    "selector": {
+      "namespaces": [
+        "train-ticket-lab"
+      ],
+      "labelSelectors": {
+        "app": "ts-basic-service"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "train-ticket-lab",
+          "name": "ts-basic-service-b974d68cb-cmvpw",
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            15680
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): stresschaos.chaos-mesh.org \"basic-stress-cpu-candidate-r1\" not found\n"
+  },
+  "lifecycle": {
+    "applied": true,
+    "injected": true,
+    "recovered": true,
+    "cleanup": {
+      "delete_command_ok": true,
+      "delete_output": "stresschaos.chaos-mesh.org \"basic-stress-cpu-candidate-r1\" deleted from train-ticket-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): stresschaos.chaos-mesh.org \"basic-stress-cpu-candidate-r1\" not found"
+    },
+    "injected_status": {
+      "selected": false,
+      "all_injected": false,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-04T05:54:44Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "train-ticket-lab/ts-basic-service-b974d68cb-cmvpw/ts-basic-service",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-04T05:54:44Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    },
+    "recovered_status": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-04T05:54:44Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-04T05:55:29Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "train-ticket-lab/ts-basic-service-b974d68cb-cmvpw/ts-basic-service",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-04T05:54:44Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-04T05:55:29Z"
+      ],
+      "desired_phase": "Stop"
+    },
+    "recovery_wait_completed": true
+  },
+  "requests": [
+    {
+      "sample": 1,
+      "observed_at": "2026-08-04T05:54:46.337525+00:00",
+      "status_code": 200,
+      "latency_ms": 98.168,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 2,
+      "observed_at": "2026-08-04T05:54:46.337992+00:00",
+      "status_code": 200,
+      "latency_ms": 187.981,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 3,
+      "observed_at": "2026-08-04T05:54:46.338418+00:00",
+      "status_code": 200,
+      "latency_ms": 104.291,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 4,
+      "observed_at": "2026-08-04T05:54:46.338804+00:00",
+      "status_code": 200,
+      "latency_ms": 195.868,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 5,
+      "observed_at": "2026-08-04T05:54:47.036100+00:00",
+      "status_code": 200,
+      "latency_ms": 60.29,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 6,
+      "observed_at": "2026-08-04T05:54:47.036457+00:00",
+      "status_code": 200,
+      "latency_ms": 91.502,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 7,
+      "observed_at": "2026-08-04T05:54:47.036813+00:00",
+      "status_code": 200,
+      "latency_ms": 59.453,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 8,
+      "observed_at": "2026-08-04T05:54:47.037246+00:00",
+      "status_code": 200,
+      "latency_ms": 59.269,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 9,
+      "observed_at": "2026-08-04T05:54:47.629197+00:00",
+      "status_code": 200,
+      "latency_ms": 21.356,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 10,
+      "observed_at": "2026-08-04T05:54:47.629698+00:00",
+      "status_code": 200,
+      "latency_ms": 20.81,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 11,
+      "observed_at": "2026-08-04T05:54:47.630270+00:00",
+      "status_code": 200,
+      "latency_ms": 94.74,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 12,
+      "observed_at": "2026-08-04T05:54:47.630786+00:00",
+      "status_code": 200,
+      "latency_ms": 94.15,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    }
+  ],
+  "warmup_requests": [
+    {
+      "sample": 1,
+      "observed_at": "2026-08-04T05:54:45.020154+00:00",
+      "status_code": 200,
+      "latency_ms": 130.675,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 2,
+      "observed_at": "2026-08-04T05:54:45.651422+00:00",
+      "status_code": 200,
+      "latency_ms": 144.282,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    },
+    {
+      "sample": 3,
+      "observed_at": "2026-08-04T05:54:46.296412+00:00",
+      "status_code": 200,
+      "latency_ms": 40.489,
+      "body": "{\"status\":1,\"msg\":\"Success\",\"data\":\"80fad31f-143a-4906-a816-622098aef3d1\"}",
+      "error": null
+    }
+  ],
+  "errors": [],
+  "apply": {
+    "return_code": 0,
+    "stdout": "stresschaos.chaos-mesh.org/basic-stress-cpu-candidate-r1 created",
+    "stderr": ""
+  },
+  "port_forward": {
+    "return_code": 1,
+    "stopped_by_runner": true,
+    "stdout": "Forwarding from 127.0.0.1:18091 -> 15680\nForwarding from [::1]:18091 -> 15680\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091\nHandling connection for 18091",
+    "stderr": ""
+  },
+  "result_classification": "response_observed",
+  "defense_conclusion": {
+    "allowed": true,
+    "rule": "The runner records effect evidence; defense interpretation still requires baseline, path evidence and outcome-specific analysis."
+  },
+  "finished_at": "2026-08-04T05:55:29.911878+00:00"
+}

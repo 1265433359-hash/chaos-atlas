@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "tool": "generate_candidate_mutations",
+  "selection_report": "artifacts/train-ticket/runtime/stress_candidate_selection.json",
+  "namespace": "train-ticket-lab",
+  "generated_count": 1,
+  "generated": [
+    {
+      "candidate_rank": 1,
+      "test_id": "order-stress-cpu",
+      "kind": "StressChaos",
+      "test_nodes": [
+        "selector",
+        "stress_cpu"
+      ],
+      "target_app": "ts-order-service",
+      "source_yaml": "raw_yaml/StressChaos/0885ce87187120d724117939.yaml",
+      "source_sha256": "b415e011e4b45b1dfdca07614f6bfc199097bc930ba906a6e3aab30ad938f3cc",
+      "mutation_yaml": "artifacts/train-ticket/runtime/generated_mutations/stress/order-stress-cpu-candidate-r1.yaml",
+      "namespace": "train-ticket-lab",
+      "name": "order-stress-cpu-candidate-r1",
+      "policy": {
+        "mode": "one",
+        "bounded_duration": "45s",
+        "runner": "tools/run_chaos_experiment.py",
+        "requires_gate": "tools/runtime_applicability_gate.py",
+        "not_applied_by_generator": true
+      }
+    }
+  ],
+  "skipped": [],
+  "safety": {
+    "apply_performed": false,
+    "source_hash_preserved": true,
+    "selector_rewritten_to_isolated_namespace": true,
+    "next_command": "run runtime_applicability_gate.py, then run_chaos_experiment.py"
+  }
+}

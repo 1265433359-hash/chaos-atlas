@@ -1,0 +1,62 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: api-resilience-test
+  namespace: sentinel-system
+spec:
+  entry: pod-failure-recovery
+  templates:
+  - name: pod-failure-recovery
+    templateType: Serial
+    deadline: 5m
+    children:
+    - kill-api-pod
+    - wait-for-restart
+    - verify-api-healthy
+    - verify-no-data-loss
+  - name: kill-api-pod
+    templateType: PodChaos
+    deadline: 1m
+    podChaos:
+      action: pod-kill
+      mode: one
+      selector:
+        labelSelectors:
+          app: control-api
+  - name: wait-for-restart
+    templateType: Suspend
+    deadline: 2m
+    suspend:
+      duration: 60s
+  - name: verify-api-healthy
+    templateType: Task
+    deadline: 1m
+    task:
+      container:
+        name: verify
+        image: curlimages/curl:latest
+        command:
+        - /bin/sh
+        - -c
+        - 'curl -f http://control-api:8000/health || exit 1
+
+          echo "✓ Control API is healthy"
+
+          '
+  - name: verify-no-data-loss
+    templateType: Task
+    deadline: 1m
+    task:
+      container:
+        name: verify
+        image: curlimages/curl:latest
+        command:
+        - /bin/sh
+        - -c
+        - '# Check workloads endpoint returns data
+
+          curl -f http://control-api:8000/api/v1/workloads || exit 1
+
+          echo "✓ No data loss detected"
+
+          '

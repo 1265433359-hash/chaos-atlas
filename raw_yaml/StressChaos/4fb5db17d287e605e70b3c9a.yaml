@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-inventory-f006
+  namespace: chaos-mesh
+spec:
+  mode: one
+  duration: 15m
+  stressors:
+    cpu:
+      workers: 1
+      load: 80
+  selector:
+    namespaces:
+    - online-boutique
+    labelSelectors:
+      app: inventory-service

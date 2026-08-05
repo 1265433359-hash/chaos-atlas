@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: eshop-http-delay
+  namespace: chaos-testing
+spec:
+  mode: one
+  duration: 60s
+  selector:
+    namespaces:
+    - eshop
+    labelSelectors:
+      app: eshop-webmvc
+  target: Request
+  port: 80
+  method: GET
+  path: /*
+  delay: 500ms

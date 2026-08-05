@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-advanced
+  namespace: chaos-testing
+spec:
+  action: pod-kill
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      component: stateless-worker
+      tier: backend
+    nodes:
+    - '0'
+  mode: all
+  value: '50'
+  duration: 10m
+  startingDeadlineSeconds: 0
+  gracePeriod: 0

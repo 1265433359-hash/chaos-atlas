@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition
+  namespace: security-monitor
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - security-monitor
+    labelSelectors:
+      app: security-monitor
+  direction: both
+  target:
+    mode: one
+    selector:
+      namespaces:
+      - security-monitor
+      labelSelectors:
+        app: postgres
+  duration: 2m

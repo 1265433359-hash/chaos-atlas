@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: net-loss-massive
+  namespace: rca-sandbox
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+    - rca-sandbox
+    labelSelectors:
+      app: svc-025
+  loss:
+    loss: '15'
+    correlation: '60'
+  direction: to
+  duration: 5m

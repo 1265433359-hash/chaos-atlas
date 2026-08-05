@@ -1,0 +1,151 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: vernemq-disaster-recovery-drill
+  namespace: chaos-mesh
+  labels:
+    experiment-type: disaster-recovery
+    target-service: vernemq
+    severity: critical
+    storage.samcloud.online/tier: standard
+spec:
+  entry: disaster-recovery-test
+  templates:
+  - name: disaster-recovery-test
+    templateType: Serial
+    deadline: 120m
+    children:
+    - baseline-health-check
+    - simulate-zone-failure
+    - validate-failover
+    - test-data-consistency
+    - simulate-full-recovery
+    - validate-recovery
+  - name: baseline-health-check
+    templateType: Task
+    deadline: 10m
+    task:
+      container:
+        name: health-check
+        image: bitnami/kubectl:1.28
+        command:
+        - /bin/sh
+        args:
+        - -c
+        - "echo \"Performing baseline health check...\"\n\n# Check VerneMQ cluster\
+          \ status\nkubectl exec -n storage statefulset/vernemq -- vmq-admin cluster\
+          \ show || exit 1\n\n# Check all pods are ready\nkubectl wait --for=condition=ready\
+          \ pod -l app.kubernetes.io/name=vernemq -n storage --timeout=300s || exit\
+          \ 1\n\n# Test MQTT connectivity\nkubectl run mqtt-test --rm -i --tty --restart=Never\
+          \ --image=eclipse-mosquitto:latest -- \\\n  mosquitto_pub -h vernemq.storage.svc.cluster.local\
+          \ -p 1883 -t \"test/chaos\" -m \"baseline\" || exit 1\n\necho \"[PASS] Baseline\
+          \ health check passed\"\n"
+  - name: simulate-zone-failure
+    templateType: PodChaos
+    deadline: 30m
+    podChaos:
+      action: pod-kill
+      mode: fixed-percent
+      value: '66'
+      selector:
+        namespaces:
+        - storage
+        labelSelectors:
+          app.kubernetes.io/name: vernemq
+  - name: validate-failover
+    templateType: Task
+    deadline: 20m
+    task:
+      container:
+        name: failover-validation
+        image: bitnami/kubectl:1.28
+        command:
+        - /bin/sh
+        args:
+        - -c
+        - "echo \"Validating failover behavior...\"\n\n# Wait for pods to be killed\n\
+          sleep 60\n\n# Check that at least 1 pod survives\nready_pods=$(kubectl get\
+          \ pods -n storage -l app.kubernetes.io/name=vernemq -o jsonpath='{.items[?(@.status.phase==\"\
+          Running\")].metadata.name}' | wc -w || echo \"0\")\necho \"Ready pods: $ready_pods\"\
+          \n\nif [ \"$ready_pods\" -lt 1 ]; then\n  echo \"[FAIL] Total failure -\
+          \ no pods surviving\"\n  exit 1\nfi\n\n# Test MQTT still works on surviving\
+          \ nodes\nkubectl run mqtt-failover-test --rm -i --tty --restart=Never --image=eclipse-mosquitto:latest\
+          \ -- \\\n  mosquitto_pub -h vernemq.storage.svc.cluster.local -p 1883 -t\
+          \ \"test/failover\" -m \"surviving\" || {\n  echo \"[FAIL] MQTT service\
+          \ unavailable during failover\"\n  exit 1\n}\n\necho \"[PASS] Failover validation\
+          \ passed\"\n"
+  - name: test-data-consistency
+    templateType: Task
+    deadline: 15m
+    task:
+      container:
+        name: data-consistency
+        image: bitnami/kubectl:1.28
+        command:
+        - /bin/sh
+        args:
+        - -c
+        - "echo \"Testing data consistency...\"\n\n# Check cluster state consistency\n\
+          for pod in $(kubectl get pods -n storage -l app.kubernetes.io/name=vernemq\
+          \ -o name | head -1); do\n  echo \"Checking cluster state on $pod\"\n  kubectl\
+          \ exec -n storage $pod -- vmq-admin cluster show\n  kubectl exec -n storage\
+          \ $pod -- vmq-admin metrics show\ndone\n\necho \"[PASS] Data consistency\
+          \ validated\"\n"
+  - name: simulate-full-recovery
+    templateType: Task
+    deadline: 30m
+    task:
+      container:
+        name: recovery-simulation
+        image: bitnami/kubectl:1.28
+        command:
+        - /bin/sh
+        args:
+        - -c
+        - 'echo "Simulating full recovery..."
+
+
+          # Scale StatefulSet back to 3 replicas
+
+          kubectl scale statefulset vernemq --replicas=3 -n storage
+
+
+          # Wait for all pods to be ready
+
+          kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=vernemq
+          -n storage --timeout=900s
+
+
+          # Wait for cluster to stabilize
+
+          sleep 120
+
+
+          echo "[PASS] Recovery simulation completed"
+
+          '
+  - name: validate-recovery
+    templateType: Task
+    deadline: 15m
+    task:
+      container:
+        name: recovery-validation
+        image: bitnami/kubectl:1.28
+        command:
+        - /bin/sh
+        args:
+        - -c
+        - "echo \"Validating full recovery...\"\n\n# Check all pods are ready\nready_pods=$(kubectl\
+          \ get pods -n storage -l app.kubernetes.io/name=vernemq -o jsonpath='{.items[?(@.status.phase==\"\
+          Running\")].metadata.name}' | wc -w || echo \"0\")\n\nif [ \"$ready_pods\"\
+          \ -ne 3 ]; then\n  echo \"[FAIL] Not all pods recovered. Expected: 3, Got:\
+          \ $ready_pods\"\n  exit 1\nfi\n\n# Verify cluster status\nkubectl exec -n\
+          \ storage statefulset/vernemq -- vmq-admin cluster show\n\n# Test MQTT functionality\n\
+          kubectl run mqtt-recovery-test --rm -i --tty --restart=Never --image=eclipse-mosquitto:latest\
+          \ -- \\\n  mosquitto_pub -h vernemq.storage.svc.cluster.local -p 1883 -t\
+          \ \"test/recovery\" -m \"complete\" || exit 1\n\n# Test load balancing across\
+          \ all nodes\nfor i in $(seq 1 10); do\n  kubectl run mqtt-load-test-$i --rm\
+          \ -i --restart=Never --image=eclipse-mosquitto:latest -- \\\n    mosquitto_pub\
+          \ -h vernemq.storage.svc.cluster.local -p 1883 -t \"test/load/$i\" -m \"\
+          message$i\" &\ndone\nwait\n\necho \"[PASS] Full disaster recovery validation\
+          \ passed!\"\n"

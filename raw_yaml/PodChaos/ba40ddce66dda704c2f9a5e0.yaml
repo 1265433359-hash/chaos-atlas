@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: payments-service-pod-delete
+  namespace: demo-stage
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - demo-stage
+    labelSelectors:
+      app.kubernetes.io/name: payments-service
+  duration: 30s

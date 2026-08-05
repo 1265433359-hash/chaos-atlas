@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: template-pod-restart
+  namespace: chaos-experiments
+  labels:
+    template: pod-restart
+    severity: low
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: worker-service
+  mode: one
+  action: pod-kill
+  gracePeriod: 0
+  duration: 5m

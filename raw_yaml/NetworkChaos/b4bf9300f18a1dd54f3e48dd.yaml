@@ -1,0 +1,26 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: mssql-coordinator-packet-loss
+  namespace: chaos-mesh
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+    - demo
+    labelSelectors:
+      app.kubernetes.io/instance: sqlserver-ag-cluster
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - demo
+      labelSelectors:
+        app.kubernetes.io/instance: sqlserver-ag-cluster
+  loss:
+    loss: '30'
+    correlation: '25'
+  direction: both
+  targetPort: 2379,2380
+  duration: 5m

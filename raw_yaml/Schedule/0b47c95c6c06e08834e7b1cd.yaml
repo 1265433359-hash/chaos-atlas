@@ -1,0 +1,54 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: cosmic-chaos-schedule
+  namespace: load-testing
+spec:
+  schedule: '@every 6h'
+  historyLimit: 10
+  concurrencyPolicy: Forbid
+  type: Workflow
+  workflow:
+    entry: daily-chaos
+    templates:
+    - name: daily-chaos
+      templateType: Parallel
+      deadline: 1h
+      children:
+      - network-chaos
+      - pod-chaos
+      - stress-chaos
+    - name: network-chaos
+      templateType: NetworkChaos
+      networkChaos:
+        action: loss
+        mode: random-max-percent
+        value: '30'
+        selector:
+          namespaces:
+          - terrafusion-cosmic
+        loss:
+          loss: '30'
+        duration: 10m
+    - name: pod-chaos
+      templateType: PodChaos
+      podChaos:
+        action: pod-failure
+        mode: random-max-percent
+        value: '20'
+        selector:
+          namespaces:
+          - terrafusion-cosmic
+        duration: 5m
+    - name: stress-chaos
+      templateType: StressChaos
+      stressChaos:
+        mode: all
+        selector:
+          namespaces:
+          - terrafusion-cosmic
+        stressors:
+          memory:
+            workers: 2
+            size: 2GB
+        duration: 10m

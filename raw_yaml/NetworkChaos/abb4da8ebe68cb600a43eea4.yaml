@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition
+  namespace: chaos-testing
+spec:
+  action: partition
+  mode: all
+  duration: 10m
+  selector:
+    namespaces:
+    - skalean-system
+    labelSelectors:
+      app: api-gateway
+  direction: both
+  target:
+    selector:
+      namespaces:
+      - skalean-system
+      labelSelectors:
+        app: postgres
+  scheduler:
+    cron: '@every 1h'

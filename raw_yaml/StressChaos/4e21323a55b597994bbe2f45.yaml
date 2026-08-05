@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-experiment
+  namespace: chaos-testing
+  labels:
+    app: hospital-management-system
+    component: chaos
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - ultimate-hms
+    labelSelectors:
+      app: hospital-management-system
+      component: mobile
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 120s
+  scheduler:
+    cron: '@every 6h'

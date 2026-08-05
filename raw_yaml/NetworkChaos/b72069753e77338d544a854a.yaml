@@ -1,0 +1,29 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-delay-echo-redis
+  namespace: echo-server
+  labels:
+    app.kubernetes.io/part-of: chaos-engineering
+    experiment: network-delay
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - echo-server
+    labelSelectors:
+      app: echo-server
+  delay:
+    latency: 500ms
+    jitter: 100ms
+    correlation: '50'
+  direction: to
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - services
+      labelSelectors:
+        app.kubernetes.io/name: redis
+  duration: 120s

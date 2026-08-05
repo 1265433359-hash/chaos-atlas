@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: kserve-total-isolation
+  namespace: chaos-testing
+  labels:
+    app: chaos-testing
+    experiment: total-isolation
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - kserve
+    labelSelectors:
+      component: predictor
+  direction: both
+  externalTargets:
+  - 0.0.0.0/0
+  duration: 30s

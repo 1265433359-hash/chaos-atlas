@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: high-latency-mongos
+  namespace: default
+spec:
+  action: delay
+  mode: all
+  selector:
+    labelSelectors:
+      role: mongos
+  delay:
+    latency: 500ms
+    correlation: '100'
+    jitter: 0ms
+  direction: to
+  duration: 15m

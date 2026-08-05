@@ -1,0 +1,24 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-error-inter-service
+  namespace: chaos-testing
+  labels:
+    experiment: dns-chaos
+    tier: advanced
+    app.kubernetes.io/part-of: self-healing-infra
+  annotations:
+    chaos.selfhealing.io/description: DNS resolution errors for internal services
+    chaos.selfhealing.io/expected-detection-seconds: '15'
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - self-healing
+    labelSelectors:
+      app.kubernetes.io/name: api-gateway
+  duration: 60s
+  patterns:
+  - anomaly-detector.self-healing.svc.cluster.local
+  - healing-controller.self-healing.svc.cluster.local

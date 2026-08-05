@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-failure
+  namespace: query-engines
+spec:
+  action: error
+  mode: one
+  selector:
+    namespaces:
+    - query-engines
+    labelSelectors:
+      app.kubernetes.io/name: presto
+  patterns:
+  - '*.presto-coordinator'
+  duration: 20s
+  scheduler:
+    cron: '@every 45m'

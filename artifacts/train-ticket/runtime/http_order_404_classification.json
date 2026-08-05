@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tool": "classify_runtime_result",
+  "classified_at": "2026-08-03T14:46:11.739421+00:00",
+  "run_report": "artifacts/train-ticket/runtime/http_order_404_result.json",
+  "baseline_report": null,
+  "classification": "invalid_not_injected",
+  "evidence_state": "no_effect_evidence",
+  "confidence": "B",
+  "root_cause_labels": [
+    "injection_not_confirmed"
+  ],
+  "observations": {
+    "request_count": 5,
+    "observed_median_latency_ms": 17.0,
+    "baseline_median_latency_ms": null,
+    "latency_delta_ms": null,
+    "injected": false,
+    "recovered": false,
+    "cleanup_confirmed": null
+  },
+  "interpretation": {
+    "defense_claim": "not_derived",
+    "reason": "The classifier records evidence state; defense requires the test-node graph, baseline, path evidence and outcome-specific reasoning.",
+    "result": "The experiment cannot support a defense conclusion because the injector did not confirm an effect."
+  },
+  "evidence_refs": []
+}

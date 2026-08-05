@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: disk-fill
+  namespace: chaos-testing
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - llm-marketplace
+  stressors:
+    disk:
+      workers: 1
+      size: 5GB
+      path: /tmp
+  duration: 2m

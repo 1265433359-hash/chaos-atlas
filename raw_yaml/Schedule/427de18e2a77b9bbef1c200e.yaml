@@ -1,0 +1,36 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: nightly-chaos-schedule
+  namespace: chaos-testing
+spec:
+  schedule: 0 2 * * *
+  concurrencyPolicy: Forbid
+  type: Workflow
+  workflowSpec:
+    entry: nightly-chaos-suite
+    templates:
+    - name: nightly-chaos-suite
+      templateType: Parallel
+      deadline: 2h
+      children:
+      - name: run-iptv-chaos
+      - name: run-pms-chaos
+      - name: run-ai-chaos
+      - name: run-iot-chaos
+    - name: run-iptv-chaos
+      templateType: Workflow
+      workflow:
+        name: nexus-iptv-failure-simulation
+    - name: run-pms-chaos
+      templateType: Workflow
+      workflow:
+        name: nexus-pms-failover-test
+    - name: run-ai-chaos
+      templateType: Workflow
+      workflow:
+        name: nexus-ai-degradation-test
+    - name: run-iot-chaos
+      templateType: Workflow
+      workflow:
+        name: nexus-iot-disruption-test

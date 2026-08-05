@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-delay
+  namespace: llmchat
+spec:
+  action: latency
+  mode: one
+  selector:
+    namespaces:
+    - llmchat
+    labelSelectors:
+      app: postgres
+  volumePath: /var/lib/postgresql/data
+  path: /
+  delay: 100ms
+  percent: 50
+  duration: 5m

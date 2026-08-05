@@ -1,0 +1,195 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Workflow
+metadata:
+  name: linea-resilience
+  namespace: chaos-mesh
+  labels:
+    purpose: resilience-test
+spec:
+  entry: serial-tests
+  templates:
+  - name: serial-tests
+    templateType: Serial
+    children:
+    - network-full-restart
+    - wait-10s
+    - podkill-randomly
+    - wait
+    - network-chaos-p2p
+    - wait
+    - network-http-rpc-failures
+    - wait
+  - name: podkill-randomly
+    templateType: Parallel
+    children:
+    - kill-besu-randomly
+    - kill-maru-randomly
+  - name: network-full-restart
+    templateType: Parallel
+    children:
+    - kill-maru-all
+    - kill-besu-all
+  - name: network-http-rpc-failures
+    templateType: Parallel
+    children:
+    - http-abort-engine-api
+    - http-abort-eth-api
+    - network-latency
+  - name: wait
+    templateType: Suspend
+    deadline: 5s
+  - name: wait-10s
+    templateType: Suspend
+    deadline: 10s
+  - name: http-abort-engine-api
+    templateType: HTTPChaos
+    deadline: 40s
+    httpChaos:
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/component: besu
+      mode: fixed-percent
+      value: '70'
+      target: Request
+      method: POST
+      port: 8550
+      abort: true
+  - name: http-abort-eth-api
+    templateType: HTTPChaos
+    deadline: 40s
+    httpChaos:
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/component: besu
+      mode: fixed-percent
+      value: '70'
+      target: Request
+      method: POST
+      port: 8545
+      abort: true
+  - name: network-chaos-p2p
+    templateType: NetworkChaos
+    deadline: 30s
+    networkChaos:
+      action: netem
+      mode: all
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/component: maru
+      duplicate:
+        duplicate: '50'
+        correlation: '25'
+      loss:
+        loss: '50'
+        correlation: '25'
+  - name: network-latency
+    templateType: NetworkChaos
+    deadline: 30s
+    networkChaos:
+      action: delay
+      mode: one
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/component: maru
+      delay:
+        latency: 300ms
+        correlation: '100'
+        jitter: 500ms
+  - name: kill-maru-sequencer
+    templateType: PodChaos
+    deadline: 10s
+    podChaos:
+      action: pod-kill
+      mode: one
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/component: maru
+          app.kubernetes.io/component-role: sequencer
+  - name: kill-besu-sequencer
+    templateType: PodChaos
+    deadline: 10s
+    podChaos:
+      action: pod-kill
+      mode: all
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/component: besu
+          app.kubernetes.io/component-role: sequencer
+  - name: kill-maru-randomly
+    templateType: PodChaos
+    deadline: 20s
+    podChaos:
+      action: pod-kill
+      mode: random-max-percent
+      value: '50'
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/component: maru
+        expressionSelectors:
+        - key: app.kubernetes.io/component-role
+          operator: NotIn
+          values:
+          - bootnode
+  - name: kill-besu-randomly
+    templateType: PodChaos
+    deadline: 20s
+    podChaos:
+      action: pod-kill
+      mode: random-max-percent
+      value: '50'
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/component: besu
+        expressionSelectors:
+        - key: app.kubernetes.io/component-role
+          operator: NotIn
+          values:
+          - bootnode
+  - name: kill-maru-all
+    templateType: PodChaos
+    deadline: 10s
+    podChaos:
+      action: pod-failure
+      mode: all
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/component: maru
+        expressionSelectors:
+        - key: app.kubernetes.io/component-role
+          operator: NotIn
+          values:
+          - bootnode
+  - name: kill-besu-all
+    templateType: PodChaos
+    deadline: 10s
+    podChaos:
+      action: pod-failure
+      mode: all
+      selector:
+        namespaces:
+        - default
+        labelSelectors:
+          app.kubernetes.io/component: besu
+        expressionSelectors:
+        - key: app.kubernetes.io/component-role
+          operator: NotIn
+          values:
+          - bootnode

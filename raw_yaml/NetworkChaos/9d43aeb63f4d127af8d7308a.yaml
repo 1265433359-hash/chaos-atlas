@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition-experiment
+  namespace: default
+spec:
+  action: partition
+  mode: all
+  selector:
+    labelSelectors:
+      tier: frontend
+  direction: both
+  target:
+    mode: all
+    selector:
+      labelSelectors:
+        tier: data
+  duration: 60s

@@ -1,0 +1,12 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: time-skew-experiment
+  namespace: default
+spec:
+  mode: all
+  selector:
+    labelSelectors:
+      app: order-service
+  timeOffset: 5m
+  duration: 60s

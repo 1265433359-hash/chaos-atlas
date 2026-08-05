@@ -1,0 +1,190 @@
+{
+  "id": "KB-TT-HTTP-ORDER-RESPONSE-404-001",
+  "version": 2,
+  "status": "blocked_by_platform_prerequisite",
+  "evidence_state": "runtime_injection_blocked",
+  "project": "FudanSELab/train-ticket",
+  "project_commit": "313886e99befb94be6cd45f085c98e0019f59829",
+  "test_node": {
+    "family": "HTTPChaos",
+    "operation": "replace_response",
+    "target": "Response",
+    "replace_code": 404,
+    "port": 12031,
+    "path": "*",
+    "mode": "one",
+    "duration": "5m",
+    "selector": {
+      "namespace": "train-ticket",
+      "label": {
+        "app": "ts-order-service"
+      }
+    },
+    "source_yaml": "raw_yaml/HTTPChaos/a554bb3751e7b1c20eead94c.yaml"
+  },
+  "test_node_centered_graph": {
+    "nodes": [
+      {
+        "id": "test.http.response.replace.order",
+        "kind": "TestNode",
+        "evidence": "YAML parsed and selector/port/path extracted"
+      },
+      {
+        "id": "deploy.ts-order-service",
+        "kind": "TargetDeployment",
+        "evidence": "selector matches ts-order-service Deployment and Service"
+      },
+      {
+        "id": "listener.ts-order-service.12031",
+        "kind": "RuntimeListener",
+        "evidence": "application.yml server.port=12031 and Deployment containerPort=12031"
+      },
+      {
+        "id": "controller.OrderController",
+        "kind": "HTTPEntryPoints",
+        "source": "train-ticket/ts-order-service/src/main/java/order/controller/OrderController.java:20-180"
+      },
+      {
+        "id": "service.OrderServiceImpl",
+        "kind": "BusinessCall",
+        "source": "train-ticket/ts-order-service/src/main/java/order/service/OrderServiceImpl.java:50-466"
+      },
+      {
+        "id": "data.order.repository",
+        "kind": "DataFlow",
+        "evidence": "OrderServiceImpl methods read/write OrderRepository"
+      },
+      {
+        "id": "response.app.envelope",
+        "kind": "ApplicationResponse",
+        "evidence": "controller wraps service Response with ResponseEntity.ok"
+      },
+      {
+        "id": "response.chaos.rewrite.404",
+        "kind": "InjectedResponseEffect",
+        "evidence": "HTTPChaos target=Response, replace.code=404"
+      },
+      {
+        "id": "observe.order.logs",
+        "kind": "Observation",
+        "evidence": "controller and service log statements remain in application path"
+      }
+    ],
+    "edges": [
+      {
+        "from": "test.http.response.replace.order",
+        "to": "deploy.ts-order-service",
+        "type": "selects",
+        "confidence": "confirmed_static"
+      },
+      {
+        "from": "deploy.ts-order-service",
+        "to": "listener.ts-order-service.12031",
+        "type": "exposes",
+        "confidence": "confirmed_static"
+      },
+      {
+        "from": "listener.ts-order-service.12031",
+        "to": "controller.OrderController",
+        "type": "routes_to",
+        "confidence": "confirmed_static"
+      },
+      {
+        "from": "controller.OrderController",
+        "to": "service.OrderServiceImpl",
+        "type": "calls",
+        "confidence": "confirmed_static",
+        "evidence": "controller methods delegate to OrderService"
+      },
+      {
+        "from": "service.OrderServiceImpl",
+        "to": "data.order.repository",
+        "type": "reads_or_writes",
+        "confidence": "confirmed_static"
+      },
+      {
+        "from": "service.OrderServiceImpl",
+        "to": "response.app.envelope",
+        "type": "returns_to",
+        "confidence": "confirmed_static"
+      },
+      {
+        "from": "response.app.envelope",
+        "to": "response.chaos.rewrite.404",
+        "type": "rewrites",
+        "confidence": "configured_static"
+      },
+      {
+        "from": "controller.OrderController",
+        "to": "observe.order.logs",
+        "type": "observes",
+        "confidence": "confirmed_static"
+      }
+    ]
+  },
+  "four_layer_validation": {
+    "yaml_syntax": "confirmed_static",
+    "target_exists": "confirmed_static",
+    "port_exists": "confirmed_static",
+    "controller_path_exists": "confirmed_static",
+    "selected_request_reachable": "confirmed_runtime",
+    "response_rewrite_observed": "blocked_by_instrumentation_prerequisite",
+    "application_business_logic_executed": "confirmed_runtime",
+    "defense_observed": "not_applicable",
+    "recovery_observed": "not_applicable_no_injection"
+  },
+  "candidate_entry_points": [
+    "GET /api/v1/orderservice/welcome",
+    "POST /api/v1/orderservice/order/tickets",
+    "POST /api/v1/orderservice/order",
+    "POST /api/v1/orderservice/order/query",
+    "POST /api/v1/orderservice/order/refresh",
+    "GET /api/v1/orderservice/order/{orderId}",
+    "GET /api/v1/orderservice/order/{travelDate}/{trainNumber}",
+    "PUT /api/v1/orderservice/order",
+    "DELETE /api/v1/orderservice/order/{orderId}"
+  ],
+  "test_value_hypothesis": {
+    "current": "high_for_client_response_contract_and_observability_split",
+    "reason": "The node is attached to a real listener and response target; it can distinguish internal application outcome from client-visible HTTP status.",
+    "boundary": "path=* and mode=one can affect more than one endpoint; choose one endpoint per run and do not infer all business paths from one response.",
+    "safe_first_injection": "Use one read-only order query after recording baseline response, logs, and trace; first verify the Chaos Mesh HTTP tproxy prerequisite on the host."
+  },
+  "defense_hypotheses": [
+    {
+      "hypothesis": "The application may complete its service method successfully while the client receives 404 after response rewriting.",
+      "static_support": "Controller delegates to service and returns ResponseEntity.ok; no local response-contract defense is visible in the module.",
+      "runtime_status": "unverified"
+    },
+    {
+      "hypothesis": "A client or gateway may classify 404 as a handled business error, a retryable error, or an outage depending on its own control flow.",
+      "static_support": "The order service exposes multiple response envelopes but the client-side caller is outside this card and must be traced.",
+      "runtime_status": "unverified"
+    }
+  ],
+  "result_classification_rules": [
+    "If the target is matched, the application handler runs, the client receives 404, and cleanup succeeds: classify as injected response effect, not application defense.",
+    "If the application handler does not run or the target is not matched: classify as invalid or unreachable test, not defended.",
+    "If the client or gateway preserves the business outcome through a documented fallback, require client trace and SLO evidence before classifying as defended.",
+    "If Chaos Mesh selects the Pod but injectedCount remains zero and the daemon reports a missing host kernel module, classify as platform_instrumentation_prerequisite_missing, not defended."
+  ],
+  "next_evidence": [
+    "Enable or choose a Chaos Mesh HTTP injection backend compatible with the Docker Desktop WSL2 kernel, then repeat the narrow path mutation.",
+    "Keep the baseline in artifacts/train-ticket/runtime/baseline_order_service.json and correlate application logs with the client-visible 404.",
+    "Record the client or gateway control-flow result separately from the order-service result."
+  ],
+  "runtime_evidence": {
+    "baseline": "artifacts/train-ticket/runtime/baseline_order_service.json",
+    "result": "artifacts/train-ticket/runtime/http_order_404_result.json",
+    "mutation": "artifacts/train-ticket/runtime/injections/order-http-code-nonexistent.yaml",
+    "selected_request_reachable": "confirmed_runtime",
+    "application_business_logic_executed": "confirmed_runtime",
+    "response_rewrite_observed": "blocked_by_platform_prerequisite",
+    "defense_observed": "not_applicable",
+    "recovery_observed": "not_applicable_no_injection",
+    "runtime_lesson": "A selected test node is not equivalent to an injected test node; host kernel and Chaos Mesh daemon prerequisites must be part of the applicability gate."
+  },
+  "secrets": {
+    "redaction": "No credentials or secret values are stored in this card."
+  }
+}

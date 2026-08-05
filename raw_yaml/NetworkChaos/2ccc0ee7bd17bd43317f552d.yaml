@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: slow-account-legs
+  namespace: chaos-mesh
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - bian-operations
+    labelSelectors:
+      app.kubernetes.io/name: sd-payment-execution
+  delay:
+    latency: 500ms
+    jitter: 100ms
+  direction: to
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - bian-operations
+      labelSelectors:
+        bian/business-domain: account-management
+  duration: 2m

@@ -1,0 +1,13 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: weekly-application-chaos
+  namespace: chaos-testing
+spec:
+  concurrencyPolicy: Forbid
+  schedule: 0 3 * * 0
+  startingDeadlineSeconds: 7200
+  workflows:
+  - name: application-resilience-test
+  - name: database-failover-test
+  - name: cache-failover-test

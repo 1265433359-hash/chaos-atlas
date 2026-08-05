@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: dns-error-experiment
+  namespace: default
+spec:
+  action: error
+  mode: all
+  selector:
+    labelSelectors:
+      app: order-service
+  patterns:
+  - inventory-service.*
+  duration: 60s

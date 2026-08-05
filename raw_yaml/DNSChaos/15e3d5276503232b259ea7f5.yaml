@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: exp-004-dns-failure
+  namespace: microshop
+  labels:
+    experiment: exp-004
+    experiment-name: dns-failure
+    type: dns-failure
+    service: frontend
+    risk-level: medium
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - microshop
+    labelSelectors:
+      app: frontend
+  patterns:
+  - catalog-service.microshop.svc.cluster.local
+  duration: 45s

@@ -1,0 +1,13 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: sock-shop
+  name: e3-pod-kill-user
+spec:
+  selector:
+    namespaces:
+    - sock-shop
+    labelSelectors:
+      name: user
+  mode: one
+  action: pod-kill

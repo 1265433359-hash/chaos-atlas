@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: kafka-node-low-stress
+  namespace: strimzi-kafka
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - strimzi-kafka
+    labelSelectors:
+      strimzi.io/kind: Kafka
+      strimzi.io/broker-role: 'true'
+  stressors:
+    cpu:
+      workers: 1
+      load: 50
+    memory:
+      workers: 1
+      size: 256MB
+  duration: 5m

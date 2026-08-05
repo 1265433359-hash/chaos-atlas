@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: paymentservice-partial-failure
+spec:
+  mode: fixed-percent
+  value: '30'
+  selector:
+    labelSelectors:
+      app: paymentservice
+  target: Request
+  port: 50051
+  method: POST
+  abort: true
+  duration: 10m

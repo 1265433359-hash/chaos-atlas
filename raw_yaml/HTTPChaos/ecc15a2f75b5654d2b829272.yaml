@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-chaos-replace
+  namespace: chaos-mesh
+spec:
+  mode: all
+  selector:
+    labelSelectors:
+      app: flask-client
+    namespaces:
+    - sample-app
+  target: Response
+  port: 5000
+  path: '*'
+  delay: 2s
+  patch:
+    body:
+      type: JSON
+      value: '{"message": "Buongiorno, bambinos!"}'
+  duration: 60s

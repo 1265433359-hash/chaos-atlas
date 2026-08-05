@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: data-plane-network-latency
+  namespace: govsecure
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - govsecure
+    labelSelectors:
+      app: data-plane
+  delay:
+    latency: 100ms
+    correlation: '25'
+    jitter: 50ms
+  duration: 1m
+  scheduler:
+    cron: '@every 6h'

@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: io-latency-data-service
+  namespace: chaos-testing
+  labels:
+    experiment: io-latency
+    severity: high
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: postgres-primary
+  mode: one
+  action: latency
+  delay: 100ms
+  percent: '50'
+  path: /var/lib/postgresql/data
+  volumePath: /var/lib/postgresql/data
+  duration: 10m

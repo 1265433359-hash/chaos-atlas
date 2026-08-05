@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-failure-experiment
+  namespace: qbitel
+spec:
+  action: pod-failure
+  mode: one
+  duration: 30s
+  selector:
+    namespaces:
+    - qbitel
+    labelSelectors:
+      app: qbitel
+  scheduler:
+    cron: '@every 1h'

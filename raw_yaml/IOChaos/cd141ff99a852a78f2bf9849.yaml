@@ -1,0 +1,25 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: auth-service-io-fault
+  namespace: chaos-engineering
+  labels:
+    experiment-type: io-fault
+    target-service: auth-service
+    severity: high
+    automation: enabled
+spec:
+  action: fault
+  mode: one
+  selector:
+    namespaces:
+    - rust-security-dev
+    labelSelectors:
+      app: auth-service
+  volumePath: /tmp
+  path: /tmp/**/*
+  errno: 5
+  percent: 10
+  duration: 1m
+  scheduler:
+    cron: 45 2 * * 2,4

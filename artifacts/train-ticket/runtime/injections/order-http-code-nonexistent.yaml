@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: order-http-code-nonexistent
+  namespace: train-ticket-lab
+  annotations:
+    chaos.origin.raw-sha256: 26b4f5abfed5613e9a3c2beb9ed1d484b8b7c8cc4e7ee615d479d91b278de2ff
+  labels:
+    chaos.origin: train-ticket-http
+    chaos.test-node: http_replace_response
+spec:
+  selector:
+    namespaces:
+      - train-ticket-lab
+    labelSelectors:
+      app: ts-order-service
+  mode: one
+  target: Response
+  replace:
+    code: 404
+  port: 12031
+  path: /api/v1/orderservice/order/00000000-0000-0000-0000-000000000000
+  duration: 60s

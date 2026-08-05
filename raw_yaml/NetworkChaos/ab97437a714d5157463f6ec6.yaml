@@ -1,0 +1,27 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition
+  namespace: quickpizza
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - quickpizza
+    labelSelectors:
+      app.k8s.io/name: quickpizza
+      app.kubernetes.io/component: service
+      app.kubernetes.io/instance: catalog
+  direction: both
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - quickpizza
+      labelSelectors:
+        environment: production
+        app.k8s.io/name: quickpizza-app
+        app.kubernetes.io/component: database
+        app.kubernetes.io/instance: quickpizza-db
+  duration: 5m

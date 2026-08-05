@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: basic-pod-kill
+  namespace: chaos-mesh
+  annotations:
+    chaos.alpha.kubernetes.io/experiment: pod-resilience-test
+spec:
+  action: pod-kill
+  mode: one
+  duration: 60s
+  selector:
+    namespaces:
+    - chaos-sandbox
+    labelSelectors:
+      app: backend-api

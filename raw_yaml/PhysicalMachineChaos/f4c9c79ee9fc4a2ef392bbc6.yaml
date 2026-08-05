@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PhysicalMachineChaos
+metadata:
+  name: server-reboot-inactive-1696943731
+  namespace: default
+spec:
+  action: user_defined
+  address:
+  - https://116.203.199.187:31768
+  duration: 1s
+  mode: all
+  selector: {}
+  user_defined:
+    attackCmd: shutdown -r +1
+    recoverCmd: 'true'

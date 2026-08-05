@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-stress
+  namespace: chaos-testing
+spec:
+  mode: random-max-percent
+  value: '50'
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: ergo-web
+  stressors:
+    memory:
+      workers: 1
+      size: 512Mi
+  duration: 2m

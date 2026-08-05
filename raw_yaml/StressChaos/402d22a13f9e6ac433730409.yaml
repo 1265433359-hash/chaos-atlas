@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: sp-worker-cpu-stress
+  namespace: spatialpipe
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - spatialpipe
+    labelSelectors:
+      app.kubernetes.io/component: worker
+  stressors:
+    cpu:
+      workers: 4
+      load: 90
+  duration: 90s

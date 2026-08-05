@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-stress-test
+  namespace: trading-bot
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - trading-bot
+    labelSelectors:
+      app: trading-bot-api
+  stressors:
+    memory:
+      workers: 1
+      size: 256MB
+  duration: 2m
+  scheduler:
+    cron: '@every 24h'

@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: time-skew
+  namespace: query-engines
+spec:
+  action: time-skew
+  mode: one
+  selector:
+    namespaces:
+    - query-engines
+    labelSelectors:
+      app.kubernetes.io/name: clickhouse
+  timeOffset: 5s
+  duration: 30s
+  scheduler:
+    cron: '@every 50m'

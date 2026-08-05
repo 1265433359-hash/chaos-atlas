@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: clock-drift
+  namespace: chaos-testing
+  labels:
+    chaos.virtengine.com/category: time
+    chaos.virtengine.com/scenario: drift
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - virtengine
+    labelSelectors:
+      app.kubernetes.io/component: validator
+  timeOffset: 5s
+  duration: 300s

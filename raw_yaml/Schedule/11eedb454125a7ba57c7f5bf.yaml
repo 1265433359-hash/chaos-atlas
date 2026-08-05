@@ -1,0 +1,27 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: chaos-24h-partition
+  namespace: backend
+spec:
+  schedule: 30 2-23/6 * * *
+  type: NetworkChaos
+  concurrencyPolicy: Forbid
+  historyLimit: 3
+  networkChaos:
+    action: partition
+    mode: all
+    selector:
+      namespaces:
+      - backend
+      labelSelectors:
+        chaos-target: 'true'
+    direction: both
+    target:
+      mode: all
+      selector:
+        namespaces:
+        - backend
+        labelSelectors:
+          role: dependency
+    duration: 15m

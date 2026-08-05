@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: scoopdope-redis-outage
+  namespace: default
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: redis
+  duration: 3m
+  scheduler:
+    cron: 0 2 * * *

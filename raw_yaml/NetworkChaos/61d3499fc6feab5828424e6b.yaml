@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: quantum-network-partition
+  namespace: load-testing
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - terrafusion-cosmic
+    labelSelectors:
+      app: holographic-storage
+  direction: both
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - terrafusion-cosmic
+      labelSelectors:
+        app: consciousness-service
+  duration: 2m

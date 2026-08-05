@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: trading-bot-chaos-schedule
+  namespace: trading-bot
+spec:
+  schedule: 0 2 * * *
+  historyLimit: 5
+  concurrencyPolicy: Forbid
+  type: PodChaos
+  podChaos:
+    action: pod-kill
+    mode: one
+    selector:
+      namespaces:
+      - trading-bot
+      labelSelectors:
+        app: trading-bot-api
+    scheduler:
+      cron: '@every 1h'

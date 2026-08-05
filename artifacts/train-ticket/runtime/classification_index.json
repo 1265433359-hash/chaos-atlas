@@ -1,0 +1,355 @@
+{
+    "schema_version":  1,
+    "tool":  "classify_runtime_result",
+    "project":  "FudanSELab/train-ticket",
+    "records":  [
+                    {
+                        "id":  "TT-STRESS-BASIC-CPU-SUCCESS-001",
+                        "test_node":  "stress_cpu",
+                        "target_service":  "ts-basic-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_result.json",
+                        "runner_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_runner_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_classification.json",
+                        "classification":  "response_observed",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "resource_throttling_observed",
+                                                  "success_oracle_preserved",
+                                                  "latency_variance_requires_repeat"
+                                              ],
+                        "selection_report":  "artifacts/train-ticket/runtime/stress_basic_candidate_selection.json",
+                        "generation_plan":  "artifacts/train-ticket/runtime/stress_basic_mutation_generation_plan.json",
+                        "applicability_gate":  "artifacts/train-ticket/runtime/stress_basic_success_gate.json",
+                        "cgroup_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_cgroup.json",
+                        "log_evidence":  "artifacts/train-ticket/runtime/generated_basic_stress_success_log_evidence.json",
+                        "orchestration_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_orchestration.json"
+                    },
+                    {
+                        "id":  "TT-STRESS-BASIC-CPU-DOWNSTREAM-001",
+                        "test_node":  "stress_cpu",
+                        "target_service":  "ts-basic-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_basic_stress_result.json",
+                        "runner_report":  "artifacts/train-ticket/runtime/generated_basic_stress_runner_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/generated_basic_stress_classification.json",
+                        "classification":  "response_preserved_latency_degradation",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "resource_throttling_observed",
+                                                  "latency_degradation",
+                                                  "controlled_not_found_oracle"
+                                              ],
+                        "selection_report":  "artifacts/train-ticket/runtime/stress_basic_candidate_selection.json",
+                        "generation_plan":  "artifacts/train-ticket/runtime/stress_basic_mutation_generation_plan.json",
+                        "applicability_gate":  "artifacts/train-ticket/runtime/stress_basic_gate.json",
+                        "cgroup_report":  "artifacts/train-ticket/runtime/generated_basic_stress_cgroup.json",
+                        "log_evidence":  "artifacts/train-ticket/runtime/generated_basic_stress_log_evidence.json",
+                        "orchestration_report":  "artifacts/train-ticket/runtime/generated_basic_stress_orchestration.json"
+                    },
+                    {
+                        "id":  "TT-STRESS-ORDER-CPU-SELECTOR-REPLAY",
+                        "test_node":  "stress_cpu",
+                        "target_service":  "ts-order-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_stress_result.json",
+                        "runner_report":  "artifacts/train-ticket/runtime/generated_stress_runner_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/generated_stress_classification.json",
+                        "classification":  "response_observed",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "resource_throttling_observed",
+                                                  "business_path_scope_limited"
+                                              ],
+                        "selection_report":  "artifacts/train-ticket/runtime/stress_candidate_selection.json",
+                        "generation_plan":  "artifacts/train-ticket/runtime/stress_mutation_generation_plan.json",
+                        "cgroup_report":  "artifacts/train-ticket/runtime/generated_stress_cgroup.json",
+                        "orchestration_report":  "artifacts/train-ticket/runtime/generated_stress_orchestration.json"
+                    },
+                    {
+                        "id":  "TT-NETWORK-BASIC-STATION-SELECTOR-REPLAY",
+                        "test_node":  "network_delay",
+                        "target_service":  "ts-basic-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_network_runner_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/generated_network_classification.json",
+                        "classification":  "response_preserved_latency_degradation",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "latency_degradation"
+                                              ],
+                        "selection_report":  "artifacts/train-ticket/runtime/network_candidate_selection.json",
+                        "generation_plan":  "artifacts/train-ticket/runtime/network_mutation_generation_plan.json"
+                    },
+                    {
+                        "id":  "TT-NETWORK-BASIC-STATION-RUNNER-SMOKE",
+                        "test_node":  "network_delay",
+                        "target_service":  "ts-basic-service",
+                        "run_report":  "artifacts/train-ticket/runtime/runner_network_smoke.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/runner_network_smoke_classification.json",
+                        "classification":  "response_preserved_latency_degradation",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "latency_degradation"
+                                              ]
+                    },
+                    {
+                        "id":  "TT-NETWORK-BASIC-STATION-TIMEOUT-BOUNDARY",
+                        "test_node":  "network_delay",
+                        "target_service":  "ts-basic-service",
+                        "run_report":  "artifacts/train-ticket/runtime/network_basic_station_5s_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/network_basic_station_5s_classification.json",
+                        "classification":  "client_timeout_observed",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "client_timeout_budget_exceeded"
+                                              ]
+                    },
+                    {
+                        "id":  "TT-HTTP-ORDER-RESPONSE-PLATFORM-BLOCKED",
+                        "test_node":  "http_replace_response",
+                        "target_service":  "ts-order-service",
+                        "run_report":  "artifacts/train-ticket/runtime/runner_http_blocked.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/runner_http_blocked_classification.json",
+                        "classification":  "platform_or_preflight_blocked",
+                        "evidence_state":  "no_defense_conclusion",
+                        "confidence":  "B",
+                        "root_cause_labels":  [
+                                                  "platform_instrumentation_prerequisite_missing"
+                                              ]
+                    },
+                    {
+                        "id":  "TT-STRESS-ORDER-CPU-BOUNDED",
+                        "test_node":  "stress_cpu",
+                        "target_service":  "ts-order-service",
+                        "run_report":  "artifacts/train-ticket/runtime/stress_order_cpu_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/stress_order_cpu_classification.json",
+                        "classification":  "response_observed",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "B",
+                        "root_cause_labels":  [
+
+                                              ]
+                    },
+                    {
+                        "id":  "TT-STRESS-ORDER-CPU-STRONG",
+                        "test_node":  "stress_cpu",
+                        "target_service":  "ts-order-service",
+                        "run_report":  "artifacts/train-ticket/runtime/stress_order_cpu_strong_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/stress_order_cpu_strong_classification.json",
+                        "classification":  "response_observed",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "B",
+                        "root_cause_labels":  [
+
+                                              ]
+                    },
+                    {
+                        "id":  "TT-HTTP-ORDER-RESPONSE-NOT-INJECTED",
+                        "test_node":  "http_replace_response",
+                        "target_service":  "ts-order-service",
+                        "run_report":  "artifacts/train-ticket/runtime/http_order_404_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/http_order_404_classification.json",
+                        "classification":  "invalid_not_injected",
+                        "evidence_state":  "no_effect_evidence",
+                        "confidence":  "B",
+                        "root_cause_labels":  [
+                                                  "injection_not_confirmed"
+                                              ]
+                    },
+                    {
+                        "id":  "TT-STRESS-BASIC-CPU-WARMUP-001",
+                        "test_node":  "stress_cpu",
+                        "target_service":  "ts-basic-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_basic_stress_warmup_result.json",
+                        "runner_reports":  [
+                                               "artifacts/train-ticket/runtime/generated_basic_stress_success_warmup_runner_result.json",
+                                               "artifacts/train-ticket/runtime/generated_basic_stress_not_found_warmup_runner_result.json"
+                                           ],
+                        "classification_reports":  [
+                                                       "artifacts/train-ticket/runtime/generated_basic_stress_success_warmup_classification.json",
+                                                       "artifacts/train-ticket/runtime/generated_basic_stress_not_found_warmup_classification.json"
+                                                   ],
+                        "classification":  "both_business_oracles_preserved_with_cpu_throttling_and_small_latency_increase",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "resource_throttling_observed",
+                                                  "response_contract_preserved",
+                                                  "warmup_controlled",
+                                                  "latency_increase_requires_slo_boundary"
+                                              ],
+                        "cgroup_reports":  [
+                                               "artifacts/train-ticket/runtime/generated_basic_stress_success_warmup_cgroup.json",
+                                               "artifacts/train-ticket/runtime/generated_basic_stress_not_found_warmup_cgroup.json"
+                                           ],
+                        "log_evidence":  [
+                                             "artifacts/train-ticket/runtime/generated_basic_stress_success_warmup_log_evidence.json",
+                                             "artifacts/train-ticket/runtime/generated_basic_stress_not_found_warmup_log_evidence.json"
+                                         ],
+                        "orchestration_reports":  [
+                                                      "artifacts/train-ticket/runtime/generated_basic_stress_success_warmup_orchestration.json",
+                                                      "artifacts/train-ticket/runtime/generated_basic_stress_not_found_warmup_orchestration.json"
+                                                  ]
+                    },
+                    {
+                        "id":  "TT-STRESS-BASIC-CPU-STRONG-WARMUP-001",
+                        "test_node":  "stress_cpu",
+                        "target_service":  "ts-basic-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_strong_warmup_result.json",
+                        "runner_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_strong_warmup_runner_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_strong_warmup_classification.json",
+                        "classification":  "response_preserved_latency_degradation",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "resource_throttling_observed",
+                                                  "latency_degradation",
+                                                  "success_oracle_preserved",
+                                                  "timeout_boundary_not_reached"
+                                              ],
+                        "cgroup_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_strong_warmup_cgroup.json",
+                        "orchestration_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_strong_warmup_orchestration.json",
+                        "log_evidence":  "not_captured_permission_review_timeout"
+                    },
+                    {
+                        "id":  "TT-STRESS-BASIC-CPU-CONCURRENT-001",
+                        "test_node":  "stress_cpu",
+                        "target_service":  "ts-basic-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_concurrent_result.json",
+                        "runner_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_concurrent_runner_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_concurrent_classification.json",
+                        "classification":  "response_preserved_latency_degradation",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "resource_throttling_observed",
+                                                  "concurrency_amplified_latency",
+                                                  "success_oracle_preserved",
+                                                  "timeout_boundary_not_reached"
+                                              ],
+                        "cgroup_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_concurrent_cgroup.json",
+                        "orchestration_report":  "artifacts/train-ticket/runtime/generated_basic_stress_success_concurrent_orchestration.json",
+                        "log_evidence":  "not_captured_permission_review_timeout"
+                    },
+                    {
+                        "id":  "TT-STRESS-STATION-CPU-SUCCESS-001",
+                        "test_node":  "stress_cpu",
+                        "target_service":  "ts-station-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_station_stress_success_result.json",
+                        "runner_report":  "artifacts/train-ticket/runtime/generated_station_stress_success_warmup_runner_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/generated_station_stress_success_warmup_classification.json",
+                        "classification":  "response_observed",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "resource_throttling_observed",
+                                                  "station_success_oracle_preserved",
+                                                  "latency_increase"
+                                              ],
+                        "selection_report":  "artifacts/train-ticket/runtime/stress_candidate_selection.json",
+                        "applicability_gate":  "artifacts/train-ticket/runtime/stress_station_gate.json",
+                        "cgroup_report":  "artifacts/train-ticket/runtime/generated_station_stress_success_warmup_cgroup.json",
+                        "orchestration_report":  "artifacts/train-ticket/runtime/generated_station_stress_success_warmup_orchestration.json",
+                        "log_evidence":  "not_captured_permission_review_timeout"
+                    },
+                    {
+                        "id":  "TT-NETWORK-STATION-DELAY-SUCCESS-001",
+                        "test_node":  "network_delay",
+                        "target_service":  "ts-station-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_station_network_delay_result.json",
+                        "runner_report":  "artifacts/train-ticket/runtime/generated_station_network_delay_runner_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/generated_station_network_delay_classification.json",
+                        "classification":  "response_preserved_latency_degradation",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "network_delay_injected",
+                                                  "latency_degradation",
+                                                  "station_success_oracle_preserved",
+                                                  "timeout_boundary_not_reached"
+                                              ],
+                        "selection_report":  "artifacts/train-ticket/runtime/stress_candidate_selection.json",
+                        "applicability_gate":  "artifacts/train-ticket/runtime/network_station_gate.json",
+                        "log_evidence":  "not_captured_permission_review_timeout"
+                    },
+                    {
+                        "id":  "TT-NETWORK-STATION-DELAY-NOTFOUND-001",
+                        "test_node":  "network_delay",
+                        "target_service":  "ts-station-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_station_network_delay_oracle_comparison.json",
+                        "runner_report":  "artifacts/train-ticket/runtime/generated_station_network_not_found_delay_runner_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/generated_station_network_not_found_delay_classification.json",
+                        "classification":  "response_preserved_latency_degradation",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "network_delay_injected",
+                                                  "latency_degradation",
+                                                  "not_found_oracle_preserved",
+                                                  "timeout_boundary_not_reached"
+                                              ],
+                        "applicability_gate":  "artifacts/train-ticket/runtime/network_station_gate.json",
+                        "log_evidence":  "not_captured_permission_review_timeout"
+                    },
+                    {
+                        "id":  "TT-NETWORK-STATION-DELAY-BOUNDARY-001",
+                        "test_node":  "network_delay",
+                        "target_service":  "ts-station-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_station_network_delay_boundary_comparison.json",
+                        "runner_report":  "artifacts/train-ticket/runtime/generated_station_network_delay_r3_runner_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/generated_station_network_delay_r3_classification.json",
+                        "classification":  "response_preserved_latency_degradation",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "network_delay_effect_reproduced",
+                                                  "latency_monotonic_with_nominal_delay",
+                                                  "technical_timeout_boundary_approached"
+                                              ],
+                        "applicability_gate":  "artifacts/train-ticket/runtime/network_station_r3_gate.json",
+                        "log_evidence":  "not_captured_permission_review_timeout"
+                    },
+                    {
+                        "id":  "TT-NETWORK-STATION-DELAY-TIMEOUT-001",
+                        "test_node":  "network_delay",
+                        "target_service":  "ts-station-service",
+                        "run_report":  "artifacts/train-ticket/runtime/generated_station_network_delay_r4_result.json",
+                        "runner_report":  "artifacts/train-ticket/runtime/generated_station_network_delay_r4_runner_result.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/generated_station_network_delay_r4_classification.json",
+                        "classification":  "client_timeout_observed",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "network_delay_injected",
+                                                  "client_timeout_budget_exceeded",
+                                                  "server_branch_completed_after_client_timeout",
+                                                  "runtime_configured_mysql_peer",
+                                                  "packet_attribution_not_collected"
+                                              ],
+                        "applicability_gate":  "artifacts/train-ticket/runtime/network_station_r3_gate.json",
+                        "log_evidence":  "artifacts/train-ticket/runtime/generated_station_network_delay_r4_result.json"
+                    },
+                    {
+                        "id":  "TT-NETWORK-STATION-DELAY-LINE-001",
+                        "test_node":  "network_delay",
+                        "target_service":  "ts-station-service",
+                        "run_report":  "artifacts/train-ticket/runtime/station_network_delay_line_report.json",
+                        "classification_report":  "artifacts/train-ticket/runtime/station_network_delay_line_report.json",
+                        "classification":  "client_timeout_observed",
+                        "evidence_state":  "runtime_effect_observed",
+                        "confidence":  "A",
+                        "root_cause_labels":  [
+                                                  "network_delay_effect_reproduced",
+                                                  "latency_monotonic_with_nominal_delay",
+                                                  "technical_timeout_boundary_crossed",
+                                                  "server_completion_after_client_timeout",
+                                                  "stop_rule_applied"
+                                              ],
+                        "applicability_gate":  "artifacts/train-ticket/runtime/network_station_r3_gate.json",
+                        "log_evidence":  "artifacts/train-ticket/runtime/generated_station_network_delay_r4_result.json"
+                    }
+                ]
+}

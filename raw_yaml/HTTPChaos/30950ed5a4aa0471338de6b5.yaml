@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: api-gateway-503-injection
+  namespace: chaos-mesh
+  labels:
+    experiment: http-fault
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - employee-platform
+    labelSelectors:
+      app: api-gateway
+  target: Response
+  port: 8080
+  path: /api/employees/*
+  abort: false
+  delay: 100ms
+  replace:
+    code: 503
+  percent: 30
+  duration: 1m

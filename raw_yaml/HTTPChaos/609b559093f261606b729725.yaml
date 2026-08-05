@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: shipping-http
+  namespace: sock-shop
+spec:
+  target: Request
+  port: 80
+  method: GET
+  path: /
+  abort: true
+  mode: all
+  duration: 10m
+  selector:
+    labelSelectors:
+      name: shipping

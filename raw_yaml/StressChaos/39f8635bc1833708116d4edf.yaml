@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-stress
+  namespace: query-engines
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - query-engines
+    labelSelectors:
+      app.kubernetes.io/name: clickhouse
+  stressors:
+    memory:
+      workers: 1
+      size: 1GB
+  duration: 45s
+  scheduler:
+    cron: '@every 25m'

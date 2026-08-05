@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition-test
+  namespace: chaos-testing
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - self-healing-prod
+    labelSelectors:
+      app: gateway-service
+  direction: to
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - self-healing-prod
+      labelSelectors:
+        app: data-service
+  duration: 2m

@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: DNSChaos
+metadata:
+  name: external-api-dns-error
+  namespace: chaos-testing
+spec:
+  action: error
+  mode: all
+  selector:
+    namespaces:
+    - elevatediq
+    labelSelectors:
+      app: portal-backend
+  patterns:
+  - auth0.com
+  - api.stripe.com
+  duration: 30s
+  scheduler:
+    cron: 0 5 * * 0

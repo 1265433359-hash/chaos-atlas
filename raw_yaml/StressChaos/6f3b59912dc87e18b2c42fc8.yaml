@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: remitflow-server-memory-stress
+  namespace: remitflow-staging
+  labels:
+    app.kubernetes.io/part-of: remitflow
+    chaos-type: resource
+    target: server
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - remitflow-staging
+    labelSelectors:
+      app: remitflow-server
+  stressors:
+    memory:
+      workers: 4
+      size: 512MB
+  duration: 3m

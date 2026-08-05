@@ -1,0 +1,29 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-latency-elite-scanner
+  namespace: elevatediq-production
+  labels:
+    app.kubernetes.io/name: chaos-experiment
+    app.kubernetes.io/component: network-latency
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - elevatediq-production
+    labelSelectors:
+      app.kubernetes.io/name: elite-scanner
+  delay:
+    latency: 200ms
+    jitter: 50ms
+    correlation: '50'
+  direction: both
+  target:
+    selector:
+      namespaces:
+      - elevatediq-production
+      labelSelectors:
+        app.kubernetes.io/name: ml-forecasting
+    mode: all
+  duration: 120s

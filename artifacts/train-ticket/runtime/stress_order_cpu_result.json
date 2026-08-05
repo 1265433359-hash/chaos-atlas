@@ -1,0 +1,36 @@
+{
+  "experiment_id": "TT-STRESS-ORDER-CPU-001",
+  "source_yaml": "raw_yaml/StressChaos/0885ce87187120d724117939.yaml",
+  "mutation_yaml": "artifacts/train-ticket/runtime/injections/order-stress-cpu-short.yaml",
+  "namespace": "train-ticket-lab",
+  "target": "ts-order-service/ts-order-service-5f8ffb4b7b-qdflp",
+  "mutation": {"workers": 1, "load_percent": 80, "duration": "45s"},
+  "chaos_status": {
+    "selected": true,
+    "all_injected": true,
+    "injected_count": 1,
+    "injection_phase": "Injected",
+    "recovered_count": 1,
+    "all_recovered": true,
+    "recover_event": "2026-08-03T13:15:53Z"
+  },
+  "request_samples_during_window": [
+    {"attempt": 1, "status": 200, "latency_ms": 101},
+    {"attempt": 2, "status": 200, "latency_ms": 23},
+    {"attempt": 3, "status": 200, "latency_ms": 48},
+    {"attempt": 4, "status": 200, "latency_ms": 30},
+    {"attempt": 5, "status": 200, "latency_ms": 36},
+    {"attempt": 6, "status": 200, "latency_ms": 19},
+    {"attempt": 7, "status": 200, "latency_ms": 68},
+    {"attempt": 8, "status": 200, "latency_ms": 38}
+  ],
+  "post_recovery_samples": [
+    {"attempt": 1, "status": 200, "latency_ms": 56},
+    {"attempt": 2, "status": 200, "latency_ms": 16},
+    {"attempt": 3, "status": 200, "latency_ms": 72}
+  ],
+  "pod_observation": {"ready": true, "restarts": 0},
+  "metrics_gap": "kubectl top returned no sample; CPU throttling was not directly measured.",
+  "result_classification": "functional_defense_observed_at_test_strength",
+  "interpretation": "At one worker and 80 percent stress for 45 seconds, the selected read-only request remained HTTP 200 and the pod recovered without restart. This does not prove behavior under the original five-minute four-worker stressor."
+}

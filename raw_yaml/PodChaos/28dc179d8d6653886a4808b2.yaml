@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-failure
+  namespace: llmchat
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+    - llmchat
+    labelSelectors:
+      app: llmchat-backend
+  duration: 2m

@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: service-latency-all-paths
+  namespace: chaos-testing
+  labels:
+    experiment: http-chaos
+    severity: medium
+spec:
+  selector:
+    namespaces:
+    - production
+    labelSelectors:
+      app: api-gateway
+  mode: all
+  action: delay
+  delay: 200ms
+  percent: '20'
+  target: Service
+  port: 8080
+  duration: 15m

@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-abort-experiment
+  namespace: chaos-mesh
+spec:
+  mode: random-max-percent
+  value: '30'
+  selector:
+    namespaces:
+    - microservices
+    labelSelectors:
+      app: api-gateway
+  target: Request
+  port: 8080
+  method: POST
+  path: /api/orders
+  abort: true
+  duration: 3m

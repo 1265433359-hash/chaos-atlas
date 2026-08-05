@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: basic-network-delay-short
+  namespace: train-ticket-lab
+  annotations:
+    chaos.origin.raw-sha256: b706e36cc61568c10f20e0b4a4d68c0ced84e70174f314ad0388f58ec29512dd
+  labels:
+    chaos.origin: train-ticket-network
+    chaos.test-node: network_delay
+    chaos.profile: downstream-short
+spec:
+  selector:
+    namespaces:
+      - train-ticket-lab
+    labelSelectors:
+      app: ts-basic-service
+  mode: one
+  action: delay
+  direction: to
+  delay:
+    latency: 500ms
+  duration: 45s

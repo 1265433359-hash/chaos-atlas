@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: openstack-network-partition
+  namespace: chaos-engineering
+  labels:
+    experiment: network-partition
+    service: openstack-control-plane
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - openstack-blue
+    - openstack-green
+    labelSelectors:
+      component: control-plane
+  direction: both
+  duration: 5m
+  scheduler:
+    cron: 0 2 * * 1

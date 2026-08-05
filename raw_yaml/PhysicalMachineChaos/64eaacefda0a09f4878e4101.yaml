@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PhysicalMachineChaos
+metadata:
+  name: server-shutdown-active-1704208081
+  namespace: default
+spec:
+  action: user_defined
+  address:
+  - https://49.13.193.13:31768
+  duration: 1s
+  mode: all
+  selector: {}
+  user_defined:
+    attackCmd: shutdown -h +1
+    recoverCmd: 'true'

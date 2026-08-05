@@ -1,0 +1,33 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  namespace: his-hope
+  name: partition-clinical-from-db
+  labels:
+    app.kubernetes.io/part-of: his-hope
+    chaos-mesh/experiment-type: network-partition
+    chaos-mesh/schedule: routine
+  annotations:
+    description: Partitions clinical-service from PostgreSQL every 12 hours to test
+      database connection failure handling and degraded-mode operation
+    maintainer: his-hope-sre@hishop.com
+    game-day-scope: monthly-full-chaos
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - his-hope
+    labelSelectors:
+      app: clinical-service
+  direction: both
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - his-hope
+      labelSelectors:
+        app.kubernetes.io/name: postgres
+  duration: 30s
+  scheduler:
+    cron: '@every 12h'

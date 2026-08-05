@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "tool": "capture_http_observation",
+  "started_at": "2026-08-04T11:25:51.090538+00:00",
+  "namespace": "train-ticket-lab",
+  "service": "ts-station-service",
+  "request_config": {
+    "remote_port": 12345,
+    "local_port": 18094,
+    "path": "/api/v1/stationservice/stations/id/stationName",
+    "method": "GET",
+    "count": 3,
+    "timeout_sec": 5.0
+  },
+  "requests": [
+    {
+      "status_code": 200,
+      "latency_ms": 35.324,
+      "body": "{\"status\":0,\"msg\":\"Not exists\",\"data\":\"stationName\"}",
+      "error": null,
+      "sample": 1,
+      "observed_at": "2026-08-04T11:25:51.838045+00:00"
+    },
+    {
+      "status_code": 200,
+      "latency_ms": 32.038,
+      "body": "{\"status\":0,\"msg\":\"Not exists\",\"data\":\"stationName\"}",
+      "error": null,
+      "sample": 2,
+      "observed_at": "2026-08-04T11:25:52.370368+00:00"
+    },
+    {
+      "status_code": 200,
+      "latency_ms": 27.639,
+      "body": "{\"status\":0,\"msg\":\"Not exists\",\"data\":\"stationName\"}",
+      "error": null,
+      "sample": 3,
+      "observed_at": "2026-08-04T11:25:52.898308+00:00"
+    }
+  ],
+  "errors": [],
+  "port_forward": {
+    "return_code": 1,
+    "stopped_by_runner": true,
+    "stdout": "Forwarding from 127.0.0.1:18094 -> 12345\nForwarding from [::1]:18094 -> 12345\nHandling connection for 18094\nHandling connection for 18094\nHandling connection for 18094\nHandling connection for 18094",
+    "stderr": ""
+  },
+  "finished_at": "2026-08-04T11:25:52.905709+00:00"
+}

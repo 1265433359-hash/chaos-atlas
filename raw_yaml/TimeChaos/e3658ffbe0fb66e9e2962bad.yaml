@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: epic8-time-chaos-test
+  namespace: epic8-prod
+  labels:
+    epic8.platform/experiment: time-chaos
+    epic8.platform/component: chaos-engineering
+    epic8.platform/validation: time-synchronization
+spec:
+  mode: fixed
+  value: '1'
+  duration: 240s
+  timeOffset: 30s
+  clockIds:
+  - CLOCK_REALTIME
+  selector:
+    namespaces:
+    - epic8-prod
+    labelSelectors:
+      epic8.platform/service: analytics

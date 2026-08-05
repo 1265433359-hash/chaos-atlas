@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: nginx-demo-cpu-mem
+  namespace: chaos-demo
+spec:
+  mode: random-max-percent
+  value: '60'
+  selector:
+    namespaces:
+    - chaos-demo
+    labelSelectors:
+      app: nginx-demo
+  stressors:
+    cpu:
+      workers: 2
+      load: 70
+    memory:
+      workers: 1
+      size: 256MB
+  duration: 90s

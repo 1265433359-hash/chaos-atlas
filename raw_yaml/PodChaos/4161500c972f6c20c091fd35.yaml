@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-failure-experiment
+  namespace: selfhealing
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - selfhealing
+    labelSelectors:
+      app: crave-backend
+  duration: 30s

@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PhysicalMachineChaos
+metadata:
+  name: stop-wireguard-active-1695157322
+  namespace: default
+spec:
+  action: user_defined
+  address:
+  - https://49.12.207.65:31768
+  duration: 10m
+  mode: all
+  selector: {}
+  user_defined:
+    attackCmd: systemctl stop wg-quick@wg0.service
+    recoverCmd: systemctl start wg-quick@wg0.service

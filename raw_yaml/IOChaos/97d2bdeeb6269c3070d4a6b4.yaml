@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: securerag-db-io-chaos
+  namespace: securerag-hub
+  annotations:
+    feature.securerag.dev/enable-chaos-mesh: 'true'
+    chaos.securerag.dev/category: database
+spec:
+  action: latency
+  mode: one
+  selector:
+    namespaces:
+    - securerag-hub
+    labelSelectors:
+      app.kubernetes.io/name: postgres-auth
+  delay: 100ms
+  path: /var/lib/postgresql/data
+  percent: 50
+  volumePath: /var/lib/postgresql/data
+  duration: 30s

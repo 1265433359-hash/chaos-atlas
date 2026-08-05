@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: http-flood-gateway
+  namespace: chaos-testing
+  labels:
+    app.kubernetes.io/part-of: sentinels
+    experiment-type: http-flood
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - netflix
+    labelSelectors:
+      app: api-gateway
+  target: Request
+  port: 8001
+  method: GET
+  path: /api/*
+  abort: true
+  duration: 30s

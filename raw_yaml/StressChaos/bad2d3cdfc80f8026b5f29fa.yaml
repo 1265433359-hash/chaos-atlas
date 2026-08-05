@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: pesitwizard-cpu-stress
+  namespace: staging
+  labels:
+    app: pesitwizard
+    chaos-type: cpu-stress
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - staging
+    labelSelectors:
+      app: pesitwizard-server
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 5m
+  scheduler:
+    cron: 0 */6 * * *

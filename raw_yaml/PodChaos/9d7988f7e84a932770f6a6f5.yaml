@@ -1,0 +1,14 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pdb-validation
+  namespace: chaos-testing
+spec:
+  action: pod-kill
+  mode: all
+  selector:
+    namespaces:
+    - grafana
+    labelSelectors:
+      app.kubernetes.io/name: grafana
+  duration: 30s

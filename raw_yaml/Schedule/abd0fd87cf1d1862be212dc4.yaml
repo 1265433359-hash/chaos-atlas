@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: scheduled-chaos-tests
+  namespace: qbitel
+spec:
+  schedule: 0 2 * * *
+  type: PodChaos
+  podChaos:
+    action: pod-kill
+    mode: one
+    selector:
+      namespaces:
+      - qbitel
+      labelSelectors:
+        app: qbitel
+    duration: 30s
+  historyLimit: 5
+  concurrencyPolicy: Forbid

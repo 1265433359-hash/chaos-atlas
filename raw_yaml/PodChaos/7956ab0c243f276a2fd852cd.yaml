@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: securerag-pod-kill
+  namespace: securerag-hub
+  annotations:
+    feature.securerag.dev/enable-chaos-mesh: 'true'
+    chaos.securerag.dev/category: availability
+    chaos.securerag.dev/mttr-target: 30s
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - securerag-hub
+    labelSelectors:
+      app.kubernetes.io/name: chatbot-manager
+  scheduler:
+    cron: '@every 1h'
+  duration: 30s

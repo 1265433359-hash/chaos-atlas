@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-stress-selected-pod
+  namespace: chaos-mesh
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - default
+    labelSelectors:
+      app: chat-authorization-deployment
+  stressors:
+    memory:
+      workers: 4
+      size: 4096MB

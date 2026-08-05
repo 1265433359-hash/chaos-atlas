@@ -1,0 +1,15 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: chaos-mesh
+  name: {}
+spec:
+  selector:
+    namespaces:
+    - {}
+    labelSelectors:
+      name: {}
+  mode: all
+  action: container-kill
+  containerNames: {}
+  duration: 0s

@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-worker
+  namespace: reliabilityos
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - reliabilityos
+    labelSelectors:
+      app: worker
+  stressors:
+    cpu:
+      workers: 1
+      load: 80
+  duration: 180s

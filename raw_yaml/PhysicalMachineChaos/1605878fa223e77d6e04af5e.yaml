@@ -1,0 +1,13 @@
+kind: PhysicalMachineChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: chaos-mesh
+  name: {}
+spec:
+  action: stress-mem
+  address:
+  - {}
+  mode: all
+  stress-mem:
+    size: {}
+  duration: {}

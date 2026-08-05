@@ -1,0 +1,12 @@
+kind: PodChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  name: pod-kill
+spec:
+  selector:
+    labelSelectors:
+      app: kafka
+  mode: fixed
+  value: '1'
+  action: pod-kill
+  gracePeriod: 0

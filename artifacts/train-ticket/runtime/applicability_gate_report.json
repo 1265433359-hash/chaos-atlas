@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "tool": "runtime_applicability_gate",
+  "results": [
+    {
+      "checked_at": "2026-08-03T13:48:26.186371+00:00",
+      "mutation": "artifacts/train-ticket/runtime/injections/order-http-code-nonexistent.yaml",
+      "kind": "HTTPChaos",
+      "namespace": "train-ticket-lab",
+      "name": "order-http-code-nonexistent",
+      "selector": {
+        "namespaces": [
+          "train-ticket-lab"
+        ],
+        "labelSelectors": {
+          "app": "ts-order-service"
+        }
+      },
+      "decision": "blocked",
+      "checks": {
+        "yaml_shape": true,
+        "crd_exists": true,
+        "chaos_components_ready": true,
+        "selector_matches": true,
+        "target_pods": [
+          {
+            "namespace": "train-ticket-lab",
+            "name": "ts-order-service-5f8ffb4b7b-qdflp",
+            "ready": true,
+            "restarts": 0,
+            "ports": [
+              12031
+            ]
+          }
+        ],
+        "target_pods_ready": true,
+        "target_port_exists": true,
+        "mutation_name_available": true,
+        "injector_prerequisite": {
+          "status": "blocked",
+          "evidence": "Chaos Daemon reported that the WSL2 kernel lacks ebtables.",
+          "blocker": "platform_instrumentation_prerequisite_missing"
+        }
+      },
+      "errors": [
+        "platform_instrumentation_prerequisite_missing"
+      ],
+      "interpretation": {
+        "selected_is_not_injected": true,
+        "defense_conclusion_allowed": false
+      },
+      "resource_error": "Error from server (NotFound): httpchaos.chaos-mesh.org \"order-http-code-nonexistent\" not found\n"
+    },
+    {
+      "checked_at": "2026-08-03T13:48:26.473625+00:00",
+      "mutation": "artifacts/train-ticket/runtime/injections/order-stress-cpu-short.yaml",
+      "kind": "StressChaos",
+      "namespace": "train-ticket-lab",
+      "name": "order-stress-cpu-short",
+      "selector": {
+        "namespaces": [
+          "train-ticket-lab"
+        ],
+        "labelSelectors": {
+          "app": "ts-order-service"
+        }
+      },
+      "decision": "ready_for_injection",
+      "checks": {
+        "yaml_shape": true,
+        "crd_exists": true,
+        "chaos_components_ready": true,
+        "selector_matches": true,
+        "target_pods": [
+          {
+            "namespace": "train-ticket-lab",
+            "name": "ts-order-service-5f8ffb4b7b-qdflp",
+            "ready": true,
+            "restarts": 0,
+            "ports": [
+              12031
+            ]
+          }
+        ],
+        "target_pods_ready": true,
+        "target_port_exists": true,
+        "mutation_name_available": true,
+        "injector_prerequisite": {
+          "status": "pass",
+          "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+        }
+      },
+      "errors": [],
+      "interpretation": {
+        "selected_is_not_injected": true,
+        "defense_conclusion_allowed": true
+      },
+      "resource_error": "Error from server (NotFound): stresschaos.chaos-mesh.org \"order-stress-cpu-short\" not found\n"
+    }
+  ],
+  "summary": {
+    "ready_for_injection": 1,
+    "blocked": 1,
+    "not_applicable": 0
+  }
+}

@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-kill-api-gateway
+  namespace: chaos-testing
+  labels:
+    experiment: pod-kill
+    tier: targeted
+    app.kubernetes.io/part-of: self-healing-infra
+  annotations:
+    chaos.selfhealing.io/description: Kill api-gateway pod to validate ingress recovery
+    chaos.selfhealing.io/expected-recovery-seconds: '45'
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - self-healing
+    labelSelectors:
+      app.kubernetes.io/name: api-gateway
+  gracePeriod: 0
+  duration: 30s

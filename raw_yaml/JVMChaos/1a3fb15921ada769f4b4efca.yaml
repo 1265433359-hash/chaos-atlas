@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: JVMChaos
+metadata:
+  name: kafka-jvm-exception
+  namespace: kafka-cluster
+spec:
+  action: exception
+  mode: one
+  selector:
+    namespaces:
+    - kafka-cluster
+    labelSelectors:
+      strimzi.io/cluster: kafka-cluster
+      strimzi.io/kind: Kafka
+  class: kafka.server.KafkaApis
+  method: handleProduceRequest
+  exception: java.io.IOException("Chaos test exception")
+  duration: 30s

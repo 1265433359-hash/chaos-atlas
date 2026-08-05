@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition-test
+  namespace: estatewise
+spec:
+  action: partition
+  mode: one
+  selector:
+    namespaces:
+    - estatewise
+    labelSelectors:
+      app: estatewise-backend
+  direction: both
+  duration: 1m
