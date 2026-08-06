@@ -94,6 +94,50 @@
 
 **阈值结论**：与 1s 级（1024ms ok，无重启）对照——**重启阈值不是延迟绝对值，而是"延迟 > 探针 timeoutSeconds(1s)"**。1s 恰好不触发（探针测量与注入的时序误差），1.5s 必触发。**探针重启 = 故障持续超过 (timeoutSeconds × failureThreshold × periodSeconds) 的组合，而非简单的延迟阈值**。
 
+## 深入 C：shipping 双倍延迟传导 + 致命丢包（三下游矩阵补全）
+
+**方法**：shippingservice 注入 2s 延迟 / 100% 丢包，测 PlaceOrder。
+
+| shipping 故障 | PlaceOrder | 语义 |
+|---|---|---|
+| 2s 延迟 | **4021.5ms ok** | **双倍传导**（GetQuote + ShipOrder 两次调用 × 2s） |
+| 100% 丢包 | **挂起 10010.7ms → DEADLINE_EXCEEDED** | 致命（无降级），同 payment |
+
+**代码确证**：`checkoutservice/main.go:315`（quoteShipping → GetQuote）+ `:387`（shipOrder → ShipOrder）——PlaceOrder 路径上 shipping 被调用**两次**，2s 延迟 × 2 = 4s。**shipping 是比 payment 更严重的传导点**（双倍）。
+
+## 深入 D：checkout 三下游语义矩阵（补全）
+
+| 下游 | 延迟故障 | 丢包故障 | 致命性 |
+|---|---|---|---|
+| paymentservice | 2021.5ms 传导 | 挂起 10s 后 DEADLINE_EXCEEDED | **致命**（chargeCard 错误 → PlaceOrder 失败） |
+| shippingservice | **4021.5ms 双倍传导** | 挂起 10s 后 DEADLINE_EXCEEDED | **致命**（GetQuote/ShipOrder 双调用） |
+| emailservice | 2021.3ms 传导 | 27.4ms **降级成功** | **非致命**（log.Warnf 吞错） |
+
+**结论**：三个下游三种语义——**致命（payment/shipping）+ 降级（email）**。但致命性只影响"失败与否"，不影响"延迟传导"——**所有下游的延迟都全额传导**（无 timeout 是共性缺陷）。
+
+## 深入 E：注入窗口内连续采样（揭示探针重启"治愈"故障）
+
+**方法**：payment 2s 延迟 60s 窗口，每 3s 采样 PlaceOrder + payment restart 计数。
+
+```
+t= 0s  2021.4ms ok    restarts=8   ← 注入生效，延迟传导
+t= 3s  2020.3ms ok    restarts=8   ← 稳定延迟
+t= 6s  2021.1ms ok    restarts=8
+t= 9s  2023.2ms ok    restarts=8
+t=12s   18.7ms ok    restarts=8   ← 探针触发，容器被杀
+t=15s   12.2ms rpc_error restarts=9  ← 重启中，连接被拒
+t=18s   12.5ms rpc_error restarts=9
+t=21s   11.4ms rpc_error restarts=9
+t=24s   21.4ms ok    restarts=9   ← 新容器恢复
+t=27s+  16-19ms ok    restarts=9   ← 之后一直正常（无延迟！）
+```
+
+**决定性发现**：
+1. **探针重启"意外治愈"了延迟故障**：t=12s 容器被杀 → 新容器启动后**不再有 2s 延迟**（16-19ms）——chaos 注入（tc netem）绑定在**旧容器的网络命名空间**，新容器**逃逸了注入**。
+2. **自动恢复的真相**：不是"系统防御了延迟"，而是"探针把容器杀了，新容器恰好没被注入"——**混沌注入被重启绕过**。
+3. **阶梯实验的"快速失败"谜团彻底解开**：阶梯里 2s/3s/5s 显示 rpc_error connection refused，正是因为探针重启后新容器逃逸注入，且旧 IP 的 endpoint 短暂失效。
+4. **对混沌实验的方法论警示**：NetworkChaos 注入在容器重启后**静默失效**——若实验只观察"注入后一段时间"，可能因重启逃逸而误判"系统自愈"。必须用 cgroup/指标等**与容器生命周期无关**的观测，或持续采样。
+
 ## 与 train-ticket 的方法对称
 
 - train-ticket：延迟阶梯（100ms/500ms/2s）→ 客户端超时边界

@@ -41,6 +41,16 @@
       "business_path_status": "confirmed_runtime",
       "runtime_status": "validated_runtime",
       "injection_recommendation": "probe_restart_race_documented"
+    },
+    {
+      "id": "KB-OB-CHECKOUT-SHIPPING-FAILURE-001",
+      "path": "KB-OB-CHECKOUT-SHIPPING-FAILURE-001.json",
+      "test_family": "NetworkChaos",
+      "operation": "delay_loss",
+      "target": "app=shippingservice",
+      "business_path_status": "confirmed_runtime",
+      "runtime_status": "validated_runtime",
+      "injection_recommendation": "double_call_no_timeout_documented"
     }
   ]
 }

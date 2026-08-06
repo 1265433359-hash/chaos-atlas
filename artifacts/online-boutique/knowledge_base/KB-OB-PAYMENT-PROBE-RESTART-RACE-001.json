@@ -86,6 +86,11 @@
     "threshold_15s": {"latency_ms": 1517.8, "restart": true, "note": "1.5s delay (>1s probe timeout) triggers SIGKILL after ~35s (3 probe failures)"},
     "threshold_1s": {"restart": false, "note": "1s delay at probe timeout boundary, no restart observed"},
     "threshold_rule": "delay > livenessProbe.timeoutSeconds(1s) sustained across failureThreshold(3)x periodSeconds(10s) triggers restart",
+    "continuous_timeline": {
+      "artifact": "continuous_sampling_result.json",
+      "sequence": ["2021ms x4 ok", "t=12s container killed by probe", "rpc_error x3 (restarting)", "t=24s new container 17ms ok", "no delay afterwards"],
+      "note": "probe restart 'cures' the injected delay: chaos (tc netem) binds to old container netns, new container escapes injection"
+    },
     "cross_env": "same probe restart observed on docker-desktop (exit 137)"
   },
   "root_cause": "probe_timeout_1s_shorter_than_injected_delay_plus_probe_failure_threshold_interaction",
