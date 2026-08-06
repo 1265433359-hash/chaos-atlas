@@ -54,6 +54,30 @@ PlaceOrder 稳定 **~3.0-3.3s**（中位 ~3100ms）——比 OB（17ms）高两�
 - 基线 ~3s 已含 OTel SDK 开销——**观测本身有成本**，这是"观测完备系统"的隐性代价
 - 后续可补：启用观测栈后重跑注入，验证故障是否被 Jaeger trace 捕获（观测缺口检测）
 
+## 观测缺口验证（深入 A，2026-08-06 追加）
+
+**背景**：前两个项目无法验证"观测完备系统能否捕获注入故障"（OB/train-ticket 无观测栈）。OTel Demo 自带 OTel SDK，部署 Jaeger all-in-one 作为 trace 后端（绕开 429 限流的 collector，服务 SDK 直接 OTLP 导出到 Jaeger:4318）。
+
+**验证结果**：
+- Jaeger services API 捕获 4 个服务（cart/checkout/shipping/jaeger）的 trace
+- 基线 PlaceOrder trace：`oteldemo.PaymentService/Charge` span **513ms**
+- **注入 2s 延迟后**：PaymentService/Charge span **4462ms** + `System.Net.Http.HttpRequestException` 错误事件，与客户端观测的 4489.6ms 精确吻合
+- **结论：观测完备系统完整捕获注入故障——无观测缺口**（延迟 + 错误事件都在 trace 中）
+
+**方法论价值**：OTel Demo 提供了"trace 级故障归因"能力（前两项目只能靠客户端延迟+日志推断）。注入故障的 span 级延迟与错误事件 = 最强的证据链。这也回答了"观测完备系统能否自动诊断故障"——**能捕获，但需要人工查 Jaeger，无自动告警**。
+
+## email 降级验证（深入 C，追加）
+
+| email 故障 | PlaceOrder | 与 OB 对比 |
+|---|---|---|
+| 2s 延迟 | 5410ms（+2000 传导） | OB 2021ms（同模式） |
+| 100% 丢包 | **挂起 10008.8ms → DEADLINE_EXCEEDED** | OB **27.4ms 快速降级** |
+
+**新发现：gRPC vs HTTP 丢包行为差异**
+- OB email 用 **gRPC**：丢包时连接层快速失败 → 27ms 降级（`log.Warnf` 吞错）
+- OTel Demo email 用 **HTTP**：丢包时 TCP 挂起（无 timeout）→ **10s 才降级**
+- 共性：两者 email 都"失败不致命"（降级），但**延迟/挂起仍全额传导**——降级只影响"成败"，不影响"延迟"
+
 ## 已知限制
 
 - 观测栈未启用（资源考虑）——trace 级归因未验证

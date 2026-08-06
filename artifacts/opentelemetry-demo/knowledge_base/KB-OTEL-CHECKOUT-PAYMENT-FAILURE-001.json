@@ -70,15 +70,19 @@
     "classification": "full_propagation_and_infinite_hang",
     "defense_claim": "not_derived",
     "baseline_ms": 3100,
-    "delay_case": {"latency_ms": [4793.3, 5175.3], "note": "+1690/+2075ms propagation, no timeout"},
-    "loss_case": {"hang_ms": 10007.4, "outcome": "DEADLINE_EXCEEDED", "note": "100% loss hangs to 10s client deadline"}
+    "delay_case": {"latency_ms": [4793.3, 5175.3, 4489.6], "note": "+1690/+2075/+1485ms propagation, no timeout"},
+    "loss_case": {"hang_ms": 10007.4, "outcome": "DEADLINE_EXCEEDED", "note": "100% loss hangs to 10s client deadline"},
+    "observability_capture": {
+      "jaeger_trace": "injected window trace payment span 4462ms + HttpRequestException event; baseline 513ms",
+      "note": "Jaeger captures injected fault fully (delay + error event); no observability gap, but no auto-alert"
+    }
   },
   "root_cause": "missing_timeout_on_downstream_calls",
   "confidence": "A",
   "scope": {
     "versions": ["3.0.0"],
     "environments": ["kind-chaos-kind"],
-    "exclusions": ["single order path; observability stack not enabled"]
+    "exclusions": ["single order path; Jaeger-only observability (no Prometheus/Grafana)"]
   },
   "next_evidence": [
     "enable observability stack and verify Jaeger trace captures injected fault",
