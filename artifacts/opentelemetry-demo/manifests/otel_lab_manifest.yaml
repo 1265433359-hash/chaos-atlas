@@ -1,0 +1,387 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: otel-demo-lab
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkout
+  namespace: otel-demo-lab
+  labels:
+    app: checkout
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checkout
+  template:
+    metadata:
+      labels:
+        app: checkout
+    spec:
+      containers:
+      - name: checkout
+        image: ghcr.io/open-telemetry/demo:3.0.0-checkout
+        env:
+        - name: CHECKOUT_PORT
+          value: "5050"
+        - name: SHIPPING_ADDR
+          value: "http://shipping:50050"
+        - name: PRODUCT_CATALOG_ADDR
+          value: "product-catalog:3550"
+        - name: CART_ADDR
+          value: "cart:7070"
+        - name: CURRENCY_ADDR
+          value: "currency:7001"
+        - name: EMAIL_ADDR
+          value: "http://email:6060"
+        - name: PAYMENT_ADDR
+          value: "payment:50051"
+        - name: FLAGD_HOST
+          value: ""
+        - name: FLAGD_PORT
+          value: ""
+        - name: KAFKA_ADDR
+          value: ""
+        ports:
+        - containerPort: 5050
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkout
+  namespace: otel-demo-lab
+spec:
+  selector:
+    app: checkout
+  ports:
+  - port: 5050
+    targetPort: 5050
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart
+  namespace: otel-demo-lab
+  labels:
+    app: cart
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart
+  template:
+    metadata:
+      labels:
+        app: cart
+    spec:
+      containers:
+      - name: cart
+        image: ghcr.io/open-telemetry/demo:3.0.0-cart
+        env:
+        - name: CART_PORT
+          value: "7070"
+        - name: VALKEY_ADDR
+          value: "valkey:6379"
+        ports:
+        - containerPort: 7070
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart
+  namespace: otel-demo-lab
+spec:
+  selector:
+    app: cart
+  ports:
+  - port: 7070
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valkey
+  namespace: otel-demo-lab
+  labels:
+    app: valkey
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valkey
+  template:
+    metadata:
+      labels:
+        app: valkey
+    spec:
+      containers:
+      - name: valkey
+        image: ghcr.io/valkey-io/valkey:9.0.4-alpine3.23
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: valkey
+  namespace: otel-demo-lab
+spec:
+  selector:
+    app: valkey
+  ports:
+  - port: 6379
+    targetPort: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: otel-demo-lab
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:18.4
+        volumeMounts:
+        - name: init-sql
+          mountPath: /docker-entrypoint-initdb.d/init.sql
+          subPath: init.sql
+        env:
+        - name: POSTGRES_PASSWORD
+          value: "astronomy_password"
+        - name: POSTGRES_USER
+          value: "astronomy_user"
+        - name: POSTGRES_DB
+          value: "astronomy_db"
+        ports:
+        - containerPort: 5432
+      volumes:
+      - name: init-sql
+        configMap:
+          name: postgres-init
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: otel-demo-lab
+spec:
+  selector:
+    app: postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-catalog
+  namespace: otel-demo-lab
+  labels:
+    app: product-catalog
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-catalog
+  template:
+    metadata:
+      labels:
+        app: product-catalog
+    spec:
+      containers:
+      - name: product-catalog
+        image: ghcr.io/open-telemetry/demo:3.0.0-product-catalog
+        env:
+        - name: PRODUCT_CATALOG_PORT
+          value: "3550"
+        - name: DB_CONNECTION_STRING
+          value: "postgres://astronomy_user:astronomy_password@postgres:5432/astronomy_db?sslmode=disable"
+        ports:
+        - containerPort: 3550
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-catalog
+  namespace: otel-demo-lab
+spec:
+  selector:
+    app: product-catalog
+  ports:
+  - port: 3550
+    targetPort: 3550
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currency
+  namespace: otel-demo-lab
+  labels:
+    app: currency
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: currency
+  template:
+    metadata:
+      labels:
+        app: currency
+    spec:
+      containers:
+      - name: currency
+        image: ghcr.io/open-telemetry/demo:3.0.0-currency
+        env:
+        - name: CURRENCY_PORT
+          value: "7001"
+        ports:
+        - containerPort: 7001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: currency
+  namespace: otel-demo-lab
+spec:
+  selector:
+    app: currency
+  ports:
+  - port: 7001
+    targetPort: 7001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment
+  namespace: otel-demo-lab
+  labels:
+    app: payment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment
+  template:
+    metadata:
+      labels:
+        app: payment
+    spec:
+      containers:
+      - name: payment
+        image: ghcr.io/open-telemetry/demo:3.0.0-payment
+        env:
+        - name: PAYMENT_PORT
+          value: "50051"
+        ports:
+        - containerPort: 50051
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment
+  namespace: otel-demo-lab
+spec:
+  selector:
+    app: payment
+  ports:
+  - port: 50051
+    targetPort: 50051
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipping
+  namespace: otel-demo-lab
+  labels:
+    app: shipping
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shipping
+  template:
+    metadata:
+      labels:
+        app: shipping
+    spec:
+      containers:
+      - name: shipping
+        image: ghcr.io/open-telemetry/demo:3.0.0-shipping
+        env:
+        - name: SHIPPING_PORT
+          value: "50050"
+        ports:
+        - containerPort: 50050
+      - name: flagd-sidecar
+        image: ghcr.io/open-feature/flagd:v0.16.0
+        command: ["/flagd-build", "start", "--uri", "file:/etc/flagd/demo.flagd.json", "--port", "8013"]
+        volumeMounts:
+        - name: flagd-config
+          mountPath: /etc/flagd
+      volumes:
+      - name: flagd-config
+        configMap:
+          name: flagd-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipping
+  namespace: otel-demo-lab
+spec:
+  selector:
+    app: shipping
+  ports:
+  - port: 50050
+    targetPort: 50050
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email
+  namespace: otel-demo-lab
+  labels:
+    app: email
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: email
+  template:
+    metadata:
+      labels:
+        app: email
+    spec:
+      containers:
+      - name: email
+        image: ghcr.io/open-telemetry/demo:3.0.0-email
+        env:
+        - name: EMAIL_PORT
+          value: "6060"
+        ports:
+        - containerPort: 6060
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: email
+  namespace: otel-demo-lab
+spec:
+  selector:
+    app: email
+  ports:
+  - port: 6060
+    targetPort: 6060

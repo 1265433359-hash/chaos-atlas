@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: otel-payment-delay-r1
+  namespace: otel-demo-lab
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+      - otel-demo-lab
+    labelSelectors:
+      app: payment
+  delay:
+    latency: "2000ms"
+    correlation: "100"
+    jitter: "0ms"
+  duration: "30s"
+  direction: to

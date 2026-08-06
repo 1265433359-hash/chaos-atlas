@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: otel-payment-loss-r1
+  namespace: otel-demo-lab
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+      - otel-demo-lab
+    labelSelectors:
+      app: payment
+  loss:
+    loss: "100"
+    correlation: "100"
+  duration: "30s"
+  direction: to

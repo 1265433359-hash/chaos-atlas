@@ -1,0 +1,90 @@
+{
+  "id": "KB-OTEL-CHECKOUT-PAYMENT-FAILURE-001",
+  "version": 1,
+  "status": "validated_runtime",
+  "evidence_state": "runtime_observed",
+  "project": "open-telemetry/opentelemetry-demo",
+  "project_commit": "2e72d8bcdf754603e956406808630bc9663c992c",
+  "test_node": {
+    "family": "NetworkChaos",
+    "operation": "delay_loss",
+    "direction": "to",
+    "mode": "all",
+    "duration": "30s",
+    "selector": {
+      "namespace": "otel-demo-lab",
+      "label": {
+        "app": "payment"
+      }
+    },
+    "source_yaml": "generated",
+    "mutation_yaml": "artifacts/opentelemetry-demo/chaos/payment-delay-r1.yaml, payment-loss-r1.yaml"
+  },
+  "test_node_centered_graph": {
+    "nodes": [
+      {
+        "id": "test.payment.failure",
+        "kind": "TestNode",
+        "evidence": "delay/loss applied to payment service"
+      },
+      {
+        "id": "call.checkout.chargeCard",
+        "kind": "DownstreamCall",
+        "source": "checkout/main.go:570-573",
+        "evidence": "chargeCard calls PaymentService.Charge with ctx, no WithTimeout (gRPC NewClient no deadline)"
+      },
+      {
+        "id": "response.placeorder",
+        "kind": "BusinessOutcome",
+        "evidence": "PlaceOrder result under payment failure"
+      },
+      {
+        "id": "observe.checkout.http",
+        "kind": "Observation",
+        "evidence": "gRPC client latency + outcome"
+      }
+    ],
+    "edges": [
+      {
+        "from": "test.payment.failure",
+        "to": "call.checkout.chargeCard",
+        "type": "calls",
+        "confidence": "confirmed_runtime"
+      },
+      {
+        "from": "call.checkout.chargeCard",
+        "to": "response.placeorder",
+        "type": "flows_to",
+        "confidence": "confirmed_runtime"
+      }
+    ]
+  },
+  "four_layer_validation": {
+    "yaml_valid": true,
+    "schema_valid": true,
+    "semantic_valid": true,
+    "runtime_reachable": true
+  },
+  "hypothesis": "checkout has no timeout on downstream calls; delay propagates fully and loss hangs until caller boundary (3rd project replication)",
+  "runtime_result": {
+    "classification": "full_propagation_and_infinite_hang",
+    "defense_claim": "not_derived",
+    "baseline_ms": 3100,
+    "delay_case": {"latency_ms": [4793.3, 5175.3], "note": "+1690/+2075ms propagation, no timeout"},
+    "loss_case": {"hang_ms": 10007.4, "outcome": "DEADLINE_EXCEEDED", "note": "100% loss hangs to 10s client deadline"}
+  },
+  "root_cause": "missing_timeout_on_downstream_calls",
+  "confidence": "A",
+  "scope": {
+    "versions": ["3.0.0"],
+    "environments": ["kind-chaos-kind"],
+    "exclusions": ["single order path; observability stack not enabled"]
+  },
+  "next_evidence": [
+    "enable observability stack and verify Jaeger trace captures injected fault",
+    "statistical repetition (baseline variance ~3s needs n>10)"
+  ],
+  "evidence": [
+    {"artifact": "experiment_results.md", "source_span": "experiment A/B", "run_id": "otel-exp-ab", "timestamp": "2026-08-06"}
+  ]
+}

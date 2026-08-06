@@ -1,0 +1,33 @@
+{
+  "valid": true,
+  "index": "artifacts/opentelemetry-demo/knowledge_base/index.json",
+  "card_count": 1,
+  "validated_cards": 1,
+  "checks_ran": [
+    "four_layer_validation",
+    "index_and_card_path_resolution",
+    "next_evidence",
+    "required_card_fields",
+    "required_test_node_fields",
+    "sensitive_value_scan",
+    "source_yaml_presence",
+    "test_node_centered_graph"
+  ],
+  "errors": [],
+  "warnings": [
+    "KB-OTEL-CHECKOUT-PAYMENT-FAILURE-001: source_yaml is not present in the current workspace: generated"
+  ],
+  "card_checks": [
+    {
+      "id": "KB-OTEL-CHECKOUT-PAYMENT-FAILURE-001",
+      "path": "KB-OTEL-CHECKOUT-PAYMENT-FAILURE-001.json",
+      "status": "validated_runtime",
+      "version": 1,
+      "errors": [],
+      "warnings": [
+        "KB-OTEL-CHECKOUT-PAYMENT-FAILURE-001: source_yaml is not present in the current workspace: generated"
+      ],
+      "valid": true
+    }
+  ]
+}
