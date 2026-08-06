@@ -281,11 +281,61 @@
 
 ---
 
-## 七、可提交的 Issue 清单（基于已有发现）
+## 七、知识固化与 LLM 角色（重要说明）
+
+> 回答两个关键问题：**① 从 1,935 个 YAML 提取的知识落在哪里？② 谁是 LLM、在哪里工作？**
+
+### 7.1 知识的落点：三层提炼，全部可检索
+
+原始 YAML 语料的知识不是"在我（AI 助手）的脑子里"，而是被固化成三层产物，任何工具/未来的 LLM 都能读：
+
+| 层 | 产物 | 内容 | 例子 |
+|---|---|---|---|
+| ① 语料清单层 | `yaml_inventory.csv` | 1,935 个文件逐条：SHA-256、kind、字段、风险标签 | `AWSChaos/165....yaml → spec_keys=["action","awsRegion",...], risk=["cloud_instance","secret_reference"]` |
+| ② 节点/图层 | `test_node_catalog.json`、`test_slices*.json`、`service_graph*.json` | 测试节点词典（stress_cpu 230 次…）、selector→服务→函数映射、调用图 | `stress_cpu → ts-order-service → OrderController...` |
+| ③ 知识卡片层 | `knowledge_base/` 14 张卡片 | 结合运行时证据的可检索结论（含假设/结果/根因/置信度/范围） | `KB-OB-CHECKOUT-PAYMENT-DELAY-001`（延迟全额传导，置信度 A） |
+
+### 7.2 谁消费这些知识？——检索工具（LLM 消费接口）
+
+新增 `tools/query_knowledge_base.py`：**任何人或 LLM 可以不用重跑实验，直接按查询拿到决策所需字段**（测试节点、假设、根因、置信度、证据路径、范围边界）。这是"知识库 → LLM 决策"的最小闭环证明。
+
+**演示 1：列出全部 14 张卡片**
+```
+python tools/query_knowledge_base.py --list
+→ KB-OB-CHECKOUT-PAYMENT-DELAY-001: microservices-demo | NetworkChaos delay | validated_runtime_statistical_repetition
+→ KB-TT-NETWORK-STATION-DELAY-001: train-ticket | NetworkChaos delay | validated_runtime_selector_pipeline_timeout_boundary_confirmed
+→ ...（共 14 张）
+```
+
+**演示 2：查询 "payment delay"（拿到决策字段）**
+```
+python tools/query_knowledge_base.py --query "payment delay"
+→ { id: KB-OB-CHECKOUT-PAYMENT-DELAY-001, confidence: A,
+    hypothesis: "checkout chargeCard has no timeout/retry/fallback...",
+    root_cause: "missing_timeout_on_downstream_call",
+    scope: ["no production SLO claim","single endpoint PlaceOrder only"] }
+```
+
+**演示 3：按根因反查（LLM 决策场景）**
+```
+python tools/query_knowledge_base.py --root-cause missing_timeout
+→ 返回所有根因为 "missing_timeout" 的卡片（跨项目），供 LLM 判断该模式的普遍性
+```
+
+### 7.3 诚实说明：当前 LLM 角色与未完成的闭环
+
+- **当前"LLM"= 本次项目的 AI 助手（即我）**：实际承担了"读语料/判可达/选测试点/设计注入/分类根因/写卡片"的全部决策——但这些决策的**结论已固化到卡片/报告**，不依赖我的记忆
+- **方法论设想的"LLM 自主决策"（task_plan 阶段 10）尚未实现**：即"LLM 自动检索知识库 → 生成注入 YAML → 判断结果"的完整自动化
+- **检索工具是这座桥的第一步**：它让知识库可以被任何 LLM 消费；阶段 10 才是在此之上让 LLM 自主闭环
+- 汇报中凡提"让 LLM 学习/判断"，当前语境 = **AI 辅助（我）+ 规则工具 + 证据库** 的半自动模式，阶段 10 是未来完整闭环
+
+---
+
+## 八、可提交的 Issue 清单（基于已有发现）
 
 > 原则：只报"有运行时证据 + 可复现 + 与项目声明矛盾或明显缺陷"的发现；环境问题（WSL2 ebtables 等）**不报**；提交前草稿经审阅，已登记在 `reporting/tracking.md`。
 
-### 7.1 Issue 候选总览
+### 8.1 Issue 候选总览
 
 | # | 目标仓库 | 标题（英文，GitHub 格式） | 类型 | 证据强度 | 提交优先级 |
 |---|---|---|---|---|---|
@@ -294,7 +344,7 @@
 | 3 | Online Boutique | Core data path has no fallback → single service failure takes down homepage (500 cascade) | enhancement/讨论 | 运行时 | 中 |
 | 4 | Online Boutique | Checkout chain has no timeout → downstream delay fully propagates / loss hangs indefinitely | enhancement | 运行时(n=9) | 中（作韧性参考建议） |
 
-### 7.2 各 Issue 详情
+### 8.2 各 Issue 详情
 
 **Issue 1：OTel Demo 错误消息 bug（最推荐先提交）**
 - 位置：`src/checkout/main.go:498`（`quoteShipping` 函数内）
@@ -322,7 +372,7 @@
 - 证据：n=9 统计 + n=5 丢包统计
 - 类型：enhancement（demo 无 timeout 可能有意设计，建议作为**韧性参考示例**补充）
 
-### 7.3 提交策略与预期管理
+### 8.3 提交策略与预期管理
 
 - **第一批**：Issue 1（OTel，最易被接受）+ Issue 2（train-ticket，草稿就绪）——先拿到外部反馈
 - **第二批**：OB 的 Issue 3/4（视导师意见决定是否提交，或只作论文素材）
@@ -333,14 +383,14 @@
 
 ## 八、结论与下一步
 
-### 8.1 结论
+### 9.1 结论
 
 1. **方法论可迁移** ✅：测试节点中心 + 证据链 + 三阶段测量，在 benchmark/活跃 demo/观测完备 demo 三种类型项目上完整复用，均产出运行时证据
 2. **知识库闭环** ✅：14 张卡片（train-ticket 7 + OB 6 + OTel 1），统一 schema，0 错误校验
 3. **核心论文素材**：三项目复现的"无 timeout"模式 + 探针重启逃逸 + 观测捕获无自动告警
 4. **可提交 issue 4 个**（见第七章）：OTel 源码 bug（最易被接受）+ train-ticket 基准缺陷（草稿就绪）+ OB 两个韧性缺口
 
-### 8.2 待决策 / 下一步
+### 9.2 待决策 / 下一步
 
 | 事项 | 状态 |
 |---|---|
@@ -351,7 +401,7 @@
 | 统计重复扩展到 OTel（基线方差大） | 可选 |
 | 论文写作 | 素材已齐 |
 
-### 8.3 诚实边界
+### 9.3 诚实边界
 
 - HTTPChaos 全类型因 WSL2 内核缺 ebtables 无法注入（已换 kind 确认，非环境可解）
 - OTel Demo 基线 ~3s（观测开销），小延迟被掩盖
