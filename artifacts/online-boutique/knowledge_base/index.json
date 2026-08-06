@@ -51,6 +51,16 @@
       "business_path_status": "confirmed_runtime",
       "runtime_status": "validated_runtime",
       "injection_recommendation": "double_call_no_timeout_documented"
+    },
+    {
+      "id": "KB-OB-CHECKOUT-MULTI-FAULT-001",
+      "path": "KB-OB-CHECKOUT-MULTI-FAULT-001.json",
+      "test_family": "NetworkChaos",
+      "operation": "delay_multi_fault",
+      "target": "app=paymentservice+emailservice",
+      "business_path_status": "confirmed_runtime",
+      "runtime_status": "validated_runtime",
+      "injection_recommendation": "multi_fault_linear_summation"
     }
   ]
 }

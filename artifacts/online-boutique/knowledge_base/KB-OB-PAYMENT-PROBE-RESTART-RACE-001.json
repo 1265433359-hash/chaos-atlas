@@ -91,6 +91,12 @@
       "sequence": ["2021ms x4 ok", "t=12s container killed by probe", "rpc_error x3 (restarting)", "t=24s new container 17ms ok", "no delay afterwards"],
       "note": "probe restart 'cures' the injected delay: chaos (tc netem) binds to old container netns, new container escapes injection"
     },
+    "reinject_test": {
+      "artifact": "reject_escape_result.json",
+      "sequence": ["injected 2016.8ms", "after restart 21.0ms (escape)", "re-injected 2016.9ms (delay returns)"],
+      "note": "re-injection restores delay immediately -> system has NO self-healing; escape is injection bypassed by restart, not defense"
+    },
+    "unavailability_window_s": 9,
     "cross_env": "same probe restart observed on docker-desktop (exit 137)"
   },
   "root_cause": "probe_timeout_1s_shorter_than_injected_delay_plus_probe_failure_threshold_interaction",

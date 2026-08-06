@@ -1,0 +1,98 @@
+{
+  "id": "KB-OB-CHECKOUT-MULTI-FAULT-001",
+  "version": 1,
+  "status": "validated_runtime",
+  "evidence_state": "runtime_observed",
+  "project": "GoogleCloudPlatform/microservices-demo",
+  "project_commit": "9a4616e77f0f9cbcbecaf27d711c38890dda1404",
+  "test_node": {
+    "family": "NetworkChaos",
+    "operation": "delay_multi_fault",
+    "direction": "to",
+    "mode": "all",
+    "duration": "25s",
+    "selector": {
+      "namespace": "online-boutique-lab",
+      "label": {
+        "app": "paymentservice + emailservice"
+      }
+    },
+    "source_yaml": "generated",
+    "mutation_yaml": "artifacts/online-boutique/chaos/multi-payment-email-delay.yaml"
+  },
+  "test_node_centered_graph": {
+    "nodes": [
+      {
+        "id": "test.multi.fault",
+        "kind": "TestNode",
+        "evidence": "dual NetworkChaos: payment 2s delay + email 2s delay, both AllInjected"
+      },
+      {
+        "id": "call.checkout.chargeCard",
+        "kind": "DownstreamCall",
+        "source": "checkoutservice/main.go:369-375",
+        "evidence": "payment delay +2s"
+      },
+      {
+        "id": "call.checkout.sendOrderConfirmation",
+        "kind": "DownstreamCall",
+        "source": "checkoutservice/main.go:380",
+        "evidence": "email delay +2s (sequential after payment)"
+      },
+      {
+        "id": "response.placeorder",
+        "kind": "BusinessOutcome",
+        "evidence": "4016.2ms = baseline 17 + payment 2020 + email 2020 (linear sum)"
+      }
+    ],
+    "edges": [
+      {
+        "from": "test.multi.fault",
+        "to": "call.checkout.chargeCard",
+        "type": "calls",
+        "confidence": "confirmed_runtime"
+      },
+      {
+        "from": "test.multi.fault",
+        "to": "call.checkout.sendOrderConfirmation",
+        "type": "calls",
+        "confidence": "confirmed_runtime"
+      },
+      {
+        "from": "call.checkout.chargeCard",
+        "to": "call.checkout.sendOrderConfirmation",
+        "type": "flows_to",
+        "confidence": "confirmed_runtime_static"
+      }
+    ]
+  },
+  "four_layer_validation": {
+    "yaml_valid": true,
+    "schema_valid": true,
+    "semantic_valid": true,
+    "runtime_reachable": true
+  },
+  "hypothesis": "sequential downstream calls sum their delays under multi-fault (no concurrency, no dedup, no degradation)",
+  "runtime_result": {
+    "classification": "multi_fault_linear_delay_summation",
+    "defense_claim": "not_derived",
+    "multi_fault_latency_ms": 4016.2,
+    "baseline_ms": 17.0,
+    "expected_sum_ms": 4057,
+    "note": "2s payment + 2s email sum linearly; not max, not capped"
+  },
+  "root_cause": "sequential_downstream_calls_without_timeout_sum_delays",
+  "confidence": "A",
+  "scope": {
+    "versions": ["v0.10.6"],
+    "environments": ["kind-chaos-kind"],
+    "exclusions": ["single order path only; parallel-call services not tested"]
+  },
+  "next_evidence": [
+    "verify sum holds for payment+shipping (both fatal, shipping double)",
+    "test concurrent downstream calls (none in current checkout flow)"
+  ],
+  "evidence": [
+    {"artifact": "deep_experiments_report.md", "source_span": "experiment F", "run_id": "kind-exp-F", "timestamp": "2026-08-06"}
+  ]
+}

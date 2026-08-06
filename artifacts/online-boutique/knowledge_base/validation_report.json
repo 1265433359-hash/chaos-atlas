@@ -1,8 +1,8 @@
 {
   "valid": true,
   "index": "artifacts/online-boutique/knowledge_base/index.json",
-  "card_count": 5,
-  "validated_cards": 5,
+  "card_count": 6,
+  "validated_cards": 6,
   "checks_ran": [
     "four_layer_validation",
     "index_and_card_path_resolution",
@@ -16,6 +16,7 @@
   "errors": [],
   "warnings": [
     "KB-OB-CHECKOUT-EMAIL-FAILURE-001: source_yaml is not present in the current workspace: generated",
+    "KB-OB-CHECKOUT-MULTI-FAULT-001: source_yaml is not present in the current workspace: generated",
     "KB-OB-CHECKOUT-PAYMENT-DELAY-001: source_yaml is not present in the current workspace: generated (no matching corpus sample)",
     "KB-OB-CHECKOUT-SHIPPING-FAILURE-001: source_yaml is not present in the current workspace: generated",
     "KB-OB-FRONTEND-PRODUCTCATALOG-FAILURE-001: source_yaml is not present in the current workspace: generated",
@@ -74,6 +75,17 @@
       "errors": [],
       "warnings": [
         "KB-OB-CHECKOUT-SHIPPING-FAILURE-001: source_yaml is not present in the current workspace: generated"
+      ],
+      "valid": true
+    },
+    {
+      "id": "KB-OB-CHECKOUT-MULTI-FAULT-001",
+      "path": "KB-OB-CHECKOUT-MULTI-FAULT-001.json",
+      "status": "validated_runtime",
+      "version": 1,
+      "errors": [],
+      "warnings": [
+        "KB-OB-CHECKOUT-MULTI-FAULT-001: source_yaml is not present in the current workspace: generated"
       ],
       "valid": true
     }
