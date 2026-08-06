@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: ob-payment-loss-stat
+  namespace: online-boutique-lab
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+      - online-boutique-lab
+    labelSelectors:
+      app: paymentservice
+  loss:
+    loss: "100"
+    correlation: "100"
+  duration: "25s"
+  direction: to

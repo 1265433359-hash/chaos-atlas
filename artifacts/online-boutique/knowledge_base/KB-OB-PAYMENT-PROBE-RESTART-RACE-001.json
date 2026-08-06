@@ -83,6 +83,9 @@
     "ladder_1s": {"latency_ms": 1024.3, "outcome": "ok", "restart": false},
     "ladder_2s_clean": {"latency_ms": 2022.6, "outcome": "ok", "restart": false, "note": "sampled before probe kill"},
     "ladder_2s_3s_5s_dirty": {"outcome": "rpc_error_connection_refused", "restart": true, "note": "probe killed container during injection window"},
+    "threshold_15s": {"latency_ms": 1517.8, "restart": true, "note": "1.5s delay (>1s probe timeout) triggers SIGKILL after ~35s (3 probe failures)"},
+    "threshold_1s": {"restart": false, "note": "1s delay at probe timeout boundary, no restart observed"},
+    "threshold_rule": "delay > livenessProbe.timeoutSeconds(1s) sustained across failureThreshold(3)x periodSeconds(10s) triggers restart",
     "cross_env": "same probe restart observed on docker-desktop (exit 137)"
   },
   "root_cause": "probe_timeout_1s_shorter_than_injected_delay_plus_probe_failure_threshold_interaction",

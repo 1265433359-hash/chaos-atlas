@@ -90,7 +90,12 @@
     "injected_median_ms": 2021.5,
     "injected_std_ms": 3.1,
     "samples": 9,
-    "outcome": "all_orders_succeeded_no_timeout"
+    "outcome": "all_orders_succeeded_no_timeout",
+    "loss_counterpart": {
+      "loss_stat": "loss_stat_result.json",
+      "hang_times_ms": [10008.5, 10009.7, 10008.9, 10002.4, 10008.1],
+      "note": "100% loss: 5/5 hang to client 10s deadline, no timeout in app"
+    }
   },
   "root_cause": "missing_timeout_on_downstream_call",
   "confidence": "A",
