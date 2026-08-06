@@ -190,3 +190,13 @@
 - **Reporting infrastructure built**: issue_template.md, tracking.md, project_intake.md, projects_matrix.md, package_report_evidence.py (SHA-256 manifest), 23 unit tests pass.
 - **Issue status**: train-ticket draft (disabled downstream call) saved as Word to Desktop + md in reporting/train-ticket/issues/ - pending user/supervisor decision. Online Boutique findings recorded but NOT submitted as issues - pending decision.
 - **Environment assets**: chaos-kind cluster + Chaos Mesh 2.8.3 + 8 OB services preserved; local registry (host.docker.internal:5000) for image loading; Docker Desktop cluster untouched.
+
+## Project 3: OpenTelemetry Demo (2026-08-06)
+- **Onboarding**: pinned open-telemetry/opentelemetry-demo @ 2e72d8bc; static mapping found checkout no-timeout pattern REPLICATES 3rd project (gRPC NewClient no deadline, HTTP &http.Client{} no Timeout, shipping fatal via HTTP codes.Unavailable, email degraded logger.Warn); native fault flags (paymentUnreachable/kafkaQueueProblems) discovered.
+- **Deploy (kind, otel-demo-lab)**: 10 services via manual manifest (no K8s manifests in repo - compose only). Solved 4 deploy issues: .NET cart listens 8080 (not 7070), postgres init.sql CREATE conflict (lite version + astronomy_user), shipping (Rust) flagd panic -> flagd sidecar, flagd v0.16 dynamic default port -> --port 8013. Found source bug: checkout quoteShipping error says "email service" but is shipping (main.go:498 copy-paste).
+- **Baseline**: PlaceOrder ~3.1s (OTel SDK overhead + HTTP chain + multi-language).
+- **Injection**: payment 2s delay -> +1690/+2075/+1485ms (full propagation); 100% loss -> hang 10007.4ms DEADLINE_EXCEEDED. KEY: no-timeout + full-propagation + infinite-hang now replicated across 3 projects (train-ticket/OB/OTel-Demo).
+- **Observability gap detection (deep)**: deployed Jaeger all-in-one (OTLP direct from SDKs, collector Docker Hub 429-limited). Injected 2s payment delay -> Jaeger trace PaymentService/Charge span 4462ms + HttpRequestException event (baseline 513ms) - injected fault FULLY captured, NO observability gap, but NO auto-alert (manual Jaeger query needed).
+- **email degradation (deep)**: 2s delay -> 5410ms propagation; 100% loss -> hang 10008.8ms vs OB's 27.4ms (gRPC fast-fail vs HTTP hang) - degradation only affects pass/fail, not latency/挂起 propagation.
+- **Knowledge base**: 1 OTel card (KB-OTEL-CHECKOUT-PAYMENT-FAILURE-001); total 14 cards across 3 projects, all validate 0 errors.
+- **Environment**: jaeger + 10 services preserved in otel-demo-lab; chaos-kind cluster shared with OB experiments.
