@@ -281,24 +281,77 @@
 
 ---
 
-## 七、结论与下一步
+## 七、可提交的 Issue 清单（基于已有发现）
 
-### 7.1 结论
+> 原则：只报"有运行时证据 + 可复现 + 与项目声明矛盾或明显缺陷"的发现；环境问题（WSL2 ebtables 等）**不报**；提交前草稿经审阅，已登记在 `reporting/tracking.md`。
+
+### 7.1 Issue 候选总览
+
+| # | 目标仓库 | 标题（英文，GitHub 格式） | 类型 | 证据强度 | 提交优先级 |
+|---|---|---|---|---|---|
+| 1 | OTel Demo | `quoteShipping` error message points to wrong service (copy-paste bug) | bug | 运行时+源码 | **高**（一行修复，最易被接受） |
+| 2 | train-ticket | Downstream call disabled in `queryOrdersForRefresh`, fault-injection path unreachable | bug | 源码+静态 | 中高（**草稿已就绪**） |
+| 3 | Online Boutique | Core data path has no fallback → single service failure takes down homepage (500 cascade) | enhancement/讨论 | 运行时 | 中 |
+| 4 | Online Boutique | Checkout chain has no timeout → downstream delay fully propagates / loss hangs indefinitely | enhancement | 运行时(n=9) | 中（作韧性参考建议） |
+
+### 7.2 各 Issue 详情
+
+**Issue 1：OTel Demo 错误消息 bug（最推荐先提交）**
+- 位置：`src/checkout/main.go:498`（`quoteShipping` 函数内）
+- 现象：shipping 服务故障时报 `failed POST to email service: expected 200, got %d`，实际是 **shipping**——复制粘贴错误，误导排障
+- 证据：静态（`main.go:498` 字符串）+ 运行时（shipping 故障时错误信息指向错误服务）
+- 修复：字符串改为 `failed POST to shipping service`
+- 价值：一行修复；OTel 社区活跃（近 10 条 issue 当天处理），**获得外部反馈概率最高**
+
+**Issue 2：train-ticket 基准可达性缺陷（草稿已就绪）**
+- 位置：`OrderServiceImpl.java:200`（下游调用被注释）
+- 现象：`/order/refresh` 工作流唯一下游调用被注释，返回 stationId 原值——任何基于该工作流的 fault-injection 都测不到真实依赖
+- 证据：源码（`:192-220`）+ 单测只覆盖函数级
+- 草稿：`reporting/train-ticket/issues/` + 桌面 Word 已生成
+- 预期：维护者响应概率低（2025-11 后无 commit），但作为**基准完整性报告**有学术价值（基准的 fault-injection 路径静默失效）
+
+**Issue 3：OB 核心数据路径级联 500**
+- 位置：`frontend/handlers.go:62-90`（getProducts/getCart/汇率无 fallback）
+- 现象：product-catalog 故障 → 首页整站 HTTP 500；恢复靠 Deployment 重建 ~2 分钟
+- 证据：运行时（kill → 500 级联；丢包 → 首次挂起 26.7s 后 500）
+- 价值：直接破坏官方文档承诺的 "golden user journey"；与"广告优雅降级"形成**核心硬失败 vs 非核心优雅降级**的矛盾对照
+
+**Issue 4：OB checkout 无 timeout（作 enhancement 建议）**
+- 位置：`checkoutservice/main.go:369-387`（chargeCard/sendOrderConfirmation/shipOrder 无 WithTimeout）
+- 现象：2s 延迟全额传导（2021.5±3.1ms）；100% 丢包挂起 10s（5/5）
+- 证据：n=9 统计 + n=5 丢包统计
+- 类型：enhancement（demo 无 timeout 可能有意设计，建议作为**韧性参考示例**补充）
+
+### 7.3 提交策略与预期管理
+
+- **第一批**：Issue 1（OTel，最易被接受）+ Issue 2（train-ticket，草稿就绪）——先拿到外部反馈
+- **第二批**：OB 的 Issue 3/4（视导师意见决定是否提交，或只作论文素材）
+- 所有提交前：草稿经审阅 → `reporting/tracking.md` 登记 → 附隔离环境声明 + 复现步骤
+- **预期管理**：反馈是概率事件——活跃仓库（OTel/OB）响应快，train-ticket 期望低；但"**可复现发现 + 规范 issue 报告**"本身就是可行性的证明，不受回复与否影响
+
+---
+
+## 八、结论与下一步
+
+### 8.1 结论
 
 1. **方法论可迁移** ✅：测试节点中心 + 证据链 + 三阶段测量，在 benchmark/活跃 demo/观测完备 demo 三种类型项目上完整复用，均产出运行时证据
 2. **知识库闭环** ✅：14 张卡片（train-ticket 7 + OB 6 + OTel 1），统一 schema，0 错误校验
 3. **核心论文素材**：三项目复现的"无 timeout"模式 + 探针重启逃逸 + 观测捕获无自动告警
+4. **可提交 issue 4 个**（见第七章）：OTel 源码 bug（最易被接受）+ train-ticket 基准缺陷（草稿就绪）+ OB 两个韧性缺口
 
-### 7.2 待决策 / 下一步
+### 8.2 待决策 / 下一步
 
 | 事项 | 状态 |
 |---|---|
-| 是否对外提交 issue（train-ticket 基准缺陷 / OB 三发现 / OTel 源码 bug） | 待决策（tracking.md 已登记） |
+| 提交 Issue 1（OTel 错误消息）——第一优先 | 待决策 |
+| 提交 Issue 2（train-ticket 基准缺陷）——草稿就绪 | 待决策 |
+| OB 两个 issue 是否提交 / 或只作论文素材 | 待决策 |
 | LLM 决策基准（阶段 10） | 未开始（论文最后一环） |
 | 统计重复扩展到 OTel（基线方差大） | 可选 |
 | 论文写作 | 素材已齐 |
 
-### 7.3 诚实边界
+### 8.3 诚实边界
 
 - HTTPChaos 全类型因 WSL2 内核缺 ebtables 无法注入（已换 kind 确认，非环境可解）
 - OTel Demo 基线 ~3s（观测开销），小延迟被掩盖

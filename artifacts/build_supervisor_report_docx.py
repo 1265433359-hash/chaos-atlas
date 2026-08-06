@@ -12,7 +12,7 @@ from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
 SRC = r"C:\APP\project\chaos\artifacts\report_for_supervisor.md"
-OUT = r"C:\Users\xiao junyang\Desktop\chaos-methodology-supervisor-report.docx"
+OUT = r"C:\Users\xiao junyang\Desktop\chaos-methodology-supervisor-report-v2.docx"
 
 HEADING_COLOR = RGBColor(0x1F, 0x3B, 0x73)  # deep blue
 
