@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tool": "classify_runtime_result",
+  "classified_at": "2026-08-07T05:49:29.096498+00:00",
+  "run_report": "artifacts/experiments/execution/confirmation_ob_productcatalog_kill_r3.json",
+  "baseline_report": "artifacts/experiments/execution/track_k_ob_productcatalog_baseline.json",
+  "classification": "client_timeout_observed",
+  "evidence_state": "runtime_effect_observed",
+  "confidence": "A",
+  "root_cause_labels": [
+    "client_timeout_budget_exceeded"
+  ],
+  "observations": {
+    "request_count": 5,
+    "observed_median_latency_ms": 5005.114,
+    "baseline_median_latency_ms": 44.281,
+    "latency_delta_ms": 4960.833,
+    "body_contract_mode": "status_only",
+    "injected": true,
+    "recovered": true,
+    "cleanup_confirmed": true
+  },
+  "interpretation": {
+    "defense_claim": "not_derived",
+    "reason": "The classifier records evidence state; defense requires the test-node graph, baseline, path evidence and outcome-specific reasoning.",
+    "result": "The client timeout boundary was crossed after confirmed injection. Verify server-side completion, retry, fallback and cleanup separately."
+  },
+  "evidence_refs": [
+    "artifacts/experiments/execution/mutations/ob-productcatalog-kill-one.yaml",
+    {
+      "return_code": 0,
+      "stdout": "podchaos.chaos-mesh.org/eval-ob-productcatalog-kill-one created",
+      "stderr": ""
+    },
+    {
+      "delete_command_ok": true,
+      "delete_output": "podchaos.chaos-mesh.org \"eval-ob-productcatalog-kill-one\" deleted from online-boutique-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"eval-ob-productcatalog-kill-one\" not found"
+    }
+  ]
+}

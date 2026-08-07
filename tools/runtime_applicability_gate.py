@@ -25,10 +25,11 @@ RESOURCE_BY_KIND = {
     "TimeChaos": "timechaos",
 }
 
-# Runtime injection is intentionally scoped to the isolated Train Ticket lab.
-# This is a policy boundary, not a generator convention: hand-written YAML must
-# receive the same decision as generated candidates.
+# Runtime injection is intentionally scoped to isolated lab namespaces. This is
+# a policy boundary, not a generator convention: hand-written YAML must receive
+# the same decision as generated candidates.
 ALLOWED_NAMESPACE = "train-ticket-lab"
+ALLOWED_NAMESPACES = {"train-ticket-lab", "online-boutique-lab", "otel-demo-lab"}
 ALLOWED_MODES = {"one"}
 
 
@@ -54,7 +55,7 @@ def kubectl_json(args: list[str]) -> tuple[Any | None, str | None]:
 
 
 def ready_condition(obj: dict[str, Any]) -> bool:
-    return any(
+    return not obj.get("metadata", {}).get("deletionTimestamp") and any(
         condition.get("type") == "Ready" and condition.get("status") == "True"
         for condition in obj.get("status", {}).get("conditions", [])
     )
@@ -213,15 +214,16 @@ def check_mutation(path: Path) -> dict[str, Any]:
     checks: dict[str, Any] = {}
 
     requested_mode = spec.get("mode")
-    namespace_ok = namespace == ALLOWED_NAMESPACE
+    namespace_ok = namespace in ALLOWED_NAMESPACES
     selector_namespaces_ok = (
         isinstance(namespaces, list)
         and bool(namespaces)
-        and all(value == ALLOWED_NAMESPACE for value in namespaces)
+        and all(value in ALLOWED_NAMESPACES for value in namespaces)
     )
     mode_ok = requested_mode in ALLOWED_MODES
     checks["scope_guard"] = {
         "allowed_namespace": ALLOWED_NAMESPACE,
+        "allowed_namespaces": sorted(ALLOWED_NAMESPACES),
         "metadata_namespace_ok": namespace_ok,
         "selector_namespaces_ok": selector_namespaces_ok,
         "requested_namespaces": namespaces,
@@ -230,9 +232,9 @@ def check_mutation(path: Path) -> dict[str, Any]:
         "mode_ok": mode_ok,
     }
     if not namespace_ok:
-        errors.append(f"mutation namespace must be {ALLOWED_NAMESPACE}")
+        errors.append(f"mutation namespace must be one of {sorted(ALLOWED_NAMESPACES)}")
     if not selector_namespaces_ok:
-        errors.append(f"selector namespaces must be limited to {ALLOWED_NAMESPACE}")
+        errors.append(f"selector namespaces must be limited to {sorted(ALLOWED_NAMESPACES)}")
     if not mode_ok:
         errors.append("mutation mode must be 'one'; high-blast-radius modes including 'all' are forbidden")
 
@@ -268,6 +270,7 @@ def check_mutation(path: Path) -> dict[str, Any]:
         {
             "namespace": pod.get("metadata", {}).get("namespace"),
             "name": pod.get("metadata", {}).get("name"),
+            "terminating": bool(pod.get("metadata", {}).get("deletionTimestamp")),
             "ready": ready_condition(pod),
             "restarts": sum(
                 int(container.get("restartCount", 0))

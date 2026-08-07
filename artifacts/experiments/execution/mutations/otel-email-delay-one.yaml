@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: eval-otel-email-delay-one
+  namespace: otel-demo-lab
+  labels:
+    chaos.evaluation: deep-matrix
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+      - otel-demo-lab
+    labelSelectors:
+      app: email
+  delay:
+    latency: "2000ms"
+    correlation: "100"
+    jitter: "0ms"
+  duration: "15s"
+  direction: to

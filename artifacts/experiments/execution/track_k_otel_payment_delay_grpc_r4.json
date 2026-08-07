@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "tool": "run_grpc_chaos_experiment",
+  "started_at": "2026-08-07T03:13:42.691797+00:00",
+  "mutation": "artifacts/experiments/execution/mutations/otel-payment-delay-one.yaml",
+  "client_script": "artifacts/opentelemetry-demo/otel_client.py",
+  "request_config": {
+    "checkout_service": "checkout",
+    "checkout_remote_port": 5050,
+    "checkout_local_port": 15050,
+    "cart_service": "cart",
+    "cart_remote_port": 7070,
+    "cart_local_port": 17070,
+    "client_count": 1,
+    "client_timeout_sec": 12.0
+  },
+  "preflight": {
+    "checked_at": "2026-08-07T03:13:43.041527+00:00",
+    "mutation": "artifacts/experiments/execution/mutations/otel-payment-delay-one.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "otel-demo-lab",
+    "name": "otel-payment-delay-one",
+    "selector": {
+      "namespaces": [
+        "otel-demo-lab"
+      ],
+      "labelSelectors": {
+        "app": "payment"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "requested_namespaces": [
+          "otel-demo-lab"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "otel-demo-lab",
+          "name": "payment-ddb6c884d-v4s8c",
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            50051
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"otel-payment-delay-one\" not found\n"
+  },
+  "lifecycle": {
+    "applied": false,
+    "injected": false,
+    "recovered": false,
+    "cleanup": null
+  },
+  "baseline_workload": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\opentelemetry-demo\\otel_client.py",
+      "127.0.0.1:15050",
+      "127.0.0.1:17070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 1335.546,
+    "stdout": "[0] rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unknown desc = Failed to connect before the deadline (628.8ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "INTERNAL",
+        "latency_ms": 628.8,
+        "result": "rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unknown desc = Failed to connect before the deadline",
+        "error": "rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unknown desc = Failed to connect before the deadline"
+      }
+    ]
+  },
+  "workload": null,
+  "errors": [
+    "baseline produced no successful gRPC response"
+  ],
+  "result_classification": "invalid_baseline",
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:15050 -> 5050\nForwarding from [::1]:15050 -> 5050\nHandling connection for 15050\nHandling connection for 15050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:17070 -> 7070\nForwarding from [::1]:17070 -> 7070\nHandling connection for 17070\nHandling connection for 17070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-07T03:13:45.831556+00:00"
+}

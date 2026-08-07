@@ -65,6 +65,30 @@ class RuntimeClassificationConsistencyTest(unittest.TestCase):
         if "yaml.YAMLError" in source:
             self.assertIn("import yaml", source)
 
+    def test_status_only_body_contract_ignores_dynamic_values(self) -> None:
+        baseline = {
+            "requests": [
+                {"status_code": 200, "latency_ms": 30.0, "body": '{"status":1,"data":"old-id"}'},
+            ]
+        }
+        run = {
+            "preflight": {"decision": "ready_for_injection"},
+            "lifecycle": {
+                "injected": True,
+                "injected_status": {"injected_count": 1},
+                "recovered": True,
+                "cleanup": {"resource_absent_after_delete": True},
+            },
+            "requests": [
+                {"status_code": 200, "latency_ms": 215.0, "body": '{"status":1,"data":"new-id"}'},
+            ],
+        }
+        exact = classify_runtime_result.classify(run, baseline)
+        status_only = classify_runtime_result.classify(run, baseline, "status_only")
+        self.assertEqual("response_contract_changed", exact["classification"])
+        self.assertEqual("response_preserved_latency_degradation", status_only["classification"])
+        self.assertEqual("status_only", status_only["observations"]["body_contract_mode"])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "tool": "runtime_applicability_gate",
+  "results": [
+    {
+      "checked_at": "2026-08-07T02:33:31.834957+00:00",
+      "mutation": "artifacts/experiments/execution/mutations/ob-payment-delay-one.yaml",
+      "kind": "NetworkChaos",
+      "namespace": "online-boutique-lab",
+      "name": "eval-ob-payment-delay-one",
+      "selector": {
+        "namespaces": [
+          "online-boutique-lab"
+        ],
+        "labelSelectors": {
+          "app": "paymentservice"
+        }
+      },
+      "decision": "ready_for_injection",
+      "checks": {
+        "scope_guard": {
+          "allowed_namespace": "train-ticket-lab",
+          "allowed_namespaces": [
+            "online-boutique-lab",
+            "otel-demo-lab",
+            "train-ticket-lab"
+          ],
+          "metadata_namespace_ok": true,
+          "selector_namespaces_ok": true,
+          "requested_namespaces": [
+            "online-boutique-lab"
+          ],
+          "requested_mode": "one",
+          "allowed_modes": [
+            "one"
+          ],
+          "mode_ok": true
+        },
+        "yaml_shape": true,
+        "crd_exists": true,
+        "chaos_components_ready": true,
+        "selector_matches": true,
+        "target_pods": [
+          {
+            "namespace": "online-boutique-lab",
+            "name": "paymentservice-54c97dbd7b-xssdz",
+            "ready": true,
+            "restarts": 4,
+            "ports": [
+              50051
+            ]
+          }
+        ],
+        "target_pods_ready": true,
+        "target_port_exists": true,
+        "mutation_name_available": true,
+        "injector_prerequisite": {
+          "status": "pass",
+          "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+        }
+      },
+      "errors": [],
+      "interpretation": {
+        "selected_is_not_injected": true,
+        "defense_conclusion_allowed": true
+      },
+      "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"eval-ob-payment-delay-one\" not found\n"
+    },
+    {
+      "checked_at": "2026-08-07T02:33:32.179688+00:00",
+      "mutation": "artifacts/experiments/execution/mutations/ob-payment-loss-one.yaml",
+      "kind": "NetworkChaos",
+      "namespace": "online-boutique-lab",
+      "name": "eval-ob-payment-loss-one",
+      "selector": {
+        "namespaces": [
+          "online-boutique-lab"
+        ],
+        "labelSelectors": {
+          "app": "paymentservice"
+        }
+      },
+      "decision": "ready_for_injection",
+      "checks": {
+        "scope_guard": {
+          "allowed_namespace": "train-ticket-lab",
+          "allowed_namespaces": [
+            "online-boutique-lab",
+            "otel-demo-lab",
+            "train-ticket-lab"
+          ],
+          "metadata_namespace_ok": true,
+          "selector_namespaces_ok": true,
+          "requested_namespaces": [
+            "online-boutique-lab"
+          ],
+          "requested_mode": "one",
+          "allowed_modes": [
+            "one"
+          ],
+          "mode_ok": true
+        },
+        "yaml_shape": true,
+        "crd_exists": true,
+        "chaos_components_ready": true,
+        "selector_matches": true,
+        "target_pods": [
+          {
+            "namespace": "online-boutique-lab",
+            "name": "paymentservice-54c97dbd7b-xssdz",
+            "ready": true,
+            "restarts": 4,
+            "ports": [
+              50051
+            ]
+          }
+        ],
+        "target_pods_ready": true,
+        "target_port_exists": true,
+        "mutation_name_available": true,
+        "injector_prerequisite": {
+          "status": "pass",
+          "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+        }
+      },
+      "errors": [],
+      "interpretation": {
+        "selected_is_not_injected": true,
+        "defense_conclusion_allowed": true
+      },
+      "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"eval-ob-payment-loss-one\" not found\n"
+    },
+    {
+      "checked_at": "2026-08-07T02:33:32.522594+00:00",
+      "mutation": "artifacts/experiments/execution/mutations/ob-productcatalog-kill-one.yaml",
+      "kind": "PodChaos",
+      "namespace": "online-boutique-lab",
+      "name": "eval-ob-productcatalog-kill-one",
+      "selector": {
+        "namespaces": [
+          "online-boutique-lab"
+        ],
+        "labelSelectors": {
+          "app": "productcatalogservice"
+        }
+      },
+      "decision": "ready_for_injection",
+      "checks": {
+        "scope_guard": {
+          "allowed_namespace": "train-ticket-lab",
+          "allowed_namespaces": [
+            "online-boutique-lab",
+            "otel-demo-lab",
+            "train-ticket-lab"
+          ],
+          "metadata_namespace_ok": true,
+          "selector_namespaces_ok": true,
+          "requested_namespaces": [
+            "online-boutique-lab"
+          ],
+          "requested_mode": "one",
+          "allowed_modes": [
+            "one"
+          ],
+          "mode_ok": true
+        },
+        "yaml_shape": true,
+        "crd_exists": true,
+        "chaos_components_ready": true,
+        "selector_matches": true,
+        "target_pods": [
+          {
+            "namespace": "online-boutique-lab",
+            "name": "productcatalogservice-fd5f8bc44-5mhpb",
+            "ready": true,
+            "restarts": 2,
+            "ports": [
+              3550
+            ]
+          }
+        ],
+        "target_pods_ready": true,
+        "target_port_exists": true,
+        "mutation_name_available": true,
+        "injector_prerequisite": {
+          "status": "pass",
+          "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+        }
+      },
+      "errors": [],
+      "interpretation": {
+        "selected_is_not_injected": true,
+        "defense_conclusion_allowed": true
+      },
+      "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"eval-ob-productcatalog-kill-one\" not found\n"
+    }
+  ],
+  "summary": {
+    "ready_for_injection": 3,
+    "blocked": 0,
+    "not_applicable": 0
+  }
+}

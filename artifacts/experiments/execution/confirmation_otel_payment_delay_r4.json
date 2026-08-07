@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "tool": "run_grpc_chaos_experiment",
+  "started_at": "2026-08-07T14:37:19.741363+00:00",
+  "mutation": "artifacts/experiments/execution/mutations/otel-payment-delay-one.yaml",
+  "client_script": "artifacts/opentelemetry-demo/otel_client.py",
+  "request_config": {
+    "checkout_service": "checkout",
+    "checkout_remote_port": 5050,
+    "checkout_local_port": 15050,
+    "cart_service": "cart",
+    "cart_remote_port": 7070,
+    "cart_local_port": 17070,
+    "client_count": 1,
+    "client_timeout_sec": 12.0
+  },
+  "preflight": {
+    "checked_at": "2026-08-07T14:37:20.104492+00:00",
+    "mutation": "artifacts/experiments/execution/mutations/otel-payment-delay-one.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "otel-demo-lab",
+    "name": "otel-payment-delay-one",
+    "selector": {
+      "namespaces": [
+        "otel-demo-lab"
+      ],
+      "labelSelectors": {
+        "app": "payment"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "requested_namespaces": [
+          "otel-demo-lab"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "otel-demo-lab",
+          "name": "payment-54fc56b8b-f7pp9",
+          "terminating": false,
+          "ready": true,
+          "restarts": 1,
+          "ports": [
+            50051
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"otel-payment-delay-one\" not found\n"
+  },
+  "lifecycle": {
+    "applied": true,
+    "injected": true,
+    "recovered": true,
+    "cleanup": {
+      "delete_command_ok": true,
+      "delete_output": "networkchaos.chaos-mesh.org \"otel-payment-delay-one\" deleted from otel-demo-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"otel-payment-delay-one\" not found"
+    },
+    "injected_status": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-07T14:37:25Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "otel-demo-lab/payment-54fc56b8b-f7pp9",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-07T14:37:25Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    },
+    "recovered_status": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-07T14:37:25Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-07T14:37:40Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "otel-demo-lab/payment-54fc56b8b-f7pp9",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-07T14:37:25Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-07T14:37:40Z"
+      ],
+      "desired_phase": "Stop"
+    }
+  },
+  "baseline_workload": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\opentelemetry-demo\\otel_client.py",
+      "127.0.0.1:15050",
+      "127.0.0.1:17070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 3535.508,
+    "stdout": "[0] ok oid=7fbe7784-926d-11f1-9278-8a3caf62e0dd tracking=c176eb47-7bde-41a0-b50b-77ce7a3b94a1 (2821.3ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 2821.3,
+        "result": "ok oid=7fbe7784-926d-11f1-9278-8a3caf62e0dd tracking=c176eb47-7bde-41a0-b50b-77ce7a3b94a1",
+        "error": null
+      }
+    ]
+  },
+  "workload": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\opentelemetry-demo\\otel_client.py",
+      "127.0.0.1:15050",
+      "127.0.0.1:17070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 5629.442,
+    "stdout": "[0] ok oid=82576501-926d-11f1-9278-8a3caf62e0dd tracking=f6e292b5-1811-4e0e-ae83-47aa6a85dcea (4927.4ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 4927.4,
+        "result": "ok oid=82576501-926d-11f1-9278-8a3caf62e0dd tracking=f6e292b5-1811-4e0e-ae83-47aa6a85dcea",
+        "error": null
+      }
+    ]
+  },
+  "errors": [],
+  "apply": {
+    "return_code": 0,
+    "stdout": "networkchaos.chaos-mesh.org/otel-payment-delay-one created",
+    "stderr": ""
+  },
+  "result_classification": "grpc_response_observed",
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:15050 -> 5050\nForwarding from [::1]:15050 -> 5050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:17070 -> 8080\nForwarding from [::1]:17070 -> 8080\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-07T14:37:40.686648+00:00"
+}

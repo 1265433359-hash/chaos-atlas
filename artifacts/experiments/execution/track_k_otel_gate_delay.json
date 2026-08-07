@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "tool": "runtime_applicability_gate",
+  "results": [
+    {
+      "checked_at": "2026-08-07T03:02:16.366435+00:00",
+      "mutation": "artifacts/experiments/execution/mutations/otel-payment-delay-one.yaml",
+      "kind": "NetworkChaos",
+      "namespace": "otel-demo-lab",
+      "name": "otel-payment-delay-one",
+      "selector": {
+        "namespaces": [
+          "otel-demo-lab"
+        ],
+        "labelSelectors": {
+          "app": "payment"
+        }
+      },
+      "decision": "ready_for_injection",
+      "checks": {
+        "scope_guard": {
+          "allowed_namespace": "train-ticket-lab",
+          "allowed_namespaces": [
+            "online-boutique-lab",
+            "otel-demo-lab",
+            "train-ticket-lab"
+          ],
+          "metadata_namespace_ok": true,
+          "selector_namespaces_ok": true,
+          "requested_namespaces": [
+            "otel-demo-lab"
+          ],
+          "requested_mode": "one",
+          "allowed_modes": [
+            "one"
+          ],
+          "mode_ok": true
+        },
+        "yaml_shape": true,
+        "crd_exists": true,
+        "chaos_components_ready": true,
+        "selector_matches": true,
+        "target_pods": [
+          {
+            "namespace": "otel-demo-lab",
+            "name": "payment-ddb6c884d-v4s8c",
+            "ready": true,
+            "restarts": 0,
+            "ports": [
+              50051
+            ]
+          }
+        ],
+        "target_pods_ready": true,
+        "target_port_exists": true,
+        "mutation_name_available": true,
+        "injector_prerequisite": {
+          "status": "pass",
+          "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+        }
+      },
+      "errors": [],
+      "interpretation": {
+        "selected_is_not_injected": true,
+        "defense_conclusion_allowed": true
+      },
+      "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"otel-payment-delay-one\" not found\n"
+    }
+  ],
+  "summary": {
+    "ready_for_injection": 1,
+    "blocked": 0,
+    "not_applicable": 0
+  }
+}

@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: eval-ob-productcatalog-kill-one
+  namespace: online-boutique-lab
+  labels:
+    chaos.evaluation: track-k
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+      - online-boutique-lab
+    labelSelectors:
+      app: productcatalogservice
+  duration: "30s"

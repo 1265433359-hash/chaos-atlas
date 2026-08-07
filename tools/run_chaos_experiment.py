@@ -133,6 +133,50 @@ def wait_for_lifecycle(
     return False, last, errors
 
 
+def wait_for_target_ready(
+    namespace: str,
+    selector: dict[str, Any],
+    timeout: float,
+    interval: float,
+) -> tuple[bool, dict[str, Any], list[str]]:
+    """Wait for a replacement Pod to become Ready after a one-shot kill."""
+    labels = selector.get("labelSelectors") if isinstance(selector, dict) else {}
+    labels = labels if isinstance(labels, dict) else {}
+    label_query = ",".join(f"{key}={value}" for key, value in sorted(labels.items()))
+    deadline = time.monotonic() + max(0.1, timeout)
+    errors: list[str] = []
+    last: dict[str, Any] = {}
+    while time.monotonic() <= deadline:
+        args = ["get", "pods", "-n", namespace]
+        if label_query:
+            args.extend(["-l", label_query])
+        data, error = kubectl_json(args)
+        if data is None:
+            if error:
+                errors.append(error)
+            time.sleep(max(0.1, interval))
+            continue
+        items = data.get("items") if isinstance(data, dict) else []
+        ready_names = [
+            str(item.get("metadata", {}).get("name"))
+            for item in items
+            if any(
+                condition.get("type") == "Ready" and condition.get("status") == "True"
+                for condition in item.get("status", {}).get("conditions", [])
+                if isinstance(condition, dict)
+            )
+        ]
+        last = {
+            "selector": label_query,
+            "pod_count": len(items),
+            "ready_pods": ready_names,
+        }
+        if ready_names:
+            return True, last, errors
+        time.sleep(max(0.1, interval))
+    return False, last, errors
+
+
 def delete_resource(kind: str, namespace: str, name: str, timeout: int = 30) -> dict[str, Any]:
     plural = resource_name(kind)
     code, stdout, stderr = run_kubectl(
@@ -392,9 +436,18 @@ def main() -> int:
         if applied and kind and namespace and name:
             injected_confirmed = bool(report["lifecycle"].get("injected"))
             if injected_confirmed:
-                recovered, recovered_status, errors = wait_for_lifecycle(
-                    kind, namespace, name, "recovered", args.recovery_timeout, args.poll_interval
-                )
+                if kind == "PodChaos":
+                    recovered, recovered_status, errors = wait_for_target_ready(
+                        namespace,
+                        (report.get("preflight") or {}).get("selector") or {},
+                        args.recovery_timeout,
+                        args.poll_interval,
+                    )
+                    report["lifecycle"]["recovery_semantics"] = "target_selector_ready_after_podchaos"
+                else:
+                    recovered, recovered_status, errors = wait_for_lifecycle(
+                        kind, namespace, name, "recovered", args.recovery_timeout, args.poll_interval
+                    )
             else:
                 # There is no effect to wait for when injection was never
                 # confirmed. Delete immediately and avoid a needless 120s

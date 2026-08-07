@@ -82,6 +82,8 @@ spec:
         env:
         - name: CART_PORT
           value: "7070"
+        - name: ASPNETCORE_URLS
+          value: "http://*:7070"
         - name: VALKEY_ADDR
           value: "valkey:6379"
         ports:
@@ -97,7 +99,7 @@ spec:
     app: cart
   ports:
   - port: 7070
-    targetPort: 8080
+    targetPort: 7070
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -265,6 +267,49 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: flagd
+  namespace: otel-demo-lab
+  labels:
+    app: flagd
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flagd
+  template:
+    metadata:
+      labels:
+        app: flagd
+    spec:
+      containers:
+      - name: flagd
+        image: ghcr.io/open-feature/flagd:v0.16.0
+        command: ["/flagd-build", "start", "--uri", "file:/etc/flagd/demo.flagd.json", "--port", "8013"]
+        ports:
+        - containerPort: 8013
+        volumeMounts:
+        - name: flagd-config
+          mountPath: /etc/flagd
+      volumes:
+      - name: flagd-config
+        configMap:
+          name: flagd-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flagd
+  namespace: otel-demo-lab
+spec:
+  selector:
+    app: flagd
+  ports:
+  - port: 8013
+    targetPort: 8013
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: payment
   namespace: otel-demo-lab
   labels:
@@ -285,6 +330,10 @@ spec:
         env:
         - name: PAYMENT_PORT
           value: "50051"
+        - name: FLAGD_HOST
+          value: "flagd"
+        - name: FLAGD_PORT
+          value: "8013"
         ports:
         - containerPort: 50051
 ---
@@ -299,6 +348,44 @@ spec:
   ports:
   - port: 50051
     targetPort: 50051
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: quote
+  namespace: otel-demo-lab
+  labels:
+    app: quote
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: quote
+  template:
+    metadata:
+      labels:
+        app: quote
+    spec:
+      containers:
+      - name: quote
+        image: ghcr.io/open-telemetry/demo:3.0.0-quote
+        env:
+        - name: QUOTE_PORT
+          value: "8090"
+        ports:
+        - containerPort: 8090
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: quote
+  namespace: otel-demo-lab
+spec:
+  selector:
+    app: quote
+  ports:
+  - port: 8090
+    targetPort: 8090
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -323,6 +410,8 @@ spec:
         env:
         - name: SHIPPING_PORT
           value: "50050"
+        - name: QUOTE_ADDR
+          value: "http://quote:8090"
         ports:
         - containerPort: 50050
       - name: flagd-sidecar
@@ -369,6 +458,8 @@ spec:
       - name: email
         image: ghcr.io/open-telemetry/demo:3.0.0-email
         env:
+        - name: APP_ENV
+          value: "production"
         - name: EMAIL_PORT
           value: "6060"
         ports:

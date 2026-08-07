@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "tool": "run_chaos_experiment",
+  "started_at": "2026-08-07T05:48:50.939630+00:00",
+  "mutation": "artifacts/experiments/execution/mutations/ob-productcatalog-kill-one.yaml",
+  "request_config": {
+    "service": "frontend",
+    "remote_port": 80,
+    "local_port": 18194,
+    "path": "/",
+    "method": "GET",
+    "request_timeout_sec": 5.0,
+    "request_count": 5,
+    "request_concurrency": 1,
+    "warmup_count": 0,
+    "warmup_interval_sec": 0.0
+  },
+  "preflight": {
+    "checked_at": "2026-08-07T05:48:51.264112+00:00",
+    "mutation": "artifacts/experiments/execution/mutations/ob-productcatalog-kill-one.yaml",
+    "kind": "PodChaos",
+    "namespace": "online-boutique-lab",
+    "name": "eval-ob-productcatalog-kill-one",
+    "selector": {
+      "namespaces": [
+        "online-boutique-lab"
+      ],
+      "labelSelectors": {
+        "app": "productcatalogservice"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "requested_namespaces": [
+          "online-boutique-lab"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "online-boutique-lab",
+          "name": "productcatalogservice-fd5f8bc44-k4bhk",
+          "terminating": false,
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            3550
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"eval-ob-productcatalog-kill-one\" not found\n"
+  },
+  "lifecycle": {
+    "applied": true,
+    "injected": true,
+    "recovered": true,
+    "cleanup": {
+      "delete_command_ok": true,
+      "delete_output": "podchaos.chaos-mesh.org \"eval-ob-productcatalog-kill-one\" deleted from online-boutique-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"eval-ob-productcatalog-kill-one\" not found"
+    },
+    "injected_status": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-07T05:48:51Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "online-boutique-lab/productcatalogservice-fd5f8bc44-k4bhk",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-07T05:48:51Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    },
+    "recovery_semantics": "target_selector_ready_after_podchaos",
+    "recovered_status": {
+      "selector": "app=productcatalogservice",
+      "pod_count": 1,
+      "ready_pods": [
+        "productcatalogservice-fd5f8bc44-zblhm"
+      ]
+    },
+    "recovery_wait_completed": true
+  },
+  "requests": [
+    {
+      "sample": 1,
+      "observed_at": "2026-08-07T05:48:52.246658+00:00",
+      "status_code": null,
+      "latency_ms": 5027.653,
+      "body": null,
+      "error": "timed out"
+    },
+    {
+      "sample": 2,
+      "observed_at": "2026-08-07T05:48:57.275326+00:00",
+      "status_code": null,
+      "latency_ms": 5009.379,
+      "body": null,
+      "error": "timed out"
+    },
+    {
+      "sample": 3,
+      "observed_at": "2026-08-07T05:49:02.285493+00:00",
+      "status_code": null,
+      "latency_ms": 5005.114,
+      "body": null,
+      "error": "timed out"
+    },
+    {
+      "sample": 4,
+      "observed_at": "2026-08-07T05:49:07.291447+00:00",
+      "status_code": 500,
+      "latency_ms": 4978.104,
+      "body": "\n    \n<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, shrink-to-fit=no\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">\n    <title>\n        \n        Online Boutique\n        \n    </title>\n    <link href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB\"\n        crossorigin=\"anonymous\">\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n    <link href=\"https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap\" rel=\"stylesheet\">\n    <link href=\"https://fonts.googleapis.com/css2?family=Google+Symbols:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200\" rel=\"stylesheet\" />\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/static/styles/styles.css\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/static/styles/cart.css\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/static/styles/order.css\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/static/styles/bot.css\">\n    \n    <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />\n    \n</head>\n\n<body>\n    <header>\n        \n        <div class=\"navbar sub-navbar\">\n            <div class=\"container d-flex justify-content-between\">\n                <a href=\"/\" class=\"navbar-brand d-flex align-items-center\">\n                    \n                    <img src=\"/static/icons/Hipster_NavLogo.svg\" alt=\"\" class=\"top-left-logo\" />\n                    \n                </a>\n                <div class=\"controls\">\n\n                    \n\n                    \n\n                    <a href=\"/cart\" class=\"cart-link\">\n                        <img src=\"/static/icons/Hipster_CartIcon.svg\" alt=\"Cart icon\" class=\"logo\" title=\"Cart\" />\n                        \n                    </a>\n                </div>\n            </div>\n        </div>\n\n    </header>\n    \n    <div  class=\"local\" >\n        <span class=\"platform-flag\">\n          local\n        </span>\n      </div>\n    <main role=\"main\">\n        <div class=\"py-5\">\n            <div class=\"container bg-light py-3 px-lg-5 py-lg-5\">\n                <h1>Uh, oh!</h1>\n                <p>Something has failed. Below are some details for debugging.</p>\n\n                <p><strong>HTTP Status:</strong> 500 Internal Server Error</p>\n                <pre class=\"border border-danger p-3\"\n                    style=\"white-space: pre-wrap; word-break: keep-all;\">rpc error: code = Unavailable desc = connection error: desc = &#34;transport: Error while dialing: dial tcp 10.96.96.77:3550: i/o timeout&#34;\ncould not retrieve products\nmain.(*frontendServer).homeHandler\n\t/src/handlers.go:69\nnet/http.HandlerFunc.ServeHTTP\n\t/usr/local/go/src/net/http/server.go:2286\ngithub.com/gorilla/mux.(*Router).ServeHTTP\n\t/go/pkg/mod/github.com/gorilla/mux@v1.8.1/mux.go:212\nmain.(*logHandler).ServeHTTP\n\t/src/middleware.go:82\nmain.main.ensureSessionID.func4\n\t/src/middleware.go:109\nnet/http.HandlerFunc.ServeHTTP\n\t/usr/local/go/src/net/http/server.go:2286\ngo.opentelemetry.io/contrib/instrumentation/net/http/otelhttp.(*middleware).serveHTTP\n\t/go/pkg/mod/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp@v0.69.0/handler.go:185\ngo.opentelemetry.io/contrib/instrumentation/net/http/otelhttp.NewMiddleware.func2.1\n\t/go/pkg/mod/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp@v0.69.0/handler.go:67\nnet/http.HandlerFunc.ServeHTTP\n\t/usr/local/go/src/net/http/server.go:2286\nnet/http.serverHandler.ServeHTTP\n\t/usr/local/go/src/net/http/server.go:3311\nnet/http.(*conn).serve\n\t/usr/local/go/src/net/http/server.go:2073\nruntime.goexit\n\t/usr/local/go/src/runtime/asm_amd64.s:1771</pre>\n            </div>\n        </div>\n    </main>\n\n    \n\n<footer class=\"py-5\">\n    <div class=\"footer-top\">\n        <div class=\"container footer-social\">\n            <p class=\"footer-text\">This website is hosted for demo purposes only. It is not an actual shop. This is not a Google product.</p>\n            <p class=\"footer-text\">\u00a9 2020-2026 Google LLC (<a href=\"https://github.com/GoogleCloudPlatform/microservices-demo\">Source Code</a>)</p>\n            <p class=\"footer-text\">\n                <small>\n                    session-id: 6f308ddc-40ed-4aae-b1d2-916b3bd8f7e4 \u2014 \n                    request-id: 1799fea9-ae61-4b4d-828f-ba87c75ea216\n                </small>\n                <br/>\n                <small>\n                    \n                        \n                        \n                        \n                        <b>Pod: </b>frontend-58b44f9dd-mqk8n\n                        \n                    \n                </small>\n            </p>\n        </div>\n    </div>\n</footer>\n<script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js\"\n    integrity=\"sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T\" crossorigin=\"anonymous\">\n</script>\n</body>\n\n</html>\n\n    ",
+      "error": "HTTP Error 500: Internal Server Error"
+    },
+    {
+      "sample": 5,
+      "observed_at": "2026-08-07T05:49:12.270460+00:00",
+      "status_code": 500,
+      "latency_ms": 18.144,
+      "body": "\n    \n<!DOCTYPE html>\n<html lang=\"en\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, shrink-to-fit=no\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\">\n    <title>\n        \n        Online Boutique\n        \n    </title>\n    <link href=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css\" rel=\"stylesheet\" integrity=\"sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB\"\n        crossorigin=\"anonymous\">\n    <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n    <link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n    <link href=\"https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap\" rel=\"stylesheet\">\n    <link href=\"https://fonts.googleapis.com/css2?family=Google+Symbols:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200\" rel=\"stylesheet\" />\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/static/styles/styles.css\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/static/styles/cart.css\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/static/styles/order.css\">\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/static/styles/bot.css\">\n    \n    <link rel='shortcut icon' type='image/x-icon' href='/static/favicon.ico' />\n    \n</head>\n\n<body>\n    <header>\n        \n        <div class=\"navbar sub-navbar\">\n            <div class=\"container d-flex justify-content-between\">\n                <a href=\"/\" class=\"navbar-brand d-flex align-items-center\">\n                    \n                    <img src=\"/static/icons/Hipster_NavLogo.svg\" alt=\"\" class=\"top-left-logo\" />\n                    \n                </a>\n                <div class=\"controls\">\n\n                    \n\n                    \n\n                    <a href=\"/cart\" class=\"cart-link\">\n                        <img src=\"/static/icons/Hipster_CartIcon.svg\" alt=\"Cart icon\" class=\"logo\" title=\"Cart\" />\n                        \n                    </a>\n                </div>\n            </div>\n        </div>\n\n    </header>\n    \n    <div  class=\"local\" >\n        <span class=\"platform-flag\">\n          local\n        </span>\n      </div>\n    <main role=\"main\">\n        <div class=\"py-5\">\n            <div class=\"container bg-light py-3 px-lg-5 py-lg-5\">\n                <h1>Uh, oh!</h1>\n                <p>Something has failed. Below are some details for debugging.</p>\n\n                <p><strong>HTTP Status:</strong> 500 Internal Server Error</p>\n                <pre class=\"border border-danger p-3\"\n                    style=\"white-space: pre-wrap; word-break: keep-all;\">rpc error: code = Unavailable desc = connection error: desc = &#34;transport: Error while dialing: dial tcp 10.96.96.77:3550: i/o timeout&#34;\ncould not retrieve products\nmain.(*frontendServer).homeHandler\n\t/src/handlers.go:69\nnet/http.HandlerFunc.ServeHTTP\n\t/usr/local/go/src/net/http/server.go:2286\ngithub.com/gorilla/mux.(*Router).ServeHTTP\n\t/go/pkg/mod/github.com/gorilla/mux@v1.8.1/mux.go:212\nmain.(*logHandler).ServeHTTP\n\t/src/middleware.go:82\nmain.main.ensureSessionID.func4\n\t/src/middleware.go:109\nnet/http.HandlerFunc.ServeHTTP\n\t/usr/local/go/src/net/http/server.go:2286\ngo.opentelemetry.io/contrib/instrumentation/net/http/otelhttp.(*middleware).serveHTTP\n\t/go/pkg/mod/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp@v0.69.0/handler.go:185\ngo.opentelemetry.io/contrib/instrumentation/net/http/otelhttp.NewMiddleware.func2.1\n\t/go/pkg/mod/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp@v0.69.0/handler.go:67\nnet/http.HandlerFunc.ServeHTTP\n\t/usr/local/go/src/net/http/server.go:2286\nnet/http.serverHandler.ServeHTTP\n\t/usr/local/go/src/net/http/server.go:3311\nnet/http.(*conn).serve\n\t/usr/local/go/src/net/http/server.go:2073\nruntime.goexit\n\t/usr/local/go/src/runtime/asm_amd64.s:1771</pre>\n            </div>\n        </div>\n    </main>\n\n    \n\n<footer class=\"py-5\">\n    <div class=\"footer-top\">\n        <div class=\"container footer-social\">\n            <p class=\"footer-text\">This website is hosted for demo purposes only. It is not an actual shop. This is not a Google product.</p>\n            <p class=\"footer-text\">\u00a9 2020-2026 Google LLC (<a href=\"https://github.com/GoogleCloudPlatform/microservices-demo\">Source Code</a>)</p>\n            <p class=\"footer-text\">\n                <small>\n                    session-id: 92d214c5-961a-4fc6-ae08-847e27dd40c8 \u2014 \n                    request-id: e73c2c8d-0044-4a6f-a968-18af7a118384\n                </small>\n                <br/>\n                <small>\n                    \n                        \n                        \n                        \n                        <b>Pod: </b>frontend-58b44f9dd-mqk8n\n                        \n                    \n                </small>\n            </p>\n        </div>\n    </div>\n</footer>\n<script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js\"\n    integrity=\"sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T\" crossorigin=\"anonymous\">\n</script>\n</body>\n\n</html>\n\n    ",
+      "error": "HTTP Error 500: Internal Server Error"
+    }
+  ],
+  "warmup_requests": [],
+  "errors": [],
+  "apply": {
+    "return_code": 0,
+    "stdout": "podchaos.chaos-mesh.org/eval-ob-productcatalog-kill-one created",
+    "stderr": ""
+  },
+  "port_forward": {
+    "return_code": 1,
+    "stopped_by_runner": true,
+    "stdout": "Forwarding from 127.0.0.1:18194 -> 8080\nForwarding from [::1]:18194 -> 8080\nHandling connection for 18194\nHandling connection for 18194\nHandling connection for 18194\nHandling connection for 18194\nHandling connection for 18194\nHandling connection for 18194",
+    "stderr": ""
+  },
+  "classification_details": {
+    "schema_version": 1,
+    "tool": "classify_runtime_result",
+    "classified_at": "2026-08-07T05:49:12.645732+00:00",
+    "run_report": "artifacts/experiments/execution/mutations/ob-productcatalog-kill-one.yaml",
+    "baseline_report": null,
+    "classification": "client_timeout_observed",
+    "evidence_state": "runtime_effect_observed",
+    "confidence": "B",
+    "root_cause_labels": [
+      "client_timeout_budget_exceeded"
+    ],
+    "observations": {
+      "request_count": 5,
+      "observed_median_latency_ms": 5005.114,
+      "baseline_median_latency_ms": null,
+      "latency_delta_ms": null,
+      "body_contract_mode": "exact",
+      "injected": true,
+      "recovered": true,
+      "cleanup_confirmed": true
+    },
+    "interpretation": {
+      "defense_claim": "not_derived",
+      "reason": "The classifier records evidence state; defense requires the test-node graph, baseline, path evidence and outcome-specific reasoning.",
+      "result": "The client timeout boundary was crossed after confirmed injection. Verify server-side completion, retry, fallback and cleanup separately."
+    },
+    "evidence_refs": [
+      "artifacts/experiments/execution/mutations/ob-productcatalog-kill-one.yaml",
+      {
+        "return_code": 0,
+        "stdout": "podchaos.chaos-mesh.org/eval-ob-productcatalog-kill-one created",
+        "stderr": ""
+      },
+      {
+        "delete_command_ok": true,
+        "delete_output": "podchaos.chaos-mesh.org \"eval-ob-productcatalog-kill-one\" deleted from online-boutique-lab namespace",
+        "resource_absent_after_delete": true,
+        "verify_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"eval-ob-productcatalog-kill-one\" not found"
+      }
+    ]
+  },
+  "result_classification": "client_timeout_observed",
+  "classification_source": "shared_classifier",
+  "defense_conclusion": {
+    "allowed": true,
+    "rule": "The runner records effect evidence; defense interpretation still requires baseline, path evidence and outcome-specific analysis."
+  },
+  "finished_at": "2026-08-07T05:49:12.645756+00:00"
+}

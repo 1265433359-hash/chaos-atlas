@@ -1,0 +1,1271 @@
+{
+  "schema_version": 1,
+  "tool": "generate_comparison_pilot",
+  "replicate": 2,
+  "seed": 42,
+  "candidate_budget_per_project": 6,
+  "methods": [
+    {
+      "id": "M0",
+      "name": "random-template",
+      "status": "available",
+      "plans": [
+        {
+          "plan_id": "M0-train-ticket-r2-01",
+          "method": "random-template",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 1,
+          "workload_id": "station-lookup",
+          "target": {
+            "service": "ts-station-service",
+            "endpoint_or_edge": "station-process",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "cpu_stress",
+            "intensity": "1-worker-80pct",
+            "duration": "45s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "station lookup remains available under bounded CPU contention",
+          "predicted_root_cause": "single replica saturation increases tail latency",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-STATION-CPU",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/stress-station/station-stress-cpu-candidate-r1.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M0-train-ticket-r2-02",
+          "method": "random-template",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 2,
+          "workload_id": "station-lookup",
+          "target": {
+            "service": "ts-station-service",
+            "endpoint_or_edge": "client->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "500ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "station lookup remains within the registered deadline",
+          "predicted_root_cause": "same station latency mechanism as the 100ms candidate",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K1-STATION-DELAY-DUPLICATE",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r2.yaml",
+            "preclassified": "duplicate_known_mechanism"
+          }
+        },
+        {
+          "plan_id": "M0-train-ticket-r2-03",
+          "method": "random-template",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 3,
+          "workload_id": "basic-to-station",
+          "target": {
+            "service": "ts-basic-service",
+            "endpoint_or_edge": "basic->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "100ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "basic query remains successful within the client deadline",
+          "predicted_root_cause": "downstream latency propagates without a bounded fallback",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-BASIC-DELAY",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network/basic-network-delay-candidate-r1.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M0-train-ticket-r2-04",
+          "method": "random-template",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 4,
+          "workload_id": "order-refresh",
+          "target": {
+            "service": "ts-order-service",
+            "endpoint_or_edge": "order->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "500ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "order refresh calls station lookup",
+          "predicted_root_cause": "station dependency latency",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K2-ORDER-UNREACHABLE",
+            "mutation_path": null,
+            "preclassified": "invalid_unreachable"
+          }
+        },
+        {
+          "plan_id": "M0-train-ticket-r2-05",
+          "method": "random-template",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 5,
+          "workload_id": "station-lookup",
+          "target": {
+            "service": "ts-station-service",
+            "endpoint_or_edge": "client->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "100ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "station lookup preserves its response contract within the client deadline",
+          "predicted_root_cause": "unbounded latency propagation to the station endpoint",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K1-STATION-DELAY",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r1.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M0-train-ticket-r2-06",
+          "method": "random-template",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 6,
+          "workload_id": "order-query",
+          "target": {
+            "service": "ts-order-service",
+            "endpoint_or_edge": "client->order",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "http_error",
+            "intensity": "404",
+            "duration": "60s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "order query rejects an injected response error cleanly",
+          "predicted_root_cause": "missing API error handling",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K3-HTTP-PLATFORM",
+            "mutation_path": "artifacts/train-ticket/runtime/injections/order-http-code-nonexistent.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M0-online-boutique-r2-01",
+          "method": "random-template",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 1,
+          "workload_id": "frontend-home",
+          "target": {
+            "service": "productcatalogservice",
+            "endpoint_or_edge": "frontend->productcatalog",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "500ms",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "frontend latency stays within its registered deadline",
+          "predicted_root_cause": "catalog latency propagates to the frontend",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-PRODUCTCATALOG-DELAY",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-productcatalog-delay-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M0-online-boutique-r2-02",
+          "method": "random-template",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 2,
+          "workload_id": "place-order",
+          "target": {
+            "service": "paymentservice",
+            "endpoint_or_edge": "checkout->payment",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "unavailable",
+            "intensity": "100pct-loss",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "place order fails within a bounded deadline",
+          "predicted_root_cause": "missing payment timeout propagates a hang",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K4-PAYMENT-LOSS",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-loss-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M0-online-boutique-r2-03",
+          "method": "random-template",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 3,
+          "workload_id": "frontend-home",
+          "target": {
+            "service": "productcatalogservice",
+            "endpoint_or_edge": "frontend->productcatalog",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "pod_kill",
+            "intensity": "one-pod",
+            "duration": "30s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "frontend remains available when one catalog pod is replaced",
+          "predicted_root_cause": "single replica core dependency causes cascading failure",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K5-PRODUCTCATALOG-KILL",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-productcatalog-kill-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M0-online-boutique-r2-04",
+          "method": "random-template",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 4,
+          "workload_id": "frontend-home",
+          "target": {
+            "service": "adservice",
+            "endpoint_or_edge": "frontend->adservice",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "unavailable",
+            "intensity": "service-absent",
+            "duration": "baseline-window",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "frontend remains available without advertisements",
+          "predicted_root_cause": "non-core dependency is guarded by timeout and error swallowing",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K6-ADSERVICE-NEGATIVE",
+            "mutation_path": null,
+            "preclassified": "negative_control_observation"
+          }
+        },
+        {
+          "plan_id": "M0-online-boutique-r2-05",
+          "method": "random-template",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 5,
+          "workload_id": "place-order",
+          "target": {
+            "service": "paymentservice",
+            "endpoint_or_edge": "checkout->payment",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "2000ms",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "place order completes within the registered deadline",
+          "predicted_root_cause": "checkout has no bounded payment timeout",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K4-PAYMENT-DELAY",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-delay-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M0-online-boutique-r2-06",
+          "method": "random-template",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 6,
+          "workload_id": "place-order",
+          "target": {
+            "service": "paymentservice",
+            "endpoint_or_edge": "probe->payment",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "2000ms",
+            "duration": "150s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "probe restart does not amplify or escape the injected fault",
+          "predicted_root_cause": "probe deadline is shorter than injected service latency",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K7-PROBE-RESTART",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-probe-escape-one.yaml",
+            "preclassified": "control_already_executed"
+          }
+        }
+      ]
+    },
+    {
+      "id": "M1",
+      "name": "ChaosEater-adapter",
+      "status": "blocked_external_reproduction",
+      "blocker": "official repository download unavailable in the current host network",
+      "source": "https://github.com/ntt-dkiku/chaos-eater",
+      "plans": []
+    },
+    {
+      "id": "M2",
+      "name": "FastFI-adapter",
+      "status": "blocked_external_reproduction",
+      "blocker": "official repository download unavailable in the current host network",
+      "source": "https://github.com/TanYuzhen/TOSEM-FastFI-Code",
+      "plans": []
+    },
+    {
+      "id": "M3",
+      "name": "graph-only",
+      "status": "available",
+      "plans": [
+        {
+          "plan_id": "M3-train-ticket-r2-01",
+          "method": "graph-only",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 1,
+          "workload_id": "order-refresh",
+          "target": {
+            "service": "ts-order-service",
+            "endpoint_or_edge": "order->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "500ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "order refresh calls station lookup",
+          "predicted_root_cause": "station dependency latency",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K2-ORDER-UNREACHABLE",
+            "mutation_path": null,
+            "preclassified": "invalid_unreachable"
+          }
+        },
+        {
+          "plan_id": "M3-train-ticket-r2-02",
+          "method": "graph-only",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 2,
+          "workload_id": "order-query",
+          "target": {
+            "service": "ts-order-service",
+            "endpoint_or_edge": "client->order",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "http_error",
+            "intensity": "404",
+            "duration": "60s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "order query rejects an injected response error cleanly",
+          "predicted_root_cause": "missing API error handling",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K3-HTTP-PLATFORM",
+            "mutation_path": "artifacts/train-ticket/runtime/injections/order-http-code-nonexistent.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M3-train-ticket-r2-03",
+          "method": "graph-only",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 3,
+          "workload_id": "basic-to-station",
+          "target": {
+            "service": "ts-basic-service",
+            "endpoint_or_edge": "basic->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "100ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "basic query remains successful within the client deadline",
+          "predicted_root_cause": "downstream latency propagates without a bounded fallback",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-BASIC-DELAY",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network/basic-network-delay-candidate-r1.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M3-train-ticket-r2-04",
+          "method": "graph-only",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 4,
+          "workload_id": "station-lookup",
+          "target": {
+            "service": "ts-station-service",
+            "endpoint_or_edge": "client->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "100ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "station lookup preserves its response contract within the client deadline",
+          "predicted_root_cause": "unbounded latency propagation to the station endpoint",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K1-STATION-DELAY",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r1.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M3-train-ticket-r2-05",
+          "method": "graph-only",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 5,
+          "workload_id": "station-lookup",
+          "target": {
+            "service": "ts-station-service",
+            "endpoint_or_edge": "client->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "500ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "station lookup remains within the registered deadline",
+          "predicted_root_cause": "same station latency mechanism as the 100ms candidate",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K1-STATION-DELAY-DUPLICATE",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r2.yaml",
+            "preclassified": "duplicate_known_mechanism"
+          }
+        },
+        {
+          "plan_id": "M3-train-ticket-r2-06",
+          "method": "graph-only",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 6,
+          "workload_id": "station-lookup",
+          "target": {
+            "service": "ts-station-service",
+            "endpoint_or_edge": "station-process",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "cpu_stress",
+            "intensity": "1-worker-80pct",
+            "duration": "45s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "station lookup remains available under bounded CPU contention",
+          "predicted_root_cause": "single replica saturation increases tail latency",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-STATION-CPU",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/stress-station/station-stress-cpu-candidate-r1.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M3-online-boutique-r2-01",
+          "method": "graph-only",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 1,
+          "workload_id": "frontend-home",
+          "target": {
+            "service": "productcatalogservice",
+            "endpoint_or_edge": "frontend->productcatalog",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "pod_kill",
+            "intensity": "one-pod",
+            "duration": "30s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "frontend remains available when one catalog pod is replaced",
+          "predicted_root_cause": "single replica core dependency causes cascading failure",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K5-PRODUCTCATALOG-KILL",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-productcatalog-kill-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M3-online-boutique-r2-02",
+          "method": "graph-only",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 2,
+          "workload_id": "frontend-home",
+          "target": {
+            "service": "productcatalogservice",
+            "endpoint_or_edge": "frontend->productcatalog",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "500ms",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "frontend latency stays within its registered deadline",
+          "predicted_root_cause": "catalog latency propagates to the frontend",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-PRODUCTCATALOG-DELAY",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-productcatalog-delay-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M3-online-boutique-r2-03",
+          "method": "graph-only",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 3,
+          "workload_id": "place-order",
+          "target": {
+            "service": "paymentservice",
+            "endpoint_or_edge": "checkout->payment",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "2000ms",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "place order completes within the registered deadline",
+          "predicted_root_cause": "checkout has no bounded payment timeout",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K4-PAYMENT-DELAY",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-delay-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M3-online-boutique-r2-04",
+          "method": "graph-only",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 4,
+          "workload_id": "place-order",
+          "target": {
+            "service": "paymentservice",
+            "endpoint_or_edge": "checkout->payment",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "unavailable",
+            "intensity": "100pct-loss",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "place order fails within a bounded deadline",
+          "predicted_root_cause": "missing payment timeout propagates a hang",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K4-PAYMENT-LOSS",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-loss-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M3-online-boutique-r2-05",
+          "method": "graph-only",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 5,
+          "workload_id": "place-order",
+          "target": {
+            "service": "paymentservice",
+            "endpoint_or_edge": "probe->payment",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "2000ms",
+            "duration": "150s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "probe restart does not amplify or escape the injected fault",
+          "predicted_root_cause": "probe deadline is shorter than injected service latency",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K7-PROBE-RESTART",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-probe-escape-one.yaml",
+            "preclassified": "control_already_executed"
+          }
+        },
+        {
+          "plan_id": "M3-online-boutique-r2-06",
+          "method": "graph-only",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 6,
+          "workload_id": "frontend-home",
+          "target": {
+            "service": "adservice",
+            "endpoint_or_edge": "frontend->adservice",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "unavailable",
+            "intensity": "service-absent",
+            "duration": "baseline-window",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "frontend remains available without advertisements",
+          "predicted_root_cause": "non-core dependency is guarded by timeout and error swallowing",
+          "information_tier": [
+            "I0",
+            "I1-global"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K6-ADSERVICE-NEGATIVE",
+            "mutation_path": null,
+            "preclassified": "negative_control_observation"
+          }
+        }
+      ]
+    },
+    {
+      "id": "M4",
+      "name": "ours-full",
+      "status": "available",
+      "plans": [
+        {
+          "plan_id": "M4-train-ticket-r2-01",
+          "method": "ours-full",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 1,
+          "workload_id": "station-lookup",
+          "target": {
+            "service": "ts-station-service",
+            "endpoint_or_edge": "client->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "100ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "station lookup preserves its response contract within the client deadline",
+          "predicted_root_cause": "unbounded latency propagation to the station endpoint",
+          "information_tier": [
+            "I0",
+            "I1-local",
+            "I2"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K1-STATION-DELAY",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r1.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M4-train-ticket-r2-02",
+          "method": "ours-full",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 2,
+          "workload_id": "basic-to-station",
+          "target": {
+            "service": "ts-basic-service",
+            "endpoint_or_edge": "basic->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "100ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "basic query remains successful within the client deadline",
+          "predicted_root_cause": "downstream latency propagates without a bounded fallback",
+          "information_tier": [
+            "I0",
+            "I1-local",
+            "I2"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-BASIC-DELAY",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network/basic-network-delay-candidate-r1.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M4-train-ticket-r2-03",
+          "method": "ours-full",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 3,
+          "workload_id": "station-lookup",
+          "target": {
+            "service": "ts-station-service",
+            "endpoint_or_edge": "station-process",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "cpu_stress",
+            "intensity": "1-worker-80pct",
+            "duration": "45s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "station lookup remains available under bounded CPU contention",
+          "predicted_root_cause": "single replica saturation increases tail latency",
+          "information_tier": [
+            "I0",
+            "I1-local",
+            "I2"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-STATION-CPU",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/stress-station/station-stress-cpu-candidate-r1.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M4-train-ticket-r2-04",
+          "method": "ours-full",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 4,
+          "workload_id": "station-lookup",
+          "target": {
+            "service": "ts-station-service",
+            "endpoint_or_edge": "client->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "500ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "station lookup remains within the registered deadline",
+          "predicted_root_cause": "same station latency mechanism as the 100ms candidate",
+          "information_tier": [
+            "I0",
+            "I1-local",
+            "I2",
+            "I3"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K1-STATION-DELAY-DUPLICATE",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r2.yaml",
+            "preclassified": "duplicate_known_mechanism"
+          }
+        },
+        {
+          "plan_id": "M4-train-ticket-r2-05",
+          "method": "ours-full",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 5,
+          "workload_id": "order-query",
+          "target": {
+            "service": "ts-order-service",
+            "endpoint_or_edge": "client->order",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "http_error",
+            "intensity": "404",
+            "duration": "60s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "order query rejects an injected response error cleanly",
+          "predicted_root_cause": "missing API error handling",
+          "information_tier": [
+            "I0",
+            "I1-local",
+            "I2"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K3-HTTP-PLATFORM",
+            "mutation_path": "artifacts/train-ticket/runtime/injections/order-http-code-nonexistent.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M4-train-ticket-r2-06",
+          "method": "ours-full",
+          "project_id": "train-ticket",
+          "replicate": 2,
+          "rank": 6,
+          "workload_id": "order-refresh",
+          "target": {
+            "service": "ts-order-service",
+            "endpoint_or_edge": "order->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "500ms",
+            "duration": "20s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "order refresh calls station lookup",
+          "predicted_root_cause": "station dependency latency",
+          "information_tier": [
+            "I0",
+            "I1-local"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "TT-K2-ORDER-UNREACHABLE",
+            "mutation_path": null,
+            "preclassified": "invalid_unreachable"
+          }
+        },
+        {
+          "plan_id": "M4-online-boutique-r2-01",
+          "method": "ours-full",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 1,
+          "workload_id": "place-order",
+          "target": {
+            "service": "paymentservice",
+            "endpoint_or_edge": "probe->payment",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "2000ms",
+            "duration": "150s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "probe restart does not amplify or escape the injected fault",
+          "predicted_root_cause": "probe deadline is shorter than injected service latency",
+          "information_tier": [
+            "I0",
+            "I1-local",
+            "I2",
+            "I3"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K7-PROBE-RESTART",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-probe-escape-one.yaml",
+            "preclassified": "control_already_executed"
+          }
+        },
+        {
+          "plan_id": "M4-online-boutique-r2-02",
+          "method": "ours-full",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 2,
+          "workload_id": "place-order",
+          "target": {
+            "service": "paymentservice",
+            "endpoint_or_edge": "checkout->payment",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "2000ms",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "place order completes within the registered deadline",
+          "predicted_root_cause": "checkout has no bounded payment timeout",
+          "information_tier": [
+            "I0",
+            "I1-local",
+            "I2"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K4-PAYMENT-DELAY",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-delay-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M4-online-boutique-r2-03",
+          "method": "ours-full",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 3,
+          "workload_id": "place-order",
+          "target": {
+            "service": "paymentservice",
+            "endpoint_or_edge": "checkout->payment",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "unavailable",
+            "intensity": "100pct-loss",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "place order fails within a bounded deadline",
+          "predicted_root_cause": "missing payment timeout propagates a hang",
+          "information_tier": [
+            "I0",
+            "I1-local",
+            "I2"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K4-PAYMENT-LOSS",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-loss-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M4-online-boutique-r2-04",
+          "method": "ours-full",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 4,
+          "workload_id": "frontend-home",
+          "target": {
+            "service": "productcatalogservice",
+            "endpoint_or_edge": "frontend->productcatalog",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "pod_kill",
+            "intensity": "one-pod",
+            "duration": "30s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "frontend remains available when one catalog pod is replaced",
+          "predicted_root_cause": "single replica core dependency causes cascading failure",
+          "information_tier": [
+            "I0",
+            "I1-local",
+            "I2"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K5-PRODUCTCATALOG-KILL",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-productcatalog-kill-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M4-online-boutique-r2-05",
+          "method": "ours-full",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 5,
+          "workload_id": "frontend-home",
+          "target": {
+            "service": "productcatalogservice",
+            "endpoint_or_edge": "frontend->productcatalog",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "500ms",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "frontend latency stays within its registered deadline",
+          "predicted_root_cause": "catalog latency propagates to the frontend",
+          "information_tier": [
+            "I0",
+            "I1-local",
+            "I2"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-PRODUCTCATALOG-DELAY",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-productcatalog-delay-one.yaml",
+            "preclassified": null
+          }
+        },
+        {
+          "plan_id": "M4-online-boutique-r2-06",
+          "method": "ours-full",
+          "project_id": "online-boutique",
+          "replicate": 2,
+          "rank": 6,
+          "workload_id": "frontend-home",
+          "target": {
+            "service": "adservice",
+            "endpoint_or_edge": "frontend->adservice",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "unavailable",
+            "intensity": "service-absent",
+            "duration": "baseline-window",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "frontend remains available without advertisements",
+          "predicted_root_cause": "non-core dependency is guarded by timeout and error swallowing",
+          "information_tier": [
+            "I0",
+            "I1-local",
+            "I2"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 0,
+          "model_tokens": 0,
+          "execution": {
+            "candidate_id": "OB-K6-ADSERVICE-NEGATIVE",
+            "mutation_path": null,
+            "preclassified": "negative_control_observation"
+          }
+        }
+      ]
+    }
+  ]
+}

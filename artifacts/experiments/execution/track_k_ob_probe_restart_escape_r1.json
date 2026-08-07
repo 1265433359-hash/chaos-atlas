@@ -1,0 +1,418 @@
+{
+  "schema_version": 1,
+  "tool": "run_probe_restart_escape",
+  "started_at": "2026-08-07T03:22:10.799062+00:00",
+  "mutation": "artifacts/experiments/execution/mutations/ob-payment-probe-escape-one.yaml",
+  "preflight": {
+    "checked_at": "2026-08-07T03:22:11.176299+00:00",
+    "mutation": "artifacts/experiments/execution/mutations/ob-payment-probe-escape-one.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "online-boutique-lab",
+    "name": "ob-payment-probe-escape-one",
+    "selector": {
+      "namespaces": [
+        "online-boutique-lab"
+      ],
+      "labelSelectors": {
+        "app": "paymentservice"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "requested_namespaces": [
+          "online-boutique-lab"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "online-boutique-lab",
+          "name": "paymentservice-54c97dbd7b-xssdz",
+          "terminating": false,
+          "ready": true,
+          "restarts": 6,
+          "ports": [
+            50051
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"ob-payment-probe-escape-one\" not found\n"
+  },
+  "baseline": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\online-boutique\\ob_client.py",
+      "127.0.0.1:35050",
+      "127.0.0.1:37070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 1434.884,
+    "stdout": "[0] ok oid=2e9d85e7-920f-11f1-aff3-7e48236dacd9 tracking=UX-44442-223536249 (577.2ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 577.2,
+        "result": "ok oid=2e9d85e7-920f-11f1-aff3-7e48236dacd9 tracking=UX-44442-223536249",
+        "error": null
+      }
+    ]
+  },
+  "first_injection": {
+    "apply": {
+      "return_code": 0,
+      "stdout": "networkchaos.chaos-mesh.org/ob-payment-probe-escape-one created",
+      "stderr": ""
+    },
+    "injected": true,
+    "status": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-07T03:22:14Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "online-boutique-lab/paymentservice-54c97dbd7b-xssdz",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-07T03:22:14Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    },
+    "workload": {
+      "command": [
+        "C:\\APP\\Python\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:35050",
+        "127.0.0.1:37070",
+        "1"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 2738.856,
+      "stdout": "[0] ok oid=2ffa54b8-920f-11f1-aff3-7e48236dacd9 tracking=AY-44432-225280536 (2021.9ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 2021.9,
+          "result": "ok oid=2ffa54b8-920f-11f1-aff3-7e48236dacd9 tracking=AY-44432-225280536",
+          "error": null
+        }
+      ]
+    }
+  },
+  "restart_timeline": [
+    {
+      "observed_at": "2026-08-07T03:22:17.858217+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": true,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:20.951770+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": true,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:24.034647+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": true,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:27.115248+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": true,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:30.198072+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": true,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:33.281740+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": true,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:36.378318+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": true,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:39.459523+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": true,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:42.538833+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": true,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:45.621656+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:48.706742+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:51.786666+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:54.868079+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:22:57.984896+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:23:01.069215+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:23:04.150119+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:23:07.237088+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 6
+    },
+    {
+      "observed_at": "2026-08-07T03:23:10.347410+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 7
+    },
+    {
+      "observed_at": "2026-08-07T03:23:13.438070+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 7
+    },
+    {
+      "observed_at": "2026-08-07T03:23:16.520066+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 7
+    },
+    {
+      "observed_at": "2026-08-07T03:23:19.611810+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 7
+    },
+    {
+      "observed_at": "2026-08-07T03:23:22.691492+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 7
+    },
+    {
+      "observed_at": "2026-08-07T03:23:25.777575+00:00",
+      "pod": "paymentservice-54c97dbd7b-xssdz",
+      "ready": false,
+      "restarts": 7
+    }
+  ],
+  "after_restart": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\online-boutique\\ob_client.py",
+      "127.0.0.1:35050",
+      "127.0.0.1:37070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 729.463,
+    "stdout": "[0] rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.96.58.112:50051: connect: connection refused\" (15.3ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "INTERNAL",
+        "latency_ms": 15.3,
+        "result": "rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.96.58.112:50051: connect: connection refused\"",
+        "error": "rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.96.58.112:50051: connect: connection refused\""
+      }
+    ]
+  },
+  "reinjection": {
+    "preflight": {
+      "checked_at": "2026-08-07T03:23:32.138410+00:00",
+      "mutation": "artifacts/experiments/execution/mutations/ob-payment-probe-escape-one.yaml",
+      "kind": "NetworkChaos",
+      "namespace": "online-boutique-lab",
+      "name": "ob-payment-probe-escape-one",
+      "selector": {
+        "namespaces": [
+          "online-boutique-lab"
+        ],
+        "labelSelectors": {
+          "app": "paymentservice"
+        }
+      },
+      "decision": "not_applicable",
+      "checks": {
+        "scope_guard": {
+          "allowed_namespace": "train-ticket-lab",
+          "allowed_namespaces": [
+            "online-boutique-lab",
+            "otel-demo-lab",
+            "train-ticket-lab"
+          ],
+          "metadata_namespace_ok": true,
+          "selector_namespaces_ok": true,
+          "requested_namespaces": [
+            "online-boutique-lab"
+          ],
+          "requested_mode": "one",
+          "allowed_modes": [
+            "one"
+          ],
+          "mode_ok": true
+        },
+        "yaml_shape": true,
+        "crd_exists": true,
+        "chaos_components_ready": true,
+        "selector_matches": true,
+        "target_pods": [
+          {
+            "namespace": "online-boutique-lab",
+            "name": "paymentservice-54c97dbd7b-xssdz",
+            "terminating": false,
+            "ready": false,
+            "restarts": 7,
+            "ports": [
+              50051
+            ]
+          }
+        ],
+        "target_pods_ready": false,
+        "target_port_exists": true,
+        "mutation_name_available": true,
+        "injector_prerequisite": {
+          "status": "pass",
+          "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+        }
+      },
+      "errors": [],
+      "interpretation": {
+        "selected_is_not_injected": true,
+        "defense_conclusion_allowed": false
+      },
+      "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"ob-payment-probe-escape-one\" not found\n"
+    }
+  },
+  "cleanup": [
+    {
+      "delete_command_ok": true,
+      "delete_output": "networkchaos.chaos-mesh.org \"ob-payment-probe-escape-one\" deleted from online-boutique-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"ob-payment-probe-escape-one\" not found"
+    }
+  ],
+  "errors": [
+    "reinjection preflight decision: not_applicable"
+  ],
+  "target_before": {
+    "pod": "paymentservice-54c97dbd7b-xssdz",
+    "ready": true,
+    "restarts": 6
+  },
+  "restart_observed": false,
+  "target_after_restart": {
+    "pod": "paymentservice-54c97dbd7b-xssdz",
+    "ready": false,
+    "restarts": 7
+  },
+  "result_classification": "runner_error",
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:35050 -> 5050\nForwarding from [::1]:35050 -> 5050\nHandling connection for 35050\nHandling connection for 35050\nHandling connection for 35050\nHandling connection for 35050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:37070 -> 7070\nForwarding from [::1]:37070 -> 7070\nHandling connection for 37070\nHandling connection for 37070\nHandling connection for 37070\nHandling connection for 37070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-07T03:23:32.150516+00:00"
+}

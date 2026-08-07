@@ -123,24 +123,37 @@ def cleanup_confirmed(cleanup: dict[str, Any]) -> bool | None:
     return None
 
 
-def baseline_contract(baseline: dict[str, Any] | None) -> tuple[float | None, set[int], set[str]]:
+def baseline_contract(
+    baseline: dict[str, Any] | None,
+    body_contract_mode: str = "exact",
+) -> tuple[float | None, set[int], set[str]]:
     if not baseline:
         return None, set(), set()
     samples = samples_from(baseline)
     statuses = {sample["status_code"] for sample in samples if sample.get("status_code") is not None}
-    bodies = {
-        body
-        for body in (canonical_body(sample.get("body")) for sample in samples)
-        if body is not None
-    }
+    bodies = set()
+    if body_contract_mode == "exact":
+        bodies = {
+            body
+            for body in (canonical_body(sample.get("body")) for sample in samples)
+            if body is not None
+        }
     return median_latency(samples), statuses, bodies
 
 
-def classify(run: dict[str, Any], baseline: dict[str, Any] | None) -> dict[str, Any]:
+def classify(
+    run: dict[str, Any],
+    baseline: dict[str, Any] | None,
+    body_contract_mode: str = "exact",
+) -> dict[str, Any]:
     preflight = run.get("preflight") or {}
     lifecycle = lifecycle_from(run)
     requests = samples_from(run)
-    baseline_median, baseline_statuses, baseline_bodies = baseline_contract(baseline)
+    if body_contract_mode not in {"exact", "status_only"}:
+        raise ValueError(f"unsupported body contract mode: {body_contract_mode}")
+    baseline_median, baseline_statuses, baseline_bodies = baseline_contract(
+        baseline, body_contract_mode
+    )
     observed_median = median_latency(requests)
     labels: list[str] = []
     evidence_state = "unknown"
@@ -243,6 +256,7 @@ def classify(run: dict[str, Any], baseline: dict[str, Any] | None) -> dict[str, 
             "latency_delta_ms": round(observed_median - baseline_median, 3)
             if observed_median is not None and baseline_median is not None
             else None,
+            "body_contract_mode": body_contract_mode,
             "injected": bool(lifecycle.get("injected")),
             "recovered": recovered,
             "cleanup_confirmed": cleanup_state,
@@ -275,12 +289,18 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--run", type=Path, required=True, help="runner or manually normalized runtime JSON")
     parser.add_argument("--baseline", type=Path, help="baseline JSON with samples/status/latency/body")
+    parser.add_argument(
+        "--body-contract",
+        choices=("exact", "status_only"),
+        default="exact",
+        help="baseline response-body comparison mode; use status_only for registered dynamic bodies",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
 
     run = load_json(args.run)
     baseline = load_json(args.baseline) if args.baseline else None
-    result = classify(run, baseline)
+    result = classify(run, baseline, args.body_contract)
     result["run_report"] = str(args.run).replace("\\", "/")
     result["baseline_report"] = str(args.baseline).replace("\\", "/") if args.baseline else None
     args.output.parent.mkdir(parents=True, exist_ok=True)
