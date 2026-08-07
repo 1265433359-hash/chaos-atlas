@@ -41,3 +41,10 @@
 - 汇总更新：24/24 有效生命周期（6 场景 × 4 次），`valid_runtime_replicates=4`。
 - 过程中确认的 gate 行为（非 bug）：payment pod 探针重启后未就绪 → gate 拒绝注入（正确纪律）；端口残留 → runner 端口占用失败（清理后重跑成功）；MSYS 路径转换 → `MSYS_NO_PATHCONV=1` 绕过。
 - 41 测试通过；三个实验 namespace 无遗留 Chaos 资源。
+
+## 2026-08-08
+
+- ChaosEater adapter 真提取完成（选项 1）：`tools/chaos_eater_adapter/` 包复刻 FaultScenarioAgent 提示词/Fault 结构/7 故障类型枚举，无 docker-compose/langchain 依赖；LLM 后端可插拔（OpenAI 兼容协议，Ollama/DeepSeek/OpenAI 通用）+ MockBackend（确定性管线验证，明确标注非真实选择）。
+- 生成脚本 `tools/generate_m1_adapter_plans.py`：读既有 registry → M1 plans（全局 rank 1-10、同候选池、I0 级上下文不泄漏静态评分/测量结论）→ 增量 registry `deep_matrix_registry_r1..r3_m1.json`；原 registry 与既有测试不动（M1 默认 blocked 的断言保持稳定）。
+- M1 mock 产物 r1-r3 全部通过 evaluate（ready_for_injection 10/10，same_candidate_pool=True）；58 测试通过。
+- 真实 LLM 运行待用户 API key（明天提供）；届时用 `--backend openai-compat` 覆盖 mock 产物并记录 model/tokens/event 溯源。

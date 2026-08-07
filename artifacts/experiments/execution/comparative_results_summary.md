@@ -23,4 +23,4 @@ This report contains only runs with explicit baseline, injection, recovery, and 
 
 - HTTPChaos platform path: blocked (WSL2 Chaos Daemon lacks ebtables/tproxy prerequisite).
 - Train Ticket order network-delay candidate: defer_unreachable_or_unproven_path (source graph does not reach the selected network target in the current lab).
-- ChaosEater and FastFI external adapters: blocked_external_reproduction (official repositories could not be fetched in the current network environment).
+- ChaosEater/FastFI external adapters: repositories cloned (proxy fix at `C:\APP\tools\chaos-eater@47c4e44`, `C:\APP\tools\TOSEM-FastFI-Code@85e9dbb`); adapter extraction evaluated — ChaosEater candidate-selection logic is extractable, full LLM adapter run blocked on LLM availability (API key or Ollama). See `artifacts/experiments/chaos_eater_adapter_evaluation.md`.
