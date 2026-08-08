@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tool": "assess_selection_evidence",
-  "assessed_at": "2026-08-08T03:44:47.413396+00:00",
+  "assessed_at": "2026-08-08T04:36:46.621072+00:00",
   "replicate": 1,
   "candidates": [
     {
@@ -577,6 +577,231 @@
         }
       ],
       "own_discovery_evidence": true
+    },
+    {
+      "candidate_id": "OB-CHECKOUT-DELAY-2000",
+      "mutation": "artifacts/experiments/execution/mutations_extended/ob-checkout-delay-one.yaml",
+      "execution_records": [
+        "m1_ext_ob_checkout_delay_2000_r1.json",
+        "m1_ext_ob_checkout_delay_2000_r2.json",
+        "m1_ext_ob_checkout_delay_2000_r3.json"
+      ],
+      "executed": true,
+      "service": "checkoutservice",
+      "cards": [],
+      "discovery_evidence": false,
+      "own_conclusions": [
+        {
+          "file": "m1_ext_ob_checkout_delay_2000_r1.json",
+          "classification": "grpc_error_observed"
+        },
+        {
+          "file": "m1_ext_ob_checkout_delay_2000_r2.json",
+          "classification": "grpc_error_observed"
+        },
+        {
+          "file": "m1_ext_ob_checkout_delay_2000_r3.json",
+          "classification": "grpc_error_observed"
+        }
+      ],
+      "own_discovery_evidence": true
+    },
+    {
+      "candidate_id": "OB-SHIPPING-DELAY-2000",
+      "mutation": "artifacts/experiments/execution/mutations_extended/ob-shipping-delay-one.yaml",
+      "execution_records": [],
+      "executed": false,
+      "service": "shippingservice",
+      "cards": [
+        {
+          "card_id": "KB-OB-CHECKOUT-SHIPPING-FAILURE-001",
+          "evidence_state": "runtime_observed",
+          "classification": "double_latency_propagation_fatal_failure",
+          "root_cause": "double_downstream_call_without_timeout_fatal_error",
+          "status": "validated_runtime",
+          "outcome": null
+        }
+      ],
+      "discovery_evidence": true,
+      "own_conclusions": [],
+      "own_discovery_evidence": false
+    },
+    {
+      "candidate_id": "OB-CART-DELAY-2000",
+      "mutation": "artifacts/experiments/execution/mutations_extended/ob-cart-delay-one.yaml",
+      "execution_records": [
+        "m1_ext_ob_cart_delay_2000_r1.json",
+        "m1_ext_ob_cart_delay_2000_r2.json",
+        "m1_ext_ob_cart_delay_2000_r3.json"
+      ],
+      "executed": true,
+      "service": "cartservice",
+      "cards": [],
+      "discovery_evidence": false,
+      "own_conclusions": [
+        {
+          "file": "m1_ext_ob_cart_delay_2000_r1.json",
+          "classification": "grpc_error_observed"
+        },
+        {
+          "file": "m1_ext_ob_cart_delay_2000_r2.json",
+          "classification": "grpc_error_observed"
+        },
+        {
+          "file": "m1_ext_ob_cart_delay_2000_r3.json",
+          "classification": "grpc_error_observed"
+        }
+      ],
+      "own_discovery_evidence": true
+    },
+    {
+      "candidate_id": "OTEL-CHECKOUT-DELAY-2000",
+      "mutation": "artifacts/experiments/execution/mutations_extended/otel-checkout-delay-one.yaml",
+      "execution_records": [
+        "m1_ext_otel_checkout_delay_2000_r1.json",
+        "m1_ext_otel_checkout_delay_2000_r2.json",
+        "m1_ext_otel_checkout_delay_2000_r3.json"
+      ],
+      "executed": true,
+      "service": "checkout",
+      "cards": [],
+      "discovery_evidence": false,
+      "own_conclusions": [
+        {
+          "file": "m1_ext_otel_checkout_delay_2000_r1.json",
+          "classification": "grpc_error_observed"
+        },
+        {
+          "file": "m1_ext_otel_checkout_delay_2000_r2.json",
+          "classification": "grpc_error_observed"
+        },
+        {
+          "file": "m1_ext_otel_checkout_delay_2000_r3.json",
+          "classification": "grpc_error_observed"
+        }
+      ],
+      "own_discovery_evidence": true
+    },
+    {
+      "candidate_id": "OTEL-CURRENCY-DELAY-2000",
+      "mutation": "artifacts/experiments/execution/mutations_extended/otel-currency-delay-one.yaml",
+      "execution_records": [
+        "m1_ext_otel_currency_delay_2000_r1.json",
+        "m1_ext_otel_currency_delay_2000_r2.json",
+        "m1_ext_otel_currency_delay_2000_r3.json"
+      ],
+      "executed": true,
+      "service": "currency",
+      "cards": [],
+      "discovery_evidence": false,
+      "own_conclusions": [
+        {
+          "file": "m1_ext_otel_currency_delay_2000_r1.json",
+          "classification": "grpc_response_observed"
+        },
+        {
+          "file": "m1_ext_otel_currency_delay_2000_r2.json",
+          "classification": "grpc_response_observed"
+        },
+        {
+          "file": "m1_ext_otel_currency_delay_2000_r3.json",
+          "classification": "grpc_response_observed"
+        }
+      ],
+      "own_discovery_evidence": true
+    },
+    {
+      "candidate_id": "TT-ORDER-DELAY-2000",
+      "mutation": "artifacts/experiments/execution/mutations_extended/tt-order-delay-one.yaml",
+      "execution_records": [
+        "m1_ext_tt_order_delay_2000_r1.json",
+        "m1_ext_tt_order_delay_2000_r2.json",
+        "m1_ext_tt_order_delay_2000_r3.json"
+      ],
+      "executed": true,
+      "service": "ts-order-service",
+      "cards": [
+        {
+          "card_id": "KB-TT-STRESS-ORDER-CPU-001",
+          "evidence_state": "runtime_observed",
+          "classification": null,
+          "root_cause": null,
+          "status": "validated_runtime_selector_pipeline",
+          "outcome": null
+        }
+      ],
+      "discovery_evidence": true,
+      "own_conclusions": [
+        {
+          "file": "m1_ext_tt_order_delay_2000_r1.json",
+          "classification": "response_observed"
+        },
+        {
+          "file": "m1_ext_tt_order_delay_2000_r2.json",
+          "classification": "response_observed"
+        },
+        {
+          "file": "m1_ext_tt_order_delay_2000_r3.json",
+          "classification": "response_observed"
+        }
+      ],
+      "own_discovery_evidence": true
+    },
+    {
+      "candidate_id": "TT-BASIC-DELAY-500",
+      "mutation": "artifacts/experiments/execution/mutations_extended/tt-basic-delay-500-one.yaml",
+      "execution_records": [],
+      "executed": false,
+      "service": "ts-basic-service",
+      "cards": [
+        {
+          "card_id": "KB-TT-STRESS-BASIC-CPU-001",
+          "evidence_state": "runtime_observed",
+          "classification": null,
+          "root_cause": null,
+          "status": "validated_runtime_selector_pipeline_concurrency_observed",
+          "outcome": null
+        },
+        {
+          "card_id": "KB-TT-NETWORK-BASIC-STATION-001",
+          "evidence_state": "runtime_observed",
+          "classification": null,
+          "root_cause": null,
+          "status": "validated_runtime_selector_pipeline",
+          "outcome": null
+        }
+      ],
+      "discovery_evidence": true,
+      "own_conclusions": [],
+      "own_discovery_evidence": false
+    },
+    {
+      "candidate_id": "TT-STATION-DELAY-500",
+      "mutation": "artifacts/experiments/execution/mutations_extended/tt-station-delay-500-one.yaml",
+      "execution_records": [],
+      "executed": false,
+      "service": "ts-station-service",
+      "cards": [
+        {
+          "card_id": "KB-TT-STRESS-STATION-CPU-001",
+          "evidence_state": "runtime_observed",
+          "classification": null,
+          "root_cause": null,
+          "status": "validated_runtime_selector_pipeline",
+          "outcome": null
+        },
+        {
+          "card_id": "KB-TT-NETWORK-STATION-DELAY-001",
+          "evidence_state": "runtime_observed",
+          "classification": null,
+          "root_cause": null,
+          "status": "validated_runtime_selector_pipeline_timeout_boundary_confirmed",
+          "outcome": null
+        }
+      ],
+      "discovery_evidence": true,
+      "own_conclusions": [],
+      "own_discovery_evidence": false
     }
   ]
 }

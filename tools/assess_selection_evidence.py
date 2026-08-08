@@ -19,6 +19,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from extended_candidate_pool import extended_candidate_pool
 from generate_deep_comparison_matrix import CORE_CANDIDATES
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,7 +38,7 @@ def normalize(path: str) -> str:
 def collect_mutation_uses() -> dict[str, list[str]]:
     """Map normalized mutation path -> list of run/classification artifacts."""
     uses: dict[str, list[str]] = {}
-    pattern = re.compile(r"(run|report|confirmation|track|smoke|stat|m1_batch).*\.json$", re.IGNORECASE)
+    pattern = re.compile(r"(run|report|confirmation|track|smoke|stat|m1_batch|m1_ext).*\.json$", re.IGNORECASE)
     for path in EXECUTION_DIR.glob("*.json"):
         if not pattern.search(path.name):
             continue
@@ -113,11 +114,11 @@ def evidence_status(candidate: dict[str, Any], card_by_label: dict[str, list[dic
     }
 
 
-def assess(replicate: int) -> dict[str, Any]:
+def assess(replicate: int, pool: list[dict[str, Any]] | None = None) -> dict[str, Any]:
     uses = collect_mutation_uses()
     card_by_label = load_card_conclusions()
     candidates: list[dict[str, Any]] = []
-    for candidate in CORE_CANDIDATES:
+    for candidate in pool or extended_candidate_pool():
         mutation_info = match_candidate_mutation(candidate, uses)
         evidence = evidence_status(candidate, card_by_label)
         # A candidate's own discovery evidence requires ITS mutation to have

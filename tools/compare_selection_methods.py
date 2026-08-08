@@ -54,6 +54,12 @@ SEVERITY: dict[str, int] = {
     "TT-STATION-DELAY-100": 1,         # response_observed, near-baseline
     "TT-STATION-CPU-80": 1,            # response_observed, 85ms
     "TT-BASIC-DELAY-100": 1,           # response_observed, 141ms
+    # Extended candidates (executed as part of M1 exploration):
+    "OB-CHECKOUT-DELAY-2000": 3,       # grpc_error, 10s DEADLINE_EXCEEDED x3
+    "OB-CART-DELAY-2000": 3,           # grpc_error, 12s client timeout x3
+    "OTEL-CHECKOUT-DELAY-2000": 3,     # grpc_error, 10s DEADLINE_EXCEEDED x3
+    "OTEL-CURRENCY-DELAY-2000": 2,     # grpc_response, ~7s under 2s injection
+    "TT-ORDER-DELAY-2000": 2,          # response_observed, ~4s
 }
 
 

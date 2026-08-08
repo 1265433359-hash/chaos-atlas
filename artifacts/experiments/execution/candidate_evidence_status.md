@@ -18,6 +18,14 @@ Not-executed candidates are reported as `not_executed` and never counted as hit 
 | OTEL-PAYMENT-LOSS-100 | yes | grpc_error_observed | missing_timeout_on_downstream_calls |
 | OTEL-EMAIL-DELAY-2000 | yes | grpc_response_observed | - |
 | OTEL-EMAIL-LOSS-100 | yes | grpc_error_observed | - |
+| OB-CHECKOUT-DELAY-2000 | yes | grpc_error_observed | - |
+| OB-SHIPPING-DELAY-2000 | no | not_executed | double_downstream_call_without_timeout_fatal_error |
+| OB-CART-DELAY-2000 | yes | grpc_error_observed | - |
+| OTEL-CHECKOUT-DELAY-2000 | yes | grpc_error_observed | - |
+| OTEL-CURRENCY-DELAY-2000 | yes | grpc_response_observed | - |
+| TT-ORDER-DELAY-2000 | yes | response_observed | - |
+| TT-BASIC-DELAY-500 | no | not_executed | - |
+| TT-STATION-DELAY-500 | no | not_executed | - |
 
-Candidates with own discovery evidence: 12
-Not executed: 0 ()
+Candidates with own discovery evidence: 17
+Not executed: 3 (OB-SHIPPING-DELAY-2000, TT-BASIC-DELAY-500, TT-STATION-DELAY-500)

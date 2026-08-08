@@ -1,24 +1,29 @@
 {
   "schema_version": 1,
   "tool": "compare_selection_methods",
-  "computed_at": "2026-08-08T03:55:14.525727+00:00",
+  "computed_at": "2026-08-08T04:36:55.450536+00:00",
   "replicate": 3,
   "candidate_universe_size": 20,
   "known_discovered": [
+    "OB-CART-DELAY-2000",
+    "OB-CHECKOUT-DELAY-2000",
     "OB-PAYMENT-DELAY-2000",
     "OB-PAYMENT-LOSS-100",
     "OB-PRODUCTCATALOG-DELAY-500",
     "OB-PRODUCTCATALOG-KILL",
+    "OTEL-CHECKOUT-DELAY-2000",
+    "OTEL-CURRENCY-DELAY-2000",
     "OTEL-EMAIL-DELAY-2000",
     "OTEL-EMAIL-LOSS-100",
     "OTEL-PAYMENT-DELAY-2000",
     "OTEL-PAYMENT-LOSS-100",
     "TT-BASIC-DELAY-100",
+    "TT-ORDER-DELAY-2000",
     "TT-STATION-CPU-80",
     "TT-STATION-DELAY-100",
     "TT-STATION-DELAY-2000"
   ],
-  "known_discovered_count": 12,
+  "known_discovered_count": 17,
   "metric": "known-positive recall@10 plus severity-weighted recall (3=timeout/hang/cascade, 2=latency amplified, 1=weak); full U@10 not computable with partial ground truth",
   "severity_scheme": {
     "OB-PAYMENT-LOSS-100": 3,
@@ -32,7 +37,12 @@
     "TT-STATION-DELAY-2000": 2,
     "TT-STATION-DELAY-100": 1,
     "TT-STATION-CPU-80": 1,
-    "TT-BASIC-DELAY-100": 1
+    "TT-BASIC-DELAY-100": 1,
+    "OB-CHECKOUT-DELAY-2000": 3,
+    "OB-CART-DELAY-2000": 3,
+    "OTEL-CHECKOUT-DELAY-2000": 3,
+    "OTEL-CURRENCY-DELAY-2000": 2,
+    "TT-ORDER-DELAY-2000": 2
   },
   "bias_note": "D_known was selected for execution by our earlier methodology (M4 lineage); M3/M4 recall is partly circular. M1 used no execution history and is the least biased signal. Unknown candidates count as exploration, never as misses.",
   "methods": [
@@ -41,18 +51,23 @@
       "name": "random-template",
       "status": "available",
       "selected_count": 10,
-      "known_hits": 6,
+      "known_hits": 10,
       "known_hit_ids": [
+        "OB-CHECKOUT-DELAY-2000",
         "OB-PRODUCTCATALOG-DELAY-500",
         "OB-PRODUCTCATALOG-KILL",
+        "OTEL-CHECKOUT-DELAY-2000",
+        "OTEL-CURRENCY-DELAY-2000",
         "OTEL-PAYMENT-DELAY-2000",
         "OTEL-PAYMENT-LOSS-100",
+        "TT-ORDER-DELAY-2000",
         "TT-STATION-CPU-80",
         "TT-STATION-DELAY-2000"
       ],
-      "known_recall@10": 0.5,
-      "severity_weighted_recall": 0.52,
+      "known_recall@10": 0.588,
+      "severity_weighted_recall": 0.605,
       "severity_missed": {
+        "OB-CART-DELAY-2000": 3,
         "OB-PAYMENT-DELAY-2000": 2,
         "OB-PAYMENT-LOSS-100": 3,
         "OTEL-EMAIL-DELAY-2000": 2,
@@ -60,44 +75,40 @@
         "TT-BASIC-DELAY-100": 1,
         "TT-STATION-DELAY-100": 1
       },
-      "unknown_selected": 4,
-      "unknown_selected_ids": [
-        "OB-CHECKOUT-DELAY-2000",
-        "OTEL-CHECKOUT-DELAY-2000",
-        "OTEL-CURRENCY-DELAY-2000",
-        "TT-ORDER-DELAY-2000"
-      ]
+      "unknown_selected": 0,
+      "unknown_selected_ids": []
     },
     {
       "method": "M1",
       "name": "ChaosEater-adapter",
       "status": "available",
       "selected_count": 10,
-      "known_hits": 7,
+      "known_hits": 10,
       "known_hit_ids": [
+        "OB-CHECKOUT-DELAY-2000",
         "OB-PAYMENT-DELAY-2000",
         "OB-PAYMENT-LOSS-100",
         "OB-PRODUCTCATALOG-KILL",
+        "OTEL-CHECKOUT-DELAY-2000",
         "OTEL-EMAIL-LOSS-100",
         "OTEL-PAYMENT-LOSS-100",
+        "TT-ORDER-DELAY-2000",
         "TT-STATION-CPU-80",
         "TT-STATION-DELAY-2000"
       ],
-      "known_recall@10": 0.583,
-      "severity_weighted_recall": 0.68,
+      "known_recall@10": 0.588,
+      "severity_weighted_recall": 0.658,
       "severity_missed": {
+        "OB-CART-DELAY-2000": 3,
         "OB-PRODUCTCATALOG-DELAY-500": 2,
+        "OTEL-CURRENCY-DELAY-2000": 2,
         "OTEL-EMAIL-DELAY-2000": 2,
         "OTEL-PAYMENT-DELAY-2000": 2,
         "TT-BASIC-DELAY-100": 1,
         "TT-STATION-DELAY-100": 1
       },
-      "unknown_selected": 3,
-      "unknown_selected_ids": [
-        "OB-CHECKOUT-DELAY-2000",
-        "OTEL-CHECKOUT-DELAY-2000",
-        "TT-ORDER-DELAY-2000"
-      ]
+      "unknown_selected": 0,
+      "unknown_selected_ids": []
     },
     {
       "method": "M3",
@@ -117,10 +128,15 @@
         "TT-STATION-DELAY-100",
         "TT-STATION-DELAY-2000"
       ],
-      "known_recall@10": 0.833,
-      "severity_weighted_recall": 0.84,
+      "known_recall@10": 0.588,
+      "severity_weighted_recall": 0.553,
       "severity_missed": {
+        "OB-CART-DELAY-2000": 3,
+        "OB-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CURRENCY-DELAY-2000": 2,
         "OTEL-EMAIL-LOSS-100": 3,
+        "TT-ORDER-DELAY-2000": 2,
         "TT-STATION-CPU-80": 1
       },
       "unknown_selected": 0,
@@ -144,10 +160,15 @@
         "TT-STATION-DELAY-100",
         "TT-STATION-DELAY-2000"
       ],
-      "known_recall@10": 0.833,
-      "severity_weighted_recall": 0.84,
+      "known_recall@10": 0.588,
+      "severity_weighted_recall": 0.553,
       "severity_missed": {
+        "OB-CART-DELAY-2000": 3,
+        "OB-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CURRENCY-DELAY-2000": 2,
         "OTEL-EMAIL-LOSS-100": 3,
+        "TT-ORDER-DELAY-2000": 2,
         "TT-STATION-CPU-80": 1
       },
       "unknown_selected": 0,
@@ -171,9 +192,14 @@
         "TT-BASIC-DELAY-100",
         "TT-STATION-CPU-80"
       ],
-      "known_recall@10": 0.833,
-      "severity_weighted_recall": 0.88,
+      "known_recall@10": 0.588,
+      "severity_weighted_recall": 0.579,
       "severity_missed": {
+        "OB-CART-DELAY-2000": 3,
+        "OB-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CURRENCY-DELAY-2000": 2,
+        "TT-ORDER-DELAY-2000": 2,
         "TT-STATION-DELAY-100": 1,
         "TT-STATION-DELAY-2000": 2
       },
@@ -198,10 +224,15 @@
         "TT-STATION-DELAY-100",
         "TT-STATION-DELAY-2000"
       ],
-      "known_recall@10": 0.833,
-      "severity_weighted_recall": 0.84,
+      "known_recall@10": 0.588,
+      "severity_weighted_recall": 0.553,
       "severity_missed": {
+        "OB-CART-DELAY-2000": 3,
+        "OB-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CURRENCY-DELAY-2000": 2,
         "OTEL-EMAIL-LOSS-100": 3,
+        "TT-ORDER-DELAY-2000": 2,
         "TT-STATION-CPU-80": 1
       },
       "unknown_selected": 0,
@@ -225,10 +256,15 @@
         "TT-STATION-DELAY-100",
         "TT-STATION-DELAY-2000"
       ],
-      "known_recall@10": 0.833,
-      "severity_weighted_recall": 0.84,
+      "known_recall@10": 0.588,
+      "severity_weighted_recall": 0.553,
       "severity_missed": {
+        "OB-CART-DELAY-2000": 3,
+        "OB-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CURRENCY-DELAY-2000": 2,
         "OTEL-EMAIL-LOSS-100": 3,
+        "TT-ORDER-DELAY-2000": 2,
         "TT-STATION-CPU-80": 1
       },
       "unknown_selected": 0,
@@ -252,10 +288,15 @@
         "TT-STATION-DELAY-100",
         "TT-STATION-DELAY-2000"
       ],
-      "known_recall@10": 0.833,
-      "severity_weighted_recall": 0.84,
+      "known_recall@10": 0.588,
+      "severity_weighted_recall": 0.553,
       "severity_missed": {
+        "OB-CART-DELAY-2000": 3,
+        "OB-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CURRENCY-DELAY-2000": 2,
         "OTEL-EMAIL-LOSS-100": 3,
+        "TT-ORDER-DELAY-2000": 2,
         "TT-STATION-CPU-80": 1
       },
       "unknown_selected": 0,
@@ -279,10 +320,15 @@
         "TT-STATION-DELAY-100",
         "TT-STATION-DELAY-2000"
       ],
-      "known_recall@10": 0.833,
-      "severity_weighted_recall": 0.84,
+      "known_recall@10": 0.588,
+      "severity_weighted_recall": 0.553,
       "severity_missed": {
+        "OB-CART-DELAY-2000": 3,
+        "OB-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CHECKOUT-DELAY-2000": 3,
+        "OTEL-CURRENCY-DELAY-2000": 2,
         "OTEL-EMAIL-LOSS-100": 3,
+        "TT-ORDER-DELAY-2000": 2,
         "TT-STATION-CPU-80": 1
       },
       "unknown_selected": 0,

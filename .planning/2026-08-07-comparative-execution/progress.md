@@ -87,3 +87,18 @@
    - M1 三次稳定挑选的扩展候选：OB-CHECKOUT-DELAY-2000、OTEL-CHECKOUT-DELAY-2000、TT-ORDER-DELAY-2000、OTEL-CURRENCY-DELAY-2000、OB-CART-DELAY-2000——这些是"M1 敢碰我们评分体系看不见的地方"的直接证据。
 - 全量测试 58 通过；三 namespace 无遗留注入。
 - 下一步（未做，需用户决定）：执行 M1 选中的 5 个扩展候选，把探索转化为发现，才能公平评价稀疏池下的 M1。
+
+## 2026-08-09（凌晨，M1 扩展探索执行）
+
+- 执行 M1 在 20 候选池中选中的 5 个扩展候选（r1-r3，共 15 次受控注入，全部完整生命周期）：
+  - OB-CHECKOUT-DELAY-2000：10.01/10.01/10.01s DEADLINE_EXCEEDED → grpc_error（severity 3）——checkout 自身 2s 延迟打挂 PlaceOrder
+  - OB-CART-DELAY-2000：12s client timeout ×3 → grpc_error（severity 3）——cart 延迟拖垮下单
+  - OTEL-CHECKOUT-DELAY-2000：10.01/10.00/10.01s DEADLINE_EXCEEDED → grpc_error（severity 3）
+  - OTEL-CURRENCY-DELAY-2000：7.22/6.98/7.12s OK → grpc_response（severity 2）——2s 注入放大到 ~7s
+  - TT-ORDER-DELAY-2000：~4s/4s/4s HTTP 200 → response_observed（severity 2）
+- **M1 探索命中率 5/5**：无执行历史、无静态评分（I0 输入）下，LLM 凭领域先验选中的未知候选全部证实为真实弱点（3×severity 3 + 2×severity 2）。
+- evidence 骨架 17/20（3 个未执行：OB-SHIPPING/TT-BASIC-500/TT-STATION-500，均为 M1 未选）。稀疏池重算（severity 加权）：
+  - **M1 = 0.658 三次稳定，全场最高**；M3/M4/A1-A4 = 0.553；M0 随机 = 0.474-0.605 飘忽。
+  - M3/M4 漏的全部是 M1 探索出的 severity-3 弱点（OB-CHECKOUT/OTEL-CHECKOUT/OB-CART/OTEL-EMAIL-LOSS）+ severity-2（OTEL-CURRENCY/TT-ORDER）——score-0 候选对它们是结构性盲区。
+  - 诚实边界：M1 的优势部分是"探索被我们执行后成为已知"的后验增益；但增益来源是它真的选中了弱点。裸 recall 三方法同 0.588（17/20 密度再饱和），severity 加权是唯一有区分度的指标。
+- 全量测试 58 通过；三 namespace 无遗留注入。
