@@ -128,11 +128,13 @@
     "TT-STATION-DELAY-500": "TT-client->station",
     "TT-BASIC-DELAY-100": "TT-basic->station",
     "TT-BASIC-DELAY-500": "TT-basic->station",
-    "TT-ORDER-DELAY-2000": "TT-client->order"
+    "TT-ORDER-DELAY-2000": "TT-client->order",
+    "OB-PRODUCTCATALOG-DELAY-2000": "OB-checkout->productcatalog",
+    "OB-PRODUCTCATALOG-LOSS-100": "OB-checkout->productcatalog"
   },
   "hard_constraint_rule": {
     "exclude": "candidate with edge contract=explicit_timeout AND fault family=delay",
-    "keep": "loss faults are NOT protected by timeout (request fails before timeout triggers)",
-    "source": "A1/C2 audit: only source-verified protection may hard-exclude; pattern-library source_verified currently 0"
+    "keep": "loss faults are NOT protected by timeout",
+    "source": "P2 decision_engine applies this as hard filter before scoring"
   }
 }

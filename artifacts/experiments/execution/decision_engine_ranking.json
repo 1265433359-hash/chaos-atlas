@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "tool": "decision_engine",
+  "ranking": [
+    {
+      "candidate_id": "OTEL-CURRENCY-LOSS-100",
+      "edge": "checkout->currency",
+      "score": 26.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=0.60)"
+      ],
+      "rank": 1
+    },
+    {
+      "candidate_id": "OB-FRONTEND-CURRENCY-DELAY-2000",
+      "edge": "frontend->currency",
+      "score": 16.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-NETWORK-FAMILY-001 (w=0.60)"
+      ],
+      "rank": 2
+    },
+    {
+      "candidate_id": "OTEL-PRODUCTCATALOG-DELAY-2000",
+      "edge": "checkout->product-catalog",
+      "score": 16.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-NETWORK-FAMILY-001 (w=0.60)"
+      ],
+      "rank": 3
+    },
+    {
+      "candidate_id": "OTEL-SHIPPING-DELAY-2000",
+      "edge": "checkout->shipping",
+      "score": 16.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-NETWORK-FAMILY-001 (w=0.60)"
+      ],
+      "rank": 4
+    },
+    {
+      "candidate_id": "OB-PRODUCTCATALOG-DELAY-2000",
+      "edge": "frontend->productcatalog",
+      "score": -999.0,
+      "priority": "skip_protected",
+      "reasons": [
+        "edge OB-checkout->productcatalog is source-verified explicit_timeout; delay is covered by timeout (contract_inventory)"
+      ],
+      "hard_skip": true,
+      "rank": 5
+    },
+    {
+      "candidate_id": "TT-BASIC-DELAY-2000",
+      "edge": "basic->station",
+      "score": -999.0,
+      "priority": "skip_recommended",
+      "reasons": [
+        "base 10",
+        "SE-NETWORK-FAMILY-001 (w=0.60)",
+        "DP skip: absorbed_by_design (['DP-DEFENSE-ABSORBED-001', 'DP-DEFENSE-ABSORBED-002', 'DP-DEFENSE-ABSORBED_BY_DESIGN-TT-BASIC-DELAY-500'])"
+      ],
+      "rank": 6
+    }
+  ]
+}
