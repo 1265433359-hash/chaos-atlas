@@ -1,0 +1,195 @@
+"""Judgment experience: abstract real-world chaos-engineering judgment rules.
+
+Third knowledge asset (see judgment_experience_methodology.md). While
+severity is a symptom-level, reproducible rule, real chaos engineers judge
+"what a symptom MEANS in business context". These entries encode that
+intuition as reusable, transferable rules, each backed by at least one real
+case from this project AND a counter-example that bounds the rule.
+
+Query by dimension or severity_adjustment so a new project can ask "how do I
+judge a symptom like X" and get case-backed rules.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+from typing import Any
+
+ROOT = Path(__file__).resolve().parents[1]
+EXPERIENCE_PATH = ROOT / "artifacts" / "experiments" / "judgment_experience.json"
+
+DIMENSIONS = ("business_path", "contract", "recovery", "observability", "risk")
+ADJUSTMENTS = ("upgrade", "confirm", "downgrade", "n_a")
+
+SEED_ENTRIES: list[dict[str, Any]] = [
+    {
+        "id": "JE-COUPLING-001",
+        "rule": "旁路/非关键依赖（email/通知/日志）同步阻塞主流程并挂到客户端超时 = 架构级耦合缺陷（severity 3 且判定价值最高），因为暴露的是依赖隔离缺失而非单个缺超时。",
+        "dimensions": ["business_path"],
+        "severity_adjustment": "upgrade",
+        "evidence_cases": [
+            "OTEL-EMAIL-LOSS-100: email 100% 丢包 -> PlaceOrder 10s DEADLINE_EXCEEDED x3",
+            "KB-OB-CHECKOUT-EMAIL-FAILURE-001: OB email 故障阻塞下单",
+        ],
+        "counter_example": "独立旁路故障不影响主流程（若隔离正确）则不构成该缺陷",
+        "transferable_to": "任意微服务系统：优先查 email/通知/日志/分析这类旁路依赖是否同步耦合主流程",
+        "confidence": "high",
+        "source": "本项目案例反推 + 混沌工程实践（非关键依赖耦合是最常见架构反模式）",
+    },
+    {
+        "id": "JE-CONTRACT-001",
+        "rule": "gRPC 客户端存在显式 deadline 且注入后请求挂到该 deadline（DEADLINE_EXCEEDED）= 明确契约违约漏洞，无需进一步论证。",
+        "dimensions": ["contract"],
+        "severity_adjustment": "confirm",
+        "evidence_cases": [
+            "OB-PAYMENT-LOSS-100: 10s deadline, hang x3",
+            "OTEL-PAYMENT-LOSS-100: 10s deadline, hang x3",
+            "OB-CHECKOUT-DELAY-2000: 10s deadline, hang x3",
+            "OB-CART-DELAY-2000: 12s client timeout x3",
+        ],
+        "counter_example": "响应 1:1 无放大且未触达 deadline（TT-BASIC-DELAY-500）不违约",
+        "transferable_to": "任何带 gRPC/timeout 预算的系统",
+        "confidence": "high",
+        "source": "本项目 12+ 个 gRPC 实验 + 契约违约判定实践",
+    },
+    {
+        "id": "JE-CONTRACT-002",
+        "rule": "无契约承诺（无 SLO/无显式 deadline）的延迟放大 ≠ 自动漏洞；应查是否有降级/兜底，无兜底则判'潜在风险'而非'确定漏洞'。",
+        "dimensions": ["contract"],
+        "severity_adjustment": "downgrade",
+        "evidence_cases": [
+            "TT-STATION-DELAY-2000: 2s 注入 -> 4s 响应，HTTP 200 无违约声明（潜在风险）",
+            "TT-ORDER-DELAY-2000: 2s -> 4s HTTP 200（同上）",
+        ],
+        "counter_example": "有 SLO/预算声明的路径放大即违约（升级为确定漏洞）",
+        "transferable_to": "无显式 SLO 的内部服务间调用",
+        "confidence": "medium",
+        "source": "TT 系 HTTP 实验反推（无 deadline 语义）",
+    },
+    {
+        "id": "JE-RECOVERY-001",
+        "rule": "注入停止后系统不自动恢复（或恢复超时） = 严重度升级，无论原始症状强弱——恢复能力缺失是独立弱点。",
+        "dimensions": ["recovery"],
+        "severity_adjustment": "upgrade",
+        "evidence_cases": [
+            "K7 探针重启：paymentservice 重启后 Ready 超时 + 业务连接拒绝（probe_restart_recovery_timeout）",
+        ],
+        "counter_example": "注入后恢复正常（TT 系、OB/OTel 所有延迟/loss 注入后 cleanup 恢复基线）不触发升级",
+        "transferable_to": "所有注入实验都应显式检查恢复是否自动完成",
+        "confidence": "high",
+        "source": "本项目探针重启逃逸机制研究",
+    },
+    {
+        "id": "JE-OBSERVABILITY-001",
+        "rule": "故障被追踪系统完整记录（trace/事件可见）但无自动告警 = 部分弱点（可诊断、不可预警）；'故障发生时无法被看见'本身是弱点，即使功能正常。",
+        "dimensions": ["observability"],
+        "severity_adjustment": "confirm",
+        "evidence_cases": [
+            "OTel payment: Jaeger 完整捕获注入窗口（payment span 4462ms + error event）但无 auto-alert",
+        ],
+        "counter_example": "故障完全不可见（无 trace 无日志）则严重度更高（完全黑洞）",
+        "transferable_to": "任何带 Jaeger/链路追踪但缺告警链路的系统",
+        "confidence": "medium",
+        "source": "OTel 可观测性缺口研究",
+    },
+    {
+        "id": "JE-RISK-001",
+        "rule": "高概率现实故障（支付商超时/网络分区/丢包）暴露的弱点，排序价值高于低概率极端场景——风险 = 概率 × 影响，概率是排序依据而非判定依据。",
+        "dimensions": ["risk"],
+        "severity_adjustment": "n_a",
+        "evidence_cases": [
+            "所有 payment/email loss 场景（支付商超时是常态事件）",
+            "TT-STATION-CPU-80: 单 worker 80% CPU 是低概率弱压场景 -> 排序靠后",
+        ],
+        "counter_example": "低概率高影响（如全部节点同时宕机）在特殊系统（银行）中仍需升级",
+        "transferable_to": "候选排序/优先级，不改判定本身",
+        "confidence": "medium",
+        "source": "风险矩阵实践 + 本项目 CPU 弱影响观察",
+    },
+]
+
+
+def load(path: Path = EXPERIENCE_PATH) -> dict[str, Any]:
+    if path.exists():
+        return json.loads(path.read_text(encoding="utf-8"))
+    return {"schema_version": 1, "entries": []}
+
+
+def save(doc: dict[str, Any], path: Path = EXPERIENCE_PATH) -> None:
+    path.write_text(json.dumps(doc, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+
+
+def seed(path: Path = EXPERIENCE_PATH) -> dict[str, Any]:
+    doc = load(path)
+    existing = {e["id"] for e in doc.get("entries", [])}
+    for entry in SEED_ENTRIES:
+        if entry["id"] not in existing:
+            doc.setdefault("entries", []).append(entry)
+    save(doc, path)
+    return doc
+
+
+def validate(doc: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    seen: set[str] = set()
+    for entry in doc.get("entries", []):
+        entry_id = entry.get("id")
+        if not entry_id:
+            errors.append("entry missing id")
+            continue
+        if entry_id in seen:
+            errors.append(f"duplicate id: {entry_id}")
+        seen.add(entry_id)
+        for field in ("rule", "dimensions", "severity_adjustment", "evidence_cases", "counter_example"):
+            if not entry.get(field):
+                errors.append(f"{entry_id}: missing {field}")
+        if not entry.get("evidence_cases"):
+            errors.append(f"{entry_id}: no evidence case (rules must be case-backed)")
+        if entry.get("severity_adjustment") not in ADJUSTMENTS:
+            errors.append(f"{entry_id}: bad severity_adjustment {entry.get('severity_adjustment')}")
+        for dim in entry.get("dimensions", []):
+            if dim not in DIMENSIONS:
+                errors.append(f"{entry_id}: bad dimension {dim}")
+    return errors
+
+
+def query(doc: dict[str, Any], dimension: str | None = None, adjustment: str | None = None) -> list[dict[str, Any]]:
+    entries = doc.get("entries", [])
+    if dimension:
+        entries = [e for e in entries if dimension in e.get("dimensions", [])]
+    if adjustment:
+        entries = [e for e in entries if e.get("severity_adjustment") == adjustment]
+    return entries
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--seed", action="store_true", help="seed entries (idempotent)")
+    parser.add_argument("--validate", action="store_true", help="validate entries")
+    parser.add_argument("--list", action="store_true", help="list all entries")
+    parser.add_argument("--dimension", choices=DIMENSIONS, default=None)
+    parser.add_argument("--adjustment", choices=ADJUSTMENTS, default=None)
+    args = parser.parse_args()
+
+    if args.seed:
+        doc = seed()
+        print(json.dumps({"seeded": len(doc.get("entries", [])), "path": str(EXPERIENCE_PATH)}, indent=2))
+        return 0
+    if args.validate:
+        doc = load()
+        errors = validate(doc)
+        print(json.dumps({"valid": not errors, "errors": errors}, indent=2, ensure_ascii=True))
+        return 1 if errors else 0
+    if args.list or args.dimension or args.adjustment:
+        doc = load()
+        entries = query(doc, args.dimension, args.adjustment)
+        print(json.dumps(entries, indent=2, ensure_ascii=True))
+        return 0
+    parser.print_help()
+    return 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

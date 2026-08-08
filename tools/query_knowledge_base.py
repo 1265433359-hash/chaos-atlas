@@ -101,7 +101,17 @@ def main() -> int:
     parser.add_argument("--root-cause", help="root cause label, e.g. missing_timeout")
     parser.add_argument("--list", action="store_true", help="list all cards")
     parser.add_argument("--json", action="store_true", help="raw JSON output")
+    parser.add_argument(
+        "--judgment",
+        action="store_true",
+        help="query judgment-experience rules instead of cards (see --dimension/--adjustment)",
+    )
+    parser.add_argument("--dimension", choices=("business_path", "contract", "recovery", "observability", "risk"))
+    parser.add_argument("--adjustment", choices=("upgrade", "confirm", "downgrade", "n_a"))
     args = parser.parse_args()
+
+    if args.judgment:
+        return query_judgment(args)
 
     cards = load_cards()
     if args.list:
@@ -125,6 +135,30 @@ def main() -> int:
             print(json.dumps(s, indent=2, ensure_ascii=False))
             print("-" * 60)
         print(f"Matched {len(hits)} card(s) from {len(cards)} total")
+    return 0
+
+
+def query_judgment(args) -> int:
+    from judgment_experience import DIMENSIONS, EXPERIENCE_PATH, load, query
+
+    doc = load(EXPERIENCE_PATH)
+    if not doc.get("entries"):
+        print("judgment experience not seeded; run: python tools/judgment_experience.py --seed")
+        return 1
+    entries = query(doc, args.dimension, args.adjustment)
+    if args.query:
+        tokens = args.query.lower().split()
+        entries = [
+            e for e in entries
+            if all(tok in " ".join(str(v) for v in (e.get("rule"), e.get("id"), e.get("evidence_cases", []))).lower() for tok in tokens)
+        ]
+    if not entries:
+        print(f"No judgment rules match (total {len(doc.get('entries', []))} seeded)")
+        return 1
+    for e in entries:
+        print(json.dumps(e, indent=2, ensure_ascii=False))
+        print("-" * 60)
+    print(f"Matched {len(entries)} judgment rule(s) from {len(doc.get('entries', []))} total")
     return 0
 
 
