@@ -99,8 +99,19 @@ Preprocessor → Hypothesis → Experiment → Analysis → Improvement → Post
 
 **产物**：`deep_matrix_registry_r1_m1.json` / `r2` / `r3`（mock:seed101/202/303），每份 M1=10 plans、全局 rank 1-10、同候选池；`evaluate_deep_comparison_matrix.py` 消费通过（ready_for_injection 10/10）。测试：`tests/test_chaos_eater_adapter.py` 17 例，全量 58 测试通过。
 
-**待真实 LLM**：API key 到位后执行
-`python tools/generate_m1_adapter_plans.py --replicate N --seed S --backend openai-compat --base-url <endpoint> --api-key <key> --model <model>`
-（Ollama 用 `http://localhost:11434/v1`）。真实结果将覆盖 mock 产物并记录 model/tokens/event 溯源；mock 结果**不得**作为真实 ChaosEater 选择上报。
+**真实 LLM 已接入（2026-08-08，DeepSeek v4 flash 正式版）**：
+- 端点 `https://api.deepseek.com/v1`，模型 `deepseek-v4-flash`，API key 经环境变量传入（不落盘、不进 git）。
+- r1-r3 真实选择已生成并覆盖 mock 产物：`deepseek-v4-flash`，每份 10 plans，全局 rank 1-10，同候选池；evaluate 全部通过（ready_for_injection 10/10，same_candidate_pool=True）。provenance 记录 model/tokens/event/thought 溯源（每份 prompt≈1.9k / completion≈3.6k tokens，单次调用 ≈34s）。
+- 三次选择高度稳定：`OB-PAYMENT-LOSS-100`、`OTEL-PAYMENT-LOSS-100`、`TT-STATION-DELAY-2000`、`OTEL-PAYMENT-DELAY-2000` 稳居前四；两次 100ms 低强度候选（`TT-STATION-DELAY-100`、`TT-BASIC-DELAY-100`）三次全部排除。选择理由以 event/thought 记录，未泄漏任何静态评分或运行时结论（I0 级输入）。
 
-**纪律**：不改 `generate_deep_comparison_matrix.py`（M1 默认保持 blocked，既有测试断言稳定）；M1 的 available 状态只出现在 `*_m1.json` 增量产物中，且逐条标注 adapter 来源。
+**mock 与真实的关系**：mock 只用于管线验证，从未作为真实选择上报；真实 LLM 产物已覆盖 mock 文件，`m1_backend` 现为 `openai-compatible:deepseek-v4-flash`。
+
+**后续运行命令**（PowerShell 中 `$env:` 引用 key）：
+```powershell
+$env:CHAOS_EATER_API_KEY = "sk-..."
+python tools/generate_m1_adapter_plans.py --replicate 1 --seed 101 `
+  --backend openai-compat --base-url https://api.deepseek.com/v1 `
+  --api-key $env:CHAOS_EATER_API_KEY --model deepseek-v4-flash
+```
+
+**纪律**：不改 `generate_deep_comparison_matrix.py`（M1 默认保持 blocked，既有测试断言稳定）；M1 的 available 状态只出现在 `*_m1.json` 增量产物中，且逐条标注 adapter 来源与真实 model/tokens 溯源。

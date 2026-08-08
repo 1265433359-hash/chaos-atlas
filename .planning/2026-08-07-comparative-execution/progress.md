@@ -48,3 +48,10 @@
 - 生成脚本 `tools/generate_m1_adapter_plans.py`：读既有 registry → M1 plans（全局 rank 1-10、同候选池、I0 级上下文不泄漏静态评分/测量结论）→ 增量 registry `deep_matrix_registry_r1..r3_m1.json`；原 registry 与既有测试不动（M1 默认 blocked 的断言保持稳定）。
 - M1 mock 产物 r1-r3 全部通过 evaluate（ready_for_injection 10/10，same_candidate_pool=True）；58 测试通过。
 - 真实 LLM 运行待用户 API key（明天提供）；届时用 `--backend openai-compat` 覆盖 mock 产物并记录 model/tokens/event 溯源。
+
+## 2026-08-08（下午）
+
+- 真实 LLM 接入：用户提供 DeepSeek v4 flash 正式版 API key（经环境变量传入，不落盘）。`deepseek-v4-flash` 生成 M1 r1-r3 真实选择并覆盖 mock 产物；evaluate 全部通过（ready_for_injection 10/10，same_candidate_pool=True）。
+- M1 真实选择三次高度稳定：`OB-PAYMENT-LOSS-100` / `OTEL-PAYMENT-LOSS-100` / `TT-STATION-DELAY-2000` / `OTEL-PAYMENT-DELAY-2000` 稳居前四；两次 100ms 低强度候选（TT-STATION-DELAY-100、TT-BASIC-DELAY-100）三次全排除。每次选择均记录 event/thought/model/tokens 溯源（prompt≈1.9k/completion≈3.6k，单次≈34s）。
+- M1 与 M4（ours-full）存在实质差异：M4 偏好 Train Ticket（4 个 TT 候选入 top10，含两个 100ms 低强度候选），M1 更均衡（4 OB + 4 OTel + 2 TT）且聚焦支付 loss/delay 高影响路径。
+- M1 所选 10 候选中有 6 个已有受控运行时证据（TT station delay、OB kill/delay/loss、OTel delay/loss），另 4 个（TT-STATION-CPU-80、OB-PRODUCTCATALOG-DELAY-500、OTEL-EMAIL-LOSS-100、OTEL-EMAIL-DELAY-2000）未执行过注入。

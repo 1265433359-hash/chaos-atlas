@@ -389,251 +389,11 @@
       ],
       "plans": [
         {
-          "plan_id": "M1-TT-STATION-CPU-80-r3-01",
+          "plan_id": "M1-OB-PAYMENT-LOSS-100-r3-01",
           "method": "ChaosEater-adapter",
-          "project_id": "train-ticket",
+          "project_id": "online-boutique",
           "replicate": 3,
           "rank": 1,
-          "workload_id": "station-lookup",
-          "target": {
-            "service": "ts-station-service",
-            "endpoint_or_edge": "station-process",
-            "direction": "to"
-          },
-          "fault": {
-            "family": "cpu_stress",
-            "intensity": "1-worker-80pct",
-            "duration": "45s",
-            "mode": "one"
-          },
-          "trigger": "during_workload",
-          "predicted_invariant": "station lookup remains available under bounded CPU contention",
-          "predicted_root_cause": "single replica saturation increases tail latency",
-          "information_tier": [
-            "I0"
-          ],
-          "evidence_refs": [],
-          "generation_time_ms": 1,
-          "model_tokens": 0,
-          "execution": {
-            "candidate_id": "TT-STATION-CPU-80",
-            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/stress-station/station-stress-cpu-candidate-r1.yaml",
-            "preclassified": null,
-            "runtime_gate_required": false,
-            "evidence_feedback": false
-          },
-          "adapter_note": {
-            "event": "a regional network incident degrades inter-service connectivity",
-            "backend": "mock",
-            "model": "mock-seed-303"
-          }
-        },
-        {
-          "plan_id": "M1-OB-PRODUCTCATALOG-KILL-r3-02",
-          "method": "ChaosEater-adapter",
-          "project_id": "online-boutique",
-          "replicate": 3,
-          "rank": 2,
-          "workload_id": "frontend-home",
-          "target": {
-            "service": "productcatalogservice",
-            "endpoint_or_edge": "frontend->productcatalog",
-            "direction": "to"
-          },
-          "fault": {
-            "family": "pod_kill",
-            "intensity": "one-pod",
-            "duration": "30s",
-            "mode": "one"
-          },
-          "trigger": "during_workload",
-          "predicted_invariant": "frontend remains available when one catalog pod is replaced",
-          "predicted_root_cause": "single replica core dependency causes cascading failure",
-          "information_tier": [
-            "I0"
-          ],
-          "evidence_refs": [],
-          "generation_time_ms": 1,
-          "model_tokens": 0,
-          "execution": {
-            "candidate_id": "OB-PRODUCTCATALOG-KILL",
-            "mutation_path": "artifacts/experiments/execution/mutations/ob-productcatalog-kill-one.yaml",
-            "preclassified": null,
-            "runtime_gate_required": false,
-            "evidence_feedback": false
-          },
-          "adapter_note": {
-            "event": "a regional network incident degrades inter-service connectivity",
-            "backend": "mock",
-            "model": "mock-seed-303"
-          }
-        },
-        {
-          "plan_id": "M1-TT-STATION-DELAY-100-r3-03",
-          "method": "ChaosEater-adapter",
-          "project_id": "train-ticket",
-          "replicate": 3,
-          "rank": 3,
-          "workload_id": "station-lookup",
-          "target": {
-            "service": "ts-station-service",
-            "endpoint_or_edge": "client->station",
-            "direction": "to"
-          },
-          "fault": {
-            "family": "latency",
-            "intensity": "100ms",
-            "duration": "20s",
-            "mode": "one"
-          },
-          "trigger": "during_workload",
-          "predicted_invariant": "station lookup preserves its response contract and registered deadline",
-          "predicted_root_cause": "unbounded latency propagation to the station endpoint",
-          "information_tier": [
-            "I0"
-          ],
-          "evidence_refs": [],
-          "generation_time_ms": 1,
-          "model_tokens": 0,
-          "execution": {
-            "candidate_id": "TT-STATION-DELAY-100",
-            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r1.yaml",
-            "preclassified": null,
-            "runtime_gate_required": false,
-            "evidence_feedback": false
-          },
-          "adapter_note": {
-            "event": "a regional network incident degrades inter-service connectivity",
-            "backend": "mock",
-            "model": "mock-seed-303"
-          }
-        },
-        {
-          "plan_id": "M1-TT-STATION-DELAY-2000-r3-04",
-          "method": "ChaosEater-adapter",
-          "project_id": "train-ticket",
-          "replicate": 3,
-          "rank": 4,
-          "workload_id": "station-lookup",
-          "target": {
-            "service": "ts-station-service",
-            "endpoint_or_edge": "client->station",
-            "direction": "to"
-          },
-          "fault": {
-            "family": "latency",
-            "intensity": "2000ms",
-            "duration": "60s",
-            "mode": "one"
-          },
-          "trigger": "during_workload",
-          "predicted_invariant": "station lookup does not exceed the client deadline under boundary delay",
-          "predicted_root_cause": "missing bounded timeout or fallback at the station boundary",
-          "information_tier": [
-            "I0"
-          ],
-          "evidence_refs": [],
-          "generation_time_ms": 1,
-          "model_tokens": 0,
-          "execution": {
-            "candidate_id": "TT-STATION-DELAY-2000",
-            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r3.yaml",
-            "preclassified": null,
-            "runtime_gate_required": false,
-            "evidence_feedback": false
-          },
-          "adapter_note": {
-            "event": "a regional network incident degrades inter-service connectivity",
-            "backend": "mock",
-            "model": "mock-seed-303"
-          }
-        },
-        {
-          "plan_id": "M1-TT-BASIC-DELAY-100-r3-05",
-          "method": "ChaosEater-adapter",
-          "project_id": "train-ticket",
-          "replicate": 3,
-          "rank": 5,
-          "workload_id": "basic-to-station",
-          "target": {
-            "service": "ts-basic-service",
-            "endpoint_or_edge": "basic->station",
-            "direction": "to"
-          },
-          "fault": {
-            "family": "latency",
-            "intensity": "100ms",
-            "duration": "20s",
-            "mode": "one"
-          },
-          "trigger": "during_workload",
-          "predicted_invariant": "basic query remains successful within the client deadline",
-          "predicted_root_cause": "downstream latency propagates without a bounded fallback",
-          "information_tier": [
-            "I0"
-          ],
-          "evidence_refs": [],
-          "generation_time_ms": 1,
-          "model_tokens": 0,
-          "execution": {
-            "candidate_id": "TT-BASIC-DELAY-100",
-            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network/basic-network-delay-candidate-r1.yaml",
-            "preclassified": null,
-            "runtime_gate_required": false,
-            "evidence_feedback": false
-          },
-          "adapter_note": {
-            "event": "a regional network incident degrades inter-service connectivity",
-            "backend": "mock",
-            "model": "mock-seed-303"
-          }
-        },
-        {
-          "plan_id": "M1-OB-PAYMENT-DELAY-2000-r3-06",
-          "method": "ChaosEater-adapter",
-          "project_id": "online-boutique",
-          "replicate": 3,
-          "rank": 6,
-          "workload_id": "place-order",
-          "target": {
-            "service": "paymentservice",
-            "endpoint_or_edge": "checkout->payment",
-            "direction": "to"
-          },
-          "fault": {
-            "family": "latency",
-            "intensity": "2000ms",
-            "duration": "15s",
-            "mode": "one"
-          },
-          "trigger": "during_workload",
-          "predicted_invariant": "place order completes within the registered deadline",
-          "predicted_root_cause": "checkout has no bounded payment timeout",
-          "information_tier": [
-            "I0"
-          ],
-          "evidence_refs": [],
-          "generation_time_ms": 1,
-          "model_tokens": 0,
-          "execution": {
-            "candidate_id": "OB-PAYMENT-DELAY-2000",
-            "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-delay-one.yaml",
-            "preclassified": null,
-            "runtime_gate_required": false,
-            "evidence_feedback": false
-          },
-          "adapter_note": {
-            "event": "a regional network incident degrades inter-service connectivity",
-            "backend": "mock",
-            "model": "mock-seed-303"
-          }
-        },
-        {
-          "plan_id": "M1-OB-PAYMENT-LOSS-100-r3-07",
-          "method": "ChaosEater-adapter",
-          "project_id": "online-boutique",
-          "replicate": 3,
-          "rank": 7,
           "workload_id": "place-order",
           "target": {
             "service": "paymentservice",
@@ -653,8 +413,8 @@
             "I0"
           ],
           "evidence_refs": [],
-          "generation_time_ms": 1,
-          "model_tokens": 0,
+          "generation_time_ms": 57443,
+          "model_tokens": 7993,
           "execution": {
             "candidate_id": "OB-PAYMENT-LOSS-100",
             "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-loss-one.yaml",
@@ -663,97 +423,17 @@
             "evidence_feedback": false
           },
           "adapter_note": {
-            "event": "a regional network incident degrades inter-service connectivity",
-            "backend": "mock",
-            "model": "mock-seed-303"
+            "event": "A widespread cloud provider network incident is combined with a flash sale: packet loss and multi-second latency affect payment/station/catalog edges, while a node-related CPU exhaustion plus pod eviction occur at the same time.",
+            "backend": "openai-compatible",
+            "model": "deepseek-v4-flash"
           }
         },
         {
-          "plan_id": "M1-OB-PRODUCTCATALOG-DELAY-500-r3-08",
-          "method": "ChaosEater-adapter",
-          "project_id": "online-boutique",
-          "replicate": 3,
-          "rank": 8,
-          "workload_id": "frontend-home",
-          "target": {
-            "service": "productcatalogservice",
-            "endpoint_or_edge": "frontend->productcatalog",
-            "direction": "to"
-          },
-          "fault": {
-            "family": "latency",
-            "intensity": "500ms",
-            "duration": "15s",
-            "mode": "one"
-          },
-          "trigger": "during_workload",
-          "predicted_invariant": "frontend latency stays within its registered deadline",
-          "predicted_root_cause": "catalog latency propagates to the frontend",
-          "information_tier": [
-            "I0"
-          ],
-          "evidence_refs": [],
-          "generation_time_ms": 1,
-          "model_tokens": 0,
-          "execution": {
-            "candidate_id": "OB-PRODUCTCATALOG-DELAY-500",
-            "mutation_path": "artifacts/experiments/execution/mutations/ob-productcatalog-delay-one.yaml",
-            "preclassified": null,
-            "runtime_gate_required": false,
-            "evidence_feedback": false
-          },
-          "adapter_note": {
-            "event": "a regional network incident degrades inter-service connectivity",
-            "backend": "mock",
-            "model": "mock-seed-303"
-          }
-        },
-        {
-          "plan_id": "M1-OTEL-PAYMENT-DELAY-2000-r3-09",
+          "plan_id": "M1-OTEL-PAYMENT-LOSS-100-r3-02",
           "method": "ChaosEater-adapter",
           "project_id": "otel-demo",
           "replicate": 3,
-          "rank": 9,
-          "workload_id": "place-order",
-          "target": {
-            "service": "payment",
-            "endpoint_or_edge": "checkout->payment",
-            "direction": "to"
-          },
-          "fault": {
-            "family": "latency",
-            "intensity": "2000ms",
-            "duration": "15s",
-            "mode": "one"
-          },
-          "trigger": "during_workload",
-          "predicted_invariant": "OTel checkout remains within its payment deadline",
-          "predicted_root_cause": "payment latency propagates through the checkout workflow",
-          "information_tier": [
-            "I0"
-          ],
-          "evidence_refs": [],
-          "generation_time_ms": 1,
-          "model_tokens": 0,
-          "execution": {
-            "candidate_id": "OTEL-PAYMENT-DELAY-2000",
-            "mutation_path": "artifacts/experiments/execution/mutations/otel-payment-delay-one.yaml",
-            "preclassified": null,
-            "runtime_gate_required": false,
-            "evidence_feedback": false
-          },
-          "adapter_note": {
-            "event": "a regional network incident degrades inter-service connectivity",
-            "backend": "mock",
-            "model": "mock-seed-303"
-          }
-        },
-        {
-          "plan_id": "M1-OTEL-PAYMENT-LOSS-100-r3-10",
-          "method": "ChaosEater-adapter",
-          "project_id": "otel-demo",
-          "replicate": 3,
-          "rank": 10,
+          "rank": 2,
           "workload_id": "place-order",
           "target": {
             "service": "payment",
@@ -773,8 +453,8 @@
             "I0"
           ],
           "evidence_refs": [],
-          "generation_time_ms": 1,
-          "model_tokens": 0,
+          "generation_time_ms": 57443,
+          "model_tokens": 7993,
           "execution": {
             "candidate_id": "OTEL-PAYMENT-LOSS-100",
             "mutation_path": "artifacts/experiments/execution/mutations/otel-payment-loss-one.yaml",
@@ -783,34 +463,354 @@
             "evidence_feedback": false
           },
           "adapter_note": {
-            "event": "a regional network incident degrades inter-service connectivity",
-            "backend": "mock",
-            "model": "mock-seed-303"
+            "event": "A widespread cloud provider network incident is combined with a flash sale: packet loss and multi-second latency affect payment/station/catalog edges, while a node-related CPU exhaustion plus pod eviction occur at the same time.",
+            "backend": "openai-compatible",
+            "model": "deepseek-v4-flash"
+          }
+        },
+        {
+          "plan_id": "M1-TT-STATION-DELAY-2000-r3-03",
+          "method": "ChaosEater-adapter",
+          "project_id": "train-ticket",
+          "replicate": 3,
+          "rank": 3,
+          "workload_id": "station-lookup",
+          "target": {
+            "service": "ts-station-service",
+            "endpoint_or_edge": "client->station",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "2000ms",
+            "duration": "60s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "station lookup does not exceed the client deadline under boundary delay",
+          "predicted_root_cause": "missing bounded timeout or fallback at the station boundary",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 57443,
+          "model_tokens": 7993,
+          "execution": {
+            "candidate_id": "TT-STATION-DELAY-2000",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r3.yaml",
+            "preclassified": null,
+            "runtime_gate_required": false,
+            "evidence_feedback": false
+          },
+          "adapter_note": {
+            "event": "A widespread cloud provider network incident is combined with a flash sale: packet loss and multi-second latency affect payment/station/catalog edges, while a node-related CPU exhaustion plus pod eviction occur at the same time.",
+            "backend": "openai-compatible",
+            "model": "deepseek-v4-flash"
+          }
+        },
+        {
+          "plan_id": "M1-OTEL-PAYMENT-DELAY-2000-r3-04",
+          "method": "ChaosEater-adapter",
+          "project_id": "otel-demo",
+          "replicate": 3,
+          "rank": 4,
+          "workload_id": "place-order",
+          "target": {
+            "service": "payment",
+            "endpoint_or_edge": "checkout->payment",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "2000ms",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "OTel checkout remains within its payment deadline",
+          "predicted_root_cause": "payment latency propagates through the checkout workflow",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 57443,
+          "model_tokens": 7993,
+          "execution": {
+            "candidate_id": "OTEL-PAYMENT-DELAY-2000",
+            "mutation_path": "artifacts/experiments/execution/mutations/otel-payment-delay-one.yaml",
+            "preclassified": null,
+            "runtime_gate_required": false,
+            "evidence_feedback": false
+          },
+          "adapter_note": {
+            "event": "A widespread cloud provider network incident is combined with a flash sale: packet loss and multi-second latency affect payment/station/catalog edges, while a node-related CPU exhaustion plus pod eviction occur at the same time.",
+            "backend": "openai-compatible",
+            "model": "deepseek-v4-flash"
+          }
+        },
+        {
+          "plan_id": "M1-OB-PAYMENT-DELAY-2000-r3-05",
+          "method": "ChaosEater-adapter",
+          "project_id": "online-boutique",
+          "replicate": 3,
+          "rank": 5,
+          "workload_id": "place-order",
+          "target": {
+            "service": "paymentservice",
+            "endpoint_or_edge": "checkout->payment",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "2000ms",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "place order completes within the registered deadline",
+          "predicted_root_cause": "checkout has no bounded payment timeout",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 57443,
+          "model_tokens": 7993,
+          "execution": {
+            "candidate_id": "OB-PAYMENT-DELAY-2000",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-payment-delay-one.yaml",
+            "preclassified": null,
+            "runtime_gate_required": false,
+            "evidence_feedback": false
+          },
+          "adapter_note": {
+            "event": "A widespread cloud provider network incident is combined with a flash sale: packet loss and multi-second latency affect payment/station/catalog edges, while a node-related CPU exhaustion plus pod eviction occur at the same time.",
+            "backend": "openai-compatible",
+            "model": "deepseek-v4-flash"
+          }
+        },
+        {
+          "plan_id": "M1-OB-PRODUCTCATALOG-KILL-r3-06",
+          "method": "ChaosEater-adapter",
+          "project_id": "online-boutique",
+          "replicate": 3,
+          "rank": 6,
+          "workload_id": "frontend-home",
+          "target": {
+            "service": "productcatalogservice",
+            "endpoint_or_edge": "frontend->productcatalog",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "pod_kill",
+            "intensity": "one-pod",
+            "duration": "30s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "frontend remains available when one catalog pod is replaced",
+          "predicted_root_cause": "single replica core dependency causes cascading failure",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 57443,
+          "model_tokens": 7993,
+          "execution": {
+            "candidate_id": "OB-PRODUCTCATALOG-KILL",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-productcatalog-kill-one.yaml",
+            "preclassified": null,
+            "runtime_gate_required": false,
+            "evidence_feedback": false
+          },
+          "adapter_note": {
+            "event": "A widespread cloud provider network incident is combined with a flash sale: packet loss and multi-second latency affect payment/station/catalog edges, while a node-related CPU exhaustion plus pod eviction occur at the same time.",
+            "backend": "openai-compatible",
+            "model": "deepseek-v4-flash"
+          }
+        },
+        {
+          "plan_id": "M1-TT-STATION-CPU-80-r3-07",
+          "method": "ChaosEater-adapter",
+          "project_id": "train-ticket",
+          "replicate": 3,
+          "rank": 7,
+          "workload_id": "station-lookup",
+          "target": {
+            "service": "ts-station-service",
+            "endpoint_or_edge": "station-process",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "cpu_stress",
+            "intensity": "1-worker-80pct",
+            "duration": "45s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "station lookup remains available under bounded CPU contention",
+          "predicted_root_cause": "single replica saturation increases tail latency",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 57443,
+          "model_tokens": 7993,
+          "execution": {
+            "candidate_id": "TT-STATION-CPU-80",
+            "mutation_path": "artifacts/train-ticket/runtime/generated_mutations/stress-station/station-stress-cpu-candidate-r1.yaml",
+            "preclassified": null,
+            "runtime_gate_required": false,
+            "evidence_feedback": false
+          },
+          "adapter_note": {
+            "event": "A widespread cloud provider network incident is combined with a flash sale: packet loss and multi-second latency affect payment/station/catalog edges, while a node-related CPU exhaustion plus pod eviction occur at the same time.",
+            "backend": "openai-compatible",
+            "model": "deepseek-v4-flash"
+          }
+        },
+        {
+          "plan_id": "M1-OTEL-EMAIL-LOSS-100-r3-08",
+          "method": "ChaosEater-adapter",
+          "project_id": "otel-demo",
+          "replicate": 3,
+          "rank": 8,
+          "workload_id": "place-order",
+          "target": {
+            "service": "email",
+            "endpoint_or_edge": "checkout->email",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "unavailable",
+            "intensity": "100pct-loss",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "email unavailability does not corrupt the primary order result",
+          "predicted_root_cause": "missing isolation or fallback for a non-critical side effect",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 57443,
+          "model_tokens": 7993,
+          "execution": {
+            "candidate_id": "OTEL-EMAIL-LOSS-100",
+            "mutation_path": "artifacts/experiments/execution/mutations/otel-email-loss-one.yaml",
+            "preclassified": null,
+            "runtime_gate_required": false,
+            "evidence_feedback": false
+          },
+          "adapter_note": {
+            "event": "A widespread cloud provider network incident is combined with a flash sale: packet loss and multi-second latency affect payment/station/catalog edges, while a node-related CPU exhaustion plus pod eviction occur at the same time.",
+            "backend": "openai-compatible",
+            "model": "deepseek-v4-flash"
+          }
+        },
+        {
+          "plan_id": "M1-OTEL-EMAIL-DELAY-2000-r3-09",
+          "method": "ChaosEater-adapter",
+          "project_id": "otel-demo",
+          "replicate": 3,
+          "rank": 9,
+          "workload_id": "place-order",
+          "target": {
+            "service": "email",
+            "endpoint_or_edge": "checkout->email",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "2000ms",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "email side effect remains bounded without blocking checkout indefinitely",
+          "predicted_root_cause": "non-critical email latency is not isolated from the order path",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 57443,
+          "model_tokens": 7993,
+          "execution": {
+            "candidate_id": "OTEL-EMAIL-DELAY-2000",
+            "mutation_path": "artifacts/experiments/execution/mutations/otel-email-delay-one.yaml",
+            "preclassified": null,
+            "runtime_gate_required": false,
+            "evidence_feedback": false
+          },
+          "adapter_note": {
+            "event": "A widespread cloud provider network incident is combined with a flash sale: packet loss and multi-second latency affect payment/station/catalog edges, while a node-related CPU exhaustion plus pod eviction occur at the same time.",
+            "backend": "openai-compatible",
+            "model": "deepseek-v4-flash"
+          }
+        },
+        {
+          "plan_id": "M1-OB-PRODUCTCATALOG-DELAY-500-r3-10",
+          "method": "ChaosEater-adapter",
+          "project_id": "online-boutique",
+          "replicate": 3,
+          "rank": 10,
+          "workload_id": "frontend-home",
+          "target": {
+            "service": "productcatalogservice",
+            "endpoint_or_edge": "frontend->productcatalog",
+            "direction": "to"
+          },
+          "fault": {
+            "family": "latency",
+            "intensity": "500ms",
+            "duration": "15s",
+            "mode": "one"
+          },
+          "trigger": "during_workload",
+          "predicted_invariant": "frontend latency stays within its registered deadline",
+          "predicted_root_cause": "catalog latency propagates to the frontend",
+          "information_tier": [
+            "I0"
+          ],
+          "evidence_refs": [],
+          "generation_time_ms": 57443,
+          "model_tokens": 7993,
+          "execution": {
+            "candidate_id": "OB-PRODUCTCATALOG-DELAY-500",
+            "mutation_path": "artifacts/experiments/execution/mutations/ob-productcatalog-delay-one.yaml",
+            "preclassified": null,
+            "runtime_gate_required": false,
+            "evidence_feedback": false
+          },
+          "adapter_note": {
+            "event": "A widespread cloud provider network incident is combined with a flash sale: packet loss and multi-second latency affect payment/station/catalog edges, while a node-related CPU exhaustion plus pod eviction occur at the same time.",
+            "backend": "openai-compatible",
+            "model": "deepseek-v4-flash"
           }
         }
       ],
       "provenance": {
-        "backend": "mock",
-        "model": "mock-seed-303",
-        "generation_time_ms": 1,
+        "backend": "openai-compatible",
+        "model": "deepseek-v4-flash",
+        "generation_time_ms": 57443,
         "tokens": {
-          "prompt": null,
-          "completion": null,
-          "total": null
+          "prompt": 1929,
+          "completion": 6064,
+          "total": 7993
         },
-        "event": "a regional network incident degrades inter-service connectivity",
-        "thought": "mock backend: deterministic type-diverse selection for pipeline verification",
+        "event": "A widespread cloud provider network incident is combined with a flash sale: packet loss and multi-second latency affect payment/station/catalog edges, while a node-related CPU exhaustion plus pod eviction occur at the same time.",
+        "thought": "The steady-state contract makes payment and station edges critical because they are synchronous and have no declared retry/circuit breaker; 2000ms delays and 100% packet loss will exceed timeouts and break responses. The pod-kill and CPU-stress candidates test whether replica counts and resource limits can absorb capacity loss. I therefore omit the low-impact 100ms/500ms variants where stronger versions exist, and order faults from total payment outage, to long-duration critical latency, to availability faults (kill/stress), to notification and catalog soft degradations.",
         "ranked_candidates": [
-          "TT-STATION-CPU-80",
-          "OB-PRODUCTCATALOG-KILL",
-          "TT-STATION-DELAY-100",
-          "TT-STATION-DELAY-2000",
-          "TT-BASIC-DELAY-100",
-          "OB-PAYMENT-DELAY-2000",
           "OB-PAYMENT-LOSS-100",
-          "OB-PRODUCTCATALOG-DELAY-500",
+          "OTEL-PAYMENT-LOSS-100",
+          "TT-STATION-DELAY-2000",
           "OTEL-PAYMENT-DELAY-2000",
-          "OTEL-PAYMENT-LOSS-100"
+          "OB-PAYMENT-DELAY-2000",
+          "OB-PRODUCTCATALOG-KILL",
+          "TT-STATION-CPU-80",
+          "OTEL-EMAIL-LOSS-100",
+          "OTEL-EMAIL-DELAY-2000",
+          "OB-PRODUCTCATALOG-DELAY-500"
         ]
       }
     },
@@ -3459,6 +3459,6 @@
       ]
     }
   ],
-  "m1_generated_at": "2026-08-07T16:14:35.140517+00:00",
-  "m1_backend": "mock:seed303"
+  "m1_generated_at": "2026-08-08T03:10:25.166473+00:00",
+  "m1_backend": "openai-compatible:deepseek-v4-flash"
 }
