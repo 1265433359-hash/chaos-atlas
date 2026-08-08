@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: otel-cart-delay-one
+  namespace: otel-demo-lab
+  labels:
+    chaos.prospective: round2
+    chaos.candidate-id: OTEL-CART-DELAY-2000
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - otel-demo-lab
+    labelSelectors:
+      app: cart
+  duration: 15s
+  direction: to
+  delay:
+    latency: 2000ms
+    correlation: '100'
+    jitter: 0ms

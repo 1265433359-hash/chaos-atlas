@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: tt-basic-loss-one
+  namespace: train-ticket-lab
+  labels:
+    chaos.prospective: round2
+    chaos.candidate-id: TT-BASIC-LOSS-100
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+    - train-ticket-lab
+    labelSelectors:
+      app: ts-basic-service
+  duration: 20s
+  direction: to
+  loss:
+    loss: '100'
+    correlation: '100'

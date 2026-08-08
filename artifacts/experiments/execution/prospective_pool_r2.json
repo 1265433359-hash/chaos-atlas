@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "candidates": [
+    {
+      "candidate_id": "OB-CHECKOUT-LOSS-100",
+      "mutation": "ob-checkout-loss-one.yaml",
+      "namespace": "online-boutique-lab",
+      "app": "checkoutservice",
+      "fault": "loss",
+      "edge": "OB-client->checkout",
+      "contract": "unknown"
+    },
+    {
+      "candidate_id": "OB-CURRENCY-DELAY-2000",
+      "mutation": "ob-currency-delay-one.yaml",
+      "namespace": "online-boutique-lab",
+      "app": "currencyservice",
+      "fault": "delay",
+      "edge": "OB-checkout->currency",
+      "contract": "unknown"
+    },
+    {
+      "candidate_id": "OB-CURRENCY-LOSS-100",
+      "mutation": "ob-currency-loss-one.yaml",
+      "namespace": "online-boutique-lab",
+      "app": "currencyservice",
+      "fault": "loss",
+      "edge": "OB-checkout->currency",
+      "contract": "unknown"
+    },
+    {
+      "candidate_id": "OB-EMAIL-DELAY-2000",
+      "mutation": "ob-email-delay-one.yaml",
+      "namespace": "online-boutique-lab",
+      "app": "emailservice",
+      "fault": "delay",
+      "edge": "OB-checkout->email",
+      "contract": "unknown"
+    },
+    {
+      "candidate_id": "OB-EMAIL-LOSS-100",
+      "mutation": "ob-email-loss-one.yaml",
+      "namespace": "online-boutique-lab",
+      "app": "emailservice",
+      "fault": "loss",
+      "edge": "OB-checkout->email",
+      "contract": "unknown"
+    },
+    {
+      "candidate_id": "OB-SHIPPING-LOSS-100",
+      "mutation": "ob-shipping-loss-one.yaml",
+      "namespace": "online-boutique-lab",
+      "app": "shippingservice",
+      "fault": "loss",
+      "edge": "OB-checkout->shipping",
+      "contract": "unknown"
+    },
+    {
+      "candidate_id": "OB-CART-LOSS-100",
+      "mutation": "ob-cart-loss-one.yaml",
+      "namespace": "online-boutique-lab",
+      "app": "cartservice",
+      "fault": "loss",
+      "edge": "OB-checkout->cart",
+      "contract": "no_timeout"
+    },
+    {
+      "candidate_id": "OB-PRODUCTCATALOG-LOSS-100",
+      "mutation": "ob-productcatalog-loss-one.yaml",
+      "namespace": "online-boutique-lab",
+      "app": "productcatalogservice",
+      "fault": "loss",
+      "edge": "OB-checkout->productcatalog",
+      "contract": "explicit_timeout"
+    },
+    {
+      "candidate_id": "OTEL-CHECKOUT-LOSS-100",
+      "mutation": "otel-checkout-loss-one.yaml",
+      "namespace": "otel-demo-lab",
+      "app": "checkout",
+      "fault": "loss",
+      "edge": "OTel-client->checkout",
+      "contract": "unknown"
+    },
+    {
+      "candidate_id": "OTEL-PRODUCTCATALOG-LOSS-100",
+      "mutation": "otel-productcatalog-loss-one.yaml",
+      "namespace": "otel-demo-lab",
+      "app": "product-catalog",
+      "fault": "loss",
+      "edge": "OTel-checkout->product-catalog",
+      "contract": "no_timeout"
+    },
+    {
+      "candidate_id": "OTEL-SHIPPING-LOSS-100",
+      "mutation": "otel-shipping-loss-one.yaml",
+      "namespace": "otel-demo-lab",
+      "app": "shipping",
+      "fault": "loss",
+      "edge": "OTel-checkout->shipping",
+      "contract": "no_timeout"
+    },
+    {
+      "candidate_id": "OTEL-CART-DELAY-2000",
+      "mutation": "otel-cart-delay-one.yaml",
+      "namespace": "otel-demo-lab",
+      "app": "cart",
+      "fault": "delay",
+      "edge": "OTel-checkout->cart",
+      "contract": "no_timeout"
+    },
+    {
+      "candidate_id": "OTEL-CART-LOSS-100",
+      "mutation": "otel-cart-loss-one.yaml",
+      "namespace": "otel-demo-lab",
+      "app": "cart",
+      "fault": "loss",
+      "edge": "OTel-checkout->cart",
+      "contract": "no_timeout"
+    },
+    {
+      "candidate_id": "OTEL-QUOTE-DELAY-2000",
+      "mutation": "otel-quote-delay-one.yaml",
+      "namespace": "otel-demo-lab",
+      "app": "quote",
+      "fault": "delay",
+      "edge": "OTel-checkout->quote",
+      "contract": "unknown"
+    },
+    {
+      "candidate_id": "OTEL-QUOTE-LOSS-100",
+      "mutation": "otel-quote-loss-one.yaml",
+      "namespace": "otel-demo-lab",
+      "app": "quote",
+      "fault": "loss",
+      "edge": "OTel-checkout->quote",
+      "contract": "unknown"
+    },
+    {
+      "candidate_id": "TT-ORDER-LOSS-100",
+      "mutation": "tt-order-loss-one.yaml",
+      "namespace": "train-ticket-lab",
+      "app": "ts-order-service",
+      "fault": "loss",
+      "edge": "TT-client->order",
+      "contract": "no_timeout"
+    },
+    {
+      "candidate_id": "TT-BASIC-LOSS-100",
+      "mutation": "tt-basic-loss-one.yaml",
+      "namespace": "train-ticket-lab",
+      "app": "ts-basic-service",
+      "fault": "loss",
+      "edge": "TT-basic->station",
+      "contract": "no_timeout"
+    },
+    {
+      "candidate_id": "TT-STATION-LOSS-100",
+      "mutation": "tt-station-loss-one.yaml",
+      "namespace": "train-ticket-lab",
+      "app": "ts-station-service",
+      "fault": "loss",
+      "edge": "TT-client->station",
+      "contract": "no_timeout"
+    }
+  ]
+}

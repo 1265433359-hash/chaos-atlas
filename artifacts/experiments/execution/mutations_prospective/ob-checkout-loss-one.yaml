@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: ob-checkout-loss-one
+  namespace: online-boutique-lab
+  labels:
+    chaos.prospective: round2
+    chaos.candidate-id: OB-CHECKOUT-LOSS-100
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+    - online-boutique-lab
+    labelSelectors:
+      app: checkoutservice
+  duration: 15s
+  direction: to
+  loss:
+    loss: '100'
+    correlation: '100'
