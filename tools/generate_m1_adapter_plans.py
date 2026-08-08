@@ -64,12 +64,37 @@ def build_backend(args: argparse.Namespace, candidates: list[dict[str, Any]] | N
     raise SystemExit(f"unknown backend: {args.backend}")
 
 
+def build_i1_context(pool: list[dict[str, Any]]) -> str:
+    """I1-tier context: our static graph/local/yaml scores per candidate.
+
+    Score 0 means the candidate is not in our analyzed set (extension of the
+    pool). This is exactly the information tier M3/M4 rank on; giving it to the
+    LLM measures whether our static analysis improves LLM selection. It must
+    NOT include any runtime/execution information (that would be I2 leakage).
+    """
+    lines = [
+        "Candidate scores from our static analysis (graph/local/yaml; "
+        "0 = not analyzed in our set):"
+    ]
+    for c in pool:
+        scores = c.get("scores") or {}
+        if any(scores.values()):
+            lines.append(
+                f"- {c['candidate_id']}: graph={scores.get('graph', 0)} "
+                f"local={scores.get('local', 0)} yaml={scores.get('yaml', 0)}"
+            )
+        else:
+            lines.append(f"- {c['candidate_id']}: 0 (not in our analyzed set)")
+    return "\n".join(lines)
+
+
 def generate(registry: dict[str, Any], args: argparse.Namespace) -> dict[str, Any]:
     replicate = int(registry.get("replicate"))
     seed = int(registry.get("seed"))
     budget = int(registry.get("candidate_budget") or 10)
 
     pool = extended_candidate_pool() if getattr(args, "extended", False) else CORE_CANDIDATES
+    tier = getattr(args, "tier", "i0")
 
     m1: dict[str, Any] = {key: value for key, value in METHOD_M1.items()}
     m1["plans"] = []
@@ -77,10 +102,12 @@ def generate(registry: dict[str, Any], args: argparse.Namespace) -> dict[str, An
 
     backend = build_backend(args, candidates=pool)
     adapter = ChaosEaterAdapter(backend=backend, candidates=pool, budget=budget)
+    extra_context = build_i1_context(pool) if tier == "i1" else None
     result = adapter.select(
         user_input=build_user_input(None, pool),
         steady_states=build_steady_states("all"),
         ce_instructions=CE_INSTRUCTIONS,
+        extra_context=extra_context,
     )
     for warning in result.warnings:
         print(f"[m1] warning: {warning}")
@@ -97,6 +124,7 @@ def generate(registry: dict[str, Any], args: argparse.Namespace) -> dict[str, An
         "thought": result.scenario.thought,
         "ranked_candidates": [item["candidate_id"] for item in result.ranked_candidates],
         "pool_size": len(pool),
+        "tier": tier,
     }
     for rank, ranked in enumerate(result.ranked_candidates, start=1):
         candidate_id = ranked["candidate_id"]
@@ -154,6 +182,12 @@ def main() -> int:
         action="store_true",
         help="use the 20-candidate extended pool (12 core + 8 unexecuted)",
     )
+    parser.add_argument(
+        "--tier",
+        choices=["i0", "i1"],
+        default="i0",
+        help="i0 = blind LLM (M1); i1 = LLM + our static analysis scores (M5-select)",
+    )
     args = parser.parse_args()
 
     registry_path = args.registry
@@ -170,8 +204,9 @@ def main() -> int:
 
     registry = load_json(registry_path)
     result = generate(registry, args)
+    suffix = "m5sel" if args.tier == "i1" else "m1"
     output = args.output or registry_path.with_name(
-        f"{registry_path.stem}_m1.json"
+        f"{registry_path.stem}_{suffix}.json"
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
@@ -181,6 +216,7 @@ def main() -> int:
         "output": str(output),
         "replicate": args.replicate,
         "backend": backend_name(result),
+        "tier": prov.get("tier"),
         "m1_status": m1["status"],
         "m1_plans": len(m1["plans"]),
         "m1_ranked": prov.get("ranked_candidates"),

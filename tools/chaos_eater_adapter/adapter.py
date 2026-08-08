@@ -69,6 +69,7 @@ class ChaosEaterAdapter:
         user_input: str,
         steady_states: str,
         ce_instructions: str,
+        extra_context: str | None = None,
     ) -> AdapterResult:
         pool_lines = [
             "- " + json.dumps(entry, ensure_ascii=True, sort_keys=True) for entry in self.pool
@@ -80,6 +81,8 @@ class ChaosEaterAdapter:
             candidate_pool="\n".join(pool_lines),
             candidate_budget=self.budget,
         )
+        if extra_context:
+            user_prompt += f"\n\nAdditional analysis from our methodology:\n{extra_context}"
         system_prompt = SYS_ASSUME_FAULT_SCENARIOS.format(
             candidate_fault_types=self._fault_type_block(),
             format_instructions=FORMAT_INSTRUCTIONS,

@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "patterns": [
+    {
+      "pattern_id": "DP-DEFENSE-ABSORBED-001",
+      "defense_mechanism": "absorbed_by_design",
+      "evidence": {
+        "project": "train-ticket",
+        "candidate_id": "TT-BASIC-DELAY-500",
+        "mutation": "artifacts/experiments/execution/mutations_extended/tt-basic-delay-500-one.yaml",
+        "observation": "500ms injection -> 517-535ms response (1:1, no amplification), 5/5 HTTP 200 x3",
+        "evidence_files": [
+          "m1_ext_tt_basic_delay_500_r1.json",
+          "m1_ext_tt_basic_delay_500_r2.json",
+          "m1_ext_tt_basic_delay_500_r3.json"
+        ]
+      },
+      "inference": "basic->station is a single downstream call; latency propagates 1:1 with no fan-out compounding"
+    },
+    {
+      "pattern_id": "DP-DEFENSE-ABSORBED-002",
+      "defense_mechanism": "absorbed_by_design",
+      "evidence": {
+        "project": "train-ticket",
+        "candidate_id": "TT-BASIC-DELAY-100",
+        "mutation": "artifacts/train-ticket/runtime/generated_mutations/network/basic-network-delay-candidate-r1.yaml",
+        "observation": "100ms injection -> 141ms response, 5/5 HTTP 200",
+        "evidence_files": [
+          "m1_batch_tt_basic_delay_100_r1.json"
+        ]
+      },
+      "inference": "weak latency injection on a single-call path; no amplification"
+    },
+    {
+      "pattern_id": "DP-DEFENSE-WEAK-001",
+      "defense_mechanism": "weak_stressor",
+      "evidence": {
+        "project": "train-ticket",
+        "candidate_id": "TT-STATION-DELAY-100",
+        "mutation": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r1.yaml",
+        "observation": "100ms injection -> ~124ms response (near injection, no compounding), 5/5 HTTP 200 x4",
+        "evidence_files": [
+          "confirmation_tt_station_r2.json",
+          "confirmation_tt_station_r3.json",
+          "confirmation_tt_station_r4.json",
+          "smoke_station_r1.json"
+        ]
+      },
+      "inference": "100ms on station boundary is below any trigger threshold; response tracks injection 1:1"
+    },
+    {
+      "pattern_id": "DP-DEFENSE-WEAK-002",
+      "defense_mechanism": "weak_stressor",
+      "evidence": {
+        "project": "train-ticket",
+        "candidate_id": "TT-STATION-CPU-80",
+        "mutation": "artifacts/train-ticket/runtime/generated_mutations/stress-station/station-stress-cpu-candidate-r1.yaml",
+        "observation": "1 worker 80% CPU -> 39-100ms responses (near baseline), 5/5 HTTP 200 x3",
+        "evidence_files": [
+          "m1_batch_tt_station_cpu_80_r1.json",
+          "m1_batch_tt_station_cpu_80_r2.json",
+          "m1_batch_tt_station_cpu_80_r3.json"
+        ]
+      },
+      "inference": "single-worker 80% does not saturate a multi-core pod; CPU stress below trigger threshold"
+    }
+  ],
+  "generated_at": "2026-08-08T05:22:42.152957+00:00"
+}
