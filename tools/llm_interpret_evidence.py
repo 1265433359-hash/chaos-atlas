@@ -103,22 +103,43 @@ defense definitions:
 
 
 def build_candidate_evidence(evidence_doc: dict[str, Any]) -> list[dict[str, Any]]:
-    """Collect executed candidates with a concluded classification."""
+    """Collect executed candidates with a concluded classification.
+
+    Representative-conclusion selection must not be fooled by early-track noise:
+    invalid_* records are excluded, and among the surviving classifications the
+    confirmed experiments (confirmation_*, m1_*) take precedence over early
+    track_k runs. For a candidate where confirmation runs say
+    grpc_response_observed but an early track_k run says grpc_error_observed,
+    the confirmation (controlled, repeated) verdict wins.
+    """
+    def source_priority(name: str) -> int:
+        if name.startswith("confirmation_"):
+            return 0
+        if name.startswith("m1_"):
+            return 1
+        if name.startswith("track_k"):
+            return 2
+        return 3
+
     out: list[dict[str, Any]] = []
     for item in evidence_doc.get("candidates", []):
         conclusions = item.get("own_conclusions") or []
-        if not conclusions:
+        valid = [
+            c for c in conclusions
+            if not str(c["classification"]).startswith("invalid")
+            and c["classification"] != "not_applicable"
+        ]
+        if not valid:
             continue
-        # Representative conclusion: prefer gRPC/HTTP conclusions over weak ones.
-        classifications = sorted({c["classification"] for c in conclusions})
-        classification = classifications[0]
+        valid.sort(key=lambda c: (source_priority(str(c["file"])), str(c["file"])))
+        classification = valid[0]["classification"]
         out.append(
             {
                 "candidate_id": item["candidate_id"],
                 "service": item.get("service"),
                 "classification": classification,
                 "defense": defense_for(str(item["candidate_id"]), classification),
-                "evidence_files": [c["file"] for c in conclusions],
+                "evidence_files": sorted({c["file"] for c in valid}),
             }
         )
     return out
@@ -150,17 +171,29 @@ def extract_observations(evidence_files: list[str], by_file: dict[str, dict[str,
                 f"delta={obs.get('latency_delta_ms')}ms request_count={obs.get('request_count')}"
             )
         else:
-            obs = (doc.get("observations") or {}).get("workload") or doc.get("workload") or {}
+            detail = (doc.get("classification_details") or {}).get("observations") or {}
+            baseline = detail.get("baseline_median_latency_ms")
+            observed = detail.get("observed_median_latency_ms")
+            # gRPC runner exposes samples under workload.observations; HTTP
+            # runner exposes them under the top-level requests array.
             samples = []
-            for sample in (obs.get("observations") or [])[:2]:
+            wl = (doc.get("observations") or {}).get("workload") or doc.get("workload") or {}
+            for sample in (wl.get("observations") or [])[:3]:
                 samples.append(
                     f"{sample.get('grpc_status') or 'http'} {sample.get('latency_ms')}ms "
                     f"{str(sample.get('error') or '')[:40]}"
                 )
+            if not samples:
+                for req in (doc.get("requests") or [])[:3]:
+                    samples.append(
+                        f"{req.get('status_code') or 'http'} {req.get('latency_ms')}ms "
+                        f"{str(req.get('error') or '')[:40]}"
+                    )
             lifecycle = doc.get("lifecycle") or {}
             lines.append(
                 f"- run {name}: applied={lifecycle.get('applied')} "
                 f"injected={lifecycle.get('injected')} recovered={lifecycle.get('recovered')} "
+                f"baseline_median={baseline}ms observed_median={observed}ms "
                 f"samples=[{'; '.join(samples)}]"
             )
     return "\n".join(lines) if lines else "(no runtime evidence extracted)"
@@ -197,11 +230,28 @@ def load_run_files() -> dict[str, dict[str, Any]]:
 
 
 def parse_completion(text: str) -> dict[str, Any]:
-    start = text.find("{")
-    end = text.rfind("}")
-    if start == -1 or end <= start:
-        raise ValueError(f"no JSON object in completion: {text[:120]!r}")
-    return json.loads(text[start : end + 1])
+    """Parse a JSON object from a completion, tolerating unescaped quotes in
+    string values (the model occasionally emits them). Tries the strict parse
+    first, then falls back to decoding progressively longer prefixes of the
+    text until a complete JSON object is found."""
+    stripped = text.strip()
+    # strip markdown fences if present
+    if stripped.startswith("```"):
+        stripped = stripped.split("\n", 1)[-1]
+        stripped = stripped.rsplit("```", 1)[0]
+    decoder = json.JSONDecoder()
+    start = 0
+    while True:
+        start = stripped.find("{", start)
+        if start == -1:
+            raise ValueError(f"no JSON object in completion: {text[:160]!r}")
+        try:
+            obj, _ = decoder.raw_decode(stripped[start:])
+            if isinstance(obj, dict):
+                return obj
+        except json.JSONDecodeError:
+            pass
+        start += 1
 
 
 def root_cause_family(text: str) -> str:
@@ -212,14 +262,28 @@ def root_cause_family(text: str) -> str:
     return "unmatched"
 
 
-def run(backend: OpenAICompatBackend, evidence: list[dict[str, Any]], meta: dict[str, Any], by_file: dict[str, dict[str, Any]]) -> dict[str, Any]:
+def run(backend: OpenAICompatBackend, evidence: list[dict[str, Any]], meta: dict[str, Any], by_file: dict[str, dict[str, Any]], output_path: Path | None = None) -> dict[str, Any]:
+    # Resume support: load any previously completed candidates.
+    completed_ids: set[str] = set()
     results: list[dict[str, Any]] = []
+    if output_path and output_path.exists():
+        try:
+            existing = json.loads(output_path.read_text(encoding="utf-8"))
+            results = existing.get("results") or []
+            completed_ids = {r["candidate_id"] for r in results}
+        except (OSError, json.JSONDecodeError):
+            results, completed_ids = [], set()
+        if completed_ids:
+            print(f"[resume] {len(completed_ids)} candidates already completed, skipping")
+
+    pending = [c for c in evidence if c["candidate_id"] not in completed_ids]
+
     blind_stats = {"correct": 0, "total": 0}
     evidence_stats = {"correct": 0, "total": 0}
     blind_rc = {"matched": 0, "total": 0}
     evidence_rc = {"matched": 0, "total": 0}
 
-    for c in evidence:
+    for c in pending:
         candidate_meta = meta.get(c["candidate_id"], {})
         observations = extract_observations(c["evidence_files"], by_file)
 
@@ -250,22 +314,43 @@ def run(backend: OpenAICompatBackend, evidence: list[dict[str, Any]], meta: dict
                 "candidate_id": c["candidate_id"],
                 "truth": c["defense"],
                 "truth_classification": c["classification"],
+                "root_cause_family": c.get("root_cause_family", "unmatched"),
                 "blind": {"defense": blind.get("defense"), "reason": blind.get("reason"), "root_cause": blind.get("root_cause"), "correct": blind_correct, "tokens": blind_meta.get("total_tokens")},
                 "evidence": {"defense": judged.get("defense"), "reason": judged.get("reason"), "root_cause": judged.get("root_cause"), "correct": evidence_correct, "tokens": evidence_meta.get("total_tokens")},
                 "observations": observations,
             }
         )
+        # Persist after every candidate so a crash only loses the current one.
+        if output_path:
+            _write_checkpoint(output_path, results)
         print(f"[{c['candidate_id']}] truth={c['defense']:<12} blind={blind.get('defense'):<12} evid={judged.get('defense'):<12}")
+
+    total = len(results)
+    blind_accuracy = sum(r["blind"]["correct"] for r in results) / total if total else None
+    evidence_accuracy = sum(r["evidence"]["correct"] for r in results) / total if total else None
+    blind_rc_rate = sum(root_cause_family(r["blind"].get("root_cause") or "") == r.get("root_cause_family") for r in results) / total if total else None
+    evidence_rc_rate = sum(root_cause_family(r["evidence"].get("root_cause") or "") == r.get("root_cause_family") for r in results) / total if total else None
 
     return {
         "schema_version": 1,
         "tool": "llm_interpret_evidence",
         "method": "M5/A5 ours-llm-interpret",
-        "candidate_count": len(results),
-        "blind": {"defense_accuracy": round(blind_stats["correct"] / blind_stats["total"], 3) if blind_stats["total"] else None, "correct": blind_stats["correct"], "total": blind_stats["total"], "root_cause_match_rate": round(blind_rc["matched"] / blind_rc["total"], 3) if blind_rc["total"] else None},
-        "evidence": {"defense_accuracy": round(evidence_stats["correct"] / evidence_stats["total"], 3) if evidence_stats["total"] else None, "correct": evidence_stats["correct"], "total": evidence_stats["total"], "root_cause_match_rate": round(evidence_rc["matched"] / evidence_rc["total"], 3) if evidence_rc["total"] else None},
+        "candidate_count": total,
+        "blind": {"defense_accuracy": round(blind_accuracy, 3) if blind_accuracy is not None else None, "correct": sum(r["blind"]["correct"] for r in results), "total": total, "root_cause_match_rate": round(blind_rc_rate, 3) if blind_rc_rate is not None else None},
+        "evidence": {"defense_accuracy": round(evidence_accuracy, 3) if evidence_accuracy is not None else None, "correct": sum(r["evidence"]["correct"] for r in results), "total": total, "root_cause_match_rate": round(evidence_rc_rate, 3) if evidence_rc_rate is not None else None},
         "results": results,
     }
+
+
+def _write_checkpoint(output_path: Path, results: list[dict[str, Any]]) -> None:
+    payload = {
+        "schema_version": 1,
+        "tool": "llm_interpret_evidence",
+        "partial": True,
+        "candidate_count": len(results),
+        "results": results,
+    }
+    output_path.write_text(json.dumps(payload, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
 
 
 def main() -> int:
@@ -291,7 +376,7 @@ def main() -> int:
     for c in evidence:
         c["root_cause_family"] = card_truth.get(c["candidate_id"], "unmatched")
 
-    result = run(backend, evidence, meta, by_file)
+    result = run(backend, evidence, meta, by_file, output_path=args.output)
     args.output.write_text(json.dumps(result, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
     print(json.dumps({"output": str(args.output), "blind_accuracy": result["blind"]["defense_accuracy"], "evidence_accuracy": result["evidence"]["defense_accuracy"], "candidates": result["candidate_count"]}, indent=2))
     return 0

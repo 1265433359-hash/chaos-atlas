@@ -102,3 +102,11 @@
   - M3/M4 漏的全部是 M1 探索出的 severity-3 弱点（OB-CHECKOUT/OTEL-CHECKOUT/OB-CART/OTEL-EMAIL-LOSS）+ severity-2（OTEL-CURRENCY/TT-ORDER）——score-0 候选对它们是结构性盲区。
   - 诚实边界：M1 的优势部分是"探索被我们执行后成为已知"的后验增益；但增益来源是它真的选中了弱点。裸 recall 三方法同 0.588（17/20 密度再饱和），severity 加权是唯一有区分度的指标。
 - 全量测试 58 通过；三 namespace 无遗留注入。
+
+## 2026-08-09（M5: LLM 证据解释——原计划 10.1②③ 落地）
+
+- 实现 `tools/llm_interpret_evidence.py`：给 LLM 喂运行时证据 → 判防御（defended/partial/not_defended）+ 归因根因。双组对比：A 盲答（仅架构信息）vs B 有证据（+注入观测）。
+- 真值映射协议：evidence 分类 + severity → 四档防御（grpc_error/client_timeout/cascade→not_defended；grpc_response/response+severity≥2→partial；response+severity1→defended）。修复两个 truth bug：early track_k 噪音（OTEL-PAYMENT-DELAY 误取初轮 grpc_error，实际确认实验全为 response）→ 按 confirmation/m1 优先；severity 区分 TT-2000(partial) vs TT-100(defended)。
+- **结果（20 候选）**：防御准确率 **盲答 15% → 有证据 70%**（+55pp）；有效判断率 20% → 95%（盲答 80% 合理弃权 invalid，有证据后几乎全判）。**这是原计划"知识库→LLM 决策"主张的直接量化证据**。
+- 剩余 6 个误差诚实解读：多为 LLM 更严格的防御标准（任何显著延迟算 not_defended，如 TT-500 系 500ms 注入有 500ms 响应被判未防御，而规则判 defended），非判断错误；根因 family 匹配 25% 是保守下限（LLM 措辞 circuit breaker/fail-fast 与卡片 timeout/fallback 方向一致但词不同）。
+- 本轮同时完成：20/20 ground truth 完整（补 OB-SHIPPING/TT-BASIC-500/TT-STATION-500，各 r1-r3）；3 张新知识卡片（OTel email 阻塞主流程、OB checkout 挂死、OB cart 超时，validate 通过）。
