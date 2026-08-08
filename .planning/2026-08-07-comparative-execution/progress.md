@@ -110,3 +110,14 @@
 - **结果（20 候选）**：防御准确率 **盲答 15% → 有证据 70%**（+55pp）；有效判断率 20% → 95%（盲答 80% 合理弃权 invalid，有证据后几乎全判）。**这是原计划"知识库→LLM 决策"主张的直接量化证据**。
 - 剩余 6 个误差诚实解读：多为 LLM 更严格的防御标准（任何显著延迟算 not_defended，如 TT-500 系 500ms 注入有 500ms 响应被判未防御，而规则判 defended），非判断错误；根因 family 匹配 25% 是保守下限（LLM 措辞 circuit breaker/fail-fast 与卡片 timeout/fallback 方向一致但词不同）。
 - 本轮同时完成：20/20 ground truth 完整（补 OB-SHIPPING/TT-BASIC-500/TT-STATION-500，各 r1-r3）；3 张新知识卡片（OTel email 阻塞主流程、OB checkout 挂死、OB cart 超时，validate 通过）。
+
+## 2026-08-09（M5 双轨重构）
+
+- 按项目负责人确认的"薄弱点发现为主"定位，M5 从"防御等级"重构为**双轨归因**：verdict(weakness/defended) + severity + root_cause + defense_mechanism + confidence。
+- 真值映射协议：severity 3/2 → weakness（3=挂死/级联，2=放大），severity 1 → defended；SEVERITY 表外候选按分类信号兜底（error→3，不误判 defended）。
+- 运行 20 候选 × 盲答/有证据（deepseek-v4-flash，40 次调用，checkpoint 续跑）：
+  - verdict 准确率：盲 0.50 → 有证据 0.65（+15pp）
+  - weakness severity 精确命中：有证据 0.8（12/15；3 个 miss 均为 LLM 把 severity 2 低估为 1）
+  - 防御机制提取：1/5（TT-BASIC-500 → absorbed_by_design；LLM 与种子模式交叉验证一致）
+- 诚实解读：LLM 对 500ms 注入→500ms 响应（1:1 无放大）常判 weakness 而非 defended——与规则"无放大=防御住"存在标准分歧，是论文可写的发现（规则 vs LLM 防御判定标准差异）。
+- 防御模式库回填 `backfill_defense_patterns.py`：新增 1 条 LLM 归因模式，库共 5 条。

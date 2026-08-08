@@ -1,0 +1,564 @@
+{
+  "schema_version": 1,
+  "tool": "llm_interpret_evidence",
+  "method": "M5/A5 ours-llm-interpret (dual-track: weakness discovery + defense mechanism)",
+  "candidate_count": 20,
+  "weakness_truth": 15,
+  "defended_truth": 5,
+  "blind": {
+    "verdict_accuracy": 0.5,
+    "weakness_severity_hit_rate": 0.333,
+    "defense_mechanism_extraction_rate": 0.4,
+    "correct": 10,
+    "total": 20
+  },
+  "evidence": {
+    "verdict_accuracy": 0.65,
+    "weakness_severity_hit_rate": 0.8,
+    "defense_mechanism_extraction_rate": 0.2,
+    "correct": 13,
+    "total": 20
+  },
+  "results": [
+    {
+      "candidate_id": "TT-STATION-DELAY-100",
+      "truth": "defended",
+      "truth_severity": 1,
+      "truth_classification": "response_observed",
+      "blind": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "single-hop client->station call with no retries/downstream fan-out; injected 100ms latency propagates 1:1 without compounding",
+        "correct": true,
+        "severity_hit": false,
+        "mechanism": "absorbed_by_design",
+        "tokens": 4879
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "no isolation/backpressure: injected 100ms delay causes queueing/retries that amplify latency to ~185ms delta",
+        "defense_mechanism": null,
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": "unmatched",
+        "tokens": 16290
+      },
+      "observations": "- run confirmation_tt_station_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=124.174ms samples=[200 126.669ms ; 200 112.375ms ; 200 111.973ms ]\n- run confirmation_tt_station_r2_classification.json: injected=True recovered=True cleanup=True baseline_median=30.146ms injected_median=124.174ms delta=94.028ms request_count=5\n- run confirmation_tt_station_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=122.69ms samples=[200 131.336ms ; 200 122.69ms ; 200 122.962ms ]\n- run confirmation_tt_station_r3_classification.json: injected=True recovered=True cleanup=True baseline_median=30.146ms injected_median=122.69ms delta=92.544ms request_count=5\n- run confirmation_tt_station_r4.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=113.39ms samples=[200 114.677ms ; 200 120.356ms ; 200 113.39ms ]\n- run confirmation_tt_station_r4_classification.json: injected=True recovered=True cleanup=True baseline_median=30.146ms injected_median=113.39ms delta=83.244ms request_count=5\n- run smoke_station_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=215.281ms samples=[200 116.687ms ; 200 230.951ms ; 200 215.281ms ]\n- run smoke_station_r1_classification.json: injected=True recovered=True cleanup=True baseline_median=30.146ms injected_median=215.281ms delta=185.135ms request_count=5"
+    },
+    {
+      "candidate_id": "TT-STATION-DELAY-2000",
+      "truth": "weakness",
+      "truth_severity": 2,
+      "truth_classification": "response_observed",
+      "blind": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "missing timeout or circuit breaker on client->station call",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 1441
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "latency amplification on client->station path (observed ~4000ms vs 2000ms injected, no fallback)",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 3874
+      },
+      "observations": "- run m1_batch_tt_station_delay_2000_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=4017.454ms samples=[200 4017.454ms ; 200 4024.525ms ; 200 4014.293ms ]\n- run m1_batch_tt_station_delay_2000_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=4021.123ms samples=[200 4025.479ms ; 200 4021.123ms ; 200 4014.552ms ]\n- run m1_batch_tt_station_delay_2000_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=4021.728ms samples=[200 4016.513ms ; 200 4027.193ms ; 200 4022.629ms ]"
+    },
+    {
+      "candidate_id": "TT-STATION-CPU-80",
+      "truth": "defended",
+      "truth_severity": 1,
+      "truth_classification": "response_observed",
+      "blind": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "CPU stress on the station-process worker causes latency amplification",
+        "defense_mechanism": null,
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": "unmatched",
+        "tokens": 3253
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "single-worker CPU saturation on station-process queues requests; no worker isolation or capacity fallback",
+        "defense_mechanism": null,
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": "unmatched",
+        "tokens": 3279
+      },
+      "observations": "- run m1_batch_tt_station_cpu_80_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=84.637ms samples=[200 100.421ms ; 200 95.232ms ; 200 12.945ms ]\n- run m1_batch_tt_station_cpu_80_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=93.038ms samples=[200 93.038ms ; 200 99.319ms ; 200 96.846ms ]\n- run m1_batch_tt_station_cpu_80_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=57.301ms samples=[200 74.413ms ; 200 57.301ms ; 200 39.7ms ]"
+    },
+    {
+      "candidate_id": "TT-BASIC-DELAY-100",
+      "truth": "defended",
+      "truth_severity": 1,
+      "truth_classification": "response_observed",
+      "blind": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "linear latency propagation on a single synchronous call with no retries or compounding",
+        "correct": true,
+        "severity_hit": false,
+        "mechanism": "unmatched",
+        "tokens": 1748
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "no timeout or circuit breaker on downstream basic->station call; injected latency propagates and is amplified",
+        "defense_mechanism": null,
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": "unmatched",
+        "tokens": 3773
+      },
+      "observations": "- run m1_batch_tt_basic_delay_100_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=141.283ms samples=[200 181.406ms ; 200 144.358ms ; 200 123.396ms ]"
+    },
+    {
+      "candidate_id": "OB-PAYMENT-DELAY-2000",
+      "truth": "weakness",
+      "truth_severity": 2,
+      "truth_classification": "grpc_response_observed",
+      "blind": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "single synchronous call with no retries/fanout; 2000ms latency propagates 1:1 without compounding",
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 9519
+      },
+      "evidence": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "direct 1:1 latency propagation with no retry or timeout compounding on the checkout->payment call",
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 1094
+      },
+      "observations": "- run confirmation_ob_payment_delay_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 2019.0ms ]\n- run confirmation_ob_payment_delay_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 2021.2ms ]\n- run confirmation_ob_payment_delay_r4.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 2021.9ms ]\n- run track_k_ob_payment_delay_grpc.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 2022.8ms ]"
+    },
+    {
+      "candidate_id": "OB-PAYMENT-LOSS-100",
+      "truth": "weakness",
+      "truth_severity": 3,
+      "truth_classification": "grpc_error_observed",
+      "blind": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "synchronous checkout->payment call with no circuit breaker, retry/fallback, or graceful degradation",
+        "defense_mechanism": "",
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 1040
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "missing fail-fast/circuit breaker on payment call; 100% loss causes every request to wait until deadline and error",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 1095
+      },
+      "observations": "- run confirmation_ob_payment_loss_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10007.5ms rpc_error code=DEADLINE_EXCEEDED details]\n- run confirmation_ob_payment_loss_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10003.3ms rpc_error code=DEADLINE_EXCEEDED details]\n- run confirmation_ob_payment_loss_r4.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10007.2ms rpc_error code=DEADLINE_EXCEEDED details]\n- run track_k_ob_payment_loss_grpc.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10006.9ms rpc_error code=DEADLINE_EXCEEDED details]"
+    },
+    {
+      "candidate_id": "OB-PRODUCTCATALOG-KILL",
+      "truth": "weakness",
+      "truth_severity": 3,
+      "truth_classification": "client_timeout_observed",
+      "blind": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "single replica of productcatalogservice killed; frontend has no failover or fallback",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 1744
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "single product catalog pod with no failover; frontend requests time out after 5s",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 1450
+      },
+      "observations": "- run confirmation_ob_productcatalog_kill_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=5008.467ms samples=[http 5039.581ms timed out; http 5013.228ms timed out; http 5002.93ms timed out]\n- run confirmation_ob_productcatalog_kill_r2_classification.json: injected=True recovered=True cleanup=True baseline_median=44.281ms injected_median=5008.467ms delta=4964.186ms request_count=5\n- run confirmation_ob_productcatalog_kill_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=5005.114ms samples=[http 5027.653ms timed out; http 5009.379ms timed out; http 5005.114ms timed out]\n- run confirmation_ob_productcatalog_kill_r3_classification.json: injected=True recovered=True cleanup=True baseline_median=44.281ms injected_median=5005.114ms delta=4960.833ms request_count=5\n- run confirmation_ob_productcatalog_kill_r4.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=5005.957ms samples=[http 5043.845ms timed out; http 5005.957ms timed out; http 5004.678ms timed out]\n- run confirmation_ob_productcatalog_kill_r4_classification.json: injected=True recovered=True cleanup=True baseline_median=44.281ms injected_median=5005.957ms delta=4961.676ms request_count=5\n- run track_k_ob_productcatalog_classification.json: injected=True recovered=True cleanup=True baseline_median=44.281ms injected_median=5013.802ms delta=4969.521ms request_count=5\n- run track_k_ob_productcatalog_kill.json: applied=True injected=True recovered=False baseline_median=Nonems observed_median=5025.82ms samples=[http 5034.873ms timed out; http 5025.82ms timed out; http 5029.509ms timed out]\n- run track_k_ob_productcatalog_kill_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=5013.802ms samples=[http 5029.887ms timed out; http 5013.802ms timed out; http 5027.262ms timed out]"
+    },
+    {
+      "candidate_id": "OB-PRODUCTCATALOG-DELAY-500",
+      "truth": "weakness",
+      "truth_severity": 2,
+      "truth_classification": "response_observed",
+      "blind": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "synchronous dependency without timeout, allowing additive latency propagation without cascading",
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 2237
+      },
+      "evidence": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "single downstream call without retries/compounding; 500ms fault propagated roughly 1:1",
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 23128
+      },
+      "observations": "- run m1_batch_ob_productcatalog_delay_500_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=643.675ms samples=[200 2098.512ms ; 200 646.829ms ; 200 628.274ms ]\n- run m1_batch_ob_productcatalog_delay_500_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=540.68ms samples=[200 577.824ms ; 200 535.156ms ; 200 542.484ms ]\n- run m1_batch_ob_productcatalog_delay_500_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=540.004ms samples=[200 562.881ms ; 200 534.431ms ; 200 527.608ms ]"
+    },
+    {
+      "candidate_id": "OTEL-PAYMENT-DELAY-2000",
+      "truth": "weakness",
+      "truth_severity": 2,
+      "truth_classification": "grpc_response_observed",
+      "blind": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "no retry/compounding on call path; 1:1 latency propagation",
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 1973
+      },
+      "evidence": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "synchronous downstream call propagates injected latency linearly without compounding or failure",
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 2391
+      },
+      "observations": "- run confirmation_otel_payment_delay_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 4042.8ms ]\n- run confirmation_otel_payment_delay_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 4036.4ms ]\n- run confirmation_otel_payment_delay_r4.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 4927.4ms ]\n- run track_k_otel_payment_delay_grpc.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[CLIENT_PROCESS_ERROR Nonems client produced no parseable observation]\n- run track_k_otel_payment_delay_grpc_r6.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 4033.1ms ]"
+    },
+    {
+      "candidate_id": "OTEL-PAYMENT-LOSS-100",
+      "truth": "weakness",
+      "truth_severity": 3,
+      "truth_classification": "grpc_error_observed",
+      "blind": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "missing fallback/circuit breaker for payment dependency",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 1554
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "no fallback or circuit breaker on checkout->payment call, only a 10s gRPC deadline causing error",
+        "defense_mechanism": "",
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 1064
+      },
+      "observations": "- run confirmation_otel_payment_loss_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10009.8ms rpc_error code=DEADLINE_EXCEEDED details]\n- run confirmation_otel_payment_loss_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10004.9ms rpc_error code=DEADLINE_EXCEEDED details]\n- run confirmation_otel_payment_loss_r4.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10008.6ms rpc_error code=DEADLINE_EXCEEDED details]\n- run track_k_otel_payment_loss_grpc_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10009.2ms rpc_error code=DEADLINE_EXCEEDED details]"
+    },
+    {
+      "candidate_id": "OTEL-EMAIL-DELAY-2000",
+      "truth": "weakness",
+      "truth_severity": 2,
+      "truth_classification": "grpc_response_observed",
+      "blind": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "1:1 latency propagation with no retry or timeout compounding on the checkout->email edge",
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 4616
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "missing timeout/isolation on checkout-to-email dependency, causing the 2s injected delay to amplify into ~5s response latency",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 12623
+      },
+      "observations": "- run m1_batch_otel_email_delay_2000_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 4882.4ms ]\n- run m1_batch_otel_email_delay_2000_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 5307.1ms ]\n- run m1_batch_otel_email_delay_2000_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 4964.5ms ]"
+    },
+    {
+      "candidate_id": "OTEL-EMAIL-LOSS-100",
+      "truth": "weakness",
+      "truth_severity": 3,
+      "truth_classification": "grpc_error_observed",
+      "blind": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "synchronous checkout-to-email dependency without fallback or isolation",
+        "defense_mechanism": "",
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 1361
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "synchronous checkout-to-email call has no fallback/circuit breaker, so email outage surfaces as 10s DEADLINE_EXCEEDED errors",
+        "defense_mechanism": "",
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 1243
+      },
+      "observations": "- run m1_batch_otel_email_loss_100_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10010.8ms rpc_error code=DEADLINE_EXCEEDED details]\n- run m1_batch_otel_email_loss_100_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10009.0ms rpc_error code=DEADLINE_EXCEEDED details]\n- run m1_batch_otel_email_loss_100_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10003.8ms rpc_error code=DEADLINE_EXCEEDED details]"
+    },
+    {
+      "candidate_id": "OB-CHECKOUT-DELAY-2000",
+      "truth": "weakness",
+      "truth_severity": 3,
+      "truth_classification": "grpc_error_observed",
+      "blind": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "synchronous downstream calls on checkout critical path with no fallback",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 1463
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "injected downstream latency exhausts checkout deadline, causing DEADLINE_EXCEEDED errors",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 952
+      },
+      "observations": "- run m1_ext_ob_checkout_delay_2000_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10010.1ms rpc_error code=DEADLINE_EXCEEDED details]\n- run m1_ext_ob_checkout_delay_2000_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10009.2ms rpc_error code=DEADLINE_EXCEEDED details]\n- run m1_ext_ob_checkout_delay_2000_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10007.7ms rpc_error code=DEADLINE_EXCEEDED details]"
+    },
+    {
+      "candidate_id": "OB-SHIPPING-DELAY-2000",
+      "truth": "weakness",
+      "truth_severity": 2,
+      "truth_classification": "grpc_response_observed",
+      "blind": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "direct synchronous call with no retries or timeout results in 1:1 latency propagation",
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 2329
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "duplicate invocation of shipping service on the checkout path",
+        "defense_mechanism": "",
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 3800
+      },
+      "observations": "- run m1_ext_ob_shipping_delay_2000_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 4019.7ms ]\n- run m1_ext_ob_shipping_delay_2000_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 4019.1ms ]\n- run m1_ext_ob_shipping_delay_2000_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 4020.4ms ]"
+    },
+    {
+      "candidate_id": "OB-CART-DELAY-2000",
+      "truth": "weakness",
+      "truth_severity": 3,
+      "truth_classification": "grpc_error_observed",
+      "blind": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "synchronous call without retries or circuit-breaking; latency propagates 1:1 with no compounding",
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 2645
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "client timeout on checkout->cart call under injected latency",
+        "defense_mechanism": "",
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 885
+      },
+      "observations": "- run m1_ext_ob_cart_delay_2000_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[CLIENT_PROCESS_ERROR Nonems client timeout]\n- run m1_ext_ob_cart_delay_2000_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[CLIENT_PROCESS_ERROR Nonems client timeout]\n- run m1_ext_ob_cart_delay_2000_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[CLIENT_PROCESS_ERROR Nonems client timeout]"
+    },
+    {
+      "candidate_id": "OTEL-CHECKOUT-DELAY-2000",
+      "truth": "weakness",
+      "truth_severity": 3,
+      "truth_classification": "grpc_error_observed",
+      "blind": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "latency propagates 1:1 with no compounding dependencies on the path",
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 3941
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 3,
+        "root_cause": "client deadline exceeded on injected latency, causing DEADLINE_EXCEEDED error",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 1178
+      },
+      "observations": "- run m1_ext_otel_checkout_delay_2000_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10008.5ms rpc_error code=DEADLINE_EXCEEDED details]\n- run m1_ext_otel_checkout_delay_2000_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10004.3ms rpc_error code=DEADLINE_EXCEEDED details]\n- run m1_ext_otel_checkout_delay_2000_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[DEADLINE_EXCEEDED 10007.7ms rpc_error code=DEADLINE_EXCEEDED details]"
+    },
+    {
+      "candidate_id": "OTEL-CURRENCY-DELAY-2000",
+      "truth": "weakness",
+      "truth_severity": 2,
+      "truth_classification": "grpc_response_observed",
+      "blind": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "synchronous checkout-to-currency call without timeout/fallback",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 15255
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "repeated sequential currency calls amplify injected latency to ~7s",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 2756
+      },
+      "observations": "- run m1_ext_otel_currency_delay_2000_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 7216.6ms ]\n- run m1_ext_otel_currency_delay_2000_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 6975.1ms ]\n- run m1_ext_otel_currency_delay_2000_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=Nonems samples=[OK 7119.2ms ]"
+    },
+    {
+      "candidate_id": "TT-ORDER-DELAY-2000",
+      "truth": "weakness",
+      "truth_severity": 2,
+      "truth_classification": "response_observed",
+      "blind": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "single-hop client->order edge with no downstream fan-out/retries; injected 2000ms latency propagates 1:1 without compounding",
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": null,
+        "tokens": 7528
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "retry after ~2s client timeout doubles the injected latency to ~4s",
+        "defense_mechanism": null,
+        "correct": true,
+        "severity_hit": true,
+        "mechanism": null,
+        "tokens": 8805
+      },
+      "observations": "- run m1_ext_tt_order_delay_2000_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=4018.608ms samples=[200 4099.733ms ; 200 4024.545ms ; 200 4018.608ms ]\n- run m1_ext_tt_order_delay_2000_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=4015.424ms samples=[200 4017.915ms ; 200 4014.273ms ; 200 4015.424ms ]\n- run m1_ext_tt_order_delay_2000_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=4012.727ms samples=[200 4014.229ms ; 200 4012.727ms ; 200 4017.423ms ]"
+    },
+    {
+      "candidate_id": "TT-BASIC-DELAY-500",
+      "truth": "defended",
+      "truth_severity": 1,
+      "truth_classification": "response_observed",
+      "blind": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "synchronous dependency call without timeout or fallback",
+        "defense_mechanism": null,
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": "unmatched",
+        "tokens": 1496
+      },
+      "evidence": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "downstream latency propagated 1:1 with no retries or compounding (bounded path tolerated the 500ms delay)",
+        "correct": true,
+        "severity_hit": false,
+        "mechanism": "absorbed_by_design",
+        "tokens": 1131
+      },
+      "observations": "- run m1_ext_tt_basic_delay_500_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=520.37ms samples=[200 523.175ms ; 200 520.37ms ; 200 521.279ms ]\n- run m1_ext_tt_basic_delay_500_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=521.065ms samples=[200 521.844ms ; 200 521.62ms ; 200 521.065ms ]\n- run m1_ext_tt_basic_delay_500_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=528.468ms samples=[200 526.61ms ; 200 528.468ms ; 200 533.667ms ]"
+    },
+    {
+      "candidate_id": "TT-STATION-DELAY-500",
+      "truth": "defended",
+      "truth_severity": 1,
+      "truth_classification": "response_observed",
+      "blind": {
+        "verdict": "defended",
+        "severity": 1,
+        "root_cause": null,
+        "defense_mechanism": "direct client-to-station call with no downstream fan-out; 500ms latency propagates linearly without compounding",
+        "correct": true,
+        "severity_hit": false,
+        "mechanism": "absorbed_by_design",
+        "tokens": 4767
+      },
+      "evidence": {
+        "verdict": "weakness",
+        "severity": 2,
+        "root_cause": "no isolation/fallback on the station call path, causing the 500ms injected delay to compound to ~1s",
+        "defense_mechanism": null,
+        "correct": false,
+        "severity_hit": false,
+        "mechanism": "unmatched",
+        "tokens": 17778
+      },
+      "observations": "- run m1_ext_tt_station_delay_500_r1.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=1016.612ms samples=[200 1027.63ms ; 200 1016.612ms ; 200 1016.405ms ]\n- run m1_ext_tt_station_delay_500_r2.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=1015.404ms samples=[200 1013.704ms ; 200 1013.678ms ; 200 1015.654ms ]\n- run m1_ext_tt_station_delay_500_r3.json: applied=True injected=True recovered=True baseline_median=Nonems observed_median=1012.357ms samples=[200 1012.548ms ; 200 1011.46ms ; 200 1011.984ms ]"
+    }
+  ]
+}

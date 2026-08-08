@@ -63,7 +63,22 @@
         ]
       },
       "inference": "single-worker 80% does not saturate a multi-core pod; CPU stress below trigger threshold"
+    },
+    {
+      "pattern_id": "DP-DEFENSE-ABSORBED_BY_DESIGN-TT-BASIC-DELAY-500",
+      "defense_mechanism": "absorbed_by_design",
+      "source": "m5_llm_attribution",
+      "confidence": "medium",
+      "evidence": {
+        "project": "train-ticket",
+        "candidate_id": "TT-BASIC-DELAY-500",
+        "mutation": "TT-BASIC-DELAY-500",
+        "observation": "LLM attributed 'downstream latency propagated 1:1 with no retries or compounding (bounded path tolerated the 500ms delay)' as the defense mechanism",
+        "evidence_files": []
+      },
+      "inference": "LLM (deepseek-v4-flash) attributed defense mechanism 'downstream latency propagated 1:1 with no retries or compounding (bounded path tolerated the 500ms delay)' from runtime evidence; human/behavior verification recommended"
     }
   ],
-  "generated_at": "2026-08-08T05:22:42.152957+00:00"
+  "generated_at": "2026-08-08T05:22:42.152957+00:00",
+  "backfilled_at": "2026-08-08T06:03:42.453295+00:00"
 }

@@ -1,28 +1,23 @@
-"""M5/A5: LLM evidence interpretation - defense judgment + root-cause attribution.
+"""M5/A5 (dual-track): LLM weakness discovery + defense-mechanism attribution.
 
-Implements the "LLM decision benchmark" (supervisor report chapter 10, tasks
-2-3) as a method variant of OUR methodology:
+Implements the dual-track methodology (defense_pattern_methodology.md):
+the primary goal is WEAKNESS discovery; a defended experiment is a second
+asset class — extract WHY it defended so future projects can downgrade
+candidates on edges with the same mechanism.
 
 - For every executed candidate, build two prompts:
-    A (blind): candidate metadata only (service, edge, fault type, intensity).
-               NO runtime evidence, NO conclusion. LLM must guess.
-    B (evidence): same metadata PLUS the runtime observations (baseline/inject
-               latency, status, injected/recovered flags, sample results).
-               LLM judges defense and attributes a root cause.
-- Ground truth comes from the evidence backbone (candidate_evidence_status.json)
-  mapped to the 4-level defense vocabulary via an explicit, auditable protocol:
-      grpc_error_observed / client_timeout_observed / full_cascade / hang
-          -> not_defended
-      grpc_response_observed / response_preserved_latency_degradation with
-      material amplification (severity 2) -> partial
-      response_observed near-baseline (severity 1) -> defended
-      anything else / unexecuted -> invalid (excluded)
-- Metrics: A/B defense accuracy vs the mapped truth, and root-cause keyword
-  agreement vs card root_cause (normalized: "timeout" / "fallback" / "isolation"
-  / "redundancy" families).
-
-The A-vs-B gap is the auditable evidence that the knowledge/evidence chain
-improves LLM decisions (chapter 10.2's core claim).
+    A (blind): candidate metadata only. NO runtime evidence.
+    B (evidence): metadata PLUS runtime observations (latency, status,
+               lifecycle). LLM judges whether a weakness exists and, if the
+               system defended, what mechanism absorbed the fault.
+- Ground truth (auditable protocol):
+      severity 3 (timeout/hang/cascade)  -> verdict=weakness, severity=3
+      severity 2 (material amplification)-> verdict=weakness, severity=2
+      severity 1 (near-baseline)         -> verdict=defended, mechanism LLM-attributed
+- Metrics: A/B verdict accuracy, severity agreement on weaknesses, and
+  defense-mechanism family match on defended cases.
+The A-vs-B gap is the auditable evidence that the evidence chain improves
+LLM decisions (chapter 10.2's core claim), restated in the weakness frame.
 """
 
 from __future__ import annotations
@@ -38,21 +33,8 @@ from chaos_eater_adapter.llm_backend import OpenAICompatBackend
 ROOT = Path(__file__).resolve().parents[1]
 EXECUTION_DIR = ROOT / "artifacts" / "experiments" / "execution"
 
-# Explicit auditable mapping: evidence classification -> 4-level defense.
-# Severity comes from compare_selection_methods.SEVERITY (3=hang/cascade,
-# 2=amplified, 1=weak).
-DEFENSE_BY_CLASSIFICATION: dict[str, str] = {
-    "grpc_error_observed": "not_defended",
-    "client_timeout_observed": "not_defended",
-    "full_cascade_failure_after_hang": "not_defended",
-    "full_propagation_and_infinite_hang": "not_defended",
-    "grpc_response_observed": "partial",
-    "response_preserved_latency_degradation": "partial",
-    "response_observed": None,  # resolved by severity below
-}
-
-# For classifications without a strong failure signal, severity decides:
-# severity>=2 (material latency amplification) -> partial, severity==1 -> defended.
+# Canonical severity per candidate (3=hang/cascade, 2=amplified, 1=weak),
+# mirrored from compare_selection_methods.SEVERITY so the two tools agree.
 SEVERITY = {
     "OB-PAYMENT-LOSS-100": 3, "OB-PRODUCTCATALOG-KILL": 3,
     "OTEL-PAYMENT-LOSS-100": 3, "OTEL-EMAIL-LOSS-100": 3,
@@ -63,44 +45,67 @@ SEVERITY = {
     "OB-CHECKOUT-DELAY-2000": 3, "OB-CART-DELAY-2000": 3,
     "OTEL-CHECKOUT-DELAY-2000": 3, "OTEL-CURRENCY-DELAY-2000": 2,
     "TT-ORDER-DELAY-2000": 2,
+    # extended, executed:
+    "OB-SHIPPING-DELAY-2000": 2, "TT-BASIC-DELAY-500": 1, "TT-STATION-DELAY-500": 1,
 }
 
-
-def defense_for(candidate_id: str, classification: str) -> str:
-    base = DEFENSE_BY_CLASSIFICATION.get(classification)
-    if base is not None:
-        return base
-    if classification == "response_observed":
-        return "partial" if SEVERITY.get(candidate_id, 1) >= 2 else "defended"
-    return "invalid"
-
-# Root-cause keyword families for matching LLM attribution vs card truth.
-ROOT_CAUSE_FAMILIES: dict[str, list[str]] = {
-    "missing_timeout": ["timeout", "deadline"],
-    "missing_fallback": ["fallback", "circuit", "retry", "resilience"],
-    "missing_isolation": ["isolation", "non-critical", "side effect", "coupling"],
-    "missing_redundancy": ["redundancy", "replica", "single point"],
-    "latency_amplification": ["latency", "amplif", "propagat", "queuing", "thread"],
-    "no_finding": ["no weakness", "defended", "no finding", "weak effect"],
+# Mechanism families for matching LLM attribution (defense side) against the
+# pattern library.
+MECHANISM_FAMILIES: dict[str, list[str]] = {
+    "bounded_timeout": ["timeout", "deadline"],
+    "retry_fast_fail": ["retry", "fast fail", "fail fast"],
+    "circuit_breaker": ["circuit", "breaker"],
+    "redundancy": ["redund", "replica", "multiple"],
+    "isolation_non_critical": ["isolation", "async", "non-critical", "side effect", "decoupled"],
+    "absorbed_by_design": ["1:1", "single call", "no amplification", "simple", "direct"],
+    "weak_stressor": ["below threshold", "weak", "low intensity", "not saturating", "under-provision"],
 }
 
 SYS_PROMPT = """\
-You are a chaos-engineering defense assessor. Given a fault-injection experiment,
-you judge whether the system defended against the fault and attribute a root
-cause. Answer ONLY with a single JSON object:
-{
-  "defense": "defended" | "partial" | "not_defended" | "invalid",
-  "reason": "one sentence explaining the judgment",
-  "root_cause": "one concise phrase, e.g. 'missing timeout on downstream call'"
-}
-defense definitions:
-- defended: the system absorbed the fault; behavior stayed at or near baseline.
-- partial: functionality survived but latency/behavior degraded materially
-  beyond the injected intensity (no isolation/fallback on the path).
-- not_defended: the fault produced a timeout, hang, error, or cascade failure.
-- invalid: the experiment could not produce a conclusion (no injection effect
-  or incomplete lifecycle)."""
+You are a chaos-engineering WEAKNESS assessor. Your primary job is to find
+whether a fault-injection experiment reveals a WEAKNESS in the system; when
+the system defended, you extract the mechanism that absorbed the fault.
 
+Answer ONLY with a single JSON object:
+{
+  "verdict": "weakness" | "defended",
+  "severity": 1 | 2 | 3,
+  "root_cause": "one concise phrase (only for weakness), e.g. 'missing timeout on downstream call'",
+  "defense_mechanism": "one concise phrase (only for defended), e.g. 'bounded timeout on downstream call'",
+  "confidence": "high" | "medium" | "low"
+}
+
+Definitions:
+- weakness: the fault broke through — timeout, hang, error, cascade, or
+  material latency amplification beyond the injected intensity (no isolation
+  or fallback on the path). severity: 3 = hang/timeout/cascade/error,
+  2 = response preserved but latency amplified materially.
+- defended: the system absorbed the fault — behavior stayed at or near
+  baseline (1:1 latency propagation with no compounding is also defended;
+  severity 1). Explain WHAT mechanism absorbed it."""
+
+
+def verdict_for(candidate_id: str, classification: str) -> dict[str, Any]:
+    """Truth mapping: severity + classification -> verdict/severity.
+
+    Prefers the audited SEVERITY table (each entry has evidence notes in
+    compare_selection_methods). For candidates not in the table, falls back to
+    the classification signal so an error/timeout never defaults to 'defended'.
+    """
+    severity = SEVERITY.get(candidate_id)
+    if severity is None:
+        if classification in ("grpc_error_observed", "client_timeout_observed",
+                              "full_cascade_failure_after_hang",
+                              "full_propagation_and_infinite_hang"):
+            severity = 3
+        elif classification in ("grpc_response_observed",
+                                "response_preserved_latency_degradation"):
+            severity = 2
+        else:
+            severity = 1
+    if severity >= 2:
+        return {"verdict": "weakness", "severity": severity}
+    return {"verdict": "defended", "severity": 1}
 
 def build_candidate_evidence(evidence_doc: dict[str, Any]) -> list[dict[str, Any]]:
     """Collect executed candidates with a concluded classification.
@@ -133,12 +138,14 @@ def build_candidate_evidence(evidence_doc: dict[str, Any]) -> list[dict[str, Any
             continue
         valid.sort(key=lambda c: (source_priority(str(c["file"])), str(c["file"])))
         classification = valid[0]["classification"]
+        truth = verdict_for(str(item["candidate_id"]), classification)
         out.append(
             {
                 "candidate_id": item["candidate_id"],
                 "service": item.get("service"),
                 "classification": classification,
-                "defense": defense_for(str(item["candidate_id"]), classification),
+                "truth": truth["verdict"],
+                "truth_severity": truth["severity"],
                 "evidence_files": sorted({c["file"] for c in valid}),
             }
         )
@@ -151,7 +158,7 @@ def render_blind_prompt(c: dict[str, Any], candidate_meta: dict[str, Any]) -> st
         f"Service: {candidate_meta.get('service')}\n"
         f"Edge: {candidate_meta.get('edge')}\n"
         f"Fault: {candidate_meta.get('fault_family')} ({candidate_meta.get('intensity')})\n\n"
-        "Judge the likely defense outcome and root cause based ONLY on this "
+        "Judge whether a weakness is likely and its severity based ONLY on this "
         "architecture information. No runtime measurements are provided."
     )
 
@@ -206,7 +213,8 @@ def render_evidence_prompt(c: dict[str, Any], candidate_meta: dict[str, Any], ob
         f"Edge: {candidate_meta.get('edge')}\n"
         f"Fault: {candidate_meta.get('fault_family')} ({candidate_meta.get('intensity')})\n\n"
         f"Runtime observations (baseline -> injection -> recovery):\n{observations}\n\n"
-        "Judge the defense outcome and attribute a root cause from this evidence."
+        "From this evidence, judge whether a weakness exists (and its severity) "
+        "or, if the system defended, what mechanism absorbed the fault."
     )
 
 
@@ -254,9 +262,9 @@ def parse_completion(text: str) -> dict[str, Any]:
         start += 1
 
 
-def root_cause_family(text: str) -> str:
-    lowered = text.lower()
-    for family, keywords in ROOT_CAUSE_FAMILIES.items():
+def mechanism_family(text: str) -> str:
+    lowered = (text or "").lower()
+    for family, keywords in MECHANISM_FAMILIES.items():
         if any(keyword in lowered for keyword in keywords):
             return family
     return "unmatched"
@@ -278,11 +286,6 @@ def run(backend: OpenAICompatBackend, evidence: list[dict[str, Any]], meta: dict
 
     pending = [c for c in evidence if c["candidate_id"] not in completed_ids]
 
-    blind_stats = {"correct": 0, "total": 0}
-    evidence_stats = {"correct": 0, "total": 0}
-    blind_rc = {"matched": 0, "total": 0}
-    evidence_rc = {"matched": 0, "total": 0}
-
     for c in pending:
         candidate_meta = meta.get(c["candidate_id"], {})
         observations = extract_observations(c["evidence_files"], by_file)
@@ -291,53 +294,84 @@ def run(backend: OpenAICompatBackend, evidence: list[dict[str, Any]], meta: dict
         blind_prompt = render_blind_prompt(c, candidate_meta)
         blind_raw, blind_meta = backend.complete(SYS_PROMPT, blind_prompt, "")
         blind = parse_completion(blind_raw)
-        blind_correct = blind.get("defense") == c["defense"]
-        blind_stats["total"] += 1
-        blind_stats["correct"] += int(blind_correct)
-        blind_rc_family = root_cause_family(blind.get("root_cause") or "")
-        blind_rc["total"] += 1
-        blind_rc["matched"] += int(blind_rc_family == c.get("root_cause_family", "unmatched"))
 
         # B: evidence
         evidence_prompt = render_evidence_prompt(c, candidate_meta, observations)
         evidence_raw, evidence_meta = backend.complete(SYS_PROMPT, evidence_prompt, "")
         judged = parse_completion(evidence_raw)
-        evidence_correct = judged.get("defense") == c["defense"]
-        evidence_stats["total"] += 1
-        evidence_stats["correct"] += int(evidence_correct)
-        evidence_rc_family = root_cause_family(judged.get("root_cause") or "")
-        evidence_rc["total"] += 1
-        evidence_rc["matched"] += int(evidence_rc_family == c.get("root_cause_family", "unmatched"))
 
         results.append(
             {
                 "candidate_id": c["candidate_id"],
-                "truth": c["defense"],
+                "truth": c["truth"],
+                "truth_severity": c["truth_severity"],
                 "truth_classification": c["classification"],
-                "root_cause_family": c.get("root_cause_family", "unmatched"),
-                "blind": {"defense": blind.get("defense"), "reason": blind.get("reason"), "root_cause": blind.get("root_cause"), "correct": blind_correct, "tokens": blind_meta.get("total_tokens")},
-                "evidence": {"defense": judged.get("defense"), "reason": judged.get("reason"), "root_cause": judged.get("root_cause"), "correct": evidence_correct, "tokens": evidence_meta.get("total_tokens")},
+                "blind": {
+                    "verdict": blind.get("verdict"),
+                    "severity": blind.get("severity"),
+                    "root_cause": blind.get("root_cause"),
+                    "defense_mechanism": blind.get("defense_mechanism"),
+                    "correct": blind.get("verdict") == c["truth"],
+                    "severity_hit": c["truth"] == "weakness" and blind.get("severity") == c["truth_severity"],
+                    "mechanism": mechanism_family(blind.get("defense_mechanism") or "") if c["truth"] == "defended" else None,
+                    "tokens": blind_meta.get("total_tokens"),
+                },
+                "evidence": {
+                    "verdict": judged.get("verdict"),
+                    "severity": judged.get("severity"),
+                    "root_cause": judged.get("root_cause"),
+                    "defense_mechanism": judged.get("defense_mechanism"),
+                    "correct": judged.get("verdict") == c["truth"],
+                    "severity_hit": c["truth"] == "weakness" and judged.get("severity") == c["truth_severity"],
+                    "mechanism": mechanism_family(judged.get("defense_mechanism") or "") if c["truth"] == "defended" else None,
+                    "tokens": evidence_meta.get("total_tokens"),
+                },
                 "observations": observations,
             }
         )
         # Persist after every candidate so a crash only loses the current one.
         if output_path:
             _write_checkpoint(output_path, results)
-        print(f"[{c['candidate_id']}] truth={c['defense']:<12} blind={blind.get('defense'):<12} evid={judged.get('defense'):<12}")
+        print(
+            f"[{c['candidate_id']}] truth={c['truth']}({c['truth_severity']}) "
+            f"blind={blind.get('verdict')} evid={judged.get('verdict')} "
+            f"mechE={results[-1]['evidence'].get('mechanism')}"
+        )
 
     total = len(results)
-    blind_accuracy = sum(r["blind"]["correct"] for r in results) / total if total else None
-    evidence_accuracy = sum(r["evidence"]["correct"] for r in results) / total if total else None
-    blind_rc_rate = sum(root_cause_family(r["blind"].get("root_cause") or "") == r.get("root_cause_family") for r in results) / total if total else None
-    evidence_rc_rate = sum(root_cause_family(r["evidence"].get("root_cause") or "") == r.get("root_cause_family") for r in results) / total if total else None
+    verdict_acc = lambda mode: round(sum(r[mode]["correct"] for r in results) / total, 3) if total else None
+    sev_hit = lambda mode: round(
+        sum(r[mode]["severity_hit"] for r in results if r["truth"] == "weakness")
+        / max(1, sum(1 for r in results if r["truth"] == "weakness")),
+        3,
+    )
+    mech_extract = lambda mode: round(
+        sum(1 for r in results if r["truth"] == "defended" and r[mode].get("mechanism") != "unmatched" and r[mode].get("mechanism"))
+        / max(1, sum(1 for r in results if r["truth"] == "defended")),
+        3,
+    )
 
     return {
         "schema_version": 1,
         "tool": "llm_interpret_evidence",
-        "method": "M5/A5 ours-llm-interpret",
+        "method": "M5/A5 ours-llm-interpret (dual-track: weakness discovery + defense mechanism)",
         "candidate_count": total,
-        "blind": {"defense_accuracy": round(blind_accuracy, 3) if blind_accuracy is not None else None, "correct": sum(r["blind"]["correct"] for r in results), "total": total, "root_cause_match_rate": round(blind_rc_rate, 3) if blind_rc_rate is not None else None},
-        "evidence": {"defense_accuracy": round(evidence_accuracy, 3) if evidence_accuracy is not None else None, "correct": sum(r["evidence"]["correct"] for r in results), "total": total, "root_cause_match_rate": round(evidence_rc_rate, 3) if evidence_rc_rate is not None else None},
+        "weakness_truth": sum(1 for r in results if r["truth"] == "weakness"),
+        "defended_truth": sum(1 for r in results if r["truth"] == "defended"),
+        "blind": {
+            "verdict_accuracy": verdict_acc("blind"),
+            "weakness_severity_hit_rate": sev_hit("blind"),
+            "defense_mechanism_extraction_rate": mech_extract("blind"),
+            "correct": sum(r["blind"]["correct"] for r in results),
+            "total": total,
+        },
+        "evidence": {
+            "verdict_accuracy": verdict_acc("evidence"),
+            "weakness_severity_hit_rate": sev_hit("evidence"),
+            "defense_mechanism_extraction_rate": mech_extract("evidence"),
+            "correct": sum(r["evidence"]["correct"] for r in results),
+            "total": total,
+        },
         "results": results,
     }
 
@@ -371,14 +405,16 @@ def main() -> int:
     meta = load_meta()
     by_file = load_run_files()
 
-    # Attach card root-cause families as truth for attribution comparison.
-    card_truth = load_card_root_causes()
-    for c in evidence:
-        c["root_cause_family"] = card_truth.get(c["candidate_id"], "unmatched")
-
     result = run(backend, evidence, meta, by_file, output_path=args.output)
     args.output.write_text(json.dumps(result, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
-    print(json.dumps({"output": str(args.output), "blind_accuracy": result["blind"]["defense_accuracy"], "evidence_accuracy": result["evidence"]["defense_accuracy"], "candidates": result["candidate_count"]}, indent=2))
+    print(json.dumps({
+        "output": str(args.output),
+        "blind_verdict_accuracy": result["blind"]["verdict_accuracy"],
+        "evidence_verdict_accuracy": result["evidence"]["verdict_accuracy"],
+        "weakness_truth": result["weakness_truth"],
+        "defended_truth": result["defended_truth"],
+        "candidates": result["candidate_count"],
+    }, indent=2))
     return 0
 
 

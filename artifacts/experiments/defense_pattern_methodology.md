@@ -65,7 +65,7 @@
 
 降级不是"永不测"：如果新项目的行为证据（静态分析）表明机制可能缺失（如 email 调用是同步的），降级被推翻、恢复原优先级。**模式库提供先验，行为证据可推翻先验。**
 
-## 四、M5 重构：双向归因
+## 四、M5 重构：双向归因（✅ 已实现 2026-08-09）
 
 M5 的 LLM 输出从单轨"防御等级"改为双轨归因：
 
@@ -79,19 +79,22 @@ M5 的 LLM 输出从单轨"防御等级"改为双轨归因：
 }
 ```
 
-真值映射（可审计协议）：
-- `grpc_error / client_timeout / cascade / hang` → verdict=weakness, severity=3
-- `grpc_response / response + severity 2`（放大）→ verdict=weakness, severity=2
-- `response + severity 1`（无放大/近基线）→ verdict=defended，机制由 LLM 归因 + 我们核实
+真值映射（可审计协议，`verdict_for`）：
+- severity 3（timeout/hang/cascade/error）→ verdict=weakness, severity=3
+- severity 2（material 放大）→ verdict=weakness, severity=2
+- severity 1（无放大/近基线）→ verdict=defended，机制由 LLM 归因 + 我们核实
+- 兜底：SEVERITY 表外的新候选，按分类信号推断（error→3，response→2，其他→1），不会把 error 误判为 defended
 
-## 五、落地顺序
+实现：`tools/llm_interpret_evidence.py`（dual-track 版）。指标 = verdict 准确率 + weakness 的 severity 命中率 + defended 的机制提取率。运行：`llm_interpret_results_dual.json`（20 候选 × 盲答/有证据）。
 
-1. ✅ 本设计文档（本次）
-2. 实现 `tools/defense_pattern_library.py`：模式库 CRUD + 候选降级查询
-3. 从现有防御住案例提取第一版模式（TT-BASIC-500 无放大、TT-STATION-100 弱注入、TT-CPU-80 弱压）
-4. 重构 `tools/llm_interpret_evidence.py` 为双向归因（verdict/severity/root_cause/defense_mechanism）
-5. 候选降级接入对比流程（新增 `candidate_priority` 字段）
-6. 与 M1/M5-select 对比衔接
+## 五、落地状态
+
+1. ✅ 本设计文档
+2. ✅ `tools/defense_pattern_library.py`：模式库 CRUD + 候选降级查询（v1 已装 4 条模式）
+3. ✅ 第一版模式提取：TT-BASIC-500 无放大、TT-STATION-100/TT-CPU-80 弱注入/弱压
+4. ✅ `tools/llm_interpret_evidence.py` 重构为双向归因（verdict/severity/root_cause/defense_mechanism）
+5. ⏳ 候选降级接入对比流程（`candidate_priority` 字段随降级查询输出，接入 registry 待做）
+6. ⏳ 防御模式库回填（LLM 机制归因 → 库）
 
 ## 六、对论文的含义
 
