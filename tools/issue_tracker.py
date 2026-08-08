@@ -147,6 +147,13 @@ def _reflow_confirmed(issue: dict[str, Any]) -> None:
             cited = [str(c) for c in entry.get("experiment_evidence", []) + entry.get("evidence_cases", [])]
             if not any(cand in " ".join(cited) for cand in supported):
                 continue
+            # external confirmation marker is UNCONDITIONAL (strongest evidence
+            # tier) - independent of confidence, which may already be high from
+            # internal evidence.
+            confirmed_by = entry.setdefault("external_confirmation", [])
+            if issue["issue_id"] not in confirmed_by:
+                confirmed_by.append(issue["issue_id"])
+                changed = True
             if entry.get("confidence") != "high":
                 append_audit({
                     "at": datetime.now(timezone.utc).isoformat(),
@@ -158,8 +165,6 @@ def _reflow_confirmed(issue: dict[str, Any]) -> None:
                     "note": "upstream confirmed a finding this entry's evidence cites",
                 })
                 entry["confidence"] = "high"
-                entry.setdefault("external_confirmation", []).append(issue["issue_id"])
-                changed = True
         if changed:
             path.write_text(json.dumps(doc, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
 
