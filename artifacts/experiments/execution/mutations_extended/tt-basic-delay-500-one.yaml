@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: tt-basic-delay-500-one
+  namespace: train-ticket-lab
+  labels:
+    chaos.extended: candidate
+    chaos.candidate-id: TT-BASIC-DELAY-500
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - train-ticket-lab
+    labelSelectors:
+      app: ts-basic-service
+  delay:
+    latency: 500ms
+    correlation: '100'
+    jitter: 0ms
+  duration: 20s
+  direction: to

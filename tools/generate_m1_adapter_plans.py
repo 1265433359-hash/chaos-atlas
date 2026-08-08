@@ -23,6 +23,7 @@ from typing import Any
 from chaos_eater_adapter.adapter import ChaosEaterAdapter
 from chaos_eater_adapter.contexts import build_steady_states, build_user_input
 from chaos_eater_adapter.llm_backend import MockBackend, OpenAICompatBackend
+from extended_candidate_pool import extended_candidate_pool
 from generate_deep_comparison_matrix import CORE_CANDIDATES, make_plan
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -68,14 +69,16 @@ def generate(registry: dict[str, Any], args: argparse.Namespace) -> dict[str, An
     seed = int(registry.get("seed"))
     budget = int(registry.get("candidate_budget") or 10)
 
+    pool = extended_candidate_pool() if getattr(args, "extended", False) else CORE_CANDIDATES
+
     m1: dict[str, Any] = {key: value for key, value in METHOD_M1.items()}
     m1["plans"] = []
     m1["provenance"] = {}
 
-    backend = build_backend(args, candidates=CORE_CANDIDATES)
-    adapter = ChaosEaterAdapter(backend=backend, candidates=CORE_CANDIDATES, budget=budget)
+    backend = build_backend(args, candidates=pool)
+    adapter = ChaosEaterAdapter(backend=backend, candidates=pool, budget=budget)
     result = adapter.select(
-        user_input=build_user_input(None, CORE_CANDIDATES),
+        user_input=build_user_input(None, pool),
         steady_states=build_steady_states("all"),
         ce_instructions=CE_INSTRUCTIONS,
     )
@@ -93,10 +96,11 @@ def generate(registry: dict[str, Any], args: argparse.Namespace) -> dict[str, An
         "event": result.scenario.event,
         "thought": result.scenario.thought,
         "ranked_candidates": [item["candidate_id"] for item in result.ranked_candidates],
+        "pool_size": len(pool),
     }
     for rank, ranked in enumerate(result.ranked_candidates, start=1):
         candidate_id = ranked["candidate_id"]
-        candidate = next(item for item in CORE_CANDIDATES if item["candidate_id"] == candidate_id)
+        candidate = next(item for item in pool if item["candidate_id"] == candidate_id)
         plan = make_plan(
             method=METHOD_M1,
             candidate=candidate,
@@ -145,9 +149,20 @@ def main() -> int:
     parser.add_argument("--base-url", default="http://localhost:11434/v1")
     parser.add_argument("--api-key", default=None, help="or set CHAOS_EATER_API_KEY")
     parser.add_argument("--model", default="deepseek-chat")
+    parser.add_argument(
+        "--extended",
+        action="store_true",
+        help="use the 20-candidate extended pool (12 core + 8 unexecuted)",
+    )
     args = parser.parse_args()
 
-    registry_path = args.registry or EXECUTION_DIR / f"deep_matrix_registry_r{args.replicate}.json"
+    registry_path = args.registry
+    if registry_path is None:
+        registry_path = (
+            EXECUTION_DIR / f"extended_registry_r{args.replicate}.json"
+            if args.extended
+            else EXECUTION_DIR / f"deep_matrix_registry_r{args.replicate}.json"
+        )
     if not registry_path.exists():
         raise SystemExit(f"registry not found: {registry_path}")
     if args.api_key is None:
@@ -156,7 +171,7 @@ def main() -> int:
     registry = load_json(registry_path)
     result = generate(registry, args)
     output = args.output or registry_path.with_name(
-        f"deep_matrix_registry_r{args.replicate}_m1.json"
+        f"{registry_path.stem}_m1.json"
     )
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")

@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "tool": "run_grpc_chaos_experiment",
+  "started_at": "2026-08-08T03:38:41.617078+00:00",
+  "mutation": "artifacts/experiments/execution/mutations/otel-email-loss-one.yaml",
+  "client_script": "artifacts/opentelemetry-demo/otel_client.py",
+  "request_config": {
+    "checkout_service": "checkout",
+    "checkout_remote_port": 5050,
+    "checkout_local_port": 15050,
+    "cart_service": "cart",
+    "cart_remote_port": 7070,
+    "cart_local_port": 17070,
+    "client_count": 1,
+    "client_timeout_sec": 12.0
+  },
+  "preflight": {
+    "checked_at": "2026-08-08T03:38:42.021424+00:00",
+    "mutation": "artifacts/experiments/execution/mutations/otel-email-loss-one.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "otel-demo-lab",
+    "name": "eval-otel-email-loss-one",
+    "selector": {
+      "namespaces": [
+        "otel-demo-lab"
+      ],
+      "labelSelectors": {
+        "app": "email"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "requested_namespaces": [
+          "otel-demo-lab"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "otel-demo-lab",
+          "name": "email-6c59c98bb8-csx5q",
+          "terminating": false,
+          "ready": true,
+          "restarts": 1,
+          "ports": [
+            6060
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"eval-otel-email-loss-one\" not found\n"
+  },
+  "lifecycle": {
+    "applied": true,
+    "injected": true,
+    "recovered": true,
+    "cleanup": {
+      "delete_command_ok": true,
+      "delete_output": "networkchaos.chaos-mesh.org \"eval-otel-email-loss-one\" deleted from otel-demo-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"eval-otel-email-loss-one\" not found"
+    },
+    "injected_status": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-08T03:38:47Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "otel-demo-lab/email-6c59c98bb8-csx5q",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-08T03:38:47Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    },
+    "recovered_status": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-08T03:38:47Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-08T03:39:02Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "otel-demo-lab/email-6c59c98bb8-csx5q",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-08T03:38:47Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-08T03:39:02Z"
+      ],
+      "desired_phase": "Stop"
+    }
+  },
+  "baseline_workload": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\opentelemetry-demo\\otel_client.py",
+      "127.0.0.1:15050",
+      "127.0.0.1:17070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 3665.733,
+    "stdout": "[0] ok oid=a790d7aa-92da-11f1-9278-8a3caf62e0dd tracking=84da8e68-ae92-4d61-ab1f-7b235ac68648 (2893.6ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 2893.6,
+        "result": "ok oid=a790d7aa-92da-11f1-9278-8a3caf62e0dd tracking=84da8e68-ae92-4d61-ab1f-7b235ac68648",
+        "error": null
+      }
+    ]
+  },
+  "workload": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\opentelemetry-demo\\otel_client.py",
+      "127.0.0.1:15050",
+      "127.0.0.1:17070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 10765.759,
+    "stdout": "[0] rpc_error code=DEADLINE_EXCEEDED details=Stream removed (RST_STREAM (Received RST_STREAM with error code 8)) (10009.0ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "DEADLINE_EXCEEDED",
+        "latency_ms": 10009.0,
+        "result": "rpc_error code=DEADLINE_EXCEEDED details=Stream removed (RST_STREAM (Received RST_STREAM with error code 8))",
+        "error": "rpc_error code=DEADLINE_EXCEEDED details=Stream removed (RST_STREAM (Received RST_STREAM with error code 8))"
+      }
+    ]
+  },
+  "errors": [],
+  "apply": {
+    "return_code": 0,
+    "stdout": "networkchaos.chaos-mesh.org/eval-otel-email-loss-one created",
+    "stderr": ""
+  },
+  "result_classification": "grpc_error_observed",
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:15050 -> 5050\nForwarding from [::1]:15050 -> 5050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:17070 -> 8080\nForwarding from [::1]:17070 -> 8080\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-08T03:39:02.764751+00:00"
+}

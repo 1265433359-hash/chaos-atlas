@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: otel-currency-delay-one
+  namespace: otel-demo-lab
+  labels:
+    chaos.extended: candidate
+    chaos.candidate-id: OTEL-CURRENCY-DELAY-2000
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - otel-demo-lab
+    labelSelectors:
+      app: currency
+  delay:
+    latency: 2000ms
+    correlation: '100'
+    jitter: 0ms
+  duration: 15s
+  direction: to
