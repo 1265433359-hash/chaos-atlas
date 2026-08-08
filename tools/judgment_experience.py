@@ -43,30 +43,30 @@ SEED_ENTRIES: list[dict[str, Any]] = [
         "rule": "gRPC 客户端存在显式 deadline 且注入后请求挂到该 deadline（DEADLINE_EXCEEDED）= 明确契约违约漏洞，无需进一步论证。",
         "dimensions": ["contract"],
         "severity_adjustment": "confirm",
+        "rule": "系统源码/配置声明的契约（WithTimeout/gRPC deadline/SLO）违约 = 明确漏洞；但测试客户端自设的 timeout 是测量预算，永远不是系统契约——挂到客户端 deadline 暴露的是'系统缺超时'，判定依据不同（A2 修正）。",
         "evidence_cases": [
-            "OB-PAYMENT-LOSS-100: 10s deadline, hang x3",
-            "OTEL-PAYMENT-LOSS-100: 10s deadline, hang x3",
-            "OB-CHECKOUT-DELAY-2000: 10s deadline, hang x3",
-            "OB-CART-DELAY-2000: 12s client timeout x3",
+            "OB-PAYMENT-LOSS-100: chargeCard 无 WithTimeout（main.go:369，系统无契约）；10s 挂死是 ob_client 10s 预算耗尽 → 弱点是'系统缺超时'而非'违约'",
+            "OB-CART-DELAY-2000: 12s 客户端超时 x3，cart 读无 deadline",
+            "TT 系: 无超时配置（application.yml），延迟放大无违约但无保护",
         ],
-        "counter_example": "响应 1:1 无放大且未触达 deadline（TT-BASIC-DELAY-500）不违约",
-        "transferable_to": "任何带 gRPC/timeout 预算的系统",
+        "counter_example": "有系统级 timeout 且注入后仍违约（若存在）才是契约违约；TT-BASIC-500 1:1 无放大未触任何预算",
+        "transferable_to": "判定前必须查 contract_inventory.json 区分系统契约 vs 客户端预算",
         "confidence": "high",
-        "source": "本项目 12+ 个 gRPC 实验 + 契约违约判定实践",
+        "source": "A2 审计 + 源码核查（OB chargeCard 无 WithTimeout）",
     },
     {
         "id": "JE-CONTRACT-002",
-        "rule": "无契约承诺（无 SLO/无显式 deadline）的延迟放大 ≠ 自动漏洞；应查是否有降级/兜底，无兜底则判'潜在风险'而非'确定漏洞'。",
+        "rule": "系统无契约（无 SLO/无显式 deadline，见 contract_inventory）的延迟放大 ≠ 自动漏洞；应查是否有降级/兜底，无兜底则判'潜在风险'而非'确定漏洞'。runner 的 request_timeout 不算契约。",
         "dimensions": ["contract"],
         "severity_adjustment": "downgrade",
         "evidence_cases": [
-            "TT-STATION-DELAY-2000: 2s 注入 -> 4s 响应，HTTP 200 无违约声明（潜在风险）",
+            "TT-STATION-DELAY-2000: 2s 注入 -> 4s 响应，HTTP 200；系统无超时配置（潜在风险）",
             "TT-ORDER-DELAY-2000: 2s -> 4s HTTP 200（同上）",
         ],
         "counter_example": "有 SLO/预算声明的路径放大即违约（升级为确定漏洞）",
         "transferable_to": "无显式 SLO 的内部服务间调用",
         "confidence": "medium",
-        "source": "TT 系 HTTP 实验反推（无 deadline 语义）",
+        "source": "A2 审计：TT 系 application.yml 无超时配置；runner timeout 5s/8s 为测试参数",
     },
     {
         "id": "JE-RECOVERY-001",
@@ -122,11 +122,14 @@ def save(doc: dict[str, Any], path: Path = EXPERIENCE_PATH) -> None:
 
 
 def seed(path: Path = EXPERIENCE_PATH) -> dict[str, Any]:
+    """Seed entries; SEED_ENTRIES is the authoritative definition, so existing
+    entries with the same id are replaced (they may have been revised, e.g. by
+    an audit fix)."""
     doc = load(path)
-    existing = {e["id"] for e in doc.get("entries", [])}
+    by_id = {e["id"]: e for e in doc.get("entries", [])}
     for entry in SEED_ENTRIES:
-        if entry["id"] not in existing:
-            doc.setdefault("entries", []).append(entry)
+        by_id[entry["id"]] = entry
+    doc["entries"] = [by_id[eid] for eid in sorted(by_id)]
     save(doc, path)
     return doc
 

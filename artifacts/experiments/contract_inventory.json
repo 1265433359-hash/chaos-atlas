@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "tool": "contract_inventory",
+  "generated_at": "2026-08-08T06:29:17.330734+00:00",
+  "principle": "Runner/request timeouts are the TEST CLIENT's budget, never a system contract. Only source/config-declared deadlines count for contract-violation judgment (A2 audit). 'unknown' means source not checked.",
+  "contracts": {
+    "OB-checkout->payment": {
+      "contract": "no_timeout",
+      "evidence": "online-boutique/src/checkoutservice/main.go:369 chargeCard -> PaymentService.Charge(ctx) no WithTimeout/WithDeadline; card KB-OB-CHECKOUT-PAYMENT-DELAY-001 confirms",
+      "client_budget": {
+        "source": "ob_client.py run_one timeout_s=10",
+        "value_s": 10.0
+      },
+      "note": "10s hang is client budget exhaustion, NOT system contract violation; the weakness is the ABSENCE of a system timeout"
+    },
+    "OB-checkout->cart": {
+      "contract": "no_timeout",
+      "evidence": "checkout cart read without per-call deadline (same file); cart delay -> 12s client timeout x3",
+      "client_budget": {
+        "source": "ob_client.py run_one timeout_s=10",
+        "value_s": 10.0
+      },
+      "note": "client process error at ~12s (connect+read); system has no cart timeout"
+    },
+    "OB-checkout->productcatalog": {
+      "contract": "explicit_timeout",
+      "evidence": "checkoutservice/main.go:161 context.WithTimeout(ctx, 3s) on catalog call",
+      "client_budget": {
+        "source": "ob_client.py run_one timeout_s=10",
+        "value_s": 10.0
+      },
+      "note": "3s system timeout present; productcatalog delay 500ms stayed within it (no violation, partial degradation)"
+    },
+    "OTel-checkout->payment": {
+      "contract": "unknown",
+      "evidence": "OTel demo source not in workspace; not source-verified (honest gap)",
+      "client_budget": {
+        "source": "otel_client.py",
+        "value_s": 12.0
+      },
+      "note": "10s DEADLINE_EXCEEDED observed; contract status unknown pending source check"
+    },
+    "OTel-checkout->email": {
+      "contract": "unknown",
+      "evidence": "OTel demo source not in workspace; not source-verified (honest gap)",
+      "client_budget": {
+        "source": "otel_client.py",
+        "value_s": 12.0
+      },
+      "note": "email delay -> 4.9-5.3s, loss -> 10s hang; contract status unknown"
+    },
+    "TT-basic->station": {
+      "contract": "no_timeout",
+      "evidence": "ts-basic-service application.yml: no timeout config; single synchronous call",
+      "client_budget": {
+        "source": "run_chaos_experiment --request-timeout",
+        "value_s": 5.0
+      },
+      "note": "no system timeout; 500ms/100ms delay -> 1:1 response (no amplification) is NOT contract-protected, it is below-threshold behavior"
+    },
+    "TT-client->station": {
+      "contract": "no_timeout",
+      "evidence": "ts-station-service application.yml: no timeout config",
+      "client_budget": {
+        "source": "run_chaos_experiment --request-timeout",
+        "value_s": 5.0
+      },
+      "note": "2000ms injection -> 4017ms response with HTTP 200: no system contract violated, but no protection either (potential risk, JE-CONTRACT-002)"
+    },
+    "TT-client->order": {
+      "contract": "no_timeout",
+      "evidence": "ts-order-service application.yml: no timeout config",
+      "client_budget": {
+        "source": "run_chaos_experiment --request-timeout",
+        "value_s": 8.0
+      },
+      "note": "order query delay -> ~4s response, no system timeout"
+    }
+  },
+  "candidate_map": {
+    "OB-PAYMENT-DELAY-2000": "OB-checkout->payment",
+    "OB-PAYMENT-LOSS-100": "OB-checkout->payment",
+    "OB-CART-DELAY-2000": "OB-checkout->cart",
+    "OB-PRODUCTCATALOG-DELAY-500": "OB-checkout->productcatalog",
+    "OB-PRODUCTCATALOG-KILL": "OB-checkout->productcatalog",
+    "OTEL-PAYMENT-DELAY-2000": "OTel-checkout->payment",
+    "OTEL-PAYMENT-LOSS-100": "OTel-checkout->payment",
+    "OTEL-EMAIL-DELAY-2000": "OTel-checkout->email",
+    "OTEL-EMAIL-LOSS-100": "OTel-checkout->email",
+    "TT-STATION-DELAY-100": "TT-client->station",
+    "TT-STATION-DELAY-2000": "TT-client->station",
+    "TT-STATION-DELAY-500": "TT-client->station",
+    "TT-BASIC-DELAY-100": "TT-basic->station",
+    "TT-BASIC-DELAY-500": "TT-basic->station",
+    "TT-ORDER-DELAY-2000": "TT-client->order"
+  }
+}
