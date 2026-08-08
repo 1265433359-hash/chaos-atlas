@@ -80,17 +80,22 @@ Definitions:
   material latency amplification beyond the injected intensity (no isolation
   or fallback on the path). severity: 3 = hang/timeout/cascade/error,
   2 = response preserved but latency amplified materially.
-- defended: the system absorbed the fault — behavior stayed at or near
-  baseline (1:1 latency propagation with no compounding is also defended;
-  severity 1). Explain WHAT mechanism absorbed it."""
+- defended: the system absorbed the fault with a VERIFIED mechanism — the
+  source/config confirms a timeout, retry, redundancy, or isolation that
+  absorbed it. Do NOT claim 'defended' from behavior alone.
+- below_threshold: behavior stayed at/near baseline (1:1 no compounding) but
+  NO mechanism is verified. This is 'not yet penetrated', NOT proof of
+  defense; an intensity sweep is required to find the boundary."""
 
 
 def verdict_for(candidate_id: str, classification: str) -> dict[str, Any]:
-    """Truth mapping: severity + classification -> verdict/severity.
+    """Truth mapping (three-state, audit-fixed A1): severity + classification.
 
-    Prefers the audited SEVERITY table (each entry has evidence notes in
-    compare_selection_methods). For candidates not in the table, falls back to
-    the classification signal so an error/timeout never defaults to 'defended'.
+    severity 2/3 -> weakness (penetrated).
+    severity 1 -> below_threshold, UNLESS a verified defense mechanism exists
+    for that candidate. We have NO source-verified mechanisms yet, so every
+    severity-1 candidate currently maps to below_threshold, never to
+    'defended'. This stops conflating 'not yet penetrated' with 'defended'.
     """
     severity = SEVERITY.get(candidate_id)
     if severity is None:
@@ -105,7 +110,7 @@ def verdict_for(candidate_id: str, classification: str) -> dict[str, Any]:
             severity = 1
     if severity >= 2:
         return {"verdict": "weakness", "severity": severity}
-    return {"verdict": "defended", "severity": 1}
+    return {"verdict": "below_threshold", "severity": 1}
 
 def build_candidate_evidence(evidence_doc: dict[str, Any]) -> list[dict[str, Any]]:
     """Collect executed candidates with a concluded classification.
@@ -350,6 +355,15 @@ def run(backend: OpenAICompatBackend, evidence: list[dict[str, Any]], meta: dict
         / max(1, sum(1 for r in results if r["truth"] == "defended")),
         3,
     )
+    # A1 fix: LLM claiming a mechanism on a below_threshold candidate is a
+    # hypothesis, not a verified defense — report it separately from true
+    # mechanism extraction (which requires source verification).
+    below_mech_claimed = lambda mode: sum(
+        1 for r in results
+        if r["truth"] == "below_threshold"
+        and r[mode].get("defense_mechanism")
+        and r[mode].get("mechanism") not in (None, "unmatched")
+    )
 
     return {
         "schema_version": 1,
@@ -357,11 +371,19 @@ def run(backend: OpenAICompatBackend, evidence: list[dict[str, Any]], meta: dict
         "method": "M5/A5 ours-llm-interpret (dual-track: weakness discovery + defense mechanism)",
         "candidate_count": total,
         "weakness_truth": sum(1 for r in results if r["truth"] == "weakness"),
+        "below_threshold_truth": sum(1 for r in results if r["truth"] == "below_threshold"),
         "defended_truth": sum(1 for r in results if r["truth"] == "defended"),
+        "a1_note": (
+            "severity-1 candidates map to below_threshold (not-yet-penetrated), "
+            "NOT defended, because no source-verified mechanism exists yet; "
+            "LLM mechanism claims on below_threshold candidates are hypotheses "
+            "requiring source verification, reported separately."
+        ),
         "blind": {
             "verdict_accuracy": verdict_acc("blind"),
             "weakness_severity_hit_rate": sev_hit("blind"),
             "defense_mechanism_extraction_rate": mech_extract("blind"),
+            "below_threshold_mechanism_claims": below_mech_claimed("blind"),
             "correct": sum(r["blind"]["correct"] for r in results),
             "total": total,
         },

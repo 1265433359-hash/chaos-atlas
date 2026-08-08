@@ -29,14 +29,19 @@ MECHANISMS = {
     "redundancy": "multiple replicas / redundancy absorb single-point failure",
     "isolation_non_critical": "non-critical side effect decoupled from the primary path (async/independent budget)",
     "absorbed_by_design": "single-call path propagates latency 1:1 with no compounding (structure is simple, nothing amplifies)",
-    "weak_stressor": "injection intensity below the trigger threshold (e.g. 1 worker 80% CPU does not saturate)",
+    "weak_stressor": "INVALID (A1 audit): injection below threshold is a measurement blind spot, not a defense mechanism — retained only for backfill de-duplication",
 }
 
 # v1 seed patterns extracted from executed experiments.
+# A1 audit fix: weak_stressor entries removed (below-threshold is not a
+# defense mechanism); absorbed_by_design entries marked source_verified:false
+# (observation-inferred, source not yet confirmed).
 SEED_PATTERNS: list[dict[str, Any]] = [
     {
         "pattern_id": "DP-DEFENSE-ABSORBED-001",
         "defense_mechanism": "absorbed_by_design",
+        "source_verified": False,
+        "source_note": "observation-inferred (1:1 no amplification); requires source/config confirmation",
         "evidence": {
             "project": "train-ticket",
             "candidate_id": "TT-BASIC-DELAY-500",
@@ -53,6 +58,8 @@ SEED_PATTERNS: list[dict[str, Any]] = [
     {
         "pattern_id": "DP-DEFENSE-ABSORBED-002",
         "defense_mechanism": "absorbed_by_design",
+        "source_verified": False,
+        "source_note": "observation-inferred (1:1 no amplification); requires source/config confirmation",
         "evidence": {
             "project": "train-ticket",
             "candidate_id": "TT-BASIC-DELAY-100",
@@ -62,47 +69,13 @@ SEED_PATTERNS: list[dict[str, Any]] = [
         },
         "inference": "weak latency injection on a single-call path; no amplification",
     },
-    {
-        "pattern_id": "DP-DEFENSE-WEAK-001",
-        "defense_mechanism": "weak_stressor",
-        "evidence": {
-            "project": "train-ticket",
-            "candidate_id": "TT-STATION-DELAY-100",
-            "mutation": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r1.yaml",
-            "observation": "100ms injection -> ~124ms response (near injection, no compounding), 5/5 HTTP 200 x4",
-            "evidence_files": [
-                "confirmation_tt_station_r2.json",
-                "confirmation_tt_station_r3.json",
-                "confirmation_tt_station_r4.json",
-                "smoke_station_r1.json",
-            ],
-        },
-        "inference": "100ms on station boundary is below any trigger threshold; response tracks injection 1:1",
-    },
-    {
-        "pattern_id": "DP-DEFENSE-WEAK-002",
-        "defense_mechanism": "weak_stressor",
-        "evidence": {
-            "project": "train-ticket",
-            "candidate_id": "TT-STATION-CPU-80",
-            "mutation": "artifacts/train-ticket/runtime/generated_mutations/stress-station/station-stress-cpu-candidate-r1.yaml",
-            "observation": "1 worker 80% CPU -> 39-100ms responses (near baseline), 5/5 HTTP 200 x3",
-            "evidence_files": [
-                "m1_batch_tt_station_cpu_80_r1.json",
-                "m1_batch_tt_station_cpu_80_r2.json",
-                "m1_batch_tt_station_cpu_80_r3.json",
-            ],
-        },
-        "inference": "single-worker 80% does not saturate a multi-core pod; CPU stress below trigger threshold",
-    },
 ]
 
 # Static edge fingerprint -> mechanism family for downgrade matching.
-# For v1 these are hand-curated from the pattern evidence; they document the
-# intended migration, not a claim that every edge of this kind is defended.
+# A1 audit fix: weak_stressor mapping removed (below-threshold must never
+# downgrade); only absorbed_by_design remains and it is an unverified prior.
 EDGE_TO_MECHANISM: dict[str, str] = {
     "basic->station": "absorbed_by_design",
-    "client->station": "weak_stressor",  # low-intensity boundary only
 }
 
 
@@ -117,12 +90,27 @@ def save_library(library: dict[str, Any], path: Path = LIBRARY_PATH) -> None:
 
 
 def seed(path: Path = LIBRARY_PATH) -> dict[str, Any]:
+    """Idempotent seed; also applies the A1 audit migration to an existing library:
+    removes weak_stressor patterns and stamps source_verified on absorbed ones."""
     library = load_library(path)
     existing = {p["pattern_id"] for p in library.get("patterns", [])}
+    # A1 migration: drop weak_stressor (measurement blind spot, not a defense).
+    before = len(library.get("patterns", []))
+    library["patterns"] = [
+        p for p in library.get("patterns", [])
+        if p.get("defense_mechanism") != "weak_stressor"
+    ]
+    dropped = before - len(library["patterns"])
+    # Stamp source_verified on absorbed_by_design entries if absent.
+    for pattern in library["patterns"]:
+        if pattern.get("defense_mechanism") == "absorbed_by_design" and "source_verified" not in pattern:
+            pattern["source_verified"] = False
+            pattern["source_note"] = "observation-inferred; requires source/config confirmation"
     for pattern in SEED_PATTERNS:
         if pattern["pattern_id"] not in existing:
             library.setdefault("patterns", []).append(pattern)
     library.setdefault("generated_at", datetime.now(timezone.utc).isoformat())
+    library["a1_audit"] = {"weak_stressor_dropped": dropped, "applied_at": datetime.now(timezone.utc).isoformat()}
     save_library(library, path)
     return library
 
