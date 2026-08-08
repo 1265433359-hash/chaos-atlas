@@ -1,0 +1,227 @@
+{
+  "schema_version": 1,
+  "tool": "decision_engine",
+  "ranking": [
+    {
+      "candidate_id": "OB-EMAIL-LOSS-100",
+      "edge": "OB-checkout->email",
+      "score": 50.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)",
+        "SE-SIDEEFFECT-COUPLING-001 (w=1.00)",
+        "JE-COUPLING-001: upgrade (coupling)"
+      ],
+      "rank": 1
+    },
+    {
+      "candidate_id": "OB-CART-LOSS-100",
+      "edge": "OB-checkout->cart",
+      "score": 40.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-CORE-CHAIN-001 (w=1.00)",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 2
+    },
+    {
+      "candidate_id": "OB-CHECKOUT-LOSS-100",
+      "edge": "OB-client->checkout",
+      "score": 40.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-CORE-CHAIN-001 (w=1.00)",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 3
+    },
+    {
+      "candidate_id": "OB-EMAIL-DELAY-2000",
+      "edge": "OB-checkout->email",
+      "score": 40.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-NETWORK-FAMILY-001 (w=1.00)",
+        "SE-SIDEEFFECT-COUPLING-001 (w=1.00)",
+        "JE-COUPLING-001: upgrade (coupling)"
+      ],
+      "rank": 4
+    },
+    {
+      "candidate_id": "OTEL-CART-LOSS-100",
+      "edge": "OTel-checkout->cart",
+      "score": 40.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-CORE-CHAIN-001 (w=1.00)",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 5
+    },
+    {
+      "candidate_id": "OTEL-CHECKOUT-LOSS-100",
+      "edge": "OTel-client->checkout",
+      "score": 40.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-CORE-CHAIN-001 (w=1.00)",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 6
+    },
+    {
+      "candidate_id": "OB-CURRENCY-LOSS-100",
+      "edge": "OB-checkout->currency",
+      "score": 30.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 7
+    },
+    {
+      "candidate_id": "OB-PRODUCTCATALOG-LOSS-100",
+      "edge": "OB-checkout->productcatalog",
+      "score": 30.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 8
+    },
+    {
+      "candidate_id": "OB-SHIPPING-LOSS-100",
+      "edge": "OB-checkout->shipping",
+      "score": 30.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 9
+    },
+    {
+      "candidate_id": "OTEL-CART-DELAY-2000",
+      "edge": "OTel-checkout->cart",
+      "score": 30.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-CORE-CHAIN-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 10
+    },
+    {
+      "candidate_id": "OTEL-PRODUCTCATALOG-LOSS-100",
+      "edge": "OTel-checkout->product-catalog",
+      "score": 30.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 11
+    },
+    {
+      "candidate_id": "OTEL-QUOTE-LOSS-100",
+      "edge": "OTel-checkout->quote",
+      "score": 30.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 12
+    },
+    {
+      "candidate_id": "OTEL-SHIPPING-LOSS-100",
+      "edge": "OTel-checkout->shipping",
+      "score": 30.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 13
+    },
+    {
+      "candidate_id": "TT-BASIC-LOSS-100",
+      "edge": "TT-basic->station",
+      "score": 30.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 14
+    },
+    {
+      "candidate_id": "TT-ORDER-LOSS-100",
+      "edge": "TT-client->order",
+      "score": 30.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 15
+    },
+    {
+      "candidate_id": "TT-STATION-LOSS-100",
+      "edge": "TT-client->station",
+      "score": 30.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 16
+    },
+    {
+      "candidate_id": "OB-CURRENCY-DELAY-2000",
+      "edge": "OB-checkout->currency",
+      "score": 20.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 17
+    },
+    {
+      "candidate_id": "OTEL-QUOTE-DELAY-2000",
+      "edge": "OTel-checkout->quote",
+      "score": 20.0,
+      "priority": "high",
+      "reasons": [
+        "base 10",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "rank": 18
+    }
+  ]
+}
