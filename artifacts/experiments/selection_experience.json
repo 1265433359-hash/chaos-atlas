@@ -13,12 +13,20 @@
         "OB-CART-DELAY-2000",
         "OB-CHECKOUT-DELAY-2000",
         "OTEL-CHECKOUT-DELAY-2000",
-        "OTEL-PAYMENT-DELAY/LOSS"
+        "OTEL-PAYMENT-DELAY/LOSS",
+        "OB-PAYMENT-DELAY-2000 (delay sev2)",
+        "OB-PAYMENT-LOSS-100 (loss sev3)",
+        "OTEL-PAYMENT-DELAY-2000 (delay sev2)",
+        "OTEL-PAYMENT-LOSS-100 (loss sev3)",
+        "OB-CHECKOUT-DELAY-2000 (delay sev3)",
+        "OB-CART-DELAY-2000 (delay sev3)",
+        "OTEL-CHECKOUT-DELAY-2000 (delay sev3)"
       ],
       "counter_example": "\u6838\u5fc3\u94fe\u8def\u82e5\u5df2\u914d\u7f6e\u8d85\u65f6\uff08OB productcatalog 3s timeout\uff09\u5219\u4e0d\u7206\u2014\u2014\u5148\u67e5\u5951\u7ea6\u6e05\u5355",
       "transferable_to": "\u7535\u5546/\u4ea4\u6613\u7c7b\u5fae\u670d\u52a1\uff1a\u652f\u4ed8\u3001\u8d2d\u7269\u8f66\u3001\u7ed3\u7b97\u670d\u52a1\u4f18\u5148",
       "confidence": "high",
-      "source": "\u6838\u5fc3\u94fe\u8def 5+ \u5019\u9009\u786e\u8ba4\u5f31\u70b9 + \u5951\u7ea6\u6e05\u5355\uff08\u65e0\u8d85\u65f6\uff09"
+      "source": "\u6838\u5fc3\u94fe\u8def 5+ \u5019\u9009\u786e\u8ba4\u5f31\u70b9 + \u5951\u7ea6\u6e05\u5355\uff08\u65e0\u8d85\u65f6\uff09",
+      "evidence_count": 7
     },
     {
       "id": "SE-CROSSPROJECT-REPLICATION-001",
@@ -53,12 +61,16 @@
         "OB-PAYMENT-LOSS-100 (10s hang)",
         "OTEL-PAYMENT-LOSS-100 (10s hang)",
         "OTEL-EMAIL-LOSS-100 (10s hang)",
-        "OB-CART-DELAY-2000 (12s client timeout)"
+        "OB-CART-DELAY-2000 (12s client timeout)",
+        "OB-PAYMENT-LOSS-100 (loss sev3)",
+        "OTEL-PAYMENT-LOSS-100 (loss sev3)",
+        "OTEL-EMAIL-LOSS-100 (loss sev3)"
       ],
       "counter_example": "\u6709\u8d85\u65f6/\u91cd\u8bd5\u4fdd\u62a4\u7684\u4e0b\u6e38\uff0closs \u53ef\u80fd\u88ab\u515c\u4f4f\uff08\u5982 OB productcatalog 3s timeout \u5bf9 delay \u6709\u6548\uff1b\u5bf9 loss \u662f\u5426\u6709\u6548\u672a\u6d4b\uff09",
       "transferable_to": "\u53d1\u73b0'\u65e0\u8d85\u65f6'\u7c7b\u5f31\u70b9\u65f6\uff0closs \u662f\u6700\u77ed\u8def\u5f84",
       "confidence": "high",
-      "source": "\u5168\u90e8 loss \u5b9e\u9a8c 100% \u6302\u6b7b\uff08severity 3\uff09+ \u8bed\u6599 network_loss"
+      "source": "\u5168\u90e8 loss \u5b9e\u9a8c 100% \u6302\u6b7b\uff08severity 3\uff09+ \u8bed\u6599 network_loss",
+      "evidence_count": 3
     },
     {
       "id": "SE-NETWORK-FAMILY-001",
@@ -89,12 +101,38 @@
         "OTEL-PAYMENT-DELAY-2000 (sev2)",
         "OTEL-PAYMENT-LOSS-100 (sev3)",
         "OTEL-EMAIL-LOSS-100 (sev3)",
-        "OB-CHECKOUT-DELAY-2000 (sev3)"
+        "OB-CHECKOUT-DELAY-2000 (sev3)",
+        "TT-STATION-DELAY-2000 (delay sev2)",
+        "OB-PAYMENT-DELAY-2000 (delay sev2)",
+        "OB-PAYMENT-LOSS-100 (loss sev3)",
+        "OB-PRODUCTCATALOG-DELAY-500 (delay sev2)",
+        "OTEL-PAYMENT-DELAY-2000 (delay sev2)",
+        "OTEL-PAYMENT-LOSS-100 (loss sev3)",
+        "OTEL-EMAIL-DELAY-2000 (delay sev2)",
+        "OTEL-EMAIL-LOSS-100 (loss sev3)",
+        "OB-CHECKOUT-DELAY-2000 (delay sev3)",
+        "OB-SHIPPING-DELAY-2000 (delay sev2)",
+        "OB-CART-DELAY-2000 (delay sev3)",
+        "OTEL-CHECKOUT-DELAY-2000 (delay sev3)",
+        "OTEL-CURRENCY-DELAY-2000 (delay sev2)",
+        "TT-ORDER-DELAY-2000 (delay sev2)"
       ],
       "counter_example": "HTTPChaos \u8bed\u6599 183 docs \u4f46\u5e73\u53f0 blocked \u672a\u6d4b\uff1b\u4e0d\u80fd\u65ad\u8a00 HTTP \u5bb6\u65cf\u540c\u6837\u6613\u7206\uff08\u672a\u5b9e\u8bc1\uff09",
       "transferable_to": "\u4efb\u610f\u5fae\u670d\u52a1\u7cfb\u7edf\uff1a\u7f51\u7edc\u6545\u969c\uff08\u5ef6\u8fdf/\u4e22\u5305/\u5206\u533a\uff09\u4f18\u5148\u4e8e CPU/\u5185\u5b58\u7b49\u8d44\u6e90\u7c7b",
-      "confidence": "high",
-      "source": "\u8bed\u6599\u9891\u6b21 + 20 \u5019\u9009\u5b9e\u9a8c\u53cd\u63a8\uff0813/14 weakness \u4e3a\u7f51\u7edc\u6545\u969c\uff09"
+      "confidence": "medium",
+      "source": "\u8bed\u6599\u9891\u6b21 + 20 \u5019\u9009\u5b9e\u9a8c\u53cd\u63a8\uff0813/14 weakness \u4e3a\u7f51\u7edc\u6545\u969c\uff09",
+      "evidence_count": 14,
+      "counter_examples": [
+        "TT-STATION-DELAY-100 (delay sev1)",
+        "TT-STATION-CPU-80 (delay sev1)",
+        "TT-BASIC-DELAY-100 (delay sev1)",
+        "TT-BASIC-DELAY-500 (delay sev1)",
+        "TT-STATION-DELAY-500 (delay sev1)"
+      ],
+      "contested": true,
+      "contested_reason": "strong injection stayed 1:1 no-amplification (TT-STATION-DELAY-500 (delay sev1)), contradicting the rule's implied 'delay on this family amplifies'; human adjudication required",
+      "adjudicated": "accepted",
+      "adjudication_note": "TT-BASIC/STATION-500 single-call 1:1; rule needs boundary"
     },
     {
       "id": "SE-SIDEEFFECT-COUPLING-001",
@@ -106,13 +144,16 @@
       "experiment_evidence": [
         "OTEL-EMAIL-LOSS-100 (10s hang)",
         "OTEL-EMAIL-DELAY-2000 (4.9s block)",
-        "KB-OB-CHECKOUT-EMAIL-FAILURE-001"
+        "KB-OB-CHECKOUT-EMAIL-FAILURE-001",
+        "OTEL-EMAIL-DELAY-2000 (delay sev2)",
+        "OTEL-EMAIL-LOSS-100 (loss sev3)"
       ],
       "counter_example": "\u65c1\u8def\u6b63\u786e\u9694\u79bb\uff08\u5f02\u6b65/\u72ec\u7acb\u9884\u7b97\uff09\u5219\u4e0d\u6784\u6210\u5f31\u70b9\u2014\u2014\u9700\u6e90\u7801\u786e\u8ba4\u8c03\u7528\u65b9\u5f0f",
       "transferable_to": "\u4efb\u610f\u5fae\u670d\u52a1\uff1aemail/\u901a\u77e5/\u65e5\u5fd7/\u5206\u6790\u7c7b\u65c1\u8def\u4f9d\u8d56",
       "confidence": "medium",
-      "source": "OTel/OB email \u53cc\u9879\u76ee\u590d\u73b0 + \u5224\u5b9a\u7ecf\u9a8c JE-COUPLING-001"
+      "source": "OTel/OB email \u53cc\u9879\u76ee\u590d\u73b0 + \u5224\u5b9a\u7ecf\u9a8c JE-COUPLING-001",
+      "evidence_count": 2
     }
   ],
-  "generated_at": "2026-08-08T08:42:27.020362+00:00"
+  "generated_at": "2026-08-08T08:43:49.696238+00:00"
 }

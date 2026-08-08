@@ -156,13 +156,20 @@ def save(doc: dict[str, Any], path: Path = EXPERIENCE_PATH) -> None:
 
 
 def seed(path: Path = EXPERIENCE_PATH) -> dict[str, Any]:
-    """Seed entries; SEED_ENTRIES is the authoritative definition, so existing
-    entries with the same id are replaced (they may have been revised, e.g. by
-    an audit fix). A3/D2 enrichment (source_verified, en_rule) is merged in."""
+    """Seed entries; SEED_ENTRIES + _ENRICH provide the static/revised fields,
+    but runtime LEARNING fields (evidence_cases additions, evidence_count,
+    contested, adjudicated) survive a re-seed so backfill state is not erased."""
     doc = load(path)
     by_id = {e["id"]: e for e in doc.get("entries", [])}
+    runtime_fields = ("evidence_cases", "evidence_count", "contested", "contested_reason",
+                      "adjudicated", "adjudication_note")
     for entry in SEED_ENTRIES:
-        by_id[entry["id"]] = {**entry, **_ENRICH.get(entry["id"], {})}
+        prev = by_id.get(entry["id"], {})
+        merged = {**entry, **_ENRICH.get(entry["id"], {})}
+        for field in runtime_fields:
+            if field in prev:
+                merged[field] = prev[field]
+        by_id[entry["id"]] = merged
     doc["entries"] = [by_id[eid] for eid in sorted(by_id)]
     save(doc, path)
     return doc

@@ -47,3 +47,15 @@ class KnowledgeUpdaterTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SeveritySyncTests(unittest.TestCase):
+    """Prevents severity-table drift that caused OB-SHIPPING misclassification."""
+
+    def test_severity_tables_in_sync(self):
+        from compare_selection_methods import SEVERITY as S1
+        from llm_interpret_evidence import SEVERITY as S2
+
+        self.assertEqual(set(S1.keys()), set(S2.keys()))
+        for cid in S1:
+            self.assertEqual(S1[cid], S2[cid], f"severity mismatch for {cid}")

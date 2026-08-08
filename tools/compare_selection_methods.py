@@ -60,6 +60,10 @@ SEVERITY: dict[str, int] = {
     "OTEL-CHECKOUT-DELAY-2000": 3,     # grpc_error, 10s DEADLINE_EXCEEDED x3
     "OTEL-CURRENCY-DELAY-2000": 2,     # grpc_response, ~7s under 2s injection
     "TT-ORDER-DELAY-2000": 2,          # response_observed, ~4s
+    # Second-round executed candidates (kept in sync with llm_interpret_evidence.SEVERITY):
+    "OB-SHIPPING-DELAY-2000": 2,       # grpc_response, ~4s (prospective r1)
+    "TT-BASIC-DELAY-500": 1,           # response_observed, ~520ms 1:1
+    "TT-STATION-DELAY-500": 1,         # response_observed, ~1015ms 1:1
 }
 
 

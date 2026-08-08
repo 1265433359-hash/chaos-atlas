@@ -124,7 +124,12 @@ def enhance_entry(entry: dict[str, Any], evidence_label: str, field: str, audit:
 
 
 def backfill(candidate_ids: list[str] | None = None, dry_run: bool = False) -> dict[str, Any]:
-    """Backfill executed candidate outcomes into SE/JE (+DP). Returns change report."""
+    """Backfill executed candidate outcomes into SE/JE (+DP). Returns change report.
+
+    P1: below_threshold evidence that CONTRADICTS a rule's predicted weakness
+    is recorded as a counter-example on the matched entry and marks it
+    'contested' (human-adjudicated later) — never silently rewritten.
+    """
     se = load(SE_PATH)
     je = load(JE_PATH)
     dp = load(DP_PATH)
@@ -136,6 +141,7 @@ def backfill(candidate_ids: list[str] | None = None, dry_run: bool = False) -> d
     audit: list[dict[str, Any]] = []
     linked: list[str] = []
     unlinked: list[str] = []
+    counter_examples: list[dict[str, Any]] = []
 
     for item in ev_doc.get("candidates", []):
         cid = item["candidate_id"]
@@ -150,14 +156,45 @@ def backfill(candidate_ids: list[str] | None = None, dry_run: bool = False) -> d
         label = f"{cid} ({ev['fault']} sev{severity})"
 
         matched_any = False
+        # P1: only a STRONG injection that stayed at 1:1 (no amplification) is a
+        # genuine counter-example. Weak injections (100ms / CPU) that don't
+        # break are measurement-blind-spot (A1), not contradictions.
+        strong_below = verdict == "below_threshold" and ("500" in cid or "2000" in cid)
         for entry_id, reason in match_selection(ev):
             entry = _entry_by_id(se, entry_id, "id")
-            if entry:
-                changed = enhance_entry(entry, label, "experiment_evidence", audit, f"selection_experience::{cid}")
-                if changed:
-                    audit.append({"at": datetime.now(timezone.utc).isoformat(), "source": f"selection_experience::{cid}",
-                                  "entry_id": entry_id, "change": "evidence_added", "evidence": label, "reason": reason})
-                matched_any = matched_any or changed
+            if not entry:
+                continue
+            if strong_below:
+                counter = entry.setdefault("counter_examples", [])
+                if label not in counter:
+                    counter.append(label)
+                    entry.setdefault("contested", True)
+                    entry["contested_reason"] = (
+                        f"strong injection stayed 1:1 no-amplification ({label}), contradicting "
+                        "the rule's implied 'delay on this family amplifies'; human adjudication required"
+                    )
+                    counter_examples.append({"entry_id": entry_id, "candidate": label, "reason": reason})
+                    audit.append({
+                        "at": datetime.now(timezone.utc).isoformat(),
+                        "source": f"counterexample::{cid}",
+                        "entry_id": entry_id,
+                        "change": "contested",
+                        "evidence": label,
+                        "reason": reason,
+                    })
+                    matched_any = True
+                continue
+            if verdict == "below_threshold":
+                # weak injection: record as boundary note on counter_examples, no contest.
+                counter = entry.setdefault("counter_examples", [])
+                if label not in counter:
+                    counter.append(label)
+                continue
+            changed = enhance_entry(entry, label, "experiment_evidence", audit, f"selection_experience::{cid}")
+            if changed:
+                audit.append({"at": datetime.now(timezone.utc).isoformat(), "source": f"selection_experience::{cid}",
+                              "entry_id": entry_id, "change": "evidence_added", "evidence": label, "reason": reason})
+            matched_any = matched_any or changed
         for entry_id, reason in match_judgment(ev):
             entry = _entry_by_id(je, entry_id, "id")
             if entry:
@@ -173,20 +210,66 @@ def backfill(candidate_ids: list[str] | None = None, dry_run: bool = False) -> d
             unlinked.append(cid)
 
     if dry_run:
-        return {"dry_run": True, "linked": linked, "unlinked": unlinked, "audit_entries": len(audit)}
+        return {"dry_run": True, "linked": linked, "unlinked": unlinked, "counter_examples": counter_examples, "audit_entries": len(audit)}
 
     save(se, SE_PATH)
     save(je, JE_PATH)
     append_audit(audit)
-    return {"linked": linked, "unlinked": unlinked, "audit_entries": len(audit), "patterns_unchanged": len(dp.get("patterns", []))}
+    return {"linked": linked, "unlinked": unlinked, "counter_examples": counter_examples, "audit_entries": len(audit), "patterns_unchanged": len(dp.get("patterns", []))}
+
+
+def adjudicate(entry_id: str, decision: str, note: str = "") -> dict[str, Any]:
+    """P1: human adjudication of a contested rule.
+
+    accept: the counter-example is real — keep the contest, demote confidence,
+            and append the adjudication note (rule needs revision).
+    reject: the counter-example is noise — clear the contest marker.
+    Either way, the action is recorded in the audit log.
+    """
+    if decision not in ("accept", "reject"):
+        raise SystemExit(f"--decision must be accept or reject, got {decision}")
+    se = load(SE_PATH)
+    entry = _entry_by_id(se, entry_id, "id")
+    if not entry:
+        raise SystemExit(f"entry not found in selection_experience: {entry_id}")
+    audit: list[dict[str, Any]] = []
+    if decision == "accept":
+        entry["contested"] = True
+        entry["adjudicated"] = "accepted"
+        entry["adjudication_note"] = note or "counter-example accepted; rule requires revision"
+        if entry.get("confidence") == "high":
+            audit.append({
+                "at": datetime.now(timezone.utc).isoformat(), "source": "adjudication",
+                "entry_id": entry_id, "change": "confidence_demote", "from": "high", "to": "medium",
+                "reason": f"accepted counter-example ({note or 'revise rule'})",
+            })
+            entry["confidence"] = "medium"
+    else:
+        entry["contested"] = False
+        entry["contested_reason"] = ""
+        entry["adjudicated"] = "rejected"
+        entry["adjudication_note"] = note or "counter-example rejected as noise"
+    audit.append({
+        "at": datetime.now(timezone.utc).isoformat(), "source": "adjudication",
+        "entry_id": entry_id, "change": f"adjudicated_{decision}", "note": note,
+    })
+    save(se, SE_PATH)
+    append_audit(audit)
+    return {"entry_id": entry_id, "decision": decision, "audit_entries": len(audit)}
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--candidates", nargs="+", default=None, help="limit backfill to these candidate ids")
     parser.add_argument("--dry-run", action="store_true", help="report what would change without writing")
+    parser.add_argument("--adjudicate", default=None, help="entry id to adjudicate (P1)")
+    parser.add_argument("--decision", choices=("accept", "reject"), default=None, help="adjudication decision")
+    parser.add_argument("--note", default="", help="adjudication note")
     args = parser.parse_args()
-    report = backfill(args.candidates, dry_run=args.dry_run)
+    if args.adjudicate:
+        report = adjudicate(args.adjudicate, args.decision or "reject", args.note)
+    else:
+        report = backfill(args.candidates, dry_run=args.dry_run)
     print(json.dumps(report, indent=2, ensure_ascii=True))
     return 0
 

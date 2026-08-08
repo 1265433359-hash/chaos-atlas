@@ -126,13 +126,30 @@ def save(doc: dict[str, Any], path: Path = EXPERIENCE_PATH) -> None:
 
 
 def seed(path: Path = EXPERIENCE_PATH) -> dict[str, Any]:
-    """Seed entries; SEED_ENTRIES is authoritative (replaces same id)."""
+    """Seed entries; SEED_ENTRIES provides the static/revised fields, but
+    runtime LEARNING fields (evidence_count, experiment_evidence additions,
+    counter_examples, contested, adjudicated, confidence after upgrades) are
+    preserved from the existing entry. This is what keeps backfill learning
+    from being erased by a re-seed (e.g. by tests)."""
     doc = load(path)
     by_id = {e["id"]: e for e in doc.get("entries", [])}
+    # Runtime fields that must survive a re-seed.
+    runtime_fields = (
+        "evidence_count", "counter_examples", "contested", "contested_reason",
+        "adjudicated", "adjudication_note", "experiment_evidence",
+    )
     for entry in SEED_ENTRIES:
-        by_id[entry["id"]] = entry
+        prev = by_id.get(entry["id"], {})
+        merged = {**entry}
+        for field in runtime_fields:
+            if field in prev:
+                merged[field] = prev[field]
+        # confidence: runtime (backfill upgrades, adjudication demotions) is
+        # evidence-driven and takes precedence over the static seed value.
+        if prev.get("confidence"):
+            merged["confidence"] = prev["confidence"]
+        by_id[entry["id"]] = merged
     doc["entries"] = [by_id[eid] for eid in sorted(by_id)]
-    doc["generated_at"] = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
     save(doc, path)
     return doc
 
