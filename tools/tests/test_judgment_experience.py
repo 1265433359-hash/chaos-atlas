@@ -53,3 +53,28 @@ class JudgmentQueryIntegrationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SelectionExperienceTests(unittest.TestCase):
+    def test_seed_entries_all_validate(self):
+        from selection_experience import SEED_ENTRIES, load, seed, validate
+
+        doc = seed()
+        self.assertEqual(validate(doc), [])
+        self.assertGreaterEqual(len(doc.get("entries", [])), 5)
+
+    def test_every_entry_has_corpus_or_experiment_evidence(self):
+        from selection_experience import SEED_ENTRIES
+
+        for entry in SEED_ENTRIES:
+            self.assertTrue(
+                entry.get("corpus_evidence") or entry.get("experiment_evidence"),
+                f"{entry['id']} lacks evidence",
+            )
+            self.assertTrue(entry["counter_example"], f"{entry['id']} lacks counter_example")
+
+    def test_ids_unique(self):
+        from selection_experience import SEED_ENTRIES
+
+        ids = [e["id"] for e in SEED_ENTRIES]
+        self.assertEqual(len(ids), len(set(ids)))

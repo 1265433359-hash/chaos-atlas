@@ -106,12 +106,19 @@ def main() -> int:
         action="store_true",
         help="query judgment-experience rules instead of cards (see --dimension/--adjustment)",
     )
-    parser.add_argument("--dimension", choices=("business_path", "contract", "recovery", "observability", "risk"))
+    parser.add_argument(
+        "--selection",
+        action="store_true",
+        help="query SELECTION-experience rules (where to test first, from corpus+experiments)",
+    )
+    parser.add_argument("--dimension", choices=("business_path", "contract", "recovery", "observability", "risk", "fault_family", "fault_intensity", "transferability"))
     parser.add_argument("--adjustment", choices=("upgrade", "confirm", "downgrade", "n_a"))
     args = parser.parse_args()
 
     if args.judgment:
         return query_judgment(args)
+    if args.selection:
+        return query_selection(args)
 
     cards = load_cards()
     if args.list:
@@ -164,6 +171,24 @@ def query_judgment(args) -> int:
         print(json.dumps(e, indent=2, ensure_ascii=False))
         print("-" * 60)
     print(f"Matched {len(entries)} judgment rule(s) from {len(doc.get('entries', []))} total")
+    return 0
+
+
+def query_selection(args) -> int:
+    from selection_experience import EXPERIENCE_PATH, load, query
+
+    doc = load(EXPERIENCE_PATH)
+    if not doc.get("entries"):
+        print("selection experience not seeded; run: python tools/selection_experience.py --seed")
+        return 1
+    entries = query(doc, args.dimension, args.query)
+    if not entries:
+        print(f"No selection rules match (total {len(doc.get('entries', []))} seeded)")
+        return 1
+    for e in entries:
+        print(json.dumps(e, indent=2, ensure_ascii=False))
+        print("-" * 60)
+    print(f"Matched {len(entries)} selection rule(s) from {len(doc.get('entries', []))} total")
     return 0
 
 
