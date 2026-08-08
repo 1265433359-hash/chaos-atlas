@@ -37,7 +37,7 @@ def normalize(path: str) -> str:
 def collect_mutation_uses() -> dict[str, list[str]]:
     """Map normalized mutation path -> list of run/classification artifacts."""
     uses: dict[str, list[str]] = {}
-    pattern = re.compile(r"(run|report|confirmation|track|smoke|stat).*\.json$", re.IGNORECASE)
+    pattern = re.compile(r"(run|report|confirmation|track|smoke|stat|m1_batch).*\.json$", re.IGNORECASE)
     for path in EXECUTION_DIR.glob("*.json"):
         if not pattern.search(path.name):
             continue

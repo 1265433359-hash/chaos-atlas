@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tool": "assess_selection_evidence",
-  "assessed_at": "2026-08-08T03:12:55.839939+00:00",
+  "assessed_at": "2026-08-08T03:30:00.528675+00:00",
   "replicate": 1,
   "candidates": [
     {
@@ -87,8 +87,10 @@
     {
       "candidate_id": "TT-STATION-DELAY-2000",
       "mutation": "artifacts/train-ticket/runtime/generated_mutations/network-station/station-network-delay-candidate-r3.yaml",
-      "execution_records": [],
-      "executed": false,
+      "execution_records": [
+        "m1_batch_tt_station_delay_2000_r1.json"
+      ],
+      "executed": true,
       "service": "ts-station-service",
       "cards": [
         {
@@ -109,14 +111,21 @@
         }
       ],
       "discovery_evidence": true,
-      "own_conclusions": [],
-      "own_discovery_evidence": false
+      "own_conclusions": [
+        {
+          "file": "m1_batch_tt_station_delay_2000_r1.json",
+          "classification": "response_observed"
+        }
+      ],
+      "own_discovery_evidence": true
     },
     {
       "candidate_id": "TT-STATION-CPU-80",
       "mutation": "artifacts/train-ticket/runtime/generated_mutations/stress-station/station-stress-cpu-candidate-r1.yaml",
-      "execution_records": [],
-      "executed": false,
+      "execution_records": [
+        "m1_batch_tt_station_cpu_80_r1.json"
+      ],
+      "executed": true,
       "service": "ts-station-service",
       "cards": [
         {
@@ -137,8 +146,13 @@
         }
       ],
       "discovery_evidence": true,
-      "own_conclusions": [],
-      "own_discovery_evidence": false
+      "own_conclusions": [
+        {
+          "file": "m1_batch_tt_station_cpu_80_r1.json",
+          "classification": "response_observed"
+        }
+      ],
+      "own_discovery_evidence": true
     },
     {
       "candidate_id": "TT-BASIC-DELAY-100",
@@ -338,8 +352,10 @@
     {
       "candidate_id": "OB-PRODUCTCATALOG-DELAY-500",
       "mutation": "artifacts/experiments/execution/mutations/ob-productcatalog-delay-one.yaml",
-      "execution_records": [],
-      "executed": false,
+      "execution_records": [
+        "m1_batch_ob_productcatalog_delay_500_r1.json"
+      ],
+      "executed": true,
       "service": "productcatalogservice",
       "cards": [
         {
@@ -352,8 +368,13 @@
         }
       ],
       "discovery_evidence": true,
-      "own_conclusions": [],
-      "own_discovery_evidence": false
+      "own_conclusions": [
+        {
+          "file": "m1_batch_ob_productcatalog_delay_500_r1.json",
+          "classification": "response_observed"
+        }
+      ],
+      "own_discovery_evidence": true
     },
     {
       "candidate_id": "OTEL-PAYMENT-DELAY-2000",
@@ -467,24 +488,38 @@
     {
       "candidate_id": "OTEL-EMAIL-DELAY-2000",
       "mutation": "artifacts/experiments/execution/mutations/otel-email-delay-one.yaml",
-      "execution_records": [],
-      "executed": false,
+      "execution_records": [
+        "m1_batch_otel_email_delay_2000_r1.json"
+      ],
+      "executed": true,
       "service": "email",
       "cards": [],
       "discovery_evidence": false,
-      "own_conclusions": [],
-      "own_discovery_evidence": false
+      "own_conclusions": [
+        {
+          "file": "m1_batch_otel_email_delay_2000_r1.json",
+          "classification": "grpc_response_observed"
+        }
+      ],
+      "own_discovery_evidence": true
     },
     {
       "candidate_id": "OTEL-EMAIL-LOSS-100",
       "mutation": "artifacts/experiments/execution/mutations/otel-email-loss-one.yaml",
-      "execution_records": [],
-      "executed": false,
+      "execution_records": [
+        "m1_batch_otel_email_loss_100_r1.json"
+      ],
+      "executed": true,
       "service": "email",
       "cards": [],
       "discovery_evidence": false,
-      "own_conclusions": [],
-      "own_discovery_evidence": false
+      "own_conclusions": [
+        {
+          "file": "m1_batch_otel_email_loss_100_r1.json",
+          "classification": "grpc_error_observed"
+        }
+      ],
+      "own_discovery_evidence": true
     }
   ]
 }

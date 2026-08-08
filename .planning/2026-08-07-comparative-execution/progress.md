@@ -61,3 +61,17 @@
 - ground-truth 骨架建立（`tools/assess_selection_evidence.py`）：12 候选池仅 6 个有自有执行结论（TT-STATION-DELAY-100、OB-PAYMENT-DELAY/LOSS、OB-PRODUCTCATALOG-KILL、OTEL-PAYMENT-DELAY/LOSS）；另 6 个未执行，结局未知。关键修正：结论必须绑定到候选自身 mutation，同 service 卡片的根因只能算 inherited 参考（OB-PRODUCTCATALOG-DELAY-500 不得继承 kill 结论）。
 - 对比（`tools/compare_selection_methods.py`）：已知阳性 recall@10 = M3/M4 1.000、M0/M1 0.833，但 6/12 密度下 M0 期望命中恰为 5，**M1 与随机打平**；M3/M4 存在选择-执行循环偏置。诚实结论：在当前部分 ground truth 下无法给出方法优劣，差异要靠执行 M1 独有的未执行候选（TT-STATION-CPU-80、OTEL-EMAIL-LOSS-100、OTEL-EMAIL-DELAY-2000 等）转化探索为发现。
 - 全量测试通过（58）。
+
+## 2026-08-08（晚，M1 探索批次）
+
+- 环境修复：train-ticket-lab namespace 随之前清理消失；重建（ns + 4 清单 + nacos/rabbitmq cm + ts-station/ts-order-mysql/train-ticket-db secret，自洽随机口令，不落盘）。gate 5/5 ready_for_injection。
+- 执行 M1 独有的 5 个未执行候选（全单次受控注入，baseline→inject→recover→cleanup 完整）：
+  - OB-PRODUCTCATALOG-DELAY-500：5/5 HTTP 200，中位 643ms（正常 ~40ms，放大 ~16 倍）→ response_observed
+  - OTEL-EMAIL-DELAY-2000：PlaceOrder 4882ms（email 2000ms 注入）→ grpc_response_observed；**非关键 email 调用串行阻塞主订单流程**
+  - OTEL-EMAIL-LOSS-100：10s DEADLINE_EXCEEDED → grpc_error_observed；**email 不可用直接打挂 PlaceOrder（无隔离/降级）**
+  - TT-STATION-DELAY-2000：5/5 HTTP 200，中位 4017ms（2000ms 注入放大到 4s）→ response_observed
+  - TT-STATION-CPU-80：5/5 HTTP 200，中位 85ms → response_observed（80% CPU 单 worker 影响弱）
+- evidence 骨架更新：11/12 候选有自有结论（唯一未执行 TT-BASIC-DELAY-100）。重算对比：**M1 recall@10 = 0.909（10/11，三次稳定），M0 = 0.909/0.818/0.909，M3/M4 = 0.818（漏 TT-STATION-DELAY-2000）**。
+- 重要证据：M1 挑的 5 个此前未执行候选，执行后 4 个证实实质弱点（email 阻塞主流程、延迟放大），1 个偏弱（CPU）；其中 OTEL-EMAIL 路径为全新发现（此前仅静态分析、未注入验证）。这证明 M1 的 LLM 探索有效，且不再有选择-执行循环偏置（M1 未使用执行历史）。
+- 诚实边界：`response_observed` 是"观察到响应/效果"，弱于 `grpc_error_observed` 等强失败信号；TT-CPU-80 的结论偏弱。11/12 密度下 recall 接近饱和，差距需在论文中按"发现质量分级"呈现，而非仅靠 recall 数字。
+- 全量测试 58 通过；三个 lab namespace 无遗留注入。
