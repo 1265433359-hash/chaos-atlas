@@ -1,0 +1,22 @@
+# HTTPChaos 边级注入: front-end->catalogue (LOSS)
+# HTTPChaos 目标 = 服务入站端口，路径 * 匹配全部（单一调用方 -> 等效边级）
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: sock-catalogue-loss
+  namespace: sock-shop-lab
+  labels:
+    chaos.candidate-id: SOCK-FRONTEND-CATALOGUE-LOSS-100
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - sock-shop-lab
+    labelSelectors:
+      name: catalogue
+  target: Request
+  port: 80
+  path: "*"
+  method: GET
+  abort: true
+  duration: 30s

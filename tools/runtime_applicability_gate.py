@@ -29,7 +29,7 @@ RESOURCE_BY_KIND = {
 # a policy boundary, not a generator convention: hand-written YAML must receive
 # the same decision as generated candidates.
 ALLOWED_NAMESPACE = "train-ticket-lab"
-ALLOWED_NAMESPACES = {"train-ticket-lab", "online-boutique-lab", "otel-demo-lab"}
+ALLOWED_NAMESPACES = {"train-ticket-lab", "online-boutique-lab", "otel-demo-lab", "sock-shop-lab"}
 ALLOWED_MODES = {"one"}
 
 

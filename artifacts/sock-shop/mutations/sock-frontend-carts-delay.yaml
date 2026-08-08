@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: sock-frontend-carts-delay
+  namespace: sock-shop-lab
+  labels:
+    chaos.candidate-id: SOCK-FRONTEND-CARTS-DELAY-2000
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - sock-shop-lab
+    labelSelectors:
+      name: carts
+  duration: 20s
+  direction: to
+  delay:
+    latency: 2000ms
+    correlation: '100'
+    jitter: 0ms

@@ -1,0 +1,21 @@
+# HTTPChaos 可行性测试：对 front-end 注入 500ms 延迟
+# 验证自定义内核 broute 表 + chaos-daemon tproxy 边级劫持是否生效
+# front-end 容器监听 8079（Node.js），非 80
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: httpchaos-fe-delay-verify
+  namespace: sock-shop-lab
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - sock-shop-lab
+    labelSelectors:
+      name: front-end
+  target: Request
+  port: 8079
+  path: "*"
+  method: GET
+  delay: 3s
+  duration: 60s

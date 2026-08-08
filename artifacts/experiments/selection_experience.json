@@ -29,6 +29,34 @@
       "evidence_count": 7
     },
     {
+      "id": "SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001",
+      "rule": "\u5ef6\u8fdf\uff08delay\uff09\u7684\u4e25\u91cd\u5ea6\u53d6\u51b3\u4e8e\u8c03\u7528\u65b9\u662f\u5426\u540c\u6b65\u7b49\u5f85\u4e14\u65e0\u8d85\u65f6\uff0c\u800c\u4e0d\u662f fault \u7c7b\u578b\u672c\u8eab\uff1aSock Shop orders->payment \u540c\u6b65\u8c03\u7528\u65e0\u8d85\u65f6\uff0cdelay 2000ms \u6253\u6302\u5ba2\u6237\u7aef 10s\uff08sev3\uff09\uff0c\u4e0e loss \u540c\u7ea7\u3002\u8de8\u5206\u5e03\u9a8c\u8bc1\u63a8\u7ffb\u4e86'loss \u6c38\u8fdc\u6bd4 delay \u4e25\u91cd'\u7684\u5148\u9a8c\u3002",
+      "dimensions": [
+        "fault_intensity",
+        "contract"
+      ],
+      "experiment_evidence": [],
+      "cross_project_evidence": [
+        "SOCK-ORDERS-PAYMENT-DELAY-2000 (sev3)",
+        "SOCK-FRONTEND-CARTS-DELAY-2000 (sev2)",
+        "SOCK-ORDERS-SHIPPING-DELAY-2000 (sev2)"
+      ],
+      "transferable_to": "\u4efb\u610f\u5fae\u670d\u52a1\u7cfb\u7edf\uff1a\u5224\u65ad delay \u4e25\u91cd\u5ea6\u524d\u5148\u67e5\u8c03\u7528\u65b9\u662f\u5426\u540c\u6b65\u7b49\u5f85/\u6709\u8d85\u65f6",
+      "confidence": "medium",
+      "source": "Sock Shop \u8de8\u5206\u5e03\u9a8c\u8bc1\uff08HTTPChaos 8 \u5019\u9009\uff09",
+      "evidence_count": 3,
+      "corpus_evidence": [
+        {
+          "document_count": 0,
+          "kind": "cross_project",
+          "node": "delay_on_sync_no_timeout"
+        }
+      ],
+      "counter_example": "\u65e0\uff08\u8de8\u5206\u5e03\u9a8c\u8bc1\u652f\u6301\uff1adelay \u5728\u540c\u6b65\u65e0\u8d85\u65f6\u8c03\u7528 = sev3\uff09",
+      "adjudicated": "accepted",
+      "contested": false
+    },
+    {
       "id": "SE-CROSSPROJECT-REPLICATION-001",
       "rule": "\u5728 A \u9879\u76ee\u786e\u8ba4\u7684\u5f31\u70b9\u6a21\u5f0f\uff0c\u4f18\u5148\u5230 B \u9879\u76ee\u540c\u540d\u670d\u52a1/\u8fb9\u590d\u6d4b\uff1apayment \u65e0\u8d85\u65f6\u5728 OB \u548c OTel \u90fd\u9a8c\u8bc1\u6302\u6b7b\uff1bemail \u8026\u5408\u540c\u7406\u2014\u2014\u8de8\u9879\u76ee\u590d\u73b0\u662f\u4f4e\u6210\u672c\u9ad8\u6536\u76ca\u7684\u9009\u62e9\u7b56\u7565\u3002",
       "dimensions": [

@@ -1,0 +1,22 @@
+# HTTPChaos 边级注入: orders->shipping (LOSS)
+# HTTPChaos 目标 = 服务入站端口，路径 * 匹配全部（单一调用方 -> 等效边级）
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: sock-shipping-loss
+  namespace: sock-shop-lab
+  labels:
+    chaos.candidate-id: SOCK-ORDERS-SHIPPING-LOSS-100
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - sock-shop-lab
+    labelSelectors:
+      name: shipping
+  target: Request
+  port: 80
+  path: "*"
+  method: GET
+  abort: true
+  duration: 30s

@@ -1,7 +1,9 @@
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
@@ -15,6 +17,23 @@ from issue_tracker import (
 
 
 class IssueTrackerTests(unittest.TestCase):
+    def setUp(self):
+        # isolate reflow writes from the real knowledge libraries
+        tmp = Path(tempfile.mkdtemp())
+        self._se = tmp / "selection_experience.json"
+        self._se.write_text(json.dumps({"schema_version": 1, "entries": []}), encoding="utf-8")
+        self._je = tmp / "judgment_experience.json"
+        self._je.write_text(json.dumps({"schema_version": 1, "entries": []}), encoding="utf-8")
+        self._patchers = [
+            patch("issue_tracker.SE_PATH", self._se),
+            patch("issue_tracker.JE_PATH", self._je),
+        ]
+        for p in self._patchers:
+            p.start()
+
+    def tearDown(self):
+        for p in self._patchers:
+            p.stop()
     def test_init_creates_two_ready_issues(self):
         doc = init()
         issues = doc["issues"]
@@ -34,8 +53,15 @@ class IssueTrackerTests(unittest.TestCase):
 
     def test_confirmed_reflow_upgrades_se_confidence(self):
         init()
+        # seed a matching SE entry in the isolated library so reflow has a target
+        se = json.loads(self._se.read_text(encoding="utf-8"))
+        se["entries"].append({
+            "id": "SE-NETWORK-FAMILY-001", "confidence": "medium",
+            "experiment_evidence": ["OTEL-EMAIL-LOSS-100 (sev3)"],
+        })
+        self._se.write_text(json.dumps(se, ensure_ascii=True), encoding="utf-8")
         record_response("ISSUE-001", "confirmed", note="upstream confirmed")
-        se = json.loads(Path("artifacts/experiments/selection_experience.json").read_text(encoding="utf-8"))
+        se = json.loads(self._se.read_text(encoding="utf-8"))
         hit = [e for e in se["entries"] if e.get("external_confirmation") == ["ISSUE-001"]]
         self.assertTrue(hit, "external confirmation should be recorded on matching SE entries")
 

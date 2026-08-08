@@ -56,15 +56,14 @@ def append_audit(entries: list[dict[str, Any]]) -> None:
 
 def evidence_from_candidate(cid: str, severity: int, verdict: str, contract: str | None) -> dict[str, Any]:
     """Normalize a candidate's executed outcome into backfill evidence."""
-    cid_upper = cid.upper()
-    project = "OB" if cid_upper.startswith("OB-") else ("OTEL" if cid_upper.startswith("OTEL-") else "TT")
-    fault = "loss" if "LOSS" in cid_upper else ("kill" if "KILL" in cid_upper else "delay")
-    service = cid_upper.replace(f"{project}-", "", 1).split("-DELAY")[0].split("-LOSS")[0].split("-KILL")[0].split("-CPU")[0]
+    from project_registry import fault_of, normalize_service, project_of
+
+    project = project_of(cid)
     return {
         "candidate_id": cid,
         "project": project,
-        "service": service,
-        "fault": fault,
+        "service": normalize_service(cid),
+        "fault": fault_of(cid),
         "severity": severity,
         "verdict": verdict,
         "contract": contract,

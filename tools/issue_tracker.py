@@ -80,11 +80,26 @@ def append_audit(entry: dict[str, Any]) -> None:
 
 
 def init(path: Path = TRACKER_PATH) -> dict[str, Any]:
+    """Initialize the tracker. DEFAULT_ISSUES is the authoritative definition;
+    existing entries keep their static fields (title/draft_path/supported_by)
+    but runtime state (status/url/external_response) is reset to ready — init
+    means 'start from a clean state', so a prior test/run that marked issues
+    submitted must not leak into the next initialization."""
     doc = load(path)
-    existing = {i["issue_id"] for i in doc.get("issues", [])}
+    existing = {i["issue_id"]: i for i in doc.get("issues", [])}
     for issue in DEFAULT_ISSUES:
-        if issue["issue_id"] not in existing:
-            doc.setdefault("issues", []).append(issue)
+        prev = existing.get(issue["issue_id"], {})
+        merged = {**issue}
+        for field in ("title", "draft_path", "supported_by", "repo"):
+            if field in prev:
+                merged[field] = prev[field]
+        # runtime state always resets on init
+        merged["status"] = "ready"
+        merged["url"] = None
+        merged["external_response"] = None
+        merged["status_updated_at"] = None
+        existing[issue["issue_id"]] = merged
+    doc["issues"] = [existing[iid] for iid in sorted(existing)]
     save(doc, path)
     return doc
 

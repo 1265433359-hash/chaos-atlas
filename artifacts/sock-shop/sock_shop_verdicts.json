@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "tool": "sock_shop_execution_verdicts",
+  "project": "sock-shop",
+  "fault_injection": "HTTPChaos (edge-level, custom WSL2 kernel)",
+  "date": "2026-08-09",
+  "candidates": [
+    {
+      "candidate_id": "SOCK-FRONTEND-CARTS-LOSS-100",
+      "edge": "front-end->carts",
+      "baseline": "HTTP 500 ~17ms",
+      "injected": "HTTP 000 ~10010ms (abort -> client hang)",
+      "recovered": "yes (after cleanup+pod restart)",
+      "verdict": "weakness",
+      "severity": 3,
+      "evidence": "abort 导致客户端 10s 挂死（同步无超时）"
+    },
+    {
+      "candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100",
+      "edge": "front-end->catalogue",
+      "baseline": "HTTP 500 ~8ms",
+      "injected": "HTTP 000 ~10010ms (abort -> client hang)",
+      "recovered": "yes",
+      "verdict": "weakness",
+      "severity": 3,
+      "evidence": "abort 导致客户端 10s 挂死"
+    },
+    {
+      "candidate_id": "SOCK-ORDERS-PAYMENT-LOSS-100",
+      "edge": "orders->payment",
+      "baseline": "HTTP 404 ~8ms",
+      "injected": "HTTP 000 ~10010ms (abort -> client hang)",
+      "recovered": "yes",
+      "verdict": "weakness",
+      "severity": 3,
+      "evidence": "abort 导致客户端 10s 挂死"
+    },
+    {
+      "candidate_id": "SOCK-ORDERS-SHIPPING-LOSS-100",
+      "edge": "orders->shipping",
+      "baseline": "HTTP 200 ~62ms",
+      "injected": "HTTP 000 ~8ms (abort, fast-fail)",
+      "recovered": "HTTP 200 ~11ms (natural)",
+      "verdict": "weakness",
+      "severity": 2,
+      "evidence": "abort 生效但客户端 8ms 快速感知失败（有容错语义），服务不可用是事实但未拖垮调用方"
+    },
+    {
+      "candidate_id": "SOCK-FRONTEND-CARTS-DELAY-2000",
+      "edge": "front-end->carts",
+      "baseline": "HTTP 500 ~100ms",
+      "injected": "HTTP 500 ~2017ms (2x delay)",
+      "recovered": "HTTP 500 ~14ms",
+      "verdict": "weakness",
+      "severity": 2,
+      "evidence": "2s 延迟精确放大 20x，功能仍响应（性能弱点）"
+    },
+    {
+      "candidate_id": "SOCK-FRONTEND-CATALOGUE-DELAY-2000",
+      "edge": "front-end->catalogue",
+      "baseline": "HTTP 500 ~9ms",
+      "injected": "HTTP 500 ~2010ms",
+      "recovered": "HTTP 500 ~8ms",
+      "verdict": "weakness",
+      "severity": 2,
+      "evidence": "2s 延迟精确放大"
+    },
+    {
+      "candidate_id": "SOCK-ORDERS-PAYMENT-DELAY-2000",
+      "edge": "orders->payment",
+      "baseline": "HTTP 404 ~8ms",
+      "injected": "HTTP 000 ~10010ms (delay -> client hang)",
+      "recovered": "yes",
+      "verdict": "weakness",
+      "severity": 3,
+      "evidence": "delay 导致客户端 10s 挂死（无超时，比预期更严重）"
+    },
+    {
+      "candidate_id": "SOCK-ORDERS-SHIPPING-DELAY-2000",
+      "edge": "orders->shipping",
+      "baseline": "HTTP 200 ~138ms",
+      "injected": "HTTP 200 ~2014ms (full wait)",
+      "recovered": "HTTP 200 ~11ms",
+      "verdict": "weakness",
+      "severity": 2,
+      "evidence": "2s 延迟完整等待后成功返回（性能弱点，功能完整）"
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "weakness": 8,
+    "defended": 0,
+    "below_threshold": 0,
+    "note": "Sock Shop 核心下单链路的全部 8 个 HTTP 边均无超时保护：任何故障注入都暴露弱点（floor effect）。候选池由我们按业务链路构造，全落在核心链路。"
+  }
+}

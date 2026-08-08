@@ -48,12 +48,12 @@ def _se_weight(entry: dict[str, Any]) -> float:
 
 def selection_hits(candidate: dict[str, Any]) -> list[tuple[str, float]]:
     """Which SE rules this candidate matches, with effective weight."""
+    from project_registry import fault_of, normalize_service
+
     se = load(SE_PATH)
     cid = candidate.get("candidate_id", "")
-    upper = cid.upper()
-    service = upper.replace("OB-", "").replace("OTEL-", "").replace("TT-", "")
-    service = service.split("-DELAY")[0].split("-LOSS")[0].split("-KILL")[0].split("-CPU")[0]
-    fault = "loss" if "LOSS" in upper else ("kill" if "KILL" in upper else "delay")
+    service = normalize_service(cid)
+    fault = fault_of(cid)
     hits: list[tuple[str, float]] = []
     for entry in se.get("entries", []):
         eid = entry.get("id", "")
@@ -84,10 +84,10 @@ def defense_downgrade(candidate: dict[str, Any]) -> dict[str, Any]:
 
 def judgment_hint(candidate: dict[str, Any]) -> str:
     """Severity-adjustment hint from judgment experience, or empty."""
+    from project_registry import normalize_service
+
     je = load(JE_PATH)
-    upper = (candidate.get("candidate_id", "") or "").upper()
-    service = upper.replace("OB-", "").replace("OTEL-", "").replace("TT-", "")
-    service = service.split("-DELAY")[0].split("-LOSS")[0].split("-KILL")[0]
+    service = normalize_service(candidate.get("candidate_id", "") or "")
     for entry in je.get("entries", []):
         if entry.get("id") == "JE-COUPLING-001" and service == "EMAIL":
             return f"JE-COUPLING-001: {entry['severity_adjustment']} (coupling)"

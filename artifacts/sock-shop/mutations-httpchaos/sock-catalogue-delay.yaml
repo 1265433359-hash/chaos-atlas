@@ -1,0 +1,22 @@
+# HTTPChaos 边级注入: front-end->catalogue (DELAY)
+# HTTPChaos 目标 = 服务入站端口，路径 * 匹配全部（单一调用方 -> 等效边级）
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: sock-catalogue-delay
+  namespace: sock-shop-lab
+  labels:
+    chaos.candidate-id: SOCK-FRONTEND-CATALOGUE-DELAY-2000
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - sock-shop-lab
+    labelSelectors:
+      name: catalogue
+  target: Request
+  port: 80
+  path: "*"
+  method: GET
+  delay: 2000ms
+  duration: 30s
