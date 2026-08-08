@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "tool": "run_grpc_chaos_experiment",
+  "started_at": "2026-08-08T04:47:11.904399+00:00",
+  "mutation": "artifacts/experiments/execution/mutations_extended/ob-shipping-delay-one.yaml",
+  "client_script": "artifacts/online-boutique/ob_client.py",
+  "request_config": {
+    "checkout_service": "checkoutservice",
+    "checkout_remote_port": 5050,
+    "checkout_local_port": 15050,
+    "cart_service": "cartservice",
+    "cart_remote_port": 7070,
+    "cart_local_port": 17070,
+    "client_count": 1,
+    "client_timeout_sec": 12.0
+  },
+  "preflight": {
+    "checked_at": "2026-08-08T04:47:12.285509+00:00",
+    "mutation": "artifacts/experiments/execution/mutations_extended/ob-shipping-delay-one.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "online-boutique-lab",
+    "name": "ob-shipping-delay-one",
+    "selector": {
+      "namespaces": [
+        "online-boutique-lab"
+      ],
+      "labelSelectors": {
+        "app": "shippingservice"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "requested_namespaces": [
+          "online-boutique-lab"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "online-boutique-lab",
+          "name": "shippingservice-866b4f9854-sw8s5",
+          "terminating": false,
+          "ready": true,
+          "restarts": 4,
+          "ports": [
+            50051
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"ob-shipping-delay-one\" not found\n"
+  },
+  "lifecycle": {
+    "applied": true,
+    "injected": true,
+    "recovered": true,
+    "cleanup": {
+      "delete_command_ok": true,
+      "delete_output": "networkchaos.chaos-mesh.org \"ob-shipping-delay-one\" deleted from online-boutique-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"ob-shipping-delay-one\" not found"
+    },
+    "injected_status": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-08T04:47:14Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "online-boutique-lab/shippingservice-866b4f9854-sw8s5",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-08T04:47:14Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    },
+    "recovered_status": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-08T04:47:14Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-08T04:47:29Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "online-boutique-lab/shippingservice-866b4f9854-sw8s5",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-08T04:47:14Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-08T04:47:29Z"
+      ],
+      "desired_phase": "Stop"
+    }
+  },
+  "baseline_workload": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\online-boutique\\ob_client.py",
+      "127.0.0.1:15050",
+      "127.0.0.1:17070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 795.716,
+    "stdout": "[0] ok oid=3976fb2d-92e4-11f1-9f1e-4ebc758108b9 tracking=RF-44005-224785271 (29.7ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 29.7,
+        "result": "ok oid=3976fb2d-92e4-11f1-9f1e-4ebc758108b9 tracking=RF-44005-224785271",
+        "error": null
+      }
+    ]
+  },
+  "workload": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\online-boutique\\ob_client.py",
+      "127.0.0.1:15050",
+      "127.0.0.1:17070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 4726.612,
+    "stdout": "[0] ok oid=3a8001b6-92e4-11f1-9f1e-4ebc758108b9 tracking=LY-44713-229830449 (4019.7ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 4019.7,
+        "result": "ok oid=3a8001b6-92e4-11f1-9f1e-4ebc758108b9 tracking=LY-44713-229830449",
+        "error": null
+      }
+    ]
+  },
+  "errors": [],
+  "apply": {
+    "return_code": 0,
+    "stdout": "networkchaos.chaos-mesh.org/ob-shipping-delay-one created",
+    "stderr": ""
+  },
+  "result_classification": "grpc_response_observed",
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:15050 -> 5050\nForwarding from [::1]:15050 -> 5050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:17070 -> 7070\nForwarding from [::1]:17070 -> 7070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-08T04:47:29.498823+00:00"
+}

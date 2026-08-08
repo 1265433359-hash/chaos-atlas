@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tool": "assess_selection_evidence",
-  "assessed_at": "2026-08-08T04:36:46.621072+00:00",
+  "assessed_at": "2026-08-08T04:51:18.768469+00:00",
   "replicate": 1,
   "candidates": [
     {
@@ -609,8 +609,12 @@
     {
       "candidate_id": "OB-SHIPPING-DELAY-2000",
       "mutation": "artifacts/experiments/execution/mutations_extended/ob-shipping-delay-one.yaml",
-      "execution_records": [],
-      "executed": false,
+      "execution_records": [
+        "m1_ext_ob_shipping_delay_2000_r1.json",
+        "m1_ext_ob_shipping_delay_2000_r2.json",
+        "m1_ext_ob_shipping_delay_2000_r3.json"
+      ],
+      "executed": true,
       "service": "shippingservice",
       "cards": [
         {
@@ -623,8 +627,21 @@
         }
       ],
       "discovery_evidence": true,
-      "own_conclusions": [],
-      "own_discovery_evidence": false
+      "own_conclusions": [
+        {
+          "file": "m1_ext_ob_shipping_delay_2000_r1.json",
+          "classification": "grpc_response_observed"
+        },
+        {
+          "file": "m1_ext_ob_shipping_delay_2000_r2.json",
+          "classification": "grpc_response_observed"
+        },
+        {
+          "file": "m1_ext_ob_shipping_delay_2000_r3.json",
+          "classification": "grpc_response_observed"
+        }
+      ],
+      "own_discovery_evidence": true
     },
     {
       "candidate_id": "OB-CART-DELAY-2000",
@@ -750,8 +767,12 @@
     {
       "candidate_id": "TT-BASIC-DELAY-500",
       "mutation": "artifacts/experiments/execution/mutations_extended/tt-basic-delay-500-one.yaml",
-      "execution_records": [],
-      "executed": false,
+      "execution_records": [
+        "m1_ext_tt_basic_delay_500_r1.json",
+        "m1_ext_tt_basic_delay_500_r2.json",
+        "m1_ext_tt_basic_delay_500_r3.json"
+      ],
+      "executed": true,
       "service": "ts-basic-service",
       "cards": [
         {
@@ -772,14 +793,31 @@
         }
       ],
       "discovery_evidence": true,
-      "own_conclusions": [],
-      "own_discovery_evidence": false
+      "own_conclusions": [
+        {
+          "file": "m1_ext_tt_basic_delay_500_r1.json",
+          "classification": "response_observed"
+        },
+        {
+          "file": "m1_ext_tt_basic_delay_500_r2.json",
+          "classification": "response_observed"
+        },
+        {
+          "file": "m1_ext_tt_basic_delay_500_r3.json",
+          "classification": "response_observed"
+        }
+      ],
+      "own_discovery_evidence": true
     },
     {
       "candidate_id": "TT-STATION-DELAY-500",
       "mutation": "artifacts/experiments/execution/mutations_extended/tt-station-delay-500-one.yaml",
-      "execution_records": [],
-      "executed": false,
+      "execution_records": [
+        "m1_ext_tt_station_delay_500_r1.json",
+        "m1_ext_tt_station_delay_500_r2.json",
+        "m1_ext_tt_station_delay_500_r3.json"
+      ],
+      "executed": true,
       "service": "ts-station-service",
       "cards": [
         {
@@ -800,8 +838,21 @@
         }
       ],
       "discovery_evidence": true,
-      "own_conclusions": [],
-      "own_discovery_evidence": false
+      "own_conclusions": [
+        {
+          "file": "m1_ext_tt_station_delay_500_r1.json",
+          "classification": "response_observed"
+        },
+        {
+          "file": "m1_ext_tt_station_delay_500_r2.json",
+          "classification": "response_observed"
+        },
+        {
+          "file": "m1_ext_tt_station_delay_500_r3.json",
+          "classification": "response_observed"
+        }
+      ],
+      "own_discovery_evidence": true
     }
   ]
 }

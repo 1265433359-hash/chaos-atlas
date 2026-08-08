@@ -61,6 +61,26 @@
       "business_path_status": "confirmed_runtime",
       "runtime_status": "validated_runtime",
       "injection_recommendation": "multi_fault_linear_summation"
+    },
+    {
+      "id": "KB-OB-CHECKOUT-PATH-DELAY-001",
+      "path": "KB-OB-CHECKOUT-PATH-DELAY-001.json",
+      "test_family": "NetworkChaos",
+      "operation": "delay",
+      "target": "app=checkoutservice",
+      "business_path_status": "confirmed_runtime",
+      "runtime_status": "validated_runtime",
+      "injection_recommendation": "llm_exploration_discovery"
+    },
+    {
+      "id": "KB-OB-CART-DELAY-001",
+      "path": "KB-OB-CART-DELAY-001.json",
+      "test_family": "NetworkChaos",
+      "operation": "delay",
+      "target": "app=cartservice",
+      "business_path_status": "confirmed_runtime",
+      "runtime_status": "validated_runtime",
+      "injection_recommendation": "llm_exploration_discovery"
     }
   ]
 }
