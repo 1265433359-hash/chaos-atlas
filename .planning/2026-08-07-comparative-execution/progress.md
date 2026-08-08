@@ -55,3 +55,9 @@
 - M1 真实选择三次高度稳定：`OB-PAYMENT-LOSS-100` / `OTEL-PAYMENT-LOSS-100` / `TT-STATION-DELAY-2000` / `OTEL-PAYMENT-DELAY-2000` 稳居前四；两次 100ms 低强度候选（TT-STATION-DELAY-100、TT-BASIC-DELAY-100）三次全排除。每次选择均记录 event/thought/model/tokens 溯源（prompt≈1.9k/completion≈3.6k，单次≈34s）。
 - M1 与 M4（ours-full）存在实质差异：M4 偏好 Train Ticket（4 个 TT 候选入 top10，含两个 100ms 低强度候选），M1 更均衡（4 OB + 4 OTel + 2 TT）且聚焦支付 loss/delay 高影响路径。
 - M1 所选 10 候选中有 6 个已有受控运行时证据（TT station delay、OB kill/delay/loss、OTel delay/loss），另 4 个（TT-STATION-CPU-80、OB-PRODUCTCATALOG-DELAY-500、OTEL-EMAIL-LOSS-100、OTEL-EMAIL-DELAY-2000）未执行过注入。
+
+## 2026-08-08（晚）
+
+- ground-truth 骨架建立（`tools/assess_selection_evidence.py`）：12 候选池仅 6 个有自有执行结论（TT-STATION-DELAY-100、OB-PAYMENT-DELAY/LOSS、OB-PRODUCTCATALOG-KILL、OTEL-PAYMENT-DELAY/LOSS）；另 6 个未执行，结局未知。关键修正：结论必须绑定到候选自身 mutation，同 service 卡片的根因只能算 inherited 参考（OB-PRODUCTCATALOG-DELAY-500 不得继承 kill 结论）。
+- 对比（`tools/compare_selection_methods.py`）：已知阳性 recall@10 = M3/M4 1.000、M0/M1 0.833，但 6/12 密度下 M0 期望命中恰为 5，**M1 与随机打平**；M3/M4 存在选择-执行循环偏置。诚实结论：在当前部分 ground truth 下无法给出方法优劣，差异要靠执行 M1 独有的未执行候选（TT-STATION-CPU-80、OTEL-EMAIL-LOSS-100、OTEL-EMAIL-DELAY-2000 等）转化探索为发现。
+- 全量测试通过（58）。
