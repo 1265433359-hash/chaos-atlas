@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "tool": "run_grpc_chaos_experiment",
+  "started_at": "2026-08-08T07:24:17.298660+00:00",
+  "mutation": "artifacts/experiments/execution/mutations_prospective/otel-currency-loss-one.yaml",
+  "client_script": "artifacts/opentelemetry-demo/otel_client.py",
+  "request_config": {
+    "checkout_service": "checkout",
+    "checkout_remote_port": 5050,
+    "checkout_local_port": 15050,
+    "cart_service": "cart",
+    "cart_remote_port": 7070,
+    "cart_local_port": 17070,
+    "client_count": 1,
+    "client_timeout_sec": 12.0
+  },
+  "preflight": {
+    "checked_at": "2026-08-08T07:24:17.697501+00:00",
+    "mutation": "artifacts/experiments/execution/mutations_prospective/otel-currency-loss-one.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "otel-demo-lab",
+    "name": "otel-currency-loss-one",
+    "selector": {
+      "namespaces": [
+        "otel-demo-lab"
+      ],
+      "labelSelectors": {
+        "app": "currency"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "requested_namespaces": [
+          "otel-demo-lab"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "otel-demo-lab",
+          "name": "currency-6748c6c85c-8bprr",
+          "terminating": false,
+          "ready": true,
+          "restarts": 2,
+          "ports": [
+            7001
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"otel-currency-loss-one\" not found\n"
+  },
+  "lifecycle": {
+    "applied": true,
+    "injected": true,
+    "recovered": true,
+    "cleanup": {
+      "delete_command_ok": true,
+      "delete_output": "networkchaos.chaos-mesh.org \"otel-currency-loss-one\" deleted from otel-demo-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"otel-currency-loss-one\" not found"
+    },
+    "injected_status": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-08T07:24:24Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "otel-demo-lab/currency-6748c6c85c-8bprr",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-08T07:24:24Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    },
+    "recovered_status": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-08T07:24:24Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-08T07:24:39Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "otel-demo-lab/currency-6748c6c85c-8bprr",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-08T07:24:24Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-08T07:24:39Z"
+      ],
+      "desired_phase": "Stop"
+    }
+  },
+  "baseline_workload": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\opentelemetry-demo\\otel_client.py",
+      "127.0.0.1:15050",
+      "127.0.0.1:17070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 4690.008,
+    "stdout": "[0] ok oid=2b7fc972-92fa-11f1-9278-8a3caf62e0dd tracking=f1e83017-8809-4703-8841-c6b58140db00 (3855.5ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 3855.5,
+        "result": "ok oid=2b7fc972-92fa-11f1-9278-8a3caf62e0dd tracking=f1e83017-8809-4703-8841-c6b58140db00",
+        "error": null
+      }
+    ]
+  },
+  "workload": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\opentelemetry-demo\\otel_client.py",
+      "127.0.0.1:15050",
+      "127.0.0.1:17070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 10754.305,
+    "stdout": "[0] rpc_error code=DEADLINE_EXCEEDED details=Deadline Exceeded (10006.2ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "DEADLINE_EXCEEDED",
+        "latency_ms": 10006.2,
+        "result": "rpc_error code=DEADLINE_EXCEEDED details=Deadline Exceeded",
+        "error": "rpc_error code=DEADLINE_EXCEEDED details=Deadline Exceeded"
+      }
+    ]
+  },
+  "errors": [],
+  "apply": {
+    "return_code": 0,
+    "stdout": "networkchaos.chaos-mesh.org/otel-currency-loss-one created",
+    "stderr": ""
+  },
+  "result_classification": "grpc_error_observed",
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:15050 -> 5050\nForwarding from [::1]:15050 -> 5050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:17070 -> 8080\nForwarding from [::1]:17070 -> 8080\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-08T07:24:39.484991+00:00"
+}

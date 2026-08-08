@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: otel-checkout-shipping-delay-one
+  namespace: otel-demo-lab
+  labels:
+    chaos.prospective: candidate
+    chaos.candidate-id: OTEL-SHIPPING-DELAY-2000
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - otel-demo-lab
+    labelSelectors:
+      app: shipping
+  delay:
+    latency: 2000ms
+    correlation: '100'
+    jitter: 0ms
+  duration: 15s
+  direction: to

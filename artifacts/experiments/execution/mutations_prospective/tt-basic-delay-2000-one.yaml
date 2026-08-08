@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: tt-basic-delay-2000-one
+  namespace: train-ticket-lab
+  labels:
+    chaos.prospective: candidate
+    chaos.candidate-id: TT-BASIC-DELAY-2000
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+    - train-ticket-lab
+    labelSelectors:
+      app: ts-basic-service
+  delay:
+    latency: 2000ms
+    correlation: '100'
+    jitter: 0ms
+  duration: 20s
+  direction: to

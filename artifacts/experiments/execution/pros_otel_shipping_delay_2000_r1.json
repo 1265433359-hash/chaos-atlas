@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "tool": "run_grpc_chaos_experiment",
+  "started_at": "2026-08-08T07:24:53.297365+00:00",
+  "mutation": "artifacts/experiments/execution/mutations_prospective/otel-checkout-shipping-delay-one.yaml",
+  "client_script": "artifacts/opentelemetry-demo/otel_client.py",
+  "request_config": {
+    "checkout_service": "checkout",
+    "checkout_remote_port": 5050,
+    "checkout_local_port": 15050,
+    "cart_service": "cart",
+    "cart_remote_port": 7070,
+    "cart_local_port": 17070,
+    "client_count": 1,
+    "client_timeout_sec": 12.0
+  },
+  "preflight": {
+    "checked_at": "2026-08-08T07:24:53.683505+00:00",
+    "mutation": "artifacts/experiments/execution/mutations_prospective/otel-checkout-shipping-delay-one.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "otel-demo-lab",
+    "name": "otel-checkout-shipping-delay-one",
+    "selector": {
+      "namespaces": [
+        "otel-demo-lab"
+      ],
+      "labelSelectors": {
+        "app": "shipping"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "requested_namespaces": [
+          "otel-demo-lab"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "otel-demo-lab",
+          "name": "shipping-9f9ffdb98-r5jzb",
+          "terminating": false,
+          "ready": true,
+          "restarts": 2,
+          "ports": [
+            50050
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"otel-checkout-shipping-delay-one\" not found\n"
+  },
+  "lifecycle": {
+    "applied": true,
+    "injected": true,
+    "recovered": true,
+    "cleanup": {
+      "delete_command_ok": true,
+      "delete_output": "networkchaos.chaos-mesh.org \"otel-checkout-shipping-delay-one\" deleted from otel-demo-lab namespace",
+      "resource_absent_after_delete": true,
+      "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"otel-checkout-shipping-delay-one\" not found"
+    },
+    "injected_status": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-08T07:24:59Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "otel-demo-lab/shipping-9f9ffdb98-r5jzb",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-08T07:24:59Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    },
+    "recovered_status": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-08T07:24:59Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-08T07:25:14Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "otel-demo-lab/shipping-9f9ffdb98-r5jzb",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-08T07:24:59Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-08T07:25:14Z"
+      ],
+      "desired_phase": "Stop"
+    }
+  },
+  "baseline_workload": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\opentelemetry-demo\\otel_client.py",
+      "127.0.0.1:15050",
+      "127.0.0.1:17070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 3991.839,
+    "stdout": "[0] ok oid=40ea2e12-92fa-11f1-9278-8a3caf62e0dd tracking=0bef80a4-b0f5-4968-8deb-5e579a2c777b (3241.0ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 3241.0,
+        "result": "ok oid=40ea2e12-92fa-11f1-9278-8a3caf62e0dd tracking=0bef80a4-b0f5-4968-8deb-5e579a2c777b",
+        "error": null
+      }
+    ]
+  },
+  "workload": {
+    "command": [
+      "C:\\APP\\Python\\python.exe",
+      "artifacts\\opentelemetry-demo\\otel_client.py",
+      "127.0.0.1:15050",
+      "127.0.0.1:17070",
+      "1"
+    ],
+    "return_code": 0,
+    "elapsed_ms": 7737.429,
+    "stdout": "[0] rpc_error code=INTERNAL details=shipping quote failure: failed POST to email service: expected 200, got 500 (7022.4ms)\n",
+    "stderr": "",
+    "observations": [
+      {
+        "sample": 1,
+        "grpc_status": "INTERNAL",
+        "latency_ms": 7022.4,
+        "result": "rpc_error code=INTERNAL details=shipping quote failure: failed POST to email service: expected 200, got 500",
+        "error": "rpc_error code=INTERNAL details=shipping quote failure: failed POST to email service: expected 200, got 500"
+      }
+    ]
+  },
+  "errors": [],
+  "apply": {
+    "return_code": 0,
+    "stdout": "networkchaos.chaos-mesh.org/otel-checkout-shipping-delay-one created",
+    "stderr": ""
+  },
+  "result_classification": "grpc_error_observed",
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:15050 -> 5050\nForwarding from [::1]:15050 -> 5050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:17070 -> 8080\nForwarding from [::1]:17070 -> 8080\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-08T07:25:14.656776+00:00"
+}

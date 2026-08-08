@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: otel-currency-loss-one
+  namespace: otel-demo-lab
+  labels:
+    chaos.prospective: candidate
+    chaos.candidate-id: OTEL-CURRENCY-LOSS-100
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+    - otel-demo-lab
+    labelSelectors:
+      app: currency
+  loss:
+    loss: '100'
+    correlation: '100'
+  duration: 15s
+  direction: to
