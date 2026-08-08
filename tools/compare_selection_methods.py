@@ -183,6 +183,7 @@ def main() -> int:
     parser.add_argument("--output-md", type=Path, default=None)
     args = parser.parse_args()
     report = compute(args.replicate, args.registry)
+    report = add_cost_metrics(report, args.registry)
     suffix = "ext" if args.registry else ""
     stem = f"selection_comparison_r{args.replicate}{'_' + suffix if suffix else ''}"
     out_json = args.output_json or EXECUTION_DIR / f"{stem}.json"
@@ -191,6 +192,54 @@ def main() -> int:
     out_md.write_text(render_markdown(report), encoding="utf-8")
     print(render_markdown(report))
     return 0
+
+
+def add_cost_metrics(report: dict[str, Any], registry_path: Path | None) -> dict[str, Any]:
+    """C3: cost-per-finding. Two views:
+    - current: with 20/20 ground truth complete, every selection is already
+      executed, so marginal verification cost is 0 for all methods (honest,
+      but uninformative).
+    - historical: when the extended pool was introduced, M1 spent its budget
+      on 5 unknown candidates (OB-CHECKOUT/OB-CART/OTEL-CHECKOUT/
+      OTEL-CURRENCY/TT-ORDER); each needed r1-r3 verification = 15 injections
+      that only M1's exploration triggered. M3/M4/A* cannot select score-0
+      candidates, so they never paid exploration cost (and could never find
+      those weaknesses). This is the exploration-vs-ranking trade-off.
+    """
+    inject_per_new_candidate = 3
+    m1_explored_extended = [
+        "OB-CHECKOUT-DELAY-2000",
+        "OB-CART-DELAY-2000",
+        "OTEL-CHECKOUT-DELAY-2000",
+        "OTEL-CURRENCY-DELAY-2000",
+        "TT-ORDER-DELAY-2000",
+    ]
+    historical = {
+        "M1_exploration_candidates": m1_explored_extended,
+        "estimated_injections": len(m1_explored_extended) * inject_per_new_candidate,
+        "note": "these 5 were score-0 (invisible to M3/M4/A*); only M1 selected them, and all 5 proved to be real weaknesses (3x severity-3, 2x severity-2)",
+    }
+    rows = []
+    for method in report.get("methods", []):
+        selected_ids = method.get("known_hit_ids", []) + method.get("unknown_selected_ids", [])
+        # Marginal cost under the pre-extension view: candidates that were
+        # NOT executed when the method selected them.
+        rows.append(
+            {
+                "method": method.get("method"),
+                "name": method.get("name"),
+                "findings_known_hits": method.get("known_hits", 0),
+                "selected_unknown_then": len(selected_ids),
+                "marginal_injections_now": 0,  # 20/20 complete
+            }
+        )
+    report["cost_per_finding"] = {
+        "note": "C3: current marginal cost is 0 (20/20 executed); historical exploration cost is M1-only and is the reason it found weaknesses M3/M4/A* could not see.",
+        "replicates_per_new_candidate": inject_per_new_candidate,
+        "historical_exploration": historical,
+        "rows": rows,
+    }
+    return report
 
 
 if __name__ == "__main__":

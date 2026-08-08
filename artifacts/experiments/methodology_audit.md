@@ -112,3 +112,25 @@
 1. **A1（防御住 vs 没打穿）**——污染判定体系和模式库，必须修
 2. **B1（无显著性）**——所有"谁更好"没有统计背书，审稿人必挑
 3. **D4（外部反馈）**——愿景闭环的最后一步，成本最低收益最大
+
+## 修复记录（2026-08-09 批量）
+
+- **A1** ✅ 三态判定（weakness/below_threshold/defended）+ 模式库去 weak_stressor 污染（09ccfbd）
+- **A2** ✅ contract_inventory.json（系统契约 vs 客户端预算分离，源码级）（66ef9d4）
+- **A3** ✅ 判定经验条目补 `source_verified` + `source_note`（6/6）
+- **B1** ✅ selection_robustness.py bootstrap CI：**M1 vs M3/M4/M0 差异 95% CI 全部含 0，不显著**——此前"0.658 vs 0.51"的点估计无统计背书，现如实声明
+- **B2** ✅ 权重敏感性：5 种 schema 下排名**不稳定**（2-2-1 时 M0 超 M1）——severity 权重本身影响结论，需在论文中按"分级呈现"而非"加权计分"
+- **B3** ⏳ llm_retest_consistency.py（运行中）
+- **C2** ✅ 防御模式边指纹改为从模式库自动派生（source_verified 才进）
+- **C3** ✅ cost_per_finding 双视角：当前边际 0（20/20 已执行）；历史视角 M1 探索 5 候选 = 15 次注入，换来 M3/M4/A* 看不见的 5 个弱点（3×severity3 + 2×severity2）
+- **C1/D1** ⏳ 范围声明 + 外部方法表述（本文件）
+- **D2** ✅ 判定经验补 en_rule（双语检索）
+- **D3** ✅ environment_fingerprint.json（WSL2 内核 6.18.33.2 / Chaos Mesh v2.8.3 / lab 三 namespace）
+
+### C1 范围声明（必须写进论文）
+
+本方法论的实证范围 = **网络故障家族（NetworkChaos delay/loss）+ 少量 PodChaos/StressChaos**，在 kind + WSL2（无 HTTPChaos tproxy）环境下验证。跨家族（HTTP/IO/DNS/Time/组合故障）与跨平台（真实云环境）是**断言**，不是实证——论文不得声称"任意故障类型/任意环境"通用。
+
+### D1 外部方法表述修正
+
+M1 不得表述为"独立外部复现"。它是 **ChaosEater 选择逻辑的 adapter 化重实现**（commit 47c4e44 提取），候选池由我们构建、执行验证由我们的 runner/证据链完成、LLM 调用经我们的 OpenAI-compat 封装。正确表述："基于 ChaosEater 提示词逻辑的 LLM 选择变体，运行于我们的受控对比框架内"。M2（FastFI）同理：未复现，仅文档化任务不对齐。

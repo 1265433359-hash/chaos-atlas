@@ -40,10 +40,9 @@ SEED_ENTRIES: list[dict[str, Any]] = [
     },
     {
         "id": "JE-CONTRACT-001",
-        "rule": "gRPC 客户端存在显式 deadline 且注入后请求挂到该 deadline（DEADLINE_EXCEEDED）= 明确契约违约漏洞，无需进一步论证。",
+        "rule": "系统源码/配置声明的契约（WithTimeout/gRPC deadline/SLO）违约 = 明确漏洞；但测试客户端自设的 timeout 是测量预算，永远不是系统契约——挂到客户端 deadline 暴露的是'系统缺超时'，判定依据不同（A2 修正）。",
         "dimensions": ["contract"],
         "severity_adjustment": "confirm",
-        "rule": "系统源码/配置声明的契约（WithTimeout/gRPC deadline/SLO）违约 = 明确漏洞；但测试客户端自设的 timeout 是测量预算，永远不是系统契约——挂到客户端 deadline 暴露的是'系统缺超时'，判定依据不同（A2 修正）。",
         "evidence_cases": [
             "OB-PAYMENT-LOSS-100: chargeCard 无 WithTimeout（main.go:369，系统无契约）；10s 挂死是 ob_client 10s 预算耗尽 → 弱点是'系统缺超时'而非'违约'",
             "OB-CART-DELAY-2000: 12s 客户端超时 x3，cart 读无 deadline",
@@ -110,6 +109,41 @@ SEED_ENTRIES: list[dict[str, Any]] = [
     },
 ]
 
+# A3/D2 enrichment: source-verification status (rules must be grounded in
+# source/config, not just observation) + English rule for bilingual retrieval.
+_ENRICH: dict[str, dict[str, Any]] = {
+    "JE-COUPLING-001": {
+        "source_verified": False,
+        "source_note": "observation-inferred from OTEL-EMAIL-LOSS + OB email card; source check of checkout->email call pending",
+        "en_rule": "A non-critical dependency (email/notification/log) synchronously blocking the primary flow and hanging to the client deadline = architecture-level coupling defect (severity 3+, highest value): it reveals missing dependency isolation, not a single missing timeout.",
+    },
+    "JE-CONTRACT-001": {
+        "source_verified": True,
+        "source_note": "OB chargeCard no WithTimeout confirmed at online-boutique/src/checkoutservice/main.go:369; TT application.yml no timeout config",
+        "en_rule": "A violation of a SOURCE-DECLARED contract (WithTimeout/gRPC deadline/SLO) is a clear vulnerability; but a test-client's own timeout is a measurement budget, never a system contract - hanging to the client deadline reveals the system LACKS a timeout, a different finding (A2 fix).",
+    },
+    "JE-CONTRACT-002": {
+        "source_verified": True,
+        "source_note": "TT station/basic/order application.yml have no timeout config (verified); runner request_timeout is a test parameter",
+        "en_rule": "Latency amplification with no system contract (no SLO/explicit deadline, see contract_inventory) is NOT automatically a vulnerability; check for degradation/fallback first - without it, classify as 'potential risk', not 'confirmed vulnerability'. The runner's request_timeout is not a contract.",
+    },
+    "JE-RECOVERY-001": {
+        "source_verified": False,
+        "source_note": "behavior-observed (K7 probe-restart recovery timeout); mechanism root not source-checked",
+        "en_rule": "Failure to auto-recover after injection stops (or recovery timeout) upgrades severity regardless of symptom strength - missing recovery capability is an independent weakness.",
+    },
+    "JE-OBSERVABILITY-001": {
+        "source_verified": False,
+        "source_note": "observed via Jaeger capture (OTel payment); alert configuration not source-checked",
+        "en_rule": "A fault fully captured by tracing (visible events) but without auto-alert = partial weakness (diagnosable, not alertable); 'cannot be seen at fault time' is itself a weakness even if functionality is normal.",
+    },
+    "JE-RISK-001": {
+        "source_verified": True,
+        "source_note": "derived from executed experiments; probability assignment is practitioner judgment, flagged",
+        "en_rule": "Weaknesses exposed by high-probability real events (payment-provider timeout/network partition/packet loss) rank above low-probability extreme scenarios - risk = probability x impact; probability ranks, it does not judge.",
+    },
+}
+
 
 def load(path: Path = EXPERIENCE_PATH) -> dict[str, Any]:
     if path.exists():
@@ -124,11 +158,11 @@ def save(doc: dict[str, Any], path: Path = EXPERIENCE_PATH) -> None:
 def seed(path: Path = EXPERIENCE_PATH) -> dict[str, Any]:
     """Seed entries; SEED_ENTRIES is the authoritative definition, so existing
     entries with the same id are replaced (they may have been revised, e.g. by
-    an audit fix)."""
+    an audit fix). A3/D2 enrichment (source_verified, en_rule) is merged in."""
     doc = load(path)
     by_id = {e["id"]: e for e in doc.get("entries", [])}
     for entry in SEED_ENTRIES:
-        by_id[entry["id"]] = entry
+        by_id[entry["id"]] = {**entry, **_ENRICH.get(entry["id"], {})}
     doc["entries"] = [by_id[eid] for eid in sorted(by_id)]
     save(doc, path)
     return doc

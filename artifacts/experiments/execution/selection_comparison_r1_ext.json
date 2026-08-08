@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tool": "compare_selection_methods",
-  "computed_at": "2026-08-08T04:52:06.306981+00:00",
+  "computed_at": "2026-08-08T06:34:24.758536+00:00",
   "replicate": 1,
   "candidate_universe_size": 20,
   "known_discovered": [
@@ -364,5 +364,83 @@
       "unknown_selected": 0,
       "unknown_selected_ids": []
     }
-  ]
+  ],
+  "cost_per_finding": {
+    "note": "C3: each newly-verified candidate costs r1-r3 injections (3); selecting an already-executed candidate costs 0. M1's exploration budget is explicit here.",
+    "replicates_per_new_candidate": 3,
+    "rows": [
+      {
+        "method": "M0",
+        "name": "random-template",
+        "candidates_needing_verification": 0,
+        "estimated_injections": 0,
+        "findings_known_hits": 10,
+        "cost_per_known_finding": 0.0
+      },
+      {
+        "method": "M1",
+        "name": "ChaosEater-adapter",
+        "candidates_needing_verification": 0,
+        "estimated_injections": 0,
+        "findings_known_hits": 10,
+        "cost_per_known_finding": 0.0
+      },
+      {
+        "method": "M3",
+        "name": "graph-only",
+        "candidates_needing_verification": 0,
+        "estimated_injections": 0,
+        "findings_known_hits": 10,
+        "cost_per_known_finding": 0.0
+      },
+      {
+        "method": "M4",
+        "name": "ours-full",
+        "candidates_needing_verification": 0,
+        "estimated_injections": 0,
+        "findings_known_hits": 10,
+        "cost_per_known_finding": 0.0
+      },
+      {
+        "method": "A0",
+        "name": "ours-yaml-only",
+        "candidates_needing_verification": 0,
+        "estimated_injections": 0,
+        "findings_known_hits": 10,
+        "cost_per_known_finding": 0.0
+      },
+      {
+        "method": "A1",
+        "name": "ours-global-graph",
+        "candidates_needing_verification": 0,
+        "estimated_injections": 0,
+        "findings_known_hits": 10,
+        "cost_per_known_finding": 0.0
+      },
+      {
+        "method": "A2",
+        "name": "ours-local-graph",
+        "candidates_needing_verification": 0,
+        "estimated_injections": 0,
+        "findings_known_hits": 10,
+        "cost_per_known_finding": 0.0
+      },
+      {
+        "method": "A3",
+        "name": "ours-local-graph-runtime-gate",
+        "candidates_needing_verification": 0,
+        "estimated_injections": 0,
+        "findings_known_hits": 10,
+        "cost_per_known_finding": 0.0
+      },
+      {
+        "method": "A4",
+        "name": "ours-full-evidence-feedback",
+        "candidates_needing_verification": 0,
+        "estimated_injections": 0,
+        "findings_known_hits": 10,
+        "cost_per_known_finding": 0.0
+      }
+    ]
+  }
 }

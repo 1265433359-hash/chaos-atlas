@@ -150,7 +150,12 @@ def query_judgment(args) -> int:
         tokens = args.query.lower().split()
         entries = [
             e for e in entries
-            if all(tok in " ".join(str(v) for v in (e.get("rule"), e.get("id"), e.get("evidence_cases", []))).lower() for tok in tokens)
+            if all(
+                tok in " ".join(
+                    str(v) for v in (e.get("rule"), e.get("en_rule"), e.get("id"), e.get("evidence_cases", []))
+                ).lower()
+                for tok in tokens
+            )
         ]
     if not entries:
         print(f"No judgment rules match (total {len(doc.get('entries', []))} seeded)")

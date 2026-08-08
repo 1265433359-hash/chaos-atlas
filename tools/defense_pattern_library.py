@@ -74,9 +74,38 @@ SEED_PATTERNS: list[dict[str, Any]] = [
 # Static edge fingerprint -> mechanism family for downgrade matching.
 # A1 audit fix: weak_stressor mapping removed (below-threshold must never
 # downgrade); only absorbed_by_design remains and it is an unverified prior.
+# C2: this map is now DERIVED from the seed patterns' evidence edges instead
+# of hand-curated; the contract inventory is the lookup table for candidate->edge.
 EDGE_TO_MECHANISM: dict[str, str] = {
     "basic->station": "absorbed_by_design",
 }
+
+
+def build_edge_index(library: dict[str, Any] | None = None) -> dict[str, str]:
+    """C2: derive edge fingerprint -> mechanism from pattern evidence.
+
+    Each pattern's evidence carries candidate_id; the candidate's edge string
+    (from extended_candidate_pool) becomes the fingerprint. This replaces
+    hand-curation for patterns that carry a resolvable candidate.
+    """
+    library = library or load_library()
+    from extended_candidate_pool import extended_candidate_pool
+
+    edge_by_candidate = {c["candidate_id"]: c.get("edge", "") for c in extended_candidate_pool()}
+    index: dict[str, str] = {}
+    for pattern in library.get("patterns", []):
+        candidate_id = (pattern.get("evidence") or {}).get("candidate_id")
+        if not candidate_id:
+            continue
+        edge = edge_by_candidate.get(candidate_id)
+        if not edge:
+            continue
+        # Do not let a pattern claim a mechanism for an edge it did not verify.
+        if pattern.get("source_verified"):
+            index.setdefault(edge, pattern["defense_mechanism"])
+    # Merge hand-curated priors last (explicit, auditable overrides).
+    index.update(EDGE_TO_MECHANISM)
+    return index
 
 
 def load_library(path: Path = LIBRARY_PATH) -> dict[str, Any]:
@@ -131,7 +160,8 @@ def query_downgrade(
     """
     library = library or load_library()
     edge = str(candidate.get("edge", ""))
-    mechanism = EDGE_TO_MECHANISM.get(edge)
+    edge_index = build_edge_index(library)
+    mechanism = edge_index.get(edge)
     if not mechanism:
         return {
             "candidate_id": candidate.get("candidate_id"),
