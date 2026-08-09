@@ -21,8 +21,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import run_chaos_experiment as rce
 
 
-def pod(name: str, ready: bool, terminating: bool = False) -> dict:
+def pod(name: str, ready: bool, terminating: bool = False, uid: str | None = None) -> dict:
     meta = {"name": name, "namespace": "train-ticket-lab"}
+    if uid:
+        meta["uid"] = uid
     if terminating:
         meta["deletionTimestamp"] = "2026-08-09T00:00:00Z"
     status = {"conditions": []}
@@ -34,11 +36,14 @@ def pod(name: str, ready: bool, terminating: bool = False) -> dict:
 class WaitForTargetReadyTests(unittest.TestCase):
     SELECTOR = {"labelSelectors": {"app": "demo"}}
 
-    def _call(self, items, expected_count=None, timeout=2.0, interval=0.1):
+    def _call(self, items, expected_count=None, timeout=2.0, interval=0.1,
+              pre_kill_uids=None, stable_checks=2):
         with patch.object(rce, "kubectl_json", return_value=({"items": items}, None)):
             return rce.wait_for_target_ready(
                 "train-ticket-lab", self.SELECTOR, timeout, interval,
                 expected_pod_count=expected_count,
+                pre_kill_uids=pre_kill_uids,
+                stable_checks=stable_checks,
             )
 
     def test_single_ready_replica_recovers(self):
@@ -82,6 +87,50 @@ class WaitForTargetReadyTests(unittest.TestCase):
         src = Path(rce.__file__).read_text(encoding="utf-8")
         self.assertIn("recovery_target_pod_count", src)
         self.assertIn("expected_pod_count=", src)
+
+
+class IdentityReplacementTests(unittest.TestCase):
+    """Round-3 P2-3: recovery must verify the killed UID is actually gone and
+    the state is stable across consecutive polls."""
+
+    SELECTOR = {"labelSelectors": {"app": "demo"}}
+
+    def _call(self, items, pre_kill_uids, expected_count=1, timeout=0.5,
+              interval=0.05, stable_checks=2):
+        with patch.object(rce, "kubectl_json", return_value=({"items": items}, None)):
+            return rce.wait_for_target_ready(
+                "train-ticket-lab", self.SELECTOR, timeout, interval,
+                expected_pod_count=expected_count,
+                pre_kill_uids=pre_kill_uids,
+                stable_checks=stable_checks,
+            )
+
+    def test_old_uid_still_ready_not_recovered(self):
+        # The pre-injection Pod (old UID) is still Ready -> the kill did NOT
+        # replace it; must NOT be considered recovered even if count+Ready pass.
+        old = pod("p0", ready=True, uid="uid-old")
+        ok, status, _ = self._call([old], pre_kill_uids={"uid-old"})
+        self.assertFalse(ok)
+        self.assertEqual(status["ready_uids"], ["uid-old"])
+
+    def test_replacement_uid_recovers_after_stability(self):
+        # A new UID replaces the killed one; needs stable_checks consecutive
+        # Ready polls to confirm.
+        new = pod("p0", ready=True, uid="uid-new")
+        ok, status, _ = self._call([new], pre_kill_uids={"uid-old"}, stable_checks=2)
+        self.assertTrue(ok)
+        self.assertEqual(status["ready_uids"], ["uid-new"])
+
+    def test_no_replacement_within_timeout(self):
+        # No Ready pod appears -> not recovered (identity never replaced).
+        down = pod("p0", ready=False, uid="uid-new")
+        ok, _, _ = self._call([down], pre_kill_uids={"uid-old"}, timeout=0.2)
+        self.assertFalse(ok)
+
+    def test_recovery_pre_kill_uids_recorded(self):
+        src = Path(rce.__file__).read_text(encoding="utf-8")
+        self.assertIn("recovery_pre_kill_uids", src)
+        self.assertIn("pre_kill_uids=", src)
 
 
 if __name__ == "__main__":

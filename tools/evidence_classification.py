@@ -33,6 +33,7 @@ INVALID_CLASSES: frozenset[str] = frozenset({
 WEAKNESS_CLASSES: frozenset[str] = frozenset({
     "client_timeout_observed",
     "server_error_observed",
+    "grpc_error_observed",
     "response_contract_changed",
     "response_preserved_latency_degradation",
 })
@@ -56,15 +57,27 @@ def classify_conclusion(classification: str | None) -> str:
 def classify_candidate(item: dict[str, Any]) -> str:
     """weakness | below_threshold | invalid | unclassified for one candidate.
 
-    invalid wins over weakness; missing conclusions -> unclassified (not invalid),
-    so legacy discovery-only fixtures are still considered known.
+    Round-3 P1-3: previously "invalid wins" over every other conclusion, so a
+    single invalid repeat (e.g. one invalid_baseline among several valid
+    grpc_error_observed repeats) dropped the whole candidate out of the known
+    set. The correct rule: FIRST drop invalid repeats, THEN aggregate the
+    remaining valid conclusions.
+
+      - no conclusions at all            -> unclassified (legacy discovery-only)
+      - every conclusion is invalid      -> invalid (no usable evidence remains)
+      - any valid conclusion is weakness -> weakness
+      - otherwise (valid non-weak)       -> below_threshold
     """
     conclusions = item.get("own_conclusions") or []
     if not conclusions:
         return UNCLASSIFIED
-    if any(classify_conclusion(c.get("classification")) == INVALID for c in conclusions):
+    valid = [
+        c for c in conclusions
+        if classify_conclusion(c.get("classification")) != INVALID
+    ]
+    if not valid:
         return INVALID
-    if any(classify_conclusion(c.get("classification")) == WEAKNESS for c in conclusions):
+    if any(classify_conclusion(c.get("classification")) == WEAKNESS for c in valid):
         return WEAKNESS
     return BELOW_THRESHOLD
 

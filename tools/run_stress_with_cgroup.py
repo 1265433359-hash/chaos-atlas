@@ -226,28 +226,34 @@ def main() -> int:
     except yaml.YAMLError as exc:
         preflight_blocked = "yaml_shape_invalid"
         preflight_errors.append(f"mutation YAML is not parseable: {exc}")
-    except (OSError, RuntimeError, subprocess.TimeoutExpired, ValueError) as exc:
+    except (AttributeError, TypeError, ValueError) as exc:
+        # Round-3 P2-1: a malformed document shape (e.g. metadata: <non-dict>)
+        # used to raise AttributeError/TypeError outside the exception list and
+        # exit without any report. Treat it as a shape-level preflight block.
+        preflight_blocked = "yaml_shape_invalid"
+        preflight_errors.append(f"mutation document has an invalid shape: {type(exc).__name__}: {exc}")
+    except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
         preflight_blocked = "preflight_error"
         preflight_errors.append(f"{type(exc).__name__}: {exc}")
 
     if preflight_blocked is not None:
-        # Even on a failed/unknown existence check, attempt an idempotent
-        # cleanup so a transient lookup failure cannot orphan the resource.
+        # Round-3 P1-1: NEVER auto-delete a resource this process did not create.
+        # A pre-existing mutation (mutation_exists) or an unknown existence state
+        # (RBAC/timeout) must not trigger cleanup_mutation - that could delete
+        # a Chaos resource owned by another experiment or created by hand.
+        # Cleanup is only permitted for resources this process explicitly
+        # applied and owns (see the normal-path finally block).
         cleanup_attempt: dict[str, Any] | None = None
         if mutation_kind and mutation_name:
-            try:
-                present = resource_exists(mutation_kind, mutation_namespace, str(mutation_name))
-            except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
-                preflight_errors.append(f"preflight cleanup existence check failed: {exc}")
-                present = True
-            if present:
-                cleanup_attempt = cleanup_mutation(mutation_kind, mutation_namespace, str(mutation_name))
-            else:
-                cleanup_attempt = {
-                    "attempted": False,
-                    "confirmed": True,
-                    "reason": "mutation resource is already absent",
-                }
+            cleanup_attempt = {
+                "attempted": False,
+                "confirmed": False,
+                "reason": (
+                    f"preflight blocked ({preflight_blocked}); resource "
+                    f"{mutation_namespace}/{mutation_name} was not created by this run, "
+                    "so no automatic cleanup was performed. Inspect manually."
+                ),
+            }
         report = {
             "schema_version": 2,
             "tool": "run_stress_with_cgroup",
@@ -328,7 +334,10 @@ def main() -> int:
     runner_stdout.parent.mkdir(parents=True, exist_ok=True)
     runner_out = runner_stdout.open("w", encoding="utf-8")
     runner_err = runner_stderr.open("w", encoding="utf-8")
-    runner = subprocess.Popen(runner_args, stdout=runner_out, stderr=runner_err, text=True)
+    # Round-3 P1-4: declare runner before the guarded block so a Popen failure
+    # (OSError) leaves runner=None and the finally block skips terminate safely
+    # instead of raising NameError and losing the report.
+    runner: subprocess.Popen[Any] | None = None
     injected_status: dict[str, Any] | None = None
     cgroup: subprocess.Popen[Any] | None = None
     cgroup_out = None
@@ -340,40 +349,51 @@ def main() -> int:
     cgroup_timed_out = False
     cleanup_fallback: dict[str, Any] | None = None
     try:
-        deadline = time.monotonic() + max(1.0, args.injection_timeout)
-        while time.monotonic() < deadline:
-            injected_status = lifecycle_status(args.namespace, mutation_name)
-            if injected_status and injected_status.get("injected_count", 0) >= 1:
-                break
-            if runner.poll() is not None:
-                errors.append(f"runner exited before injection: {runner.returncode}")
-                break
-            time.sleep(0.5)
-        if not injected_status or injected_status.get("injected_count", 0) < 1:
-            errors.append("injectedCount did not reach 1 before cgroup sampling")
-        else:
-            cgroup_args = [
-                sys.executable,
-                str(ROOT / "tools/capture_cgroup_cpu.py"),
-                "--namespace",
-                mutation_namespace,
-                "--selector",
-                target_selector,
-                "--samples",
-                str(args.cgroup_samples),
-                "--interval",
-                str(args.cgroup_interval),
-                "--phase",
-                "generated_stress_candidate",
-                "--report",
-                str(args.cgroup_report),
-            ]
-            cgroup_stdout.parent.mkdir(parents=True, exist_ok=True)
-            cgroup_out = cgroup_stdout.open("w", encoding="utf-8")
-            cgroup_err = cgroup_stderr.open("w", encoding="utf-8")
-            cgroup = subprocess.Popen(cgroup_args, stdout=cgroup_out, stderr=cgroup_err, text=True)
-        runner_exit, runner_timed_out = wait_process(runner, process_budget)
-        cgroup_exit, cgroup_timed_out = wait_process(cgroup, process_budget) if cgroup else (None, False)
+        try:
+            runner = subprocess.Popen(runner_args, stdout=runner_out, stderr=runner_err, text=True)
+            deadline = time.monotonic() + max(1.0, args.injection_timeout)
+            while time.monotonic() < deadline:
+                injected_status = lifecycle_status(args.namespace, mutation_name)
+                if injected_status and injected_status.get("injected_count", 0) >= 1:
+                    break
+                if runner.poll() is not None:
+                    errors.append(f"runner exited before injection: {runner.returncode}")
+                    break
+                time.sleep(0.5)
+            if not injected_status or injected_status.get("injected_count", 0) < 1:
+                errors.append("injectedCount did not reach 1 before cgroup sampling")
+            else:
+                cgroup_args = [
+                    sys.executable,
+                    str(ROOT / "tools/capture_cgroup_cpu.py"),
+                    "--namespace",
+                    mutation_namespace,
+                    "--selector",
+                    target_selector,
+                    "--samples",
+                    str(args.cgroup_samples),
+                    "--interval",
+                    str(args.cgroup_interval),
+                    "--phase",
+                    "generated_stress_candidate",
+                    "--report",
+                    str(args.cgroup_report),
+                ]
+                cgroup_stdout.parent.mkdir(parents=True, exist_ok=True)
+                cgroup_out = cgroup_stdout.open("w", encoding="utf-8")
+                cgroup_err = cgroup_stderr.open("w", encoding="utf-8")
+                cgroup = subprocess.Popen(cgroup_args, stdout=cgroup_out, stderr=cgroup_err, text=True)
+            runner_exit, runner_timed_out = wait_process(runner, process_budget)
+            cgroup_exit, cgroup_timed_out = wait_process(cgroup, process_budget) if cgroup else (None, False)
+        except (OSError, RuntimeError, subprocess.TimeoutExpired, ValueError, json.JSONDecodeError) as exc:
+            # Round-3 P1-4: a lifecycle-stage exception (e.g. lifecycle_status
+            # timing out / failing to parse) used to escape and the orchestration
+            # report was never written. Catch it, record the reason, and let the
+            # finally + report-writing paths run so every invocation emits a
+            # report.
+            errors.append(f"orchestration lifecycle failed: {type(exc).__name__}: {exc}")
+            runner_exit = None
+            cgroup_exit = None
     finally:
         if cgroup and cgroup.poll() is None:
             cgroup.terminate()
@@ -382,7 +402,7 @@ def main() -> int:
             except subprocess.TimeoutExpired:
                 cgroup.kill()
                 cgroup.wait(timeout=5)
-        if runner.poll() is None:
+        if runner is not None and runner.poll() is None:
             runner.terminate()
             try:
                 runner.wait(timeout=5)
@@ -393,7 +413,7 @@ def main() -> int:
         # runner killed during its recovery/finally block.
         try:
             resource_present = resource_exists(mutation_kind, mutation_namespace, str(mutation_name))
-        except RuntimeError as exc:
+        except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
             # Cannot determine existence (e.g. RBAC or API timeout). Attempt
             # cleanup anyway so a transient lookup failure cannot orphan the
             # mutation resource.

@@ -253,3 +253,100 @@ python -c "import json; d=json.load(open('artifacts/experiments/execution/remedi
 | 多副本 PodChaos 真实恢复时序 | 单元测试覆盖判定逻辑；真实集群副本重建时序未验证 |
 | 历史 stress orchestration 产物无 fingerprint | 不可回溯，仅新产物生效 |
 | universe 统计功效 | weakness 仅 2，排名仅描述性（数据事实） |
+
+---
+
+# 第三轮审查修复（round-3，P1×4 + P2×3）
+
+> 日期：2026-08-09（第三轮）
+> 约束：未执行真实 Kubernetes 注入；未修改实验真值与历史结果；新重算结果写入 `execution/remediation_v3/`；每项"修改后立即测试"。
+
+## 验证总览
+
+- **`python -m pytest -q`**：**171 passed, 5 subtests passed**（修复前 162）
+- **`git diff --check`**：干净（exit 0）
+- **artifact hash**：7 个受保护 artifacts 全部 UNCHANGED
+- 未执行真实 Kubernetes 混沌注入
+
+## P1-1：preflight 不删除本次运行未创建的既有资源
+
+- **问题**：blocked 分支（mutation_exists / 未知状态）会再次查询并调用 `cleanup_mutation`，可能删除其他实验或人工创建的 Chaos 资源
+- **修复**：`tools/run_stress_with_cgroup.py` blocked 分支**不再自动清理**——资源非本进程创建，`parent_cleanup_fallback.attempted=False` 且 reason 明确"not created by this run, inspect manually"；只有正常路径（本进程成功 apply 并拥有）才清理
+- **测试**：`test_remediation_round2_stress_preflight.py` 更新（`test_unknown_state_does_not_auto_cleanup`、`test_mutation_exists_does_not_auto_cleanup`：cleanup_mock 断言 `assert_not_called`）
+- **结果**：11 passed
+
+## P1-2：三态分类把强 gRPC 故障归入 below_threshold
+
+- **问题**：weakness 集合缺 `grpc_error_observed`，OB-PAYMENT-LOSS-100 等多次 grpc_error 被归 below_threshold → "weakness 仅 2" 是分类枚举不完整造成
+- **修复**：`tools/evidence_classification.py` WEAKNESS_CLASSES 增加 `grpc_error_observed`
+- **测试**：`test_remediation_phase6_metrics.py` 新增 `test_grpc_error_observed_is_weakness`
+- **结果**：weakness 从 2 → 9（真实数据）
+
+## P1-3：一个无效重复否定同候选全部有效重复
+
+- **问题**：invalid wins over weakness，OTEL-PAYMENT-DELAY-2000 含有效 grpc_response_observed + 无效 invalid_baseline/invalid_not_injected 被整体排除
+- **修复**：`tools/evidence_classification.py` `classify_candidate` 改为**先剔除无效重复，再聚合剩余有效结论**——全部无效才 invalid，任一有效为 weakness 则 weakness，否则 below_threshold
+- **测试**：`test_remediation_phase6_metrics.py` 更新（`test_all_invalid_conclusions_is_invalid`、`test_mixed_valid_and_invalid_aggregates_valid`、`test_valid_plus_invalid_repeats_stays_known`）
+- **结果**：OTEL-PAYMENT-DELAY-2000 回 known（v3 known=12，v2 是 11）
+
+## P1-4：stress 正常执行阶段异常无报告退出
+
+- **问题**：只保护了 preflight；生命周期阶段 `lifecycle_status()` 超时后 report 不写出（已复现）
+- **修复**：`tools/run_stress_with_cgroup.py` 生命周期 try 增加内层 except（OSError/RuntimeError/TimeoutExpired/ValueError/JSONDecodeError → errors + 继续走 finally + 写 report）；`runner` 预声明 None，Popen 失败（OSError）时 finally 安全跳过 terminate；finally 的 cleanup 存在性检查异常捕获扩展到 OSError/TimeoutExpired
+- **测试**：`test_lifecycle_exception_still_writes_report`（patch lifecycle_status raise + Popen raise → report 仍写出且 errors 含 lifecycle failed）
+- **结果**：11 passed
+
+## P2-1：部分畸形 YAML 产生裸 traceback
+
+- **问题**：`metadata: bad` 触发 AttributeError，不在异常列表，无报告（已复现）
+- **修复**：`tools/run_stress_with_cgroup.py` preflight except 增加 `AttributeError, TypeError` → `yaml_shape_invalid` + 报告
+- **测试**：`test_malformed_metadata_no_traceback`
+- **结果**：11 passed
+
+## P2-2：robustness 未真正调用共享 known 集合
+
+- **问题**：`selection_robustness.analyze` 自己遍历 evidence 只排除 invalid，未检查 `own_discovery_evidence`；与 compare 的共享 `known_candidate_ids` 会分叉
+- **修复**：`tools/selection_robustness.py` 改用 `evidence_classification.known_candidate_ids(evidence)` 作为 known 集合（检查 discovery evidence + 只剔除全 invalid）；`invalid_in_universe` 用共享分类器
+- **测试**：`test_remediation_phase6_metrics.py` fixture 补 `own_discovery_evidence`（`test_known_excludes_outside_and_invalid`）
+- **结果**：两工具 known 集合一致（`test_both_tools_agree_on_known_set` 通过）
+
+## P2-3：PodChaos 只验证数量和 Ready，未验证替换身份
+
+- **问题**：未记录注入前 Pod UID，旧 Pod 未进入 terminating 的短窗口内仍可能立即判恢复
+- **修复**：`tools/runtime_applicability_gate.py` target_pods 记录 `uid`；`tools/run_chaos_experiment.py` 注入前从 preflight 提取 `pre_kill_uids` 存入 lifecycle（`recovery_pre_kill_uids`）；`wait_for_target_ready` 增加 `pre_kill_uids` + `stable_checks`（默认 2）——恢复要求旧 UID 不再出现于 active Ready 集合，且连续 stable_checks 次稳定
+- **测试**：`test_remediation_round2_podchaos_recovery.py` 新增 `IdentityReplacementTests`（旧 UID 仍在 → 不恢复；新 UID 替换 → 稳定后恢复；无替换 → 超时不恢复）
+- **结果**：10 passed
+
+## 重算 remediation_v3（分类修正后）
+
+| 指标 | v2（错误分类） | v3（修正） |
+|---|---|---|
+| compare known | 11 | **12**（OTEL-PAYMENT-DELAY-2000 回归） |
+| robustness known | 11 | **12** |
+| weakness | 2 | **6** |
+| below_threshold | 9 | 6 |
+| invalid | 1 | **0** |
+| universe | 12 | 12 |
+| known_outside_universe | 8 | 8 |
+
+- 产物：`execution/remediation_v3/compare_selection_r1_remediated_v3.json` + `selection_robustness_r1_remediated_v3.json`
+- **"weakness 仅 2" 已修正**：grpc_error 计入后 weakness=6，不再被分类枚举不完整误导
+
+## 修改文件清单（round-3）
+
+- `tools/evidence_classification.py`
+- `tools/run_chaos_experiment.py`
+- `tools/run_stress_with_cgroup.py`
+- `tools/runtime_applicability_gate.py`
+- `tools/selection_robustness.py`
+- 测试：`test_remediation_phase6_metrics.py` / `test_remediation_round2_podchaos_recovery.py` / `test_remediation_round2_stress_preflight.py`
+- 重算产物：`execution/remediation_v3/`（2 个 JSON，旧 `remediation/`、`remediation_v2/` 未覆盖）
+
+## 仍未验证的风险（round-3）
+
+| 项 | 说明 |
+|---|---|
+| 真实集群 kubectl 异常/gate/cleanup 行为 | 约束要求不执行真实注入；异常路径经单元测试验证，真实集群行为待集成验证 |
+| 多副本 PodChaos 真实 UID 替换时序 | 单元测试覆盖身份替换判定；真实集群副本重建与 UID 轮换时序未验证 |
+| 历史 stress orchestration 产物无 fingerprint | 不可回溯，仅新产物生效 |
+| universe 统计功效 | weakness=6 较 v2 提升，但 universe 仍小（12），排名仅描述性 |

@@ -24,12 +24,29 @@ import selection_robustness as sr
 
 
 class ClassifyEvidenceCandidateTests(unittest.TestCase):
-    def test_invalid_conclusion_wins(self):
+    def test_all_invalid_conclusions_is_invalid(self):
+        # Round-3 P1-3: only when EVERY conclusion is invalid is the candidate
+        # dropped from the known set.
         item = {"own_conclusions": [
-            {"classification": "response_observed"},
             {"classification": "invalid_not_injected"},
+            {"classification": "invalid_baseline"},
         ]}
         self.assertEqual(sr.classify_evidence_candidate(item), "invalid")
+
+    def test_mixed_valid_and_invalid_aggregates_valid(self):
+        # Round-3 P1-3: a single invalid repeat must NOT negate valid repeats.
+        # Drop invalid first, then aggregate the rest -> weakness.
+        item = {"own_conclusions": [
+            {"classification": "grpc_error_observed"},
+            {"classification": "response_observed"},
+            {"classification": "invalid_baseline"},
+        ]}
+        self.assertEqual(sr.classify_evidence_candidate(item), "weakness")
+
+    def test_grpc_error_observed_is_weakness(self):
+        # Round-3 P1-2: grpc_error_observed is a strong fault signal.
+        item = {"own_conclusions": [{"classification": "grpc_error_observed"}]}
+        self.assertEqual(sr.classify_evidence_candidate(item), "weakness")
 
     def test_weakness_any_conclusion(self):
         item = {"own_conclusions": [
@@ -100,11 +117,17 @@ class AnalyzeUniverseAndClassificationTests(unittest.TestCase):
         }
 
     def _evidence(self):
+        # Round-3 P2-2: fixtures must carry own_discovery_evidence because the
+        # shared known set now checks it (was silently ignored before).
         return {"candidates": [
-            {"candidate_id": "A", "own_conclusions": [{"classification": "client_timeout_observed"}]},  # weakness
-            {"candidate_id": "B", "own_conclusions": [{"classification": "response_observed"}]},          # below_threshold
-            {"candidate_id": "C", "own_conclusions": [{"classification": "invalid_not_injected"}]},       # invalid
-            {"candidate_id": "D", "own_conclusions": [{"classification": "client_timeout_observed"}]},    # outside universe
+            {"candidate_id": "A", "own_discovery_evidence": [{}],
+             "own_conclusions": [{"classification": "client_timeout_observed"}]},  # weakness
+            {"candidate_id": "B", "own_discovery_evidence": [{}],
+             "own_conclusions": [{"classification": "response_observed"}]},          # below_threshold
+            {"candidate_id": "C", "own_discovery_evidence": [{}],
+             "own_conclusions": [{"classification": "invalid_not_injected"}]},       # invalid
+            {"candidate_id": "D", "own_discovery_evidence": [{}],
+             "own_conclusions": [{"classification": "client_timeout_observed"}]},    # outside universe
         ]}
 
     def _patch_env(self, d):
@@ -143,9 +166,10 @@ class AnalyzeUniverseAndClassificationTests(unittest.TestCase):
 
 
 class SharedKnownUniverseTests(unittest.TestCase):
-    """round-2 finding #2: both tools must share the SAME known set, and a
-    candidate with an invalid conclusion (e.g. OTEL-PAYMENT-DELAY-2000 with
-    invalid_baseline + invalid_not_injected) must NOT enter the denominator."""
+    """round-2 #2 + round-3 P1-3: both tools share the SAME known set; invalid
+    REPEATS are dropped first, then the remaining valid conclusions decide the
+    class. A candidate with valid + invalid repeats (e.g. OTEL-PAYMENT-DELAY-2000)
+    stays known."""
 
     def _otel_payment_delay_item(self):
         # Mirrors artifacts/.../candidate_evidence_status.json structure.
@@ -159,22 +183,37 @@ class SharedKnownUniverseTests(unittest.TestCase):
             ],
         }
 
-    def test_invalid_conclusion_excluded_from_shared_known(self):
+    def test_valid_plus_invalid_repeats_stays_known(self):
+        # Round-3 P1-3: the valid grpc_response_observed repeat is NOT negated
+        # by the invalid repeats -> known.
         import evidence_classification as ec
         item = self._otel_payment_delay_item()
-        self.assertEqual(ec.classify_candidate(item), "invalid")
-        self.assertFalse(ec.is_known_candidate(item))
+        self.assertEqual(ec.classify_candidate(item), "below_threshold")
+        self.assertTrue(ec.is_known_candidate(item))
         evidence = {"candidates": [item]}
-        self.assertNotIn("OTEL-PAYMENT-DELAY-2000", ec.known_candidate_ids(evidence))
+        self.assertIn("OTEL-PAYMENT-DELAY-2000", ec.known_candidate_ids(evidence))
 
-    def test_compare_selection_excludes_invalid_from_denominator(self):
+    def test_compare_selection_keeps_valid_invalid_mixed_candidate(self):
         import compare_selection_methods as csm
         import evidence_classification as ec
         with patch.object(csm, "evidence_classification", ec):
             known = csm.known_discovered_candidates(
                 {"candidates": [self._otel_payment_delay_item()]}
             )
-        self.assertNotIn("OTEL-PAYMENT-DELAY-2000", known)
+        self.assertIn("OTEL-PAYMENT-DELAY-2000", known)
+
+    def test_all_invalid_repeats_excluded(self):
+        import evidence_classification as ec
+        item = {
+            "candidate_id": "X",
+            "own_discovery_evidence": [{}],
+            "own_conclusions": [
+                {"classification": "invalid_baseline"},
+                {"classification": "invalid_not_injected"},
+            ],
+        }
+        self.assertEqual(ec.classify_candidate(item), "invalid")
+        self.assertFalse(ec.is_known_candidate(item))
 
     def test_both_tools_agree_on_known_set(self):
         import compare_selection_methods as csm
@@ -190,7 +229,7 @@ class SharedKnownUniverseTests(unittest.TestCase):
         ]
         evidence = {"candidates": candidates}
         # Both tools derive known from the same shared classifier, so the sets
-        # must be identical (invalid excluded, valid discovered included).
+        # must be identical (valid-discovered included, all-invalid excluded).
         compare_known = csm.known_discovered_candidates(evidence)
         robustness_known = {
             c["candidate_id"] for c in candidates
@@ -199,7 +238,8 @@ class SharedKnownUniverseTests(unittest.TestCase):
         }
         self.assertEqual(compare_known, robustness_known)
         self.assertEqual(
-            compare_known, {"OB-PAYMENT-DELAY-2000", "TT-STATION-DELAY-100"}
+            compare_known,
+            {"OB-PAYMENT-DELAY-2000", "TT-STATION-DELAY-100", "OTEL-PAYMENT-DELAY-2000"},
         )
 
 

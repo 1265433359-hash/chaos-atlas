@@ -131,18 +131,28 @@ def analyze(replicate: int, registry_path: Path | None, n_boot: int,
     evidence = load(EXECUTION_DIR / "candidate_evidence_status.json")
     if sev is None:
         sev = severity_weights()
-    # Phase-6 (findings #5/#9/#10): known = evidence candidates INSIDE the
-    # registry universe only, classified into weakness/below_threshold/invalid.
+    # Phase-6 (findings #5/#9/#10) + round-3 P2-2: known candidates MUST come
+    # from the SAME shared known set used by compare_selection_methods
+    # (evidence_classification.known_candidate_ids), which checks
+    # own_discovery_evidence AND drops only all-invalid candidates. Previously
+    # this function iterated universe evidence on its own and only excluded
+    # "invalid", so a discovery-less candidate would silently re-enter the
+    # denominator and the two tools would diverge.
+    candidates_by_id = {str(c.get("candidate_id")): c for c in evidence.get("candidates", [])}
     evidence_candidates = {
         str(c.get("candidate_id")): classify_evidence_candidate(c)
         for c in evidence.get("candidates", [])
     }
-    known_all = sorted(c for c in evidence_candidates if c in universe)
-    known = [c for c in known_all if evidence_candidates[c] != "invalid"]
+    known_shared = evidence_classification.known_candidate_ids(evidence)
+    known_all = sorted(cid for cid in known_shared if cid in universe)
+    known = [c for c in known_all if evidence_candidates.get(c) != "invalid"]
     known_set = set(known)
-    invalid_in_universe = sorted(c for c in known_all if evidence_candidates[c] == "invalid")
-    weakness_ids = sorted(c for c in known if evidence_candidates[c] == "weakness")
-    below_threshold_ids = sorted(c for c in known if evidence_candidates[c] == "below_threshold")
+    invalid_in_universe = sorted(
+        cid for cid in candidates_by_id
+        if cid in universe and classify_evidence_candidate(candidates_by_id[cid]) == "invalid"
+    )
+    weakness_ids = sorted(c for c in known if evidence_candidates.get(c) == "weakness")
+    below_threshold_ids = sorted(c for c in known if evidence_candidates.get(c) == "below_threshold")
     selections = method_selections(registry)
 
     schema_results: dict[str, dict[str, float]] = {}

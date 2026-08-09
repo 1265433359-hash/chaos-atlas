@@ -86,24 +86,29 @@ class StressPreflightExceptionTests(unittest.TestCase):
             report = json.loads(orch.read_text(encoding="utf-8"))
             self.assertEqual(report["preflight_blocked"], "preflight_error")
 
-    def test_unknown_state_still_attempts_cleanup(self):
-        # Even when existence cannot be determined, an idempotent cleanup is
-        # attempted (unknown must not skip the final cleanup).
+    def test_unknown_state_does_not_auto_cleanup(self):
+        # Round-3 P1-1: an unknown existence state must NOT trigger cleanup of a
+        # resource this process did not create (could delete another experiment's
+        # or a hand-created Chaos resource).
         with tempfile.TemporaryDirectory() as d:
             def _raises(*_a, **_k):
                 raise RuntimeError("cannot determine existence")
             rc, orch, cleanup_mock = _run_main(Path(d), exists_side_effect=_raises)
             self.assertEqual(rc, 2)
             report = json.loads(orch.read_text(encoding="utf-8"))
-            cleanup_mock.assert_called_once()
+            cleanup_mock.assert_not_called()
             self.assertIsNotNone(report["safety"]["parent_cleanup_fallback"])
+            self.assertFalse(report["safety"]["parent_cleanup_fallback"]["attempted"])
+            self.assertIn("not created by this run", report["safety"]["parent_cleanup_fallback"]["reason"])
 
-    def test_mutation_exists_is_preflight_blocked(self):
+    def test_mutation_exists_does_not_auto_cleanup(self):
+        # Round-3 P1-1: a pre-existing mutation must be reported, never deleted.
         with tempfile.TemporaryDirectory() as d:
             rc, orch, cleanup_mock = _run_main(Path(d), exists_side_effect=lambda *a, **k: True)
             self.assertEqual(rc, 2)
             report = json.loads(orch.read_text(encoding="utf-8"))
             self.assertEqual(report["preflight_blocked"], "mutation_exists")
+            cleanup_mock.assert_not_called()
 
     def test_yaml_parse_error_blocked(self):
         with tempfile.TemporaryDirectory() as d:
@@ -124,6 +129,63 @@ class StressPreflightExceptionTests(unittest.TestCase):
             exists_mock.assert_not_called()  # YAML parse failure never queries
             report = json.loads(orch.read_text(encoding="utf-8"))
             self.assertEqual(report["preflight_blocked"], "yaml_shape_invalid")
+
+    def test_malformed_metadata_no_traceback(self):
+        # Round-3 P2-1: metadata being a non-dict must not raise AttributeError
+        # outside the exception list; it must produce a blocked report.
+        with tempfile.TemporaryDirectory() as d:
+            mutation = Path(d) / "mutation.yaml"
+            mutation.write_text(
+                "apiVersion: chaos-mesh.org/v1alpha1\n"
+                "kind: StressChaos\n"
+                "metadata: bad\n"
+                "spec: {}\n",
+                encoding="utf-8",
+            )
+            orch = Path(d) / "orchestration.json"
+            sys.argv = [
+                "run_stress_with_cgroup", str(mutation),
+                "--namespace", "train-ticket-lab", "--service", "demo",
+                "--remote-port", "1", "--local-port", "2",
+                "--request-path", "/", "--runner-report", str(Path(d) / "r.json"),
+                "--cgroup-report", str(Path(d) / "c.json"),
+                "--orchestration-report", str(orch),
+            ]
+            with mock.patch.object(rswc, "resource_exists") as exists_mock:
+                rc = rswc.main()
+            self.assertEqual(rc, 2)
+            exists_mock.assert_not_called()
+            report = json.loads(orch.read_text(encoding="utf-8"))
+            self.assertEqual(report["preflight_blocked"], "yaml_shape_invalid")
+
+    def test_lifecycle_exception_still_writes_report(self):
+        # Round-3 P1-4: an exception during the lifecycle stage (e.g.
+        # lifecycle_status timing out) must not abort without a report.
+        with tempfile.TemporaryDirectory() as d:
+            mutation = Path(d) / "mutation.yaml"
+            mutation.write_text(MUTATION_YAML, encoding="utf-8")
+            orch = Path(d) / "orchestration.json"
+            sys.argv = [
+                "run_stress_with_cgroup", str(mutation),
+                "--namespace", "train-ticket-lab", "--service", "demo",
+                "--remote-port", "1", "--local-port", "2",
+                "--request-path", "/", "--runner-report", str(Path(d) / "r.json"),
+                "--cgroup-report", str(Path(d) / "c.json"),
+                "--orchestration-report", str(orch),
+            ]
+            # preflight passes (resource absent), lifecycle_status raises.
+            with mock.patch.object(rswc, "resource_exists", return_value=False), \
+                 mock.patch.object(rswc, "lifecycle_status", side_effect=TimeoutError("kubectl timed out")), \
+                 mock.patch.object(rswc, "cleanup_mutation", return_value={
+                     "attempted": True, "confirmed": True,
+                 }), \
+                 mock.patch.object(rswc.subprocess, "Popen", side_effect=OSError("no runner")):
+                rc = rswc.main()
+            report = json.loads(orch.read_text(encoding="utf-8"))
+            self.assertIsNone(report["preflight_blocked"])
+            self.assertTrue(any("lifecycle failed" in e for e in report["errors"]))
+            self.assertIn("runner_exit", report)
+            self.assertIn("parent_cleanup_fallback", report["safety"])
 
 
 class StressProvenanceContractTests(unittest.TestCase):

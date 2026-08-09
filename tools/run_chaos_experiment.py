@@ -154,6 +154,8 @@ def wait_for_target_ready(
     timeout: float,
     interval: float,
     expected_pod_count: int | None = None,
+    pre_kill_uids: set[str] | None = None,
+    stable_checks: int = 2,
 ) -> tuple[bool, dict[str, Any], list[str]]:
     """Wait for the target selector's Pods to be Ready after a one-shot kill.
 
@@ -166,6 +168,16 @@ def wait_for_target_ready(
       - When ``expected_pod_count`` is None (unknown / single-replica legacy
         callers), the original "any Ready" behaviour is preserved so existing
         single-replica PodChaos runs keep working.
+
+    Round-3 P2-3: additionally verify IDENTITY replacement and stability:
+      - ``pre_kill_uids``: the UIDs recorded BEFORE injection. Recovery is only
+        confirmed once none of those UIDs is still present among the active
+        Ready pods (the killed identity must be gone / replaced). This closes
+        the short window where the old Pod is still Ready but already scheduled
+        for termination, which would otherwise look like an instant recovery.
+      - ``stable_checks``: the recovered state must be observed this many
+        consecutive polls (default 2) to avoid counting a transient Ready as
+        a stable recovery.
     """
     labels = selector.get("labelSelectors") if isinstance(selector, dict) else {}
     labels = labels if isinstance(labels, dict) else {}
@@ -173,6 +185,7 @@ def wait_for_target_ready(
     deadline = time.monotonic() + max(0.1, timeout)
     errors: list[str] = []
     last: dict[str, Any] = {}
+    stable_run = 0
     while time.monotonic() <= deadline:
         args = ["get", "pods", "-n", namespace]
         if label_query:
@@ -190,18 +203,31 @@ def wait_for_target_ready(
             item for item in items
             if not item.get("metadata", {}).get("deletionTimestamp")
         ]
+        active_uids = {
+            str(item.get("metadata", {}).get("uid"))
+            for item in active
+            if item.get("metadata", {}).get("uid")
+        }
         ready_names = [
             str(item.get("metadata", {}).get("name"))
             for item in active
             if _pod_ready(item)
         ]
+        ready_uids = {
+            str(item.get("metadata", {}).get("uid"))
+            for item in active
+            if _pod_ready(item) and item.get("metadata", {}).get("uid")
+        }
         all_active_ready = len(ready_names) == len(active) and bool(active)
         last = {
             "selector": label_query,
             "pod_count": len(items),
             "active_pod_count": len(active),
             "ready_pods": ready_names,
+            "ready_uids": sorted(ready_uids),
             "expected_pod_count": expected_pod_count,
+            "pre_kill_uids": sorted(pre_kill_uids) if pre_kill_uids else None,
+            "stable_checks": stable_checks,
         }
         if expected_pod_count is not None:
             # Multi-replica: need at least the pre-injection count of non-
@@ -210,8 +236,18 @@ def wait_for_target_ready(
         else:
             # Legacy single-replica semantics: any Ready Pod is sufficient.
             recovered = bool(ready_names)
+        if recovered and pre_kill_uids:
+            # Identity check: none of the pre-injection UIDs may remain among
+            # the active Ready pods (the killed identity must be gone).
+            if ready_uids & pre_kill_uids:
+                recovered = False
+                stable_run = 0
         if recovered:
-            return True, last, errors
+            stable_run += 1
+            if stable_run >= stable_checks:
+                return True, last, errors
+        else:
+            stable_run = 0
         time.sleep(max(0.1, interval))
     return False, last, errors
 
@@ -534,13 +570,21 @@ def main() -> int:
                     preflight = report.get("preflight") or {}
                     target_pods = (preflight.get("checks") or {}).get("target_pods") or []
                     expected_count = len(target_pods) if isinstance(target_pods, list) and target_pods else None
+                    # Round-3 P2-3: record pre-injection Pod UIDs so recovery
+                    # verifies identity replacement, not just count+Ready.
+                    pre_kill_uids = {
+                        str(pod.get("uid")) for pod in target_pods
+                        if isinstance(pod, dict) and pod.get("uid")
+                    } or None
                     report["lifecycle"]["recovery_target_pod_count"] = expected_count
+                    report["lifecycle"]["recovery_pre_kill_uids"] = sorted(pre_kill_uids) if pre_kill_uids else None
                     recovered, recovered_status, errors = wait_for_target_ready(
                         namespace,
                         preflight.get("selector") or {},
                         args.recovery_timeout,
                         args.poll_interval,
                         expected_pod_count=expected_count,
+                        pre_kill_uids=pre_kill_uids,
                     )
                     report["lifecycle"]["recovery_semantics"] = "target_selector_ready_after_podchaos"
                 else:

@@ -308,6 +308,10 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
         {
             "namespace": pod.get("metadata", {}).get("namespace"),
             "name": pod.get("metadata", {}).get("name"),
+            # Round-3 P2-3: record the Pod UID so a PodChaos recovery can verify
+            # that the killed identity was actually replaced (a same-UID Ready
+            # Pod would mean the old one was never gone, i.e. no replacement).
+            "uid": pod.get("metadata", {}).get("uid"),
             "terminating": bool(pod.get("metadata", {}).get("deletionTimestamp")),
             "ready": ready_condition(pod),
             "restarts": sum(
