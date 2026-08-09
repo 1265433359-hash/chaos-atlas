@@ -18,14 +18,26 @@ class DecisionEngineTests(unittest.TestCase):
         self.assertEqual(ranked[0]["candidate_id"], "OTEL-CURRENCY-LOSS-100")
 
     def test_timeout_protected_delay_is_hard_skipped(self):
-        cand = {"candidate_id": "OB-PRODUCTCATALOG-DELAY-2000", "edge": "frontend->productcatalog"}
+        # Phase-4 fix (stale assertion): OB-PRODUCTCATALOG was corrected in the
+        # A2 audit to no_timeout (main.go:161 is connection-level, not per-request),
+        # so its delay is NOT hard-skipped. The genuinely protected edge today is
+        # OB-frontend->adservice (100ms per-request timeout, rpc.go:120) and the
+        # Sock orders->payment/shipping Future.get edges.
+        cand = {"candidate_id": "OB-FRONTEND-ADSERVICE-DELAY-2000", "edge": "frontend->adservice"}
         result = score_candidate(cand)
         self.assertEqual(result["priority"], "skip_protected")
         self.assertIn("explicit_timeout", result["reasons"][0])
 
+    def test_connection_level_timeout_is_not_a_contract(self):
+        # A2 regression: productcatalog's 3s WithTimeout guards connection setup
+        # only; a delay candidate there must NOT be hard-skipped.
+        cand = {"candidate_id": "OB-PRODUCTCATALOG-DELAY-2000", "edge": "frontend->productcatalog"}
+        result = score_candidate(cand)
+        self.assertNotEqual(result["priority"], "skip_protected")
+
     def test_loss_not_hard_skipped_by_timeout(self):
         # loss faults are NOT protected by a timeout, even on a protected edge
-        cand = {"candidate_id": "OB-PRODUCTCATALOG-LOSS-100", "edge": "frontend->productcatalog"}
+        cand = {"candidate_id": "OB-FRONTEND-ADSERVICE-LOSS-100", "edge": "frontend->adservice"}
         result = score_candidate(cand)
         self.assertNotEqual(result["priority"], "skip_protected")
 

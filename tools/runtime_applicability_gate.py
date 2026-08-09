@@ -65,6 +65,20 @@ def selector_string(labels: dict[str, Any]) -> str:
     return ",".join(f"{key}={value}" for key, value in sorted(labels.items()))
 
 
+def _kubectl_not_found(error: str | None) -> bool:
+    """True only for an explicit kubectl NotFound (never timeout/RBAC/API)."""
+    if not error:
+        return False
+    lowered = error.lower()
+    return "not found" in lowered and "forbidden" not in lowered and "timed out" not in lowered
+
+
+def _is_empty_selector(labels: dict[str, Any] | None) -> bool:
+    """A mutation with an empty labelSelectors degrades to a whole-namespace
+    query (target no longer deterministic). This is a safety boundary: reject."""
+    return not labels or len(labels) == 0
+
+
 def target_pods(namespaces: list[str], labels: dict[str, Any]) -> tuple[list[dict[str, Any]], list[str]]:
     pods: list[dict[str, Any]] = []
     errors: list[str] = []
@@ -221,11 +235,16 @@ def check_mutation(path: Path) -> dict[str, Any]:
         and all(value in ALLOWED_NAMESPACES for value in namespaces)
     )
     mode_ok = requested_mode in ALLOWED_MODES
+    # Phase-2 remediation (findings #2): an empty labelSelectors would degrade
+    # the target query to the whole namespace, making the experiment target
+    # non-deterministic. Reject it as a hard safety boundary.
+    selector_labels_ok = not _is_empty_selector(labels if isinstance(labels, dict) else None)
     checks["scope_guard"] = {
         "allowed_namespace": ALLOWED_NAMESPACE,
         "allowed_namespaces": sorted(ALLOWED_NAMESPACES),
         "metadata_namespace_ok": namespace_ok,
         "selector_namespaces_ok": selector_namespaces_ok,
+        "selector_labels_ok": selector_labels_ok,
         "requested_namespaces": namespaces,
         "requested_mode": requested_mode,
         "allowed_modes": sorted(ALLOWED_MODES),
@@ -235,6 +254,8 @@ def check_mutation(path: Path) -> dict[str, Any]:
         errors.append(f"mutation namespace must be one of {sorted(ALLOWED_NAMESPACES)}")
     if not selector_namespaces_ok:
         errors.append(f"selector namespaces must be limited to {sorted(ALLOWED_NAMESPACES)}")
+    if not selector_labels_ok:
+        errors.append("selector labelSelectors must be non-empty; empty selector degrades to a whole-namespace target")
     if not mode_ok:
         errors.append("mutation mode must be 'one'; high-blast-radius modes including 'all' are forbidden")
 
@@ -263,8 +284,15 @@ def check_mutation(path: Path) -> dict[str, Any]:
     if component_errors:
         errors.extend(component_errors)
 
-    pods, pod_errors = target_pods(namespaces, labels if isinstance(labels, dict) else {})
-    errors.extend(pod_errors)
+    # Phase-2 remediation (findings #2): never issue a whole-namespace pod query
+    # for an empty selector - the gate is read-only but must not perform a
+    # broad-scope lookup, and the target would be non-deterministic anyway.
+    # The scope_guard error already records the rejection.
+    if selector_labels_ok:
+        pods, pod_errors = target_pods(namespaces, labels if isinstance(labels, dict) else {})
+        errors.extend(pod_errors)
+    else:
+        pods, pod_errors = [], []
     checks["selector_matches"] = bool(pods)
     checks["target_pods"] = [
         {
@@ -298,9 +326,27 @@ def check_mutation(path: Path) -> dict[str, Any]:
     if namespace:
         resource_args.extend(["-n", str(namespace)])
     resource_code, _, resource_error = run_kubectl(resource_args)
-    checks["mutation_name_available"] = resource_code != 0
+    # Phase-2 remediation (findings #2): a mutation name is "available" ONLY when
+    # kubectl reports an explicit NotFound. A timeout (124) or RBAC/API error means
+    # the existence is UNKNOWN — the gate must fail closed (never treat unknown as
+    # available and allow a duplicate/blocked injection).
+    if resource_code == 0:
+        name_status = "exists"
+    elif _kubectl_not_found(resource_error):
+        name_status = "available"
+    elif resource_code == 124:
+        name_status = "unknown_timeout"
+    else:
+        name_status = "unknown_error"
+    checks["mutation_name_available"] = name_status == "available"
+    checks["mutation_name_status"] = name_status
+    checks["mutation_name_error"] = (resource_error or "").strip()
     if resource_code == 0:
         errors.append(f"mutation already exists: {namespace}/{metadata.get('name')}")
+    elif name_status.startswith("unknown"):
+        errors.append(
+            f"mutation name lookup is {name_status}; cannot confirm availability, failing closed: {resource_error}".strip()
+        )
 
     injector = daemon_prerequisite(kind, components.get("daemon_pods", []))
     checks["injector_prerequisite"] = injector
@@ -308,6 +354,7 @@ def check_mutation(path: Path) -> dict[str, Any]:
     hard_checks = [
         namespace_ok,
         selector_namespaces_ok,
+        selector_labels_ok,
         mode_ok,
         checks["yaml_shape"],
         checks["crd_exists"],
@@ -318,7 +365,12 @@ def check_mutation(path: Path) -> dict[str, Any]:
         checks["mutation_name_available"],
         injector["status"] == "pass",
     ]
-    if not namespace_ok or not selector_namespaces_ok or not mode_ok:
+    if not namespace_ok or not selector_namespaces_ok or not selector_labels_ok or not mode_ok:
+        decision = "blocked"
+    elif checks.get("mutation_name_status") in ("unknown_timeout", "unknown_error", "exists"):
+        # Phase-2: a name-lookup failure (timeout/RBAC) or an existing resource
+        # must yield a structured BLOCKED, not not_applicable - we cannot
+        # confirm the injection is safe to run.
         decision = "blocked"
     elif not checks["yaml_shape"] or not checks["crd_exists"] or not checks["chaos_components_ready"]:
         decision = "blocked"

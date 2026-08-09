@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "phase": 0,
+  "created_at": "2026-08-09T13:23:18.039720+00:00",
+  "branch": "remediation/2026-08-09-review",
+  "commit": "6554fe497867af33a0ac41de34c15a20eadcc874",
+  "python": "3.14.0",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "pytest": "pytest 9.1.1",
+  "git_status_short": "?? .planning/2026-08-09-review-remediation/",
+  "artifact_hashes": {
+    "artifacts/experiments/contract_inventory.json": "d023fdf7e81fb89a",
+    "artifacts/experiments/selection_experience.json": "f7280be785e34504",
+    "artifacts/experiments/judgment_experience.json": "7756d8d3beb0ea6a",
+    "artifacts/experiments/defense_pattern_library.json": "afffb6ada45c947a",
+    "artifacts/experiments/knowledge_audit_log.json": "fa16962ad4c26110",
+    "artifacts/experiments/our_evidence_chain_root_causes.json": "e9c380f7e13d02a7",
+    "artifacts/sock-shop/sock_shop_verdicts.json": "52d40bf258f0ef35"
+  },
+  "test_baseline": {
+    "pytest": "84 passed, 1 failed (tools/tests/)",
+    "known_failure": "test_timeout_protected_delay_is_hard_skipped: asserts OB-PRODUCTCATALOG-DELAY-2000 is hard-skipped, but A2 audit corrected productcatalog contract to no_timeout (main.go:161 is connection-level, not per-request) - test assertion is stale, will be fixed in phase 4 to match current contract schema"
+  }
+}

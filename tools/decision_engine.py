@@ -60,7 +60,7 @@ def selection_hits(candidate: dict[str, Any]) -> list[tuple[str, float]]:
 
     se = load(SE_PATH)
     cid = candidate.get("candidate_id", "")
-    service = normalize_service(cid)
+    service = normalize_service(cid, strict=True)
     fault = fault_of(cid)
     hits: list[tuple[str, float]] = []
     for entry in se.get("entries", []):
@@ -127,7 +127,9 @@ def availability_hard_filter(candidate: dict[str, Any]) -> dict[str, Any]:
         return {}
     from contract_inventory import availability_for_service
 
-    profile = availability_for_service(project_of(cid), normalize_service(cid))
+    # Phase-4: strict=True so an unknown project fails closed instead of being
+    # silently routed into the train-ticket availability universe.
+    profile = availability_for_service(project_of(cid, strict=True), normalize_service(cid, strict=True))
     if not profile:
         return {}
     redundant = int(profile.get("replicas", 1)) > 1 or bool(profile.get("pdb"))

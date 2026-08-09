@@ -23,6 +23,8 @@ try:
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("run this script from the repository with tools/ on the import path") from exc
 
+from environment_fingerprint import load_fingerprint  # phase-5 provenance
+
 
 RESOURCE_KIND_TO_PLURAL = dict(RESOURCE_BY_KIND)
 
@@ -178,17 +180,59 @@ def wait_for_target_ready(
 
 
 def delete_resource(kind: str, namespace: str, name: str, timeout: int = 30) -> dict[str, Any]:
+    """Delete a Chaos resource and VERIFY absence, distinguishing failure modes.
+
+    Phase-1 remediation (review findings #1): previously `resource_absent_after_delete`
+    was `verify_code != 0`, which treated ANY non-zero kubectl get as "resource gone" -
+    a kubectl timeout (124), RBAC error (403/1 with 'forbidden'), or API error would be
+    misreported as a successful cleanup, potentially leaving Chaos resources resident.
+
+    Now the verify step classifies the outcome:
+      - verify_status == "absent"  : kubectl confirms "not found" (NotFound) -> cleanup succeeded
+      - verify_status == "timeout" : kubectl timed out -> resource state UNKNOWN, must fail loudly
+      - verify_status == "error"   : RBAC/API error (e.g. forbidden) -> cleanup NOT confirmed
+      - verify_status == "exists"  : resource still present -> delete did not complete
+    `resource_absent_after_delete` is preserved (backward-compat boolean) and is True
+    ONLY when absence is confirmed; the new structured fields are authoritative.
+    """
     plural = resource_name(kind)
     code, stdout, stderr = run_kubectl(
         ["delete", plural, name, "-n", namespace, "--ignore-not-found=true"], timeout=timeout
     )
     verify_code, _, verify_error = run_kubectl(["get", plural, name, "-n", namespace], timeout=timeout)
+
+    if verify_code == 0:
+        verify_status = "exists"
+    elif verify_code == 124:
+        verify_status = "timeout"
+    elif _kubectl_not_found(verify_error):
+        verify_status = "absent"
+    else:
+        verify_status = "error"
+
+    absent = verify_status == "absent"
     return {
         "delete_command_ok": code == 0,
         "delete_output": (stdout or stderr).strip(),
-        "resource_absent_after_delete": verify_code != 0,
+        # Backward-compatible boolean: True ONLY when absence is confirmed.
+        "resource_absent_after_delete": absent,
+        # Structured, authoritative classification (phase-1 remediation).
+        "absent_confirmed": absent,
+        "verify_status": verify_status,
         "verify_error": verify_error.strip() if verify_error else None,
+        "delete_failed": not (code == 0) or verify_status in ("timeout", "error", "exists"),
     }
+
+
+def _kubectl_not_found(error: str | None) -> bool:
+    """True when a kubectl get error is a genuine NotFound (not timeout/RBAC/API)."""
+    if not error:
+        return False
+    lowered = error.lower()
+    # NotFound comes from kubectl itself: 'Error from server (NotFound): ... not found'.
+    # Reject messages that actually indicate permissions/transient failure so those
+    # are never misreported as a confirmed absence.
+    return "not found" in lowered and "forbidden" not in lowered and "timed out" not in lowered
 
 
 def wait_for_port(host: str, port: int, process: subprocess.Popen[str], timeout: float) -> None:
@@ -329,10 +373,14 @@ def main() -> int:
     args = parser.parse_args()
 
     report: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "tool": "run_chaos_experiment",
         "started_at": now(),
         "mutation": str(args.mutation).replace("\\", "/"),
+        # Phase-5 provenance: bind the environment fingerprint and declare the
+        # baseline/lifecycle/cleanup contract up front so cross-batch reports
+        # are auditable for drift and never claim fields they did not collect.
+        "environment_fingerprint": load_fingerprint(),
         "request_config": {
             "service": args.service,
             "remote_port": args.remote_port,
@@ -347,6 +395,7 @@ def main() -> int:
         },
         "preflight": None,
         "lifecycle": {"applied": False, "injected": False, "recovered": False, "cleanup": None},
+        "baseline": None,
         "requests": [],
         "warmup_requests": [],
         "errors": [],

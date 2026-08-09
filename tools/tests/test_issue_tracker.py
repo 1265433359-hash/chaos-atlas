@@ -18,15 +18,23 @@ from issue_tracker import (
 
 class IssueTrackerTests(unittest.TestCase):
     def setUp(self):
-        # isolate reflow writes from the real knowledge libraries
+        # isolate ALL reflow writes from the real knowledge libraries and the
+        # real issue tracker (phase-3 remediation: tests must never touch
+        # versioned artifacts). TRACKER_PATH was previously unpatched, so
+        # init()/set_submitted()/record_response() wrote the REAL tracker.
         tmp = Path(tempfile.mkdtemp())
+        self._tracker = tmp / "issue_tracker.json"
         self._se = tmp / "selection_experience.json"
         self._se.write_text(json.dumps({"schema_version": 1, "entries": []}), encoding="utf-8")
         self._je = tmp / "judgment_experience.json"
         self._je.write_text(json.dumps({"schema_version": 1, "entries": []}), encoding="utf-8")
+        self._audit = tmp / "knowledge_audit_log.json"
+        self._audit.write_text(json.dumps({"schema_version": 1, "entries": []}), encoding="utf-8")
         self._patchers = [
+            patch("issue_tracker.TRACKER_PATH", self._tracker),
             patch("issue_tracker.SE_PATH", self._se),
             patch("issue_tracker.JE_PATH", self._je),
+            patch("issue_tracker.AUDIT_PATH", self._audit),
         ]
         for p in self._patchers:
             p.start()
@@ -53,11 +61,15 @@ class IssueTrackerTests(unittest.TestCase):
 
     def test_confirmed_reflow_upgrades_se_confidence(self):
         init()
-        # seed a matching SE entry in the isolated library so reflow has a target
+        # seed a matching SE entry in the isolated library so reflow has a target.
+        # The seed MUST reference ISSUE-001's supported_by candidate so the match
+        # works against the isolated tracker (phase-3 isolation exposed that the
+        # old seed referenced an unrelated candidate and only passed because it
+        # read the REAL tracker's historical supported_by).
         se = json.loads(self._se.read_text(encoding="utf-8"))
         se["entries"].append({
             "id": "SE-NETWORK-FAMILY-001", "confidence": "medium",
-            "experiment_evidence": ["OTEL-EMAIL-LOSS-100 (sev3)"],
+            "experiment_evidence": ["OTEL-SHIPPING-DELAY-2000"],
         })
         self._se.write_text(json.dumps(se, ensure_ascii=True), encoding="utf-8")
         record_response("ISSUE-001", "confirmed", note="upstream confirmed")
@@ -68,7 +80,7 @@ class IssueTrackerTests(unittest.TestCase):
     def test_audit_log_records_external_events(self):
         init()
         record_response("ISSUE-002", "no_response", note="silent")
-        log = json.loads(Path("artifacts/experiments/knowledge_audit_log.json").read_text(encoding="utf-8"))
+        log = json.loads(self._audit.read_text(encoding="utf-8"))
         events = [e for e in log["entries"] if e.get("change") == "external_no_response"]
         self.assertTrue(any("ISSUE-002" in e.get("source", "") for e in events))
 

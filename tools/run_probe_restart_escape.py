@@ -19,6 +19,7 @@ from run_chaos_experiment import (
     wait_for_lifecycle,
     wait_for_port,
 )
+from environment_fingerprint import load_fingerprint  # phase-5 provenance
 from run_grpc_chaos_experiment import baseline_is_valid, run_client
 from runtime_applicability_gate import check_mutation, ready_condition
 
@@ -157,10 +158,12 @@ def main() -> int:
     args = parser.parse_args()
 
     report: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "tool": "run_probe_restart_escape",
         "started_at": now(),
         "mutation": str(args.mutation).replace("\\", "/"),
+        # Phase-5 provenance: bind fingerprint + declare baseline/lifecycle contract.
+        "environment_fingerprint": load_fingerprint(),
         "preflight": None,
         "baseline": None,
         "first_injection": {},
@@ -245,8 +248,14 @@ def main() -> int:
             15.0,
         )
 
-        report["cleanup"].append(delete_resource(kind, namespace, name))
-        active_resource = None
+        cleanup_result = delete_resource(kind, namespace, name)
+        report["cleanup"].append(cleanup_result)
+        # Phase-1 remediation (findings #1): only clear the active_resource once
+        # absence is CONFIRMED. If the delete timed out, hit an RBAC/API error, or
+        # the resource still exists, keep active_resource set so the finally block
+        # issues a final cleanup attempt instead of dropping the last chance.
+        if cleanup_result.get("absent_confirmed"):
+            active_resource = None
         target_recovered, recovered_state = wait_for_ready_target(
             namespace, labels, 120.0, args.poll_interval
         )

@@ -60,13 +60,15 @@ DEFAULT_ISSUES: list[dict[str, Any]] = [
 ]
 
 
-def load(path: Path = TRACKER_PATH) -> dict[str, Any]:
+def load(path: Path | None = None) -> dict[str, Any]:
+    path = path or TRACKER_PATH
     if path.exists():
         return json.loads(path.read_text(encoding="utf-8"))
     return {"schema_version": 1, "tool": "issue_tracker", "issues": []}
 
 
-def save(doc: dict[str, Any], path: Path = TRACKER_PATH) -> None:
+def save(doc: dict[str, Any], path: Path | None = None) -> None:
+    path = path or TRACKER_PATH
     path.write_text(json.dumps(doc, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
 
 
@@ -79,7 +81,8 @@ def append_audit(entry: dict[str, Any]) -> None:
     AUDIT_PATH.write_text(json.dumps(log, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
 
 
-def init(path: Path = TRACKER_PATH) -> dict[str, Any]:
+def init(path: Path | None = None) -> dict[str, Any]:
+    path = path or TRACKER_PATH
     """Initialize the tracker. DEFAULT_ISSUES is the authoritative definition;
     existing entries keep their static fields (title/draft_path/supported_by)
     but runtime state (status/url/external_response) is reset to ready — init
@@ -104,7 +107,8 @@ def init(path: Path = TRACKER_PATH) -> dict[str, Any]:
     return doc
 
 
-def set_submitted(issue_id: str, url: str, path: Path = TRACKER_PATH) -> dict[str, Any]:
+def set_submitted(issue_id: str, url: str, path: Path | None = None) -> dict[str, Any]:
+    path = path or TRACKER_PATH
     doc = load(path)
     for issue in doc["issues"]:
         if issue["issue_id"] == issue_id:
@@ -123,7 +127,8 @@ def set_submitted(issue_id: str, url: str, path: Path = TRACKER_PATH) -> dict[st
     return doc
 
 
-def record_response(issue_id: str, response: str, note: str = "", path: Path = TRACKER_PATH) -> dict[str, Any]:
+def record_response(issue_id: str, response: str, note: str = "", path: Path | None = None) -> dict[str, Any]:
+    path = path or TRACKER_PATH
     """response: confirmed | rejected | no_response. Reflows into knowledge."""
     if response not in ("confirmed", "rejected", "no_response"):
         raise SystemExit("--response must be confirmed | rejected | no_response")

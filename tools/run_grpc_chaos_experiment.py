@@ -27,6 +27,7 @@ try:
         wait_for_target_ready,
     )
     from classify_runtime_result import exit_code_for_classification
+    from environment_fingerprint import load_fingerprint  # phase-5 provenance
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("run this script from the repository with tools/ on the import path") from exc
 
@@ -156,11 +157,14 @@ def main() -> int:
     args = parser.parse_args()
 
     report: dict[str, Any] = {
-        "schema_version": 1,
+        "schema_version": 2,
         "tool": "run_grpc_chaos_experiment",
         "started_at": now(),
         "mutation": str(args.mutation).replace("\\", "/"),
         "client_script": str(args.client_script).replace("\\", "/"),
+        # Phase-5 provenance: bind environment fingerprint; baseline lifecycle is
+        # declared up front and must be populated by the runner (never assumed).
+        "environment_fingerprint": load_fingerprint(),
         "request_config": {
             "checkout_service": args.checkout_service,
             "checkout_remote_port": args.checkout_remote_port,
@@ -173,6 +177,7 @@ def main() -> int:
         },
         "preflight": None,
         "lifecycle": {"applied": False, "injected": False, "recovered": False, "cleanup": None},
+        "baseline": None,
         "baseline_workload": None,
         "workload": None,
         "errors": [],

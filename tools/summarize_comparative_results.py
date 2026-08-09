@@ -27,11 +27,19 @@ def first_observation(report: dict[str, Any], key: str) -> dict[str, Any]:
     return observations[0] if observations else {}
 
 
+def _scenario_from_name(name: str) -> str:
+    """Strip the replicate suffix (r1/r2/r3/r4/initial) from a record name so
+    records group by scenario. 'TT station delay r4' -> 'TT station delay'."""
+    import re
+    return re.sub(r"\s+(?:r\d+|initial|replicate\s*\d+)\s*$", "", name, flags=re.IGNORECASE).strip()
+
+
 def http_record(name: str, run_path: str, classification_path: str) -> dict[str, Any]:
     result = load(classification_path)
     observations = result.get("observations") or {}
     return {
         "name": name,
+        "scenario": _scenario_from_name(name),
         "protocol": "http",
         "run_report": run_path,
         "classification_report": classification_path,
@@ -55,6 +63,7 @@ def grpc_record(name: str, run_path: str) -> dict[str, Any]:
     cleanup = lifecycle.get("cleanup") or {}
     return {
         "name": name,
+        "scenario": _scenario_from_name(name),
         "protocol": "grpc",
         "run_report": run_path,
         "classification": report.get("result_classification"),
@@ -101,6 +110,13 @@ def build_summary() -> dict[str, Any]:
     ]
     valid = [item for item in runtime if item["valid_lifecycle"]]
     by_class = Counter(item.get("classification") for item in valid)
+    # Phase-5 remediation (findings #11): scenario repetitions were hardcoded
+    # to 3 while the input records contain 4 per scenario (r1..r4). Compute the
+    # per-scenario count dynamically from the actual runtime records.
+    scenario_replicates: dict[str, int] = {}
+    for item in runtime:
+        scenario = item["scenario"]
+        scenario_replicates[scenario] = scenario_replicates.get(scenario, 0) + 1
     pilot = {}
     for replicate in (1, 2, 3):
         data = load(f"artifacts/experiments/execution/pilot_gate_evaluation_r{replicate}.json")
@@ -123,14 +139,9 @@ def build_summary() -> dict[str, Any]:
             "total_runtime_records": len(runtime),
             "valid_lifecycle_rate": round(len(valid) / len(runtime), 4) if runtime else 0,
             "classification_counts": dict(sorted(by_class.items(), key=lambda item: str(item[0]))),
-            "scenario_replicates": {
-                "tt_station_delay": 3,
-                "ob_productcatalog_kill": 3,
-                "ob_payment_delay": 3,
-                "ob_payment_loss": 3,
-                "otel_payment_delay": 3,
-                "otel_payment_loss": 3,
-            },
+            # Phase-5: computed from the actual records, not hardcoded (was 3
+            # for every scenario while the inputs contain 4 records each).
+            "scenario_replicates": dict(sorted(scenario_replicates.items())),
         },
         "negative_control": "artifacts/experiments/execution/track_k_ob_adservice_negative_control.json",
         "probe_restart": "artifacts/experiments/execution/track_k_ob_probe_restart_escape_summary.json",
@@ -191,7 +202,7 @@ def markdown(summary: dict[str, Any]) -> str:
         "",
         "## Interpretation",
         "",
-        "- The six runtime scenarios each have three valid repetitions.",
+        "- Repetition counts per scenario are computed from the actual records (see runtime_summary.scenario_replicates); do not assume a fixed count.",
         "- K7 probe-restart evidence is reported separately as recovery amplification, not as a clean escape.",
         "- The pilot gate table is an eligibility comparison; it must not be presented as a superiority score.",
         "",

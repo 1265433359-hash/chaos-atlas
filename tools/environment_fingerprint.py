@@ -19,6 +19,22 @@ ROOT = Path(__file__).resolve().parents[1]
 FINGERPRINT_PATH = ROOT / "artifacts" / "experiments" / "environment_fingerprint.json"
 
 
+def load_fingerprint(path: Path = FINGERPRINT_PATH) -> dict[str, Any] | None:
+    """Load the persisted environment fingerprint (phase-5 provenance).
+
+    Runners embed this into their report so a cross-batch comparison can audit
+    environment drift (kernel / Chaos Mesh version / namespaces). Returns None
+    when absent so callers can degrade gracefully but must record that the
+    fingerprint is missing.
+    """
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
 def run(cmd: list[str]) -> str:
     try:
         return subprocess.run(cmd, capture_output=True, text=True, timeout=15).stdout.strip()

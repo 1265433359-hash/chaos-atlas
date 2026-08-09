@@ -105,14 +105,35 @@ def cleanup_mutation(kind: str, namespace: str, name: str) -> dict[str, Any]:
         verify = run_kubectl(["get", plural, name, "-n", namespace], timeout=30)
     except (OSError, subprocess.TimeoutExpired) as exc:
         return {"attempted": True, "confirmed": False, "error": str(exc)}
+    # Phase-1 remediation (findings #1): absence is confirmed ONLY on an explicit
+    # NotFound. A timeout (124) or RBAC/API error means the resource state is
+    # unknown -> confirmed stays False so callers retry / fail loudly.
+    verify_code, _, verify_error = verify
+    if verify_code == 0:
+        verify_status = "exists"
+    elif verify_code == 124:
+        verify_status = "timeout"
+    elif _kubectl_not_found(verify_error):
+        verify_status = "absent"
+    else:
+        verify_status = "error"
+    absent = verify_status == "absent"
     return {
         "attempted": True,
         "delete_return_code": delete[0],
         "delete_output": (delete[1] or delete[2]).strip(),
-        "resource_absent_after_delete": verify[0] != 0,
+        "resource_absent_after_delete": absent,
+        "verify_status": verify_status,
         "verify_error": (verify[2] or verify[1]).strip(),
-        "confirmed": delete[0] == 0 and verify[0] != 0,
+        "confirmed": delete[0] == 0 and absent,
     }
+
+
+def _kubectl_not_found(error: str | None) -> bool:
+    if not error:
+        return False
+    lowered = error.lower()
+    return "not found" in lowered and "forbidden" not in lowered and "timed out" not in lowered
 
 
 def resource_exists(kind: str, namespace: str, name: str) -> bool:

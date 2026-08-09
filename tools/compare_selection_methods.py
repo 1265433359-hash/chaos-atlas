@@ -90,8 +90,18 @@ def compute(replicate: int, registry_path: Path | None = None) -> dict[str, Any]
         or EXECUTION_DIR / f"deep_matrix_registry_r{replicate}_m1.json"
     )
     evidence = load_json(EXECUTION_DIR / "candidate_evidence_status.json")
-    known = known_discovered_candidates(evidence)
     universe = set(registry.get("candidate_universe") or [])
+    all_known = known_discovered_candidates(evidence)
+
+    # Phase-4 remediation (findings #5): the core registry universe (12) and the
+    # evidence pool (20) are different sets. Previously `known` and `selected`
+    # were NOT intersected with `universe`, so recall/weighted denominators and
+    # `unknown_selected` counted candidates OUTSIDE the registry's own universe,
+    # producing "negative remainder" artifacts (known-hits referencing
+    # non-universe candidates). All metrics must be computed over the SAME
+    # universe: candidates outside the registry are neither a hit nor a miss.
+    known = all_known & universe
+    universe_known_outside = sorted(all_known - universe)
 
     known_weight = sum(severity_of(candidate_id, evidence) for candidate_id in known)
 
@@ -101,7 +111,10 @@ def compute(replicate: int, registry_path: Path | None = None) -> dict[str, Any]
         if method_id not in METHOD_IDS:
             continue
         plans = method.get("plans") or []
-        selected = {str((plan.get("execution") or {}).get("candidate_id")) for plan in plans}
+        selected_all = {str((plan.get("execution") or {}).get("candidate_id")) for plan in plans}
+        # Only candidates inside the registry universe participate in scoring.
+        selected = selected_all & universe
+        selected_outside_universe = sorted(selected_all - universe)
         hits = selected & known
         recall = len(hits) / len(known) if known else 0.0
         weighted = (
@@ -116,6 +129,8 @@ def compute(replicate: int, registry_path: Path | None = None) -> dict[str, Any]
                 "name": method.get("name"),
                 "status": method.get("status"),
                 "selected_count": len(selected),
+                "selected_outside_universe_count": len(selected_outside_universe),
+                "selected_outside_universe_ids": selected_outside_universe,
                 "known_hits": len(hits),
                 "known_hit_ids": sorted(hits),
                 "known_recall@10": round(recall, 3),
@@ -129,17 +144,24 @@ def compute(replicate: int, registry_path: Path | None = None) -> dict[str, Any]
             }
         )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "tool": "compare_selection_methods",
         "computed_at": datetime.now(timezone.utc).isoformat(),
         "replicate": replicate,
         "candidate_universe_size": len(universe),
+        # Phase-4: explicitly surface universe-vs-evidence divergence instead of
+        # silently computing on mismatched sets.
+        "known_inside_universe_count": len(known),
+        "known_outside_universe_count": len(universe_known_outside),
+        "known_outside_universe_ids": universe_known_outside,
+        "universe_consistent": not universe_known_outside,
         "known_discovered": sorted(known),
         "known_discovered_count": len(known),
         "metric": (
             "known-positive recall@10 plus severity-weighted recall "
             "(3=timeout/hang/cascade, 2=latency amplified, 1=weak); "
-            "full U@10 not computable with partial ground truth"
+            "full U@10 not computable with partial ground truth; ALL metrics are "
+            "computed over the registry universe only (phase-4 remediation)"
         ),
         "severity_scheme": SEVERITY,
         "bias_note": (

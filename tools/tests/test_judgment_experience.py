@@ -56,10 +56,18 @@ if __name__ == "__main__":
 
 
 class SelectionExperienceTests(unittest.TestCase):
+    """Phase-3 isolation: seed()/load() must run against a temp path, never the
+    real selection_experience.json (previously seed() rewrote the versioned
+    artifact on every test run, reordering entries and dropping runtime fields)."""
+
+    def _tmp_path(self):
+        import tempfile
+        return Path(tempfile.mkdtemp()) / "selection_experience.json"
+
     def test_seed_entries_all_validate(self):
         from selection_experience import SEED_ENTRIES, load, seed, validate
 
-        doc = seed()
+        doc = seed(path=self._tmp_path())
         self.assertEqual(validate(doc), [])
         self.assertGreaterEqual(len(doc.get("entries", [])), 5)
 

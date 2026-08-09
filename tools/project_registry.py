@@ -25,22 +25,37 @@ PLURAL_ALIAS = {
 }
 
 
-def project_of(candidate_id: str) -> str:
+def project_of(candidate_id: str, strict: bool = False) -> str:
+    """Resolve the project prefix for a candidate id.
+
+    Phase-4 remediation (findings #13): an unknown prefix previously fell back
+    silently to TT, which could misroute candidates from a new project into the
+    train-ticket knowledge/evidence universe. With strict=True the caller
+    explicitly opts into fail-closed behavior (ValueError on unknown prefix);
+    default remains the legacy tolerant lookup so existing tools keep working
+    unless they opt in. Decision/summary tools should pass strict=True.
+    """
     upper = candidate_id.upper()
     for prefix in PROJECTS:
         if upper.startswith(f"{prefix}-"):
             return prefix
-    return "TT"  # unknown prefix falls back to TT (legacy behavior, flagged)
+    if strict:
+        raise ValueError(
+            f"unknown project prefix in candidate id {candidate_id!r}; "
+            f"known prefixes: {sorted(PROJECTS)}"
+        )
+    return "TT"  # legacy tolerant fallback (flagged; callers should use strict=True)
 
 
-def normalize_service(candidate_id: str) -> str:
+def normalize_service(candidate_id: str, strict: bool = False) -> str:
     """Strip project prefix + fault suffix, normalize case and plural.
 
     SOCK-CARTS-LOSS-100 -> CART; OB-CHECKOUT-DELAY-2000 -> CHECKOUT;
     OTEL-PRODUCTCATALOG-DELAY-2000 -> PRODUCTCATALOG; TT-BASIC-DELAY-100 -> BASIC.
+    strict=True propagates to project_of so unknown projects fail closed.
     """
     upper = candidate_id.upper()
-    project = project_of(upper)
+    project = project_of(upper, strict=strict)
     rest = upper[len(project) + 1:] if upper.startswith(f"{project}-") else upper
     # strip fault suffix
     for token in ("-DELAY", "-LOSS", "-KILL", "-CPU", "-RESTART", "-STRESS"):
