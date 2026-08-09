@@ -1,9 +1,40 @@
 {
-  "schema_version": 1,
+  "schema_version": 3,
   "tool": "sock_shop_execution_verdicts",
   "project": "sock-shop",
-  "fault_injection": "HTTPChaos (edge-level, custom WSL2 kernel)",
+  "fault_injection": "HTTPChaos (edge-level) + PodChaos pod-kill (availability layer, dual-track)",
   "date": "2026-08-09",
+  "revision_note": "v3: adds AVAILABILITY layer (dual-track method, 2026-08-09). v2 corrected 4 orders edges to defended (real-chain Future.get 5s). v3 adds deployment-availability track: single-replica no-PDB services total-outage on kill (front-end 130s, orders 56s) - the same judgment template applied to the availability dimension, verified independently of ChaosEater.",
+  "availability_layer": {
+    "track": "deployment-availability",
+    "method": "static manifest (replicas/pdb/probes) + PodChaos pod-kill runtime (500ms Ready sampling)",
+    "summary": "8/8 Sock Shop business services are single-replica with no PDB and no HPA -> any single pod kill = total outage (AD-REDUNDANCY-001). Verified on 2: front-end (outage 130s) and orders (outage 56s).",
+    "verdicts": [
+      {
+        "service": "front-end",
+        "replicas": 1,
+        "pdb": null,
+        "verdict": "weakness",
+        "severity": 3,
+        "outage_window_s": 130,
+        "recovered_s": 131,
+        "evidence": "PodChaos pod-kill -> Ready 1->0 for 130s; static: single-replica no-PDB. artifacts/sock-shop/avail_frontend_kill.json",
+        "ce_parity": "CE real deployment judged this same weakness (front-end 91.11%<99%); we reproduced independently with static+kill evidence"
+      },
+      {
+        "service": "orders",
+        "replicas": 1,
+        "pdb": null,
+        "verdict": "weakness",
+        "severity": 3,
+        "outage_window_s": 56,
+        "recovered_s": 57,
+        "evidence": "PodChaos pod-kill -> Ready 1->0 for 56s; static: single-replica no-PDB. artifacts/sock-shop/avail_orders_kill.json",
+        "ce_parity": "not in CE candidate set"
+      }
+    ],
+    "note": "8/8 services single-replica no-PDB (static inventory). Verified 2 (front-end, orders); remaining 6 (payment/shipping/user/carts/catalogue/queue-master) share identical manifest shape -> same verdict by AD-REDUNDANCY-001 (static rule), runtime verification pending."
+  },
   "candidates": [
     {
       "candidate_id": "SOCK-FRONTEND-CARTS-LOSS-100",
@@ -13,7 +44,8 @@
       "recovered": "yes (after cleanup+pod restart)",
       "verdict": "weakness",
       "severity": 3,
-      "evidence": "abort 导致客户端 10s 挂死（同步无超时）"
+      "evidence": "abort 导致客户端 10s 挂死（同步无超时）",
+      "measurement": "direct"
     },
     {
       "candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100",
@@ -23,27 +55,28 @@
       "recovered": "yes",
       "verdict": "weakness",
       "severity": 3,
-      "evidence": "abort 导致客户端 10s 挂死"
+      "evidence": "abort 导致客户端 10s 挂死",
+      "measurement": "direct"
     },
     {
       "candidate_id": "SOCK-ORDERS-PAYMENT-LOSS-100",
       "edge": "orders->payment",
       "baseline": "HTTP 404 ~8ms",
-      "injected": "HTTP 000 ~10010ms (abort -> client hang)",
-      "recovered": "yes",
-      "verdict": "weakness",
-      "severity": 3,
-      "evidence": "abort 导致客户端 10s 挂死"
+      "injected_direct": "HTTP 000 ~10010ms (abort -> client hang, DIRECT measurement artifact)",
+      "verdict": "defended",
+      "severity": 0,
+      "evidence": "orders OrdersController.java:139 paymentFuture.get(http.timeout=5s, SECONDS). Loss (connection refused) -> Future.get throws TimeoutException at 5s, never infinite hang. Verified: same 5s defense triggered on delay 6s (5.07s TimeoutException). LOSS under real chain not separately re-run; inferred from shared Future.get + delay evidence.",
+      "measurement": "real-chain (delay) + code inference (loss)"
     },
     {
       "candidate_id": "SOCK-ORDERS-SHIPPING-LOSS-100",
       "edge": "orders->shipping",
       "baseline": "HTTP 200 ~62ms",
-      "injected": "HTTP 000 ~8ms (abort, fast-fail)",
-      "recovered": "HTTP 200 ~11ms (natural)",
-      "verdict": "weakness",
-      "severity": 2,
-      "evidence": "abort 生效但客户端 8ms 快速感知失败（有容错语义），服务不可用是事实但未拖垮调用方"
+      "injected_direct": "HTTP 000 ~8ms (abort, fast-fail; DIRECT measurement)",
+      "verdict": "defended",
+      "severity": 0,
+      "evidence": "orders OrdersController.java:160 shipmentFuture.get(http.timeout=5s, SECONDS). Same 5s defense; loss fast-fails (connection refused) or TimeoutException at 5s. LOSS under real chain not separately re-run; inferred from shared Future.get.",
+      "measurement": "real-chain (delay) + code inference (loss)"
     },
     {
       "candidate_id": "SOCK-FRONTEND-CARTS-DELAY-2000",
@@ -53,7 +86,8 @@
       "recovered": "HTTP 500 ~14ms",
       "verdict": "weakness",
       "severity": 2,
-      "evidence": "2s 延迟精确放大 20x，功能仍响应（性能弱点）"
+      "evidence": "2s 延迟精确放大 20x，功能仍响应（性能弱点）",
+      "measurement": "direct"
     },
     {
       "candidate_id": "SOCK-FRONTEND-CATALOGUE-DELAY-2000",
@@ -63,34 +97,39 @@
       "recovered": "HTTP 500 ~8ms",
       "verdict": "weakness",
       "severity": 2,
-      "evidence": "2s 延迟精确放大"
+      "evidence": "2s 延迟精确放大",
+      "measurement": "direct"
     },
     {
       "candidate_id": "SOCK-ORDERS-PAYMENT-DELAY-2000",
       "edge": "orders->payment",
-      "baseline": "HTTP 404 ~8ms",
-      "injected": "HTTP 000 ~10010ms (delay -> client hang)",
-      "recovered": "yes",
-      "verdict": "weakness",
-      "severity": 3,
-      "evidence": "delay 导致客户端 10s 挂死（无超时，比预期更严重）"
+      "baseline_chain": "POST /orders -> 201 @ 0.19s",
+      "injected": "2s netem on payment veth: direct payment 4.0s; POST /orders -> 201 @ 4.15s (absorbed by 5s Future.get)",
+      "injected_6s": "6s netem: direct payment 12.0s; POST /orders -> 500 @ 5.10s (TimeoutException: null)",
+      "recovered": "POST /orders -> 201 @ 0.22s",
+      "verdict": "defended",
+      "severity": 0,
+      "evidence": "orders->payment has REAL 5s Future.get timeout: 2s delay absorbed (201 @ 4.15s, within window); 6s delay -> TimeoutException at 5.10s. Direct measurement (12s hang) is position artifact. See artifacts/sock-shop/sock_orders_future_get_verified.md",
+      "measurement": "real-chain (POST /orders)"
     },
     {
       "candidate_id": "SOCK-ORDERS-SHIPPING-DELAY-2000",
       "edge": "orders->shipping",
-      "baseline": "HTTP 200 ~138ms",
-      "injected": "HTTP 200 ~2014ms (full wait)",
-      "recovered": "HTTP 200 ~11ms",
-      "verdict": "weakness",
-      "severity": 2,
-      "evidence": "2s 延迟完整等待后成功返回（性能弱点，功能完整）"
+      "baseline_chain": "POST /orders -> 201 @ 0.19s",
+      "injected": "2s netem on shipping veth: direct shipping 6.0s (exceeds 5s window); POST /orders -> 500 @ 5.07s (TimeoutException)",
+      "recovered": "POST /orders -> 201 @ 0.22s",
+      "verdict": "defended",
+      "severity": 0,
+      "evidence": "orders->shipping has REAL 5s Future.get timeout (shipmentFuture, shared http.timeout=5): any latency beyond window triggers TimeoutException at ~5s, never infinite hang. See artifacts/sock-shop/sock_orders_future_get_verified.md",
+      "measurement": "real-chain (POST /orders)"
     }
   ],
   "summary": {
     "total": 8,
-    "weakness": 8,
-    "defended": 0,
+    "weakness": 4,
+    "defended": 4,
     "below_threshold": 0,
-    "note": "Sock Shop 核心下单链路的全部 8 个 HTTP 边均无超时保护：任何故障注入都暴露弱点（floor effect）。候选池由我们按业务链路构造，全落在核心链路。"
+    "revision": "v1 8/8 weakness (direct-only) -> v2 4/8 weakness + 4/8 defended (real-chain verification added). The 4 corrected edges are orders->payment and orders->shipping (delay+loss): code-level Future.get(5s) defense invisible to direct port measurement.",
+    "note": "v1 的 floor effect（8/8 全弱）是测量位置的伪影：直连 orders 端口看不到代码层 5s 异步超时。v2 走真实下单链路后，orders 的两个下游边被证明有防御；front-end 的 4 个边（carts/catalogue）仍无超时保护，保持 weakness。"
   }
 }

@@ -12,6 +12,14 @@ skip recommendations by composing:
 3. JUDGMENT experience (JE-*): severity_adjustment hints (coupling upgrades,
    no-contract downgrades) for the ranking.
 
+Dual-track hard filters (2026-08-09, availability_defense_design.md):
+- availability_hard_filter: KILL/CPU candidate on a single-replica no-PDB
+  service is a CONFIRMED single-point-of-failure - verdict known a priori
+  (AD-REDUNDANCY-001), routes the candidate to the availability track.
+- contract_hard_filter: DELAY candidate on a source-verified explicit_timeout
+  edge is protected (timeout covers delay), plus LOSS when the edge is
+  loss_bounded (Future.get-style defenses bound loss too).
+
 This runs WITHOUT the LLM — it is the auditable rule layer of the method.
 The LLM layer (M1/M5) is a separate, optional enhancer.
 """
@@ -96,6 +104,48 @@ def judgment_hint(candidate: dict[str, Any]) -> str:
     return ""
 
 
+def availability_hard_filter(candidate: dict[str, Any]) -> dict[str, Any]:
+    """Availability-layer hard constraint (dual-track, 2026-08-09).
+
+    A KILL/CPU candidate on a service whose static deployment profile shows NO
+    redundancy (replicas==1 and no PDB) is a CONFIRMED single-point-of-failure:
+    killing the only pod = total outage, by definition. This is a hard skip on
+    budget (we already know the verdict from static evidence) and routes the
+    candidate to the availability track instead of the contract track.
+
+    NOT a copy of ChaosEater's hardcoded availableReplicas check: the profile
+    comes from the contract-inventory AVAILABILITY registry (manifest facts),
+    the rule is an auditable rule in this engine, and the evidence is
+    static(manifest) + runtime(kill) dual-chain, not a single threshold.
+    """
+    from project_registry import project_of, normalize_service, fault_of
+
+    cid = candidate.get("candidate_id", "")
+    if not cid:
+        return {}
+    if fault_of(cid) not in ("kill", "cpu"):
+        return {}
+    from contract_inventory import availability_for_service
+
+    profile = availability_for_service(project_of(cid), normalize_service(cid))
+    if not profile:
+        return {}
+    redundant = int(profile.get("replicas", 1)) > 1 or bool(profile.get("pdb"))
+    if not redundant:
+        return {
+            "hard_skip": True,
+            "availability": True,
+            "reason": (
+                f"service {profile['service']} is single-replica no-PDB "
+                f"(static manifest): {cid.split('-')[0]} kill/cpu of the only pod = "
+                f"total outage, verdict known a priori (AD-REDUNDANCY-001); "
+                f"execute only for evidence-chain completeness, not for selection"
+            ),
+            "evidence": profile.get("static_prediction", "")[:100],
+        }
+    return {"redundant": True, "reason": f"service {profile['service']} has redundancy (replicas={profile['replicas']})"}
+
+
 def contract_hard_filter(candidate: dict[str, Any]) -> dict[str, Any]:
     """Contract inventory as a HARD constraint (not a hint): a delay candidate
     on a source-verified explicit_timeout edge is protected (timeout covers
@@ -117,10 +167,19 @@ def contract_hard_filter(candidate: dict[str, Any]) -> dict[str, Any]:
         return {}
     upper = cid.upper()
     is_delay = "DELAY" in upper
-    if contract.get("contract") == "explicit_timeout" and is_delay:
+    # Future.get-style async defenses also bound LOSS (connection-refused
+    # fast-fails; blackhole times out at the same deadline) - NEVER an infinite
+    # hang. Only edges explicitly marked loss_bounded in the inventory get the
+    # LOSS hard-skip; ordinary timeouts (e.g. OB adservice 100ms) do NOT cover
+    # loss in the default model (loss == 100% packet drop is still high value).
+    is_loss = "LOSS" in upper
+    loss_covered = is_loss and bool(contract.get("loss_bounded"))
+    if contract.get("contract") == "explicit_timeout" and (is_delay or loss_covered):
         return {
             "hard_skip": True,
-            "reason": f"edge {edge} is source-verified explicit_timeout; delay is covered by timeout (contract_inventory)",
+            "reason": f"edge {edge} is source-verified explicit_timeout; "
+                      f"{'delay' if is_delay else 'loss'} is covered by the timeout"
+                      f"{' (loss_bounded)' if loss_covered else ''} (contract_inventory)",
             "evidence": contract.get("evidence", "")[:80],
         }
     return {}
@@ -128,7 +187,20 @@ def contract_hard_filter(candidate: dict[str, Any]) -> dict[str, Any]:
 
 def score_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
     """Score a candidate from the three libraries (no LLM)."""
-    # Hard constraint first: timeout-protected delay is excluded before scoring.
+    # Hard constraint 1: availability layer — single-replica no-PDB kill/cpu
+    # verdict is known a priori (AD-REDUNDANCY-001), route to availability track.
+    avail = availability_hard_filter(candidate)
+    if avail.get("hard_skip"):
+        return {
+            "candidate_id": candidate.get("candidate_id"),
+            "edge": candidate.get("edge"),
+            "score": -999.0,
+            "priority": "availability_known",
+            "reasons": [avail["reason"]],
+            "hard_skip": True,
+            "availability_track": True,
+        }
+    # Hard constraint 2: contract layer — timeout-protected delay is excluded.
     hard = contract_hard_filter(candidate)
     if hard.get("hard_skip"):
         return {

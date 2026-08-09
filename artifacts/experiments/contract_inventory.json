@@ -1,8 +1,8 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "tool": "contract_inventory",
-  "generated_at": "2026-08-09T04:47:50.087169+00:00",
-  "principle": "Runner/request timeouts are the TEST CLIENT's budget, never a system contract. Only source/config-declared deadlines count for contract-violation judgment (A2 audit). 'unknown' means source not checked.",
+  "generated_at": "2026-08-09T11:57:07.637816+00:00",
+  "principle": "Runner/request timeouts are the TEST CLIENT's budget, never a system contract. Only source/config-declared deadlines count for contract-violation judgment (A2 audit). 'unknown' means source not checked. AVAILABILITY (schema v2): deployment-manifest facts (replicas/pdb/probes) for the deployment-availability layer (dual-track, 2026-08-09).",
   "contracts": {
     "OB-checkout->payment": {
       "contract": "no_timeout",
@@ -84,6 +84,116 @@
         "value_s": 8.0
       },
       "note": "order query delay -> ~4s response, no system timeout"
+    },
+    "SOCK-orders->payment": {
+      "contract": "explicit_timeout",
+      "loss_bounded": true,
+      "evidence": "sock-shop orders OrdersController.java:139 paymentFuture.get(http.timeout, SECONDS); @Value(\"${http.timeout:5}\") default 5s; verified via jar javap (Future.get + TimeoutException) AND runtime: 6s injection -> TimeoutException at 5.07s, 2s injection absorbed at 4.15s (2026-08-09 real-chain experiment)",
+      "client_budget": {
+        "source": "direct curl orders svc (sock_execute_one.sh)",
+        "value_s": 10.0
+      },
+      "note": "CODE-LEVEL async timeout (Future.get), not visible in config or direct port measurement. Direct measurement shows 12s hang; only business-chain (POST /orders) reveals the 5s defense. loss_bounded=True: Future.get also bounds LOSS (connection-refused fast-fails, blackhole times out at 5s) - never an infinite hang. REVISED 2026-08-09 from no_timeout."
+    },
+    "SOCK-orders->shipping": {
+      "contract": "explicit_timeout",
+      "loss_bounded": true,
+      "evidence": "sock-shop orders OrdersController.java:160 shipmentFuture.get(http.timeout, SECONDS); @Value(\"${http.timeout:5}\") default 5s; runtime: shipping 2s injection -> 5.07s TimeoutException (2026-08-09 real-chain experiment)",
+      "client_budget": {
+        "source": "direct curl orders svc (sock_execute_one.sh)",
+        "value_s": 10.0
+      },
+      "note": "Same Future.get defense as orders->payment (shared http.timeout=5). loss_bounded=True: same bound on LOSS. REVISED 2026-08-09 from no_timeout."
+    }
+  },
+  "availability": {
+    "SOCK": {
+      "FRONTEND": {
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "liveness_probe": {
+          "timeout_s": 1,
+          "period_s": 3
+        },
+        "readiness_probe": {
+          "timeout_s": 1
+        },
+        "static_prediction": "single-replica no-PDB: kill 1 pod = total outage; liveness 1s/3s aggressive -> delay-injected pod may be killed (self-inflicted); no redundancy defense",
+        "probe_note": "liveness 1s timeout was NOT relaxed for availability test (only payment was relaxed during contract experiments)"
+      },
+      "USER": {
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "liveness_probe": {
+          "timeout_s": 1,
+          "period_s": 3
+        },
+        "readiness_probe": {
+          "timeout_s": 1
+        },
+        "static_prediction": "single-replica no-PDB: kill 1 pod = total outage"
+      },
+      "CATALOGUE": {
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "liveness_probe": {
+          "timeout_s": 1,
+          "period_s": 3
+        },
+        "readiness_probe": {
+          "timeout_s": 1
+        },
+        "static_prediction": "single-replica no-PDB: kill 1 pod = total outage; catalogue-db OOM-crashloops (independent infra weakness, not probe config)"
+      },
+      "PAYMENT": {
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "liveness_probe": {
+          "timeout_s": 25,
+          "period_s": 20
+        },
+        "readiness_probe": {
+          "timeout_s": 25
+        },
+        "static_prediction": "single-replica no-PDB: kill 1 pod = total outage; probes were RELAXED during contract experiments (25s) so slow pods survive",
+        "probe_note": "NOT the original config (original 1s/3s, relaxed 2026-08-09 for delay experiments)"
+      },
+      "ORDER": {
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "liveness_probe": null,
+        "readiness_probe": null,
+        "static_prediction": "single-replica no-PDB no-probes: kill 1 pod = total outage; no probe-based self-heal trigger (kubelet restarts only on container death)"
+      },
+      "SHIPPING": {
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "liveness_probe": null,
+        "readiness_probe": null,
+        "static_prediction": "single-replica no-PDB no-probes: kill 1 pod = total outage"
+      },
+      "CART": {
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "liveness_probe": null,
+        "readiness_probe": null,
+        "static_prediction": "single-replica no-PDB no-probes: kill 1 pod = total outage"
+      },
+      "QUEUE-MASTER": {
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "liveness_probe": null,
+        "readiness_probe": null,
+        "static_prediction": "single-replica no-PDB: kill 1 pod = total outage (not in verified chain; registry-completeness only)"
+      }
     }
   },
   "candidate_map": {
@@ -104,6 +214,10 @@
     "TT-STATION-DELAY-500": "TT-client->station",
     "TT-BASIC-DELAY-100": "TT-basic->station",
     "TT-BASIC-DELAY-500": "TT-basic->station",
-    "TT-ORDER-DELAY-2000": "TT-client->order"
+    "TT-ORDER-DELAY-2000": "TT-client->order",
+    "SOCK-ORDERS-PAYMENT-DELAY-2000": "SOCK-orders->payment",
+    "SOCK-ORDERS-PAYMENT-LOSS-100": "SOCK-orders->payment",
+    "SOCK-ORDERS-SHIPPING-DELAY-2000": "SOCK-orders->shipping",
+    "SOCK-ORDERS-SHIPPING-LOSS-100": "SOCK-orders->shipping"
   }
 }
