@@ -29,6 +29,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import evidence_classification
+
 ROOT = Path(__file__).resolve().parents[1]
 EXECUTION_DIR = ROOT / "artifacts" / "experiments" / "execution"
 
@@ -77,11 +79,12 @@ def load_json(path: Path) -> dict[str, Any]:
 
 
 def known_discovered_candidates(evidence: dict[str, Any]) -> set[str]:
-    discovered: set[str] = set()
-    for item in evidence.get("candidates", []):
-        if item.get("own_discovery_evidence"):
-            discovered.add(str(item["candidate_id"]))
-    return discovered
+    # Round-2 finding #2: use the SHARED known-set definition so candidates with
+    # invalid conclusions (invalid_baseline / invalid_not_injected / ...) never
+    # enter the metric denominator. Previously only own_discovery_evidence was
+    # checked, which let e.g. OTEL-PAYMENT-DELAY-2000 (contains invalid_baseline
+    # + invalid_not_injected conclusions) count as known.
+    return evidence_classification.known_candidate_ids(evidence)
 
 
 def compute(replicate: int, registry_path: Path | None = None) -> dict[str, Any]:

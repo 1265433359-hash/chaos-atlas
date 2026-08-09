@@ -70,6 +70,13 @@ class ScenarioReplicatesDynamicTests(unittest.TestCase):
         self.assertNotIn('"tt_station_delay": 3', src)
         self.assertIn("scenario_replicates[scenario] = scenario_replicates.get(scenario, 0) + 1", src)
 
+    def test_no_hardcoded_valid_runtime_replicates(self):
+        # Round-2 finding #6: scope must NOT claim a uniform 4 (or any fixed
+        # count); per-scenario counts come from the actual records.
+        src = Path(scr.__file__).read_text(encoding="utf-8")
+        self.assertNotIn('"valid_runtime_replicates": 4', src)
+        self.assertIn("uniform_replicates", src)
+
     def test_scenario_field_present_in_records(self):
         # build the runtime records list WITHOUT touching real files: patch load()
         # to return stub reports; assert each record carries a scenario key and
@@ -86,6 +93,31 @@ class ScenarioReplicatesDynamicTests(unittest.TestCase):
             rec2 = scr.grpc_record("OB payment loss r4", "c.json")
         self.assertEqual(rec1["scenario"], "TT station delay")
         self.assertEqual(rec2["scenario"], "OB payment loss")
+
+    def test_different_replicate_counts_reported_honestly(self):
+        # If scenarios have different record counts, the summary must report
+        # per-scenario counts and NOT fabricate a uniform number.
+        stub = {
+            "lifecycle": {"applied": True, "injected": True, "recovered": True,
+                          "cleanup": {"delete_command_ok": True, "resource_absent_after_delete": True}},
+            "result_classification": "weakness",
+            "observations": {"injected": True, "recovered": True, "cleanup_confirmed": True},
+        }
+        with patch.object(scr, "load", return_value=stub):
+            records = [
+                scr.grpc_record("OB payment delay r1", "x.json"),
+                scr.grpc_record("OB payment delay r2", "x.json"),
+                scr.grpc_record("OTel payment loss r1", "x.json"),
+                scr.grpc_record("OTel payment loss r2", "x.json"),
+                scr.grpc_record("OTel payment loss r3", "x.json"),
+            ]
+        counts: dict[str, int] = {}
+        for item in records:
+            counts[item["scenario"]] = counts.get(item["scenario"], 0) + 1
+        self.assertEqual(counts["OB payment delay"], 2)
+        self.assertEqual(counts["OTel payment loss"], 3)
+        # The report must not claim a uniform count when they differ.
+        self.assertNotEqual(len(set(counts.values())), 1)
 
 
 if __name__ == "__main__":

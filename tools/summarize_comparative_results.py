@@ -130,7 +130,11 @@ def build_summary() -> dict[str, Any]:
         "generated_at": now(),
         "scope": {
             "projects": ["train-ticket-lab", "online-boutique-lab", "otel-demo-lab"],
-            "valid_runtime_replicates": 4,
+            # Round-2 finding #6: no hardcoded uniform replicate count. The
+            # per-scenario counts come from the actual input records and are
+            # reported explicitly (runtime_summary.scenario_replicates).
+            "scenario_replicates": dict(sorted(scenario_replicates.items())),
+            "uniform_replicates": len(set(scenario_replicates.values())) <= 1,
             "selection_policy": "one-target mutations, baseline before injection, recovery and cleanup required",
         },
         "runtime_evidence": runtime,

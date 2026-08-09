@@ -20,6 +20,8 @@ import random
 from pathlib import Path
 from typing import Any
 
+import evidence_classification
+
 ROOT = Path(__file__).resolve().parents[1]
 EXECUTION_DIR = ROOT / "artifacts" / "experiments" / "execution"
 
@@ -113,39 +115,13 @@ def pairwise_difference(sel_a: set[str], sel_b: set[str], known: list[str], sev:
             "significant_at_5pct": ci[0] > 0 or ci[1] < 0}
 
 
-# Classification of a candidate into weakness / below_threshold / invalid,
-# based on the executed evidence conclusions (findings #10).
-_WEAKNESS_CLASSES = {
-    "client_timeout_observed",
-    "server_error_observed",
-    "response_contract_changed",
-    "response_preserved_latency_degradation",
-}
-_INVALID_CLASSES = {
-    "invalid_not_injected",
-    "invalid_baseline",
-    "invalid_request_configuration",
-    "platform_or_preflight_blocked",
-    "not_applicable",
-    "transport_or_observation_error",
-}
-
-
 def classify_evidence_candidate(item: dict[str, Any]) -> str:
-    """weakness | below_threshold | invalid for one evidence candidate.
+    """weakness | below_threshold | invalid | unclassified for one candidate.
 
-    A candidate is `invalid` if ANY conclusion is invalid (no defense reading
-    is possible); else weakness if ANY conclusion is a weakness class; else
-    below_threshold (responses observed without degradation).
+    Round-2 finding #2: delegates to the SHARED evidence_classification module so
+    the invalid-class set and weakness set are identical to compare_selection_methods.
     """
-    conclusions = item.get("own_conclusions") or []
-    if not conclusions:
-        return "invalid"  # no usable evidence -> cannot support a conclusion
-    if any(c.get("classification") in _INVALID_CLASSES for c in conclusions):
-        return "invalid"
-    if any(c.get("classification") in _WEAKNESS_CLASSES for c in conclusions):
-        return "weakness"
-    return "below_threshold"
+    return evidence_classification.classify_candidate(item)
 
 
 def analyze(replicate: int, registry_path: Path | None, n_boot: int,

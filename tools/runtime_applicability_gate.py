@@ -34,14 +34,24 @@ ALLOWED_MODES = {"one"}
 
 
 def run_kubectl(args: list[str], timeout: int = 20) -> tuple[int, str, str]:
-    completed = subprocess.run(
-        ["kubectl", *args],
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=timeout,
-    )
-    return completed.returncode, completed.stdout, completed.stderr
+    try:
+        completed = subprocess.run(
+            ["kubectl", *args],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+        )
+        return completed.returncode, completed.stdout, completed.stderr
+    except subprocess.TimeoutExpired as exc:
+        # Structured timeout: mirror kubectl's 124 exit-code convention so the
+        # caller can fail closed instead of raising a raw traceback.
+        out = exc.stdout if isinstance(exc.stdout, str) else ""
+        err = exc.stderr if isinstance(exc.stderr, str) else ""
+        return 124, out, err or "kubectl command timed out"
+    except OSError as exc:
+        # kubectl binary missing, pipe error, etc.: explicit non-zero result.
+        return 1, "", f"kubectl invocation failed: {type(exc).__name__}: {exc}"
 
 
 def kubectl_json(args: list[str]) -> tuple[Any | None, str | None]:
@@ -190,7 +200,7 @@ def daemon_prerequisite(kind: str, daemon_names: list[str]) -> dict[str, Any]:
     return result
 
 
-def check_mutation(path: Path) -> dict[str, Any]:
+def _check_mutation_impl(path: Path) -> dict[str, Any]:
     try:
         raw = yaml.safe_load(path.read_text(encoding="utf-8"))
     except yaml.YAMLError as exc:
@@ -398,6 +408,34 @@ def check_mutation(path: Path) -> dict[str, Any]:
         },
         "resource_error": resource_error if resource_code != 0 else None,
     }
+
+
+def check_mutation(path: Path) -> dict[str, Any]:
+    """Public entry: never raises on real-world kubectl exceptions.
+
+    ``_check_mutation_impl`` already benefits from ``run_kubectl`` swallowing
+    ``TimeoutExpired``/``OSError``; this wrapper is a final fail-closed guard so
+    an unexpected exception still yields ``decision="blocked"`` instead of a
+    traceback (which would otherwise abort the whole candidate pipeline).
+    """
+    try:
+        return _check_mutation_impl(path)
+    except Exception as exc:  # noqa: BLE001 - the gate must fail closed
+        return {
+            "checked_at": datetime.now(timezone.utc).isoformat(),
+            "mutation": str(path).replace("\\", "/"),
+            "kind": None,
+            "namespace": None,
+            "name": None,
+            "selector": None,
+            "decision": "blocked",
+            "checks": {},
+            "errors": [f"unexpected gate failure: {type(exc).__name__}: {exc}"],
+            "interpretation": {
+                "selected_is_not_injected": True,
+                "defense_conclusion_allowed": False,
+            },
+        }
 
 
 def main() -> int:

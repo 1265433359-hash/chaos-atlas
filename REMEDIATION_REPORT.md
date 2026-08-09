@@ -163,3 +163,93 @@ python -c "import json; d=json.load(open('artifacts/experiments/execution/remedi
 - 修复代码：run_chaos_experiment / run_grpc_chaos_experiment / run_probe_restart_escape / run_stress_with_cgroup / runtime_applicability_gate / issue_tracker / environment_fingerprint / project_registry / decision_engine / compare_selection_methods / selection_robustness / summarize_comparative_results
 - 回归测试：test_remediation_phase{1,2,4,5,6}_*.py + 修正的 test_decision_engine / test_issue_tracker / test_judgment_experience
 - 配置：pytest.ini
+
+---
+
+# 第二轮审查修复（round-2，7 项）
+
+> 日期：2026-08-09（第二轮）
+> 约束：未执行真实 Kubernetes 注入；未用 git reset --hard / git checkout --；未修改实验真值与历史结果；新重算结果写入 `execution/remediation_v2/`；每一步"修改后立即测试"。
+
+## 验证总览
+
+- **`python -m pytest -q`**：**162 passed, 5 subtests passed**
+- **`git diff --check`**：干净（exit 0）
+- **artifact hash**：7 个受保护 artifacts 全部 UNCHANGED（对照 `remediation_validation.json` 基线 hash）
+  - contract_inventory / selection_experience / judgment_experience / defense_pattern_library / knowledge_audit_log / our_evidence_chain_root_causes / sock_shop_verdicts
+- 未执行真实 Kubernetes 混沌注入（全部通过单元测试 + 纯数据重算验证）
+
+## 修复 1：runtime gate 真实超时异常
+
+- **改动**：`tools/runtime_applicability_gate.py`（`run_kubectl` 捕获 `subprocess.TimeoutExpired` → `(124, stdout, stderr)`；`OSError` → `(1, "", "kubectl invocation failed: ...")`；`check_mutation` 增加顶层 fail-closed 包装器，任何未预期异常 → `decision="blocked"`）
+- **测试**：`python -m pytest tools/tests/test_remediation_phase2_gate.py -q`（新增 `RealExceptionFailClosedTests`：patch `gate.subprocess.run` side_effect=TimeoutExpired/OSError）
+- **结果**：21 passed + 5 subtests
+- **语义保持**：NotFound 仍 available；timeout/RBAC 仍 blocked（既有测试全部通过）
+- **残留**：`check_mutation` 顶层 guard 捕获 `Exception`（fail-closed 合理）；真实集群 kubectl 异常行为未集成验证（约束要求）
+
+## 修复 2：统一 evidence 分类（known 分母一致）
+
+- **改动**：新建 `tools/evidence_classification.py`（共享 `classify_candidate` / `is_known_candidate` / `known_candidate_ids`）；`compare_selection_methods.known_discovered_candidates` 与 `selection_robustness.classify_evidence_candidate` 均委托共享模块；删除 selection_robustness 里重复的 `_WEAKNESS_CLASSES`/`_INVALID_CLASSES`
+- **规则**：invalid_baseline / invalid_not_injected / invalid_request_configuration / platform_or_preflight_blocked / not_applicable / transport_or_observation_error **不进 known 分母**；无结论 → `unclassified`（非 invalid，兼容 legacy discovery-only fixture）
+- **回归**：`test_remediation_phase6_metrics.py` 新增 `SharedKnownUniverseTests`——OTEL-PAYMENT-DELAY-2000（含 invalid_baseline + invalid_not_injected）不进已知集；两工具 known 集合一致
+- **测试命令**：`python -m pytest tools/tests/test_remediation_phase6_metrics.py tools/tests/test_remediation_phase4_universe.py -q` → 18 passed
+- **重算（remediation_v2）**：
+  - `compare_selection_r1_remediated_v2.json`：universe=12, known=11, known_outside_universe=8
+  - `selection_robustness_r1_remediated_v2.json`：universe=12, known=11, weakness=2, below_threshold=9, invalid_in_universe=1
+- **残留**：universe 小、weakness 仅 2，排名仅描述性（既有结论，未过度解释）
+
+## 修复 3：清理 NotFound 必须合并 stdout+stderr
+
+- **改动**：`tools/run_chaos_experiment.py`（`delete_resource` verify 合并 stdout+stderr 后识别 NotFound）；`tools/run_stress_with_cgroup.py`（`cleanup_mutation` 同规则）
+- **测试**：`test_remediation_phase1_cleanup.py` 新增 stdout-only NotFound → absent；stdout-only Forbidden/timeout → 非 absent（两个 runner 各一套）
+- **结果**：16 passed
+- **残留**：真实集群删除行为需集成验证（约束要求）
+
+## 修复 4：PodChaos 多副本恢复误判
+
+- **改动**：`tools/run_chaos_experiment.py`（`wait_for_target_ready` 增加 `expected_pod_count`：注入前从 preflight `target_pods` 记录目标 Pod 数量；恢复要求非 terminating Pod 数 ≥ 期望值且全部 Ready；`expected_pod_count=None` 时保留单副本"任一 Ready"语义；新增 `_pod_ready` helper；lifecycle 记录 `recovery_target_pod_count`）
+- **测试**：新建 `test_remediation_round2_podchaos_recovery.py`（6 项：多副本一个未 Ready → False；全 Ready → True；terminating 不计入；单副本/None 保持原行为）
+- **结果**：6 passed
+
+## 修复 5：run_stress_with_cgroup preflight 异常报告
+
+- **改动**：`tools/run_stress_with_cgroup.py`（preflight 全程 try/except：YAMLError → `yaml_shape_invalid`；OSError/RuntimeError/TimeoutExpired/ValueError → `preflight_error`；均写 orchestration report（`preflight_blocked` + 原因 + `exit_status`）+ 返回 2；未知状态下仍执行幂等 cleanup 尝试）
+- **测试**：新建 `test_remediation_round2_stress_preflight.py`（6 项异常路径 + cleanup 仍执行 + YAML 解析失败不查询）
+- **结果**：6 passed
+- **残留**：preflight 分支 `resource_exists` 异常时 `present=True` 强制执行 cleanup 尝试（fail-safe）；真实集群行为未验证
+
+## 修复 6：重复次数元数据硬编码
+
+- **改动**：`tools/summarize_comparative_results.py`（scope 删除 `"valid_runtime_replicates": 4`；改为从实际记录计算的 `scope.scenario_replicates` + `scope.uniform_replicates`；`runtime_summary.scenario_replicates` 保留动态计算）
+- **测试**：`test_remediation_phase5_provenance.py` 新增 `test_no_hardcoded_valid_runtime_replicates` + `test_different_replicate_counts_reported_honestly`（不同场景不同次数时如实报告，不伪造统一数）
+- **结果**：10 passed
+- **残留**：真实 6 场景各 4 条记录（TT station/OB productcatalog/OB payment delay/loss/OTel payment delay/loss），`uniform_replicates=True` 反映数据事实
+
+## 修复 7：provenance 范围检查（stress runner schema）
+
+- **决定**：run_stress_with_cgroup 属于 runner 输出范围（执行 kubectl preflight/cleanup、产出被 summarize 消费的独立报告）→ **升级 schema 1→2 + 补 `environment_fingerprint` + baseline/lifecycle/cleanup contract 声明**（与 run_chaos_experiment/grpc/probe 对齐）
+- **改动**：`tools/run_stress_with_cgroup.py`（两处 report：preflight_blocked 分支 + 正常流程，均 `schema_version: 2` + `environment_fingerprint: load_fingerprint()` + `contract` 字段声明 baseline/lifecycle/cleanup/cgroup 各由谁承载）
+- **测试**：`test_remediation_round2_stress_preflight.py` 新增 `StressProvenanceContractTests`（3 项）
+- **结果**：9 passed（含修复 5 的 6 项）
+- **残留**：历史 stress orchestration 产物无 fingerprint（不可回溯，仅新产物生效——与既有 runner 相同限制）
+
+## 修改文件清单（round-2）
+
+- `tools/runtime_applicability_gate.py`
+- `tools/evidence_classification.py`（新建）
+- `tools/compare_selection_methods.py`
+- `tools/selection_robustness.py`
+- `tools/run_chaos_experiment.py`
+- `tools/run_stress_with_cgroup.py`
+- `tools/summarize_comparative_results.py`
+- 测试：`test_remediation_phase2_gate.py` / `test_remediation_phase6_metrics.py` / `test_remediation_phase1_cleanup.py` / `test_remediation_phase5_provenance.py` / `test_remediation_round2_podchaos_recovery.py`（新建）/ `test_remediation_round2_stress_preflight.py`（新建）
+- 重算产物：`artifacts/experiments/execution/remediation_v2/`（2 个 JSON，旧 `remediation/` 结果未覆盖）
+
+## 仍未验证的风险（round-2）
+
+| 项 | 说明 |
+|---|---|
+| 真实集群 kubectl 异常行为（gate/cleanup） | 约束要求不执行真实注入；异常路径通过单元测试验证，真实集群行为待集成验证 |
+| 多副本 PodChaos 真实恢复时序 | 单元测试覆盖判定逻辑；真实集群副本重建时序未验证 |
+| 历史 stress orchestration 产物无 fingerprint | 不可回溯，仅新产物生效 |
+| universe 统计功效 | weakness 仅 2，排名仅描述性（数据事实） |

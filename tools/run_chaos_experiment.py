@@ -135,13 +135,38 @@ def wait_for_lifecycle(
     return False, last, errors
 
 
+def _pod_ready(item: dict[str, Any]) -> bool:
+    """Ready condition of one Pod (mirrors runtime_applicability_gate)."""
+    conditions = item.get("status", {}).get("conditions", [])
+    if not isinstance(conditions, list):
+        return False
+    return any(
+        isinstance(condition, dict)
+        and condition.get("type") == "Ready"
+        and condition.get("status") == "True"
+        for condition in conditions
+    )
+
+
 def wait_for_target_ready(
     namespace: str,
     selector: dict[str, Any],
     timeout: float,
     interval: float,
+    expected_pod_count: int | None = None,
 ) -> tuple[bool, dict[str, Any], list[str]]:
-    """Wait for a replacement Pod to become Ready after a one-shot kill."""
+    """Wait for the target selector's Pods to be Ready after a one-shot kill.
+
+    Round-2 finding #4: previously ANY single Ready Pod made this return True,
+    which misreported a multi-replica selector as recovered while another replica
+    was still down. Now:
+      - ``expected_pod_count`` is recorded BEFORE injection (number of target Pods).
+      - Recovery requires the selector to expose >= expected_pod_count non-
+        terminating Pods AND all of them Ready.
+      - When ``expected_pod_count`` is None (unknown / single-replica legacy
+        callers), the original "any Ready" behaviour is preserved so existing
+        single-replica PodChaos runs keep working.
+    """
     labels = selector.get("labelSelectors") if isinstance(selector, dict) else {}
     labels = labels if isinstance(labels, dict) else {}
     label_query = ",".join(f"{key}={value}" for key, value in sorted(labels.items()))
@@ -159,21 +184,33 @@ def wait_for_target_ready(
             time.sleep(max(0.1, interval))
             continue
         items = data.get("items") if isinstance(data, dict) else []
+        # Exclude Pods that carry a deletionTimestamp: they are terminating and
+        # must never be counted toward a recovered target set.
+        active = [
+            item for item in items
+            if not item.get("metadata", {}).get("deletionTimestamp")
+        ]
         ready_names = [
             str(item.get("metadata", {}).get("name"))
-            for item in items
-            if any(
-                condition.get("type") == "Ready" and condition.get("status") == "True"
-                for condition in item.get("status", {}).get("conditions", [])
-                if isinstance(condition, dict)
-            )
+            for item in active
+            if _pod_ready(item)
         ]
+        all_active_ready = len(ready_names) == len(active) and bool(active)
         last = {
             "selector": label_query,
             "pod_count": len(items),
+            "active_pod_count": len(active),
             "ready_pods": ready_names,
+            "expected_pod_count": expected_pod_count,
         }
-        if ready_names:
+        if expected_pod_count is not None:
+            # Multi-replica: need at least the pre-injection count of non-
+            # terminating Pods, ALL Ready.
+            recovered = len(active) >= expected_pod_count and all_active_ready
+        else:
+            # Legacy single-replica semantics: any Ready Pod is sufficient.
+            recovered = bool(ready_names)
+        if recovered:
             return True, last, errors
         time.sleep(max(0.1, interval))
     return False, last, errors
@@ -199,13 +236,18 @@ def delete_resource(kind: str, namespace: str, name: str, timeout: int = 30) -> 
     code, stdout, stderr = run_kubectl(
         ["delete", plural, name, "-n", namespace, "--ignore-not-found=true"], timeout=timeout
     )
-    verify_code, _, verify_error = run_kubectl(["get", plural, name, "-n", namespace], timeout=timeout)
+    verify_code, verify_stdout, verify_stderr = run_kubectl(["get", plural, name, "-n", namespace], timeout=timeout)
+
+    # Round-2 finding #3: merge stdout and stderr before classifying absence.
+    # kubectl may report "not found" on either stream depending on version/verbosity;
+    # checking only stderr missed stdout-only NotFound and misreported cleanup.
+    verify_output = "\n".join(part for part in (verify_stdout, verify_stderr) if part)
 
     if verify_code == 0:
         verify_status = "exists"
     elif verify_code == 124:
         verify_status = "timeout"
-    elif _kubectl_not_found(verify_error):
+    elif _kubectl_not_found(verify_output):
         verify_status = "absent"
     else:
         verify_status = "error"
@@ -219,7 +261,7 @@ def delete_resource(kind: str, namespace: str, name: str, timeout: int = 30) -> 
         # Structured, authoritative classification (phase-1 remediation).
         "absent_confirmed": absent,
         "verify_status": verify_status,
-        "verify_error": verify_error.strip() if verify_error else None,
+        "verify_error": (verify_output or "").strip(),
         "delete_failed": not (code == 0) or verify_status in ("timeout", "error", "exists"),
     }
 
@@ -486,11 +528,19 @@ def main() -> int:
             injected_confirmed = bool(report["lifecycle"].get("injected"))
             if injected_confirmed:
                 if kind == "PodChaos":
+                    # Round-2 finding #4: record the target Pod count BEFORE
+                    # injection (from the gate's preflight target snapshot) so
+                    # recovery must cover the whole replica set, not one Pod.
+                    preflight = report.get("preflight") or {}
+                    target_pods = (preflight.get("checks") or {}).get("target_pods") or []
+                    expected_count = len(target_pods) if isinstance(target_pods, list) and target_pods else None
+                    report["lifecycle"]["recovery_target_pod_count"] = expected_count
                     recovered, recovered_status, errors = wait_for_target_ready(
                         namespace,
-                        (report.get("preflight") or {}).get("selector") or {},
+                        preflight.get("selector") or {},
                         args.recovery_timeout,
                         args.poll_interval,
+                        expected_pod_count=expected_count,
                     )
                     report["lifecycle"]["recovery_semantics"] = "target_selector_ready_after_podchaos"
                 else:

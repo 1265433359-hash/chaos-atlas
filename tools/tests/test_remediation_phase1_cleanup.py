@@ -87,6 +87,45 @@ class DeleteResourceClassificationTests(unittest.TestCase):
         self.assertFalse(r["delete_command_ok"])
         self.assertTrue(r["delete_failed"])
 
+    def test_stdout_only_not_found_is_absent(self):
+        # Round-2 finding #3: kubectl may emit "not found" on stdout; absence
+        # must still be confirmed when stderr is empty.
+        patcher = mock.patch.object(rce, "run_kubectl", autospec=True)
+        mocked = patcher.start()
+        self.addCleanup(patcher.stop)
+        mocked.side_effect = [
+            (0, "deleted", ""),
+            (1, 'networkchaos.chaos-mesh.org "x" not found', ""),
+        ]
+        r = rce.delete_resource("NetworkChaos", "train-ticket-lab", "x")
+        self.assertTrue(r["absent_confirmed"])
+        self.assertEqual(r["verify_status"], "absent")
+
+    def test_stdout_forbidden_not_absent(self):
+        # stdout must not make an RBAC error look like a confirmed absence.
+        patcher = mock.patch.object(rce, "run_kubectl", autospec=True)
+        mocked = patcher.start()
+        self.addCleanup(patcher.stop)
+        mocked.side_effect = [
+            (0, "deleted", ""),
+            (1, 'Error from server (Forbidden): "x" is forbidden', ""),
+        ]
+        r = rce.delete_resource("NetworkChaos", "train-ticket-lab", "x")
+        self.assertFalse(r["absent_confirmed"])
+        self.assertEqual(r["verify_status"], "error")
+
+    def test_stdout_timeout_not_absent(self):
+        patcher = mock.patch.object(rce, "run_kubectl", autospec=True)
+        mocked = patcher.start()
+        self.addCleanup(patcher.stop)
+        mocked.side_effect = [
+            (0, "deleted", ""),
+            (124, "kubectl timed out", ""),
+        ]
+        r = rce.delete_resource("NetworkChaos", "train-ticket-lab", "x")
+        self.assertFalse(r["absent_confirmed"])
+        self.assertEqual(r["verify_status"], "timeout")
+
 
 class StressCleanupClassificationTests(unittest.TestCase):
     """run_stress_with_cgroup.cleanup_mutation uses the same absence rule."""
@@ -128,6 +167,43 @@ class StressCleanupClassificationTests(unittest.TestCase):
         self.assertTrue(r["confirmed"])
         self.assertTrue(r["resource_absent_after_delete"])
         self.assertEqual(r["verify_status"], "absent")
+
+    def test_stdout_only_not_found_confirms(self):
+        # Round-2 finding #3 (stress runner): stdout-only NotFound confirms absence.
+        patcher = mock.patch.object(rswc, "run_kubectl", autospec=True)
+        mocked = patcher.start()
+        self.addCleanup(patcher.stop)
+        mocked.side_effect = [
+            (0, "deleted", ""),
+            (1, 'networkchaos.chaos-mesh.org "x" not found', ""),
+        ]
+        r = rswc.cleanup_mutation("NetworkChaos", "train-ticket-lab", "x")
+        self.assertTrue(r["confirmed"])
+        self.assertEqual(r["verify_status"], "absent")
+
+    def test_stdout_forbidden_never_confirms_stress(self):
+        patcher = mock.patch.object(rswc, "run_kubectl", autospec=True)
+        mocked = patcher.start()
+        self.addCleanup(patcher.stop)
+        mocked.side_effect = [
+            (0, "deleted", ""),
+            (1, 'Error from server (Forbidden): "x" is forbidden', ""),
+        ]
+        r = rswc.cleanup_mutation("NetworkChaos", "train-ticket-lab", "x")
+        self.assertFalse(r["confirmed"])
+        self.assertEqual(r["verify_status"], "error")
+
+    def test_stdout_timeout_never_confirms_stress(self):
+        patcher = mock.patch.object(rswc, "run_kubectl", autospec=True)
+        mocked = patcher.start()
+        self.addCleanup(patcher.stop)
+        mocked.side_effect = [
+            (0, "deleted", ""),
+            (124, "kubectl timed out", ""),
+        ]
+        r = rswc.cleanup_mutation("NetworkChaos", "train-ticket-lab", "x")
+        self.assertFalse(r["confirmed"])
+        self.assertEqual(r["verify_status"], "timeout")
 
 
 class ProbeRunnerLifecycleTests(unittest.TestCase):

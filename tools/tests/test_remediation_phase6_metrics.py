@@ -42,8 +42,24 @@ class ClassifyEvidenceCandidateTests(unittest.TestCase):
         item = {"own_conclusions": [{"classification": "response_observed"}]}
         self.assertEqual(sr.classify_evidence_candidate(item), "below_threshold")
 
-    def test_no_conclusions_is_invalid(self):
-        self.assertEqual(sr.classify_evidence_candidate({"own_conclusions": []}), "invalid")
+    def test_no_conclusions_is_unclassified_not_invalid(self):
+        # Round-2: missing conclusions -> unclassified (not invalid), so legacy
+        # discovery-only fixtures remain known; only EXPLICIT invalid classes
+        # remove a candidate from the denominator.
+        self.assertEqual(sr.classify_evidence_candidate({"own_conclusions": []}), "unclassified")
+
+    def test_invalid_classes_shared_definition(self):
+        # Every invalid class named in the review must be invalid here too.
+        for cls in (
+            "invalid_baseline",
+            "invalid_not_injected",
+            "invalid_request_configuration",
+            "platform_or_preflight_blocked",
+            "not_applicable",
+            "transport_or_observation_error",
+        ):
+            item = {"own_conclusions": [{"classification": cls}]}
+            self.assertEqual(sr.classify_evidence_candidate(item), "invalid", cls)
 
 
 class BootstrapDenominatorTests(unittest.TestCase):
@@ -124,6 +140,67 @@ class AnalyzeUniverseAndClassificationTests(unittest.TestCase):
         for m in ("M0", "M1", "M3", "M4"):
             self.assertIn(m, report["bootstrap_ci95_baseline_schema"])
             self.assertIn("ci95", report["bootstrap_ci95_baseline_schema"][m])
+
+
+class SharedKnownUniverseTests(unittest.TestCase):
+    """round-2 finding #2: both tools must share the SAME known set, and a
+    candidate with an invalid conclusion (e.g. OTEL-PAYMENT-DELAY-2000 with
+    invalid_baseline + invalid_not_injected) must NOT enter the denominator."""
+
+    def _otel_payment_delay_item(self):
+        # Mirrors artifacts/.../candidate_evidence_status.json structure.
+        return {
+            "candidate_id": "OTEL-PAYMENT-DELAY-2000",
+            "own_discovery_evidence": [{"verdict": "weakness"}],
+            "own_conclusions": [
+                {"classification": "grpc_response_observed"},
+                {"classification": "invalid_baseline"},
+                {"classification": "invalid_not_injected"},
+            ],
+        }
+
+    def test_invalid_conclusion_excluded_from_shared_known(self):
+        import evidence_classification as ec
+        item = self._otel_payment_delay_item()
+        self.assertEqual(ec.classify_candidate(item), "invalid")
+        self.assertFalse(ec.is_known_candidate(item))
+        evidence = {"candidates": [item]}
+        self.assertNotIn("OTEL-PAYMENT-DELAY-2000", ec.known_candidate_ids(evidence))
+
+    def test_compare_selection_excludes_invalid_from_denominator(self):
+        import compare_selection_methods as csm
+        import evidence_classification as ec
+        with patch.object(csm, "evidence_classification", ec):
+            known = csm.known_discovered_candidates(
+                {"candidates": [self._otel_payment_delay_item()]}
+            )
+        self.assertNotIn("OTEL-PAYMENT-DELAY-2000", known)
+
+    def test_both_tools_agree_on_known_set(self):
+        import compare_selection_methods as csm
+        import selection_robustness as sr
+        candidates = [
+            self._otel_payment_delay_item(),
+            {"candidate_id": "OB-PAYMENT-DELAY-2000",
+             "own_discovery_evidence": [{}],
+             "own_conclusions": [{"classification": "response_preserved_latency_degradation"}]},
+            {"candidate_id": "TT-STATION-DELAY-100",
+             "own_discovery_evidence": [{}],
+             "own_conclusions": [{"classification": "response_observed"}]},
+        ]
+        evidence = {"candidates": candidates}
+        # Both tools derive known from the same shared classifier, so the sets
+        # must be identical (invalid excluded, valid discovered included).
+        compare_known = csm.known_discovered_candidates(evidence)
+        robustness_known = {
+            c["candidate_id"] for c in candidates
+            if sr.classify_evidence_candidate(c) != "invalid"
+            and c.get("own_discovery_evidence")
+        }
+        self.assertEqual(compare_known, robustness_known)
+        self.assertEqual(
+            compare_known, {"OB-PAYMENT-DELAY-2000", "TT-STATION-DELAY-100"}
+        )
 
 
 if __name__ == "__main__":

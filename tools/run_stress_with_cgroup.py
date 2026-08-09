@@ -13,6 +13,8 @@ from typing import Any
 
 import yaml
 
+from environment_fingerprint import load_fingerprint  # phase-5 provenance
+
 
 ROOT = Path(__file__).resolve().parents[1]
 RESOURCE_BY_KIND = {
@@ -108,12 +110,15 @@ def cleanup_mutation(kind: str, namespace: str, name: str) -> dict[str, Any]:
     # Phase-1 remediation (findings #1): absence is confirmed ONLY on an explicit
     # NotFound. A timeout (124) or RBAC/API error means the resource state is
     # unknown -> confirmed stays False so callers retry / fail loudly.
-    verify_code, _, verify_error = verify
+    # Round-2 finding #3: merge stdout+stderr so a stdout-only NotFound is not
+    # mistaken for an error (and vice versa never misreported as absent).
+    verify_code, verify_stdout, verify_stderr = verify
+    verify_output = "\n".join(part for part in (verify_stdout, verify_stderr) if part)
     if verify_code == 0:
         verify_status = "exists"
     elif verify_code == 124:
         verify_status = "timeout"
-    elif _kubectl_not_found(verify_error):
+    elif _kubectl_not_found(verify_output):
         verify_status = "absent"
     else:
         verify_status = "error"
@@ -124,7 +129,7 @@ def cleanup_mutation(kind: str, namespace: str, name: str) -> dict[str, Any]:
         "delete_output": (delete[1] or delete[2]).strip(),
         "resource_absent_after_delete": absent,
         "verify_status": verify_status,
-        "verify_error": (verify[2] or verify[1]).strip(),
+        "verify_error": verify_output.strip(),
         "confirmed": delete[0] == 0 and absent,
     }
 
@@ -183,21 +188,100 @@ def main() -> int:
     args = parser.parse_args()
 
     mutation = str(args.mutation).replace("\\", "/")
+
+    # Round-2 finding #5: the entire preflight (YAML parse, selector resolution,
+    # existence check) is protected. RBAC / TimeoutExpired / OSError / API errors
+    # must NOT escape as a bare traceback: they produce an orchestration report
+    # with preflight_blocked + error reason + exit code, and an idempotent cleanup
+    # attempt is still made when the resource state is unknown.
+    preflight_blocked: str | None = None
+    preflight_errors: list[str] = []
+    mutation_doc: Any = None
+    mutation_name: Any = None
+    mutation_namespace = args.namespace
+    target_selector = ""
+    mutation_kind = ""
     try:
         mutation_doc = yaml.safe_load(args.mutation.read_text(encoding="utf-8"))
+        if not isinstance(mutation_doc, dict):
+            preflight_blocked = "yaml_shape_invalid"
+            preflight_errors.append("mutation YAML root must be a mapping")
+        else:
+            mutation_name = (mutation_doc.get("metadata") or {}).get("name")
+            if not mutation_name:
+                preflight_blocked = "yaml_shape_invalid"
+                preflight_errors.append("mutation metadata.name is required")
+            else:
+                mutation_namespace, target_selector, mutation_kind = mutation_target(mutation_doc)
+                if mutation_namespace != args.namespace:
+                    preflight_blocked = "namespace_mismatch"
+                    preflight_errors.append(
+                        f"--namespace {args.namespace} does not match mutation namespace {mutation_namespace}"
+                    )
+                else:
+                    exists = resource_exists(mutation_kind, mutation_namespace, str(mutation_name))
+                    if exists:
+                        preflight_blocked = "mutation_exists"
+                        preflight_errors.append(f"mutation already exists: {mutation_namespace}/{mutation_name}")
     except yaml.YAMLError as exc:
-        print(json.dumps({"tool": "run_stress_with_cgroup", "error": f"mutation YAML is not parseable: {exc}", "mutation": mutation}))
+        preflight_blocked = "yaml_shape_invalid"
+        preflight_errors.append(f"mutation YAML is not parseable: {exc}")
+    except (OSError, RuntimeError, subprocess.TimeoutExpired, ValueError) as exc:
+        preflight_blocked = "preflight_error"
+        preflight_errors.append(f"{type(exc).__name__}: {exc}")
+
+    if preflight_blocked is not None:
+        # Even on a failed/unknown existence check, attempt an idempotent
+        # cleanup so a transient lookup failure cannot orphan the resource.
+        cleanup_attempt: dict[str, Any] | None = None
+        if mutation_kind and mutation_name:
+            try:
+                present = resource_exists(mutation_kind, mutation_namespace, str(mutation_name))
+            except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
+                preflight_errors.append(f"preflight cleanup existence check failed: {exc}")
+                present = True
+            if present:
+                cleanup_attempt = cleanup_mutation(mutation_kind, mutation_namespace, str(mutation_name))
+            else:
+                cleanup_attempt = {
+                    "attempted": False,
+                    "confirmed": True,
+                    "reason": "mutation resource is already absent",
+                }
+        report = {
+            "schema_version": 2,
+            "tool": "run_stress_with_cgroup",
+            "started_at": now(),
+            "mutation": mutation,
+            "environment_fingerprint": load_fingerprint(),
+            "preflight_blocked": preflight_blocked,
+            "preflight_errors": preflight_errors,
+            "runner_report": str(args.runner_report).replace("\\", "/"),
+            "cgroup_report": str(args.cgroup_report).replace("\\", "/"),
+            # Round-2 finding #7: declare the baseline/lifecycle/cleanup contract
+            # up front. This orchestration layer delegates baseline + request
+            # lifecycle to the child runner (run_chaos_experiment report, schema
+            # v2 with its own fingerprint); cgroup phase and parent cleanup are
+            # owned here.
+            "contract": {
+                "baseline": "child runner report (run_chaos_experiment, schema v2)",
+                "lifecycle": "injected_status_before_sampling (this report) + child runner lifecycle",
+                "cleanup": "parent_cleanup_fallback (this report)",
+                "cgroup": "cgroup_report (this orchestration)",
+            },
+            "safety": {
+                "runner_owns_recovery_and_cleanup": False,
+                "parent_cleanup_fallback": cleanup_attempt,
+            },
+            "exit_status": "preflight_blocked",
+            "finished_at": now(),
+        }
+        args.orchestration_report.parent.mkdir(parents=True, exist_ok=True)
+        args.orchestration_report.write_text(
+            json.dumps(report, indent=2, ensure_ascii=True) + "\n", encoding="utf-8"
+        )
+        print(json.dumps(report, indent=2, ensure_ascii=True))
         return 2
-    mutation_name = ((mutation_doc.get("metadata") or {}).get("name") if isinstance(mutation_doc, dict) else None)
-    if not mutation_name:
-        raise SystemExit("mutation metadata.name is required")
-    if not isinstance(mutation_doc, dict):
-        raise SystemExit("mutation YAML root must be a mapping")
-    mutation_namespace, target_selector, mutation_kind = mutation_target(mutation_doc)
-    if mutation_namespace != args.namespace:
-        raise SystemExit(f"--namespace {args.namespace} does not match mutation namespace {mutation_namespace}")
-    if resource_exists(mutation_kind, mutation_namespace, str(mutation_name)):
-        raise SystemExit(f"mutation already exists: {mutation_namespace}/{mutation_name}")
     process_budget = max(
         args.process_timeout,
         args.injection_timeout
@@ -333,16 +417,27 @@ def main() -> int:
             cgroup_err.close()
 
     report = {
-        "schema_version": 1,
+        "schema_version": 2,
         "tool": "run_stress_with_cgroup",
         "started_at": now(),
         "mutation": mutation,
+        "environment_fingerprint": load_fingerprint(),
+        "preflight_blocked": None,
+        "preflight_errors": [],
         "runner_report": str(args.runner_report).replace("\\", "/"),
         "cgroup_report": str(args.cgroup_report).replace("\\", "/"),
         "injected_status_before_sampling": injected_status,
         "runner_exit": runner_exit,
         "cgroup_exit": cgroup_exit,
         "errors": errors,
+        # Round-2 finding #7: baseline/lifecycle/cleanup contract (see comment
+        # in the preflight_blocked branch; identical semantics here).
+        "contract": {
+            "baseline": "child runner report (run_chaos_experiment, schema v2)",
+            "lifecycle": "injected_status_before_sampling (this report) + child runner lifecycle",
+            "cleanup": "parent_cleanup_fallback (this report)",
+            "cgroup": "cgroup_report (this orchestration)",
+        },
         "safety": {
             "cgroup_started_only_after_injected": bool(injected_status and injected_status.get("injected_count", 0) >= 1),
             "runner_owns_recovery_and_cleanup": False,

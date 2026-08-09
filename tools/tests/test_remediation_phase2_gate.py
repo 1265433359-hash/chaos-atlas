@@ -6,11 +6,18 @@ Covers review findings #2:
   - empty labelSelectors must be rejected, and the gate must NOT issue a
     whole-namespace pod query in that case.
 
-Pure unit tests: monkeypatch run_kubectl / target_pods / chaos_components.
+Also covers review round-2 finding #1:
+  - ``run_kubectl`` must swallow subprocess.TimeoutExpired / OSError into
+    structured results; ``check_mutation`` must never raise a traceback and
+    must return ``decision="blocked"`` on unexpected exceptions.
+
+Pure unit tests: monkeypatch run_kubectl / subprocess.run / target_pods /
+chaos_components.
 """
 
 from __future__ import annotations
 
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -174,6 +181,79 @@ spec:
             ), patch.object(gate, "target_pods", return_value=([READY_POD], [])) as tp:
                 gate.check_mutation(path)
                 tp.assert_called_once()
+
+
+class RealExceptionFailClosedTests(unittest.TestCase):
+    """round-2 finding #1: real subprocess exceptions must be structured."""
+
+    def test_run_kubectl_swallows_timeout_expired(self):
+        exc = subprocess.TimeoutExpired(cmd=["kubectl"], timeout=20, output="", stderr="kubectl timed out")
+        with patch.object(gate.subprocess, "run", side_effect=exc):
+            code, out, err = gate.run_kubectl(["get", "pods"])
+        self.assertEqual(124, code)
+        self.assertEqual("", out)
+        self.assertIn("timed out", err)
+
+    def test_run_kubectl_swallows_timeout_without_payloads(self):
+        # TimeoutExpired may carry no stdout/stderr attributes payload.
+        exc = subprocess.TimeoutExpired(cmd=["kubectl"], timeout=20)
+        with patch.object(gate.subprocess, "run", side_effect=exc):
+            code, out, err = gate.run_kubectl(["get", "pods"])
+        self.assertEqual(124, code)
+        self.assertEqual("", out)
+        self.assertIn("timed out", err)
+
+    def test_run_kubectl_swallows_os_error(self):
+        with patch.object(gate.subprocess, "run", side_effect=FileNotFoundError("kubectl")):
+            code, out, err = gate.run_kubectl(["get", "pods"])
+        self.assertEqual(1, code)
+        self.assertEqual("", out)
+        self.assertIn("kubectl invocation failed", err)
+
+    def test_check_mutation_never_raises_when_subprocess_raises(self):
+        # The most realistic simulation: subprocess.run itself raises, exactly
+        # what the task asked to patch. run_kubectl must turn it into a
+        # structured (124, ...) result and the gate must stay fail-closed.
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "mutation.yaml"
+            path.write_text(mutation(), encoding="utf-8")
+            with patch.object(
+                gate.subprocess, "run",
+                side_effect=subprocess.TimeoutExpired(cmd=["kubectl"], timeout=20),
+            ), patch.object(gate, "chaos_components", return_value=(
+                {"ready": True, "controller_pods": ["c"], "daemon_pods": ["d"]}, []
+            )), patch.object(gate, "target_pods", return_value=([READY_POD], [])):
+                result = gate.check_mutation(path)
+        self.assertEqual("blocked", result["decision"])
+        self.assertEqual("unknown_timeout", result["checks"]["mutation_name_status"])
+
+    def test_check_mutation_top_level_guard_blocks_on_unexpected_exception(self):
+        # Even if some helper raises an exception the gate did not predict,
+        # the public entry point must still return a structured blocked result.
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "mutation.yaml"
+            path.write_text(mutation(), encoding="utf-8")
+            with patch.object(
+                gate, "chaos_components", side_effect=RuntimeError("boom")
+            ), patch.object(gate, "run_kubectl", side_effect=lambda args, timeout=20: (1, "", "not found")):
+                result = gate.check_mutation(path)
+        self.assertEqual("blocked", result["decision"])
+        self.assertTrue(any("unexpected gate failure" in e for e in result["errors"]))
+
+    def test_not_found_still_available_after_exception_guard(self):
+        # Regression: the exception-swallowing must not change the semantics
+        # that an explicit NotFound is "available".
+        def _kb(args, timeout=20):
+            if args[0:2] == ["get", "crd"]:
+                return 0, "crd", ""
+            if args[0] == "get" and len(args) >= 2 and args[1] in (
+                "stresschaos", "podchaos", "networkchaos", "httpchaos",
+            ):
+                return 1, "", 'Error from server (NotFound): ... "x" not found'
+            return 1, "", "not found"
+        result = _run(mutation(), _kb)
+        self.assertTrue(result["checks"]["mutation_name_available"])
+        self.assertEqual("available", result["checks"]["mutation_name_status"])
 
 
 if __name__ == "__main__":
