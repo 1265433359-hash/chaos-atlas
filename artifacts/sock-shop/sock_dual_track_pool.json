@@ -1,9 +1,10 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "tool": "sock_dual_track_pool",
   "date": "2026-08-09",
   "track": "contract + availability (dual-track unified pool)",
   "engine": "decision_engine.score_candidate (no LLM)",
+  "validity": "CONSISTENCY check (engine vs its own registry), NOT independent-truth validation. Independent evidence: sock_orders_future_get_verified.md, sock_availability_layer_verified.md, chaos_eater_deployed_vs_ours.md.",
   "ground_truth": {
     "SOCK-ORDERS-PAYMENT-DELAY-2000": "defended",
     "SOCK-ORDERS-PAYMENT-LOSS-100": "defended",
@@ -206,6 +207,6 @@
     "availability_candidates": 8,
     "availability_skipped_as_known_weakness": 8,
     "aligned_with_ground_truth": "16/16",
-    "interpretation": "Both layers covered by the SAME engine: contract track skips 4 protected edges (4); availability track skips 8 single-replica kills (8) as known weaknesses; remaining candidates score normally. Dual-track end-to-end OK."
+    "interpretation": "Both layers wired through the SAME engine: contract track skips 4 protected edges (4); availability track skips 8 single-replica kills (8) as known weaknesses. CONSISTENCY with the engine's own registry: 16/16. Independent real-system validation is in the experiment files (real-chain + pod-kill + CE parity), not in this script."
   }
 }

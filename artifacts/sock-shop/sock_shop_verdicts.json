@@ -158,11 +158,22 @@
     }
   ],
   "summary": {
-    "total": 8,
-    "weakness": 4,
-    "defended": 4,
-    "below_threshold": 0,
-    "revision": "v1 8/8 weakness (direct-only) -> v2 4/8 weakness + 4/8 defended (real-chain verification added). The 4 corrected edges are orders->payment and orders->shipping (delay+loss): code-level Future.get(5s) defense invisible to direct port measurement.",
-    "note": "v1 的 floor effect（8/8 全弱）是测量位置的伪影：直连 orders 端口看不到代码层 5s 异步超时。v2 走真实下单链路后，orders 的两个下游边被证明有防御；front-end 的 4 个边（carts/catalogue）仍无超时保护，保持 weakness。"
+    "contract_layer": {
+      "total": 8,
+      "weakness": 4,
+      "defended": 4,
+      "below_threshold": 0,
+      "revision": "v1 8/8 weakness (direct-only) -> v2 4/8 weakness + 4/8 defended (real-chain verification added). The 4 corrected edges are orders->payment and orders->shipping (delay+loss): code-level Future.get(5s) defense invisible to direct port measurement.",
+      "note": "v1 floor effect(8/8 全弱) 是测量位置伪影: 直连 orders 端口看不到代码层 5s 异步超时。v2 走真实下单链路后 orders 两个下游边被证明有防御; front-end 4 边(carts/catalogue)仍无超时保护, 保持 weakness。"
+    },
+    "availability_layer": {
+      "total_services": 8,
+      "runtime_verified": 5,
+      "static_inferred": 3,
+      "weakness": 8,
+      "defended": 0,
+      "note": "8/8 服务单副本无 PDB(静态 manifest, AD-REDUNDANCY-001)。5 个实测(front-end/orders/user/carts/shipping)全部 min_ready=0(kill 必现全瘫时刻); payment/catalogue/queue-master 同 manifest 形态静态推断。v3 新增本层。"
+    },
+    "note": "v3 分层汇总: 契约层 4/8 weakness + 4/8 defended; 可用性层 8/8 weakness(无冗余)。两层互不重叠(pod 在不在 vs 调用顺不顺)。"
   }
 }

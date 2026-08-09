@@ -4,17 +4,24 @@ End-to-end demonstration of the method's TWO layers on Sock Shop (2026-08-09):
   - contract layer: 8 HTTP edges (orders->payment/shipping x2, front-end->carts/catalogue x2)
   - availability layer: 8 services x pod-kill
 
+HONESTY NOTE (2026-08-09 audit, self-circularity fix): the 16/16 alignment here
+is a CONSISTENCY check between the engine and ITS OWN registered knowledge -
+the ground-truth dict below is derived from the same contract_inventory that the
+engine consumes. It proves "the engine deterministically applies the registry",
+NOT "the engine agrees with an independent ground truth about the real system".
+The independent real-system evidence lives in the experiment files:
+  - contract layer: sock_orders_future_get_verified.md (real-chain injections)
+  - availability layer: sock_availability_layer_verified.md + avail_*_kill.json
+  - CE parity: chaos_eater_deployed_vs_ours.md
+Cite this script ONLY as the reproducible wiring of the dual-track engine, and
+cite the experiment files as the actual validation evidence.
+
 The engine emits, per candidate, which track it landed on and why:
   - availability_hard_filter skips kill/cpu on single-replica no-PDB services
     (AD-REDUNDANCY-001: verdict known a priori)
   - contract_hard_filter skips delay on explicit_timeout edges, and loss when
     loss_bounded (Future.get bounds loss too)
   - remaining candidates score normally (unprotected edges)
-
-Ground truth (frozen real-chain + availability experiments this session):
-  contract defended: orders->payment/shipping (delay AND loss, 5s Future.get)
-  contract weakness : front-end->carts/catalogue (no timeout)
-  availability weak : all 8 services single-replica no-PDB (2 runtime + 6 static)
 """
 
 from __future__ import annotations
@@ -62,11 +69,12 @@ LABELS = {
 
 def main() -> int:
     result: dict = {
-        "schema_version": 1,
+        "schema_version": 2,
         "tool": "sock_dual_track_pool",
         "date": "2026-08-09",
         "track": "contract + availability (dual-track unified pool)",
         "engine": "decision_engine.score_candidate (no LLM)",
+        "validity": "CONSISTENCY check (engine vs its own registry), NOT independent-truth validation. Independent evidence: sock_orders_future_get_verified.md, sock_availability_layer_verified.md, chaos_eater_deployed_vs_ours.md.",
         "ground_truth": GROUND_TRUTH,
     }
     rows = []
@@ -104,10 +112,11 @@ def main() -> int:
         "availability_skipped_as_known_weakness": avail_skip,
         "aligned_with_ground_truth": f"{aligned}/{len(rows)}",
         "interpretation": (
-            "Both layers covered by the SAME engine: contract track skips 4 protected "
+            "Both layers wired through the SAME engine: contract track skips 4 protected "
             f"edges ({contract_skip}); availability track skips 8 single-replica kills "
-            f"({avail_skip}) as known weaknesses; remaining candidates score normally. "
-            "Dual-track end-to-end OK."
+            f"({avail_skip}) as known weaknesses. CONSISTENCY with the engine's own "
+            "registry: 16/16. Independent real-system validation is in the experiment "
+            "files (real-chain + pod-kill + CE parity), not in this script."
         ),
     }
     OUT.write_text(json.dumps(result, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")

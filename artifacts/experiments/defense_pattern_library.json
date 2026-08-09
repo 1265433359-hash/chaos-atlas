@@ -66,24 +66,6 @@
         ]
       },
       "inference": "Future.get(timeout, SECONDS) async timeout (OrdersController.java:139/160, @Value ${http.timeout:5}) bounds BOTH delay and loss (loss_bounded): never an infinite hang. Invisible to direct port measurement - only business-chain entry reveals it."
-    },
-    {
-      "pattern_id": "DP-REDUNDANCY-ABSENT-001",
-      "defense_mechanism": "redundancy",
-      "source_verified": true,
-      "source_note": "static manifest (replicas=1, no PDB) + PodChaos pod-kill runtime",
-      "evidence": {
-        "project": "sock-shop",
-        "candidate_id": "SOCK-FRONTEND-KILL-1",
-        "mutation": "PodChaos pod-kill (mode=one), 500ms Ready sampling",
-        "observation": "front-end Ready 1->0 for 130s, recovered ~131s; orders 1->0 for 56s; all 8 services single-replica no-PDB (AD-REDUNDANCY-001)",
-        "evidence_files": [
-          "artifacts/sock-shop/sock_availability_layer_verified.md",
-          "artifacts/sock-shop/avail_frontend_kill.json",
-          "artifacts/sock-shop/avail_orders_kill.json"
-        ]
-      },
-      "inference": "ABSENCE pattern: replicas=1 and no PDB -> killing the only pod = total outage, recovery in tens of seconds. Static manifest alone predicts the verdict (kill candidate on such a service is a known weakness a priori). Matches ChaosEater's front-end finding, reproduced through our own dual-evidence framework."
     }
   ],
   "generated_at": "2026-08-09T12:01:03.613480+00:00",
@@ -91,5 +73,6 @@
   "a1_audit": {
     "weak_stressor_dropped": 2,
     "applied_at": "2026-08-08T06:27:13.203060+00:00"
-  }
+  },
+  "a1_audit_note": "2026-08-09 audit: DP-REDUNDANCY-ABSENT-001 removed - it records an ABSENT defense (single-replica no-PDB), which violates A1 principle (absence is NOT a defense pattern). Absence rules live in contract_inventory AVAILABILITY static_prediction + decision_engine availability_hard_filter (AD-REDUNDANCY-001), not in the defense-pattern library."
 }

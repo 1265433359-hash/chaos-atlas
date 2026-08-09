@@ -3,11 +3,23 @@
 Prospective comparison on the Sock Shop candidate pool AFTER the real-chain
 verification of orders->payment/shipping 5s Future.get defense.
 
-This is the key-path protected-edge test: orders->payment/shipping have a
-CODE-LEVEL async timeout (Future.get) that is:
-- invisible to direct port measurement (direct curl shows 12s hang)
-- non-inferable from architecture/config alone (M1 blind has no way to know)
-- now registered as explicit_timeout in contract_inventory (decision_engine hard-skips)
+HONESTY NOTE (2026-08-09 audit, self-circularity fix): this pool compares
+THREE methods but the comparison is NOT symmetric in knowledge timing:
+  - M1 blind LLM: knowledge was truly frozen BEFORE execution (blind prompt,
+    no contract knowledge). Its picks are a genuine blind selection.
+  - decision_engine: the contract_inventory entries (SOCK-orders->payment/
+    shipping explicit_timeout + loss_bounded) were written to the registry
+    AFTER the experiments were run and their results known (backfill). The
+    engine's 4/4 is therefore a POST-HOC knowledge-backed result, NOT a
+    frozen-before-execution prediction. It demonstrates "once knowledge is
+    asset-ized into the registry, the engine deterministically benefits" -
+    it does NOT demonstrate "the engine predicts better than blind" under
+    equal-timing conditions.
+  - M0 random: distribution is timing-free (uniform over the pool).
+Consequence: do NOT cite "decision_engine 4/4 vs M1 4/4" as a fair prospective
+head-to-head. Cite it as: (a) blind M1 single-sample hit (luck, non-reproducible),
+(b) random distribution wastes ~49% budget on protected edges, (c) knowledge-
+assetized engine avoids protected edges deterministically (post-hoc).
 
 Pool = 8 Sock Shop edges:
 - 4 orders edges (payment/shipping x delay/loss): DEFENDED (5s Future.get)
@@ -19,8 +31,7 @@ Metrics:
 - M1 blind has no knowledge hint: may pick key-path orders edges (looks critical)
 - M0 random: expected waste = 4/8 = 50% of budget on protected edges
 
-Real-chain execution evidence (frozen before THIS comparison, from the
-sock_orders_future_get_verified.md experiment):
+Real-chain execution evidence (frozen, from sock_orders_future_get_verified.md):
 - orders->payment: 2s -> 201@4.15s (absorbed), 6s -> 500@5.10s TimeoutException
 - orders->shipping: 2s -> 500@5.07s TimeoutException (shipping direct 6s > window)
 - front-end->carts/catalogue: loss -> 10s hang, delay -> 2x amplification (no timeout)
@@ -131,7 +142,8 @@ def main() -> int:
     result: dict[str, Any] = {
         "schema_version": 1,
         "tool": "sock_three_method_select",
-        "frozen_before_execution": True,
+        "m1_blind_frozen_before_execution": True,
+        "decision_engine_knowledge_frozen_before_execution": False,
         "budget": args.budget,
         "pool_size": len(POOL),
         "ground_truth": GROUND_TRUTH,
@@ -139,7 +151,11 @@ def main() -> int:
         "note": (
             "Real-chain ground truth frozen from sock_orders_future_get_verified.md "
             "(2026-08-09): orders->payment/shipping defended via 5s Future.get; "
-            "front-end->carts/catalogue weak (no timeout). M1 blind gets NO knowledge."
+            "front-end->carts/catalogue weak (no timeout). M1 blind gets NO knowledge. "
+            "HONESTY (self-circularity audit): contract_inventory SOCK entries were "
+            "backfilled AFTER experiments (post-hoc); decision_engine's protected-skip "
+            "is knowledge-assetized post-hoc behavior, NOT a frozen-before-execution "
+            "prediction. Do not read decision_engine vs M1 as an equal-timing head-to-head."
         ),
     }
 

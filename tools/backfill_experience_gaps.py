@@ -9,12 +9,18 @@ structured as transferable knowledge.
 This script adds:
   defense_pattern_library:
     - DP-BOUNDED-TIMEOUT-FUTUREGET-001  (orders->payment/shipping 5s Future.get, source_verified=True)
-    - DP-REDUNDANCY-ABSENT-001          (single-replica no-PDB -> kill = total outage; availability layer)
   selection_experience (test-design/hygiene lessons from real YAML + deploy):
     - SE-TEST-HYGIENE-PROBE-001         (liveness probe timeout < injected latency -> SIGKILL escapes the injection)
     - SE-TEST-HYGIENE-IMAGECOMPAT-001   (mongo:latest 8.x breaks legacy drivers: OP_QUERY 352 -> pin 4.0)
     - SE-TEST-HYGIENE-PORTMISMATCH-001  (container listen port != svc targetPort -> silent connection refused)
     - SE-TEST-HYGIENE-OOM-001           (no resource limits -> OOM crash-loop; availability weakness, not probe)
+
+AUDIT FIX (2026-08-09): an earlier revision added DP-REDUNDANCY-ABSENT-001
+("single-replica no-PDB -> kill = total outage") to the defense-pattern
+library. That violated the A1 audit principle (an ABSENT defense is NOT a
+defense pattern - absence rules live in contract_inventory AVAILABILITY
+static_prediction + decision_engine availability_hard_filter). The entry was
+removed from the library; it is intentionally NOT re-added here.
 
 All entries carry evidence from this session's real executions.
 """
@@ -47,29 +53,6 @@ DP_ADDITIONS = [
             "@Value ${http.timeout:5}) bounds BOTH delay and loss (loss_bounded): never an "
             "infinite hang. Invisible to direct port measurement - only business-chain entry "
             "reveals it."
-        ),
-    },
-    {
-        "pattern_id": "DP-REDUNDANCY-ABSENT-001",
-        "defense_mechanism": "redundancy",
-        "source_verified": True,
-        "source_note": "static manifest (replicas=1, no PDB) + PodChaos pod-kill runtime",
-        "evidence": {
-            "project": "sock-shop",
-            "candidate_id": "SOCK-FRONTEND-KILL-1",
-            "mutation": "PodChaos pod-kill (mode=one), 500ms Ready sampling",
-            "observation": "front-end Ready 1->0 for 130s, recovered ~131s; orders 1->0 for 56s; all 8 services single-replica no-PDB (AD-REDUNDANCY-001)",
-            "evidence_files": [
-                "artifacts/sock-shop/sock_availability_layer_verified.md",
-                "artifacts/sock-shop/avail_frontend_kill.json",
-                "artifacts/sock-shop/avail_orders_kill.json",
-            ],
-        },
-        "inference": (
-            "ABSENCE pattern: replicas=1 and no PDB -> killing the only pod = total outage, "
-            "recovery in tens of seconds. Static manifest alone predicts the verdict (kill "
-            "candidate on such a service is a known weakness a priori). Matches ChaosEater's "
-            "front-end finding, reproduced through our own dual-evidence framework."
         ),
     },
 ]

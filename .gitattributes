@@ -1,0 +1,8 @@
+# 统一换行符策略 (2026-08-09 audit fix)
+# WSL/kind/容器内执行 .sh 需要 LF; Windows checkout 若转 CRLF 会破坏脚本
+# (此前 CRLF 破坏 Kconfig 解析的教训)。强制 LF,避免 git autocrlf 干扰。
+*.sh   text eol=lf
+*.py   text eol=lf
+*.bash text eol=lf
+*.yaml text eol=lf
+*.yml  text eol=lf

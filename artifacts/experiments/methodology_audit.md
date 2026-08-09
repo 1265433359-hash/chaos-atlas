@@ -131,6 +131,8 @@
 
 本方法论的实证范围 = **网络故障家族（NetworkChaos delay/loss）+ 少量 PodChaos/StressChaos**，在 kind + WSL2（无 HTTPChaos tproxy）环境下验证。跨家族（HTTP/IO/DNS/Time/组合故障）与跨平台（真实云环境）是**断言**，不是实证——论文不得声称"任意故障类型/任意环境"通用。
 
+**范围扩展（2026-08-09 audit，本声明须同步更新）**：可用性层（PodChaos pod-kill 对部署可用性的验证，front-end 130s/orders 56s/user 155s/carts+shipping 全瘫时刻）已加入实证范围——即"网络故障家族 + 部署可用性故障家族（pod-kill）"。但仍**不含**：HTTPChaos（edge 级 HTTP 注入）、组合故障（delay+kill 联合，叠加效应 C8 未实证）、多副本正例对照。论文须按此更新范围句。
+
 ### D1 外部方法表述修正
 
 M1 不得表述为"独立外部复现"。它是 **ChaosEater 选择逻辑的 adapter 化重实现**（commit 47c4e44 提取），候选池由我们构建、执行验证由我们的 runner/证据链完成、LLM 调用经我们的 OpenAI-compat 封装。正确表述："基于 ChaosEater 提示词逻辑的 LLM 选择变体，运行于我们的受控对比框架内"。M2（FastFI）同理：未复现，仅文档化任务不对齐。

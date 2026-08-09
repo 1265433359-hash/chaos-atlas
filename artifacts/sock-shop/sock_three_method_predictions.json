@@ -1,7 +1,6 @@
 {
   "schema_version": 1,
   "tool": "sock_three_method_select",
-  "frozen_before_execution": true,
   "budget": 4,
   "pool_size": 8,
   "ground_truth": {
@@ -20,7 +19,7 @@
     "SOCK-ORDERS-SHIPPING-DELAY-2000",
     "SOCK-ORDERS-SHIPPING-LOSS-100"
   ],
-  "note": "Real-chain ground truth frozen from sock_orders_future_get_verified.md (2026-08-09): orders->payment/shipping defended via 5s Future.get; front-end->carts/catalogue weak (no timeout). M1 blind gets NO knowledge.",
+  "note": "Real-chain ground truth frozen from sock_orders_future_get_verified.md (2026-08-09). HONESTY (self-circularity audit): contract_inventory SOCK entries were backfilled AFTER experiments (post-hoc); decision_engine protected-skip is knowledge-assetized post-hoc behavior, NOT frozen-before-execution. M1 blind was truly frozen (no knowledge). Do not read decision_engine vs M1 as equal-timing head-to-head.",
   "decision_engine": {
     "picks": [
       "SOCK-FRONTEND-CARTS-LOSS-100",
@@ -128,5 +127,7 @@
         "n_protected_picked": 1
       }
     ]
-  }
+  },
+  "m1_blind_frozen_before_execution": true,
+  "decision_engine_knowledge_frozen_before_execution": false
 }
