@@ -67,7 +67,7 @@
 ## 七、边界与未执行
 
 - **OTEL 4 + TT 1 候选未执行**（`not_deployed`）——三方法在这些候选上的 U@8 无法计算；已从分母剔除。
-- **8 候选全部 weakness = floor effect**：本池无 protected 边，方法区分度无法显现。含 protected 边的池（如 mixed_pool）才有区分度——已被 OB 混合池证明（Ours 跳过 protected, M0 浪费 49%）。
+- **8 候选全部 weakness = ceiling/saturation effect**（准确术语：非 floor effect）：本池无 protected 边，所有候选都是真实弱点，方法区分度无法显现（饱和于上限）。含 protected 边的池（如 mixed_pool）才有区分度——已被 OB 混合池证明（Ours 跳过 protected, M0 浪费 49%）。
 - **跨项目泛化**：本轮仅 OB 同项目，不能写"跨项目优于"。需 held-out 项目（冻结协议下未查看）才有资格。
 
 ## 八、产物清单

@@ -187,6 +187,41 @@ class StressPreflightExceptionTests(unittest.TestCase):
             self.assertIn("runner_exit", report)
             self.assertIn("parent_cleanup_fallback", report["safety"])
 
+    def test_popen_failure_with_unknown_state_never_cleans_up(self):
+        # Round-4 ownership: Popen raises (runner never started) and the final
+        # existence check raises too. The parent must NOT call cleanup_mutation
+        # because ownership was never established (injection never confirmed).
+        with tempfile.TemporaryDirectory() as d:
+            mutation = Path(d) / "mutation.yaml"
+            mutation.write_text(MUTATION_YAML, encoding="utf-8")
+            orch = Path(d) / "orchestration.json"
+            sys.argv = [
+                "run_stress_with_cgroup", str(mutation),
+                "--namespace", "train-ticket-lab", "--service", "demo",
+                "--remote-port", "1", "--local-port", "2",
+                "--request-path", "/", "--runner-report", str(Path(d) / "r.json"),
+                "--cgroup-report", str(Path(d) / "c.json"),
+                "--orchestration-report", str(orch),
+            ]
+
+            def _exists_raises(*_a, **_k):
+                raise RuntimeError("cannot determine existence")
+
+            with mock.patch.object(rswc, "resource_exists", side_effect=_exists_raises), \
+                 mock.patch.object(rswc, "lifecycle_status", return_value=None), \
+                 mock.patch.object(rswc, "cleanup_mutation", return_value={
+                     "attempted": True, "confirmed": True,
+                 }) as cleanup_mock, \
+                 mock.patch.object(rswc.subprocess, "Popen", side_effect=OSError("no runner")):
+                rc = rswc.main()
+            report = json.loads(orch.read_text(encoding="utf-8"))
+            cleanup_mock.assert_not_called()
+            self.assertFalse(report["safety"]["resource_owned_by_run"])
+            fb = report["safety"]["parent_cleanup_fallback"]
+            self.assertFalse(fb["attempted"])
+            self.assertFalse(fb["confirmed"])
+            self.assertIn("ownership not established", fb["reason"])
+
 
 class StressProvenanceContractTests(unittest.TestCase):
     """Round-2 finding #7: the stress orchestration report carries the same

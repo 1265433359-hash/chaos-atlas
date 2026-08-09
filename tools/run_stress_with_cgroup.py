@@ -348,6 +348,11 @@ def main() -> int:
     runner_timed_out = False
     cgroup_timed_out = False
     cleanup_fallback: dict[str, Any] | None = None
+    # Round-4 ownership: the parent may only auto-clean a resource THIS run
+    # successfully applied. Ownership is established at the moment the child
+    # runner's injection is confirmed (injected_count >= 1). Before that, any
+    # pre-existing or unknown-state resource must NOT be deleted.
+    resource_owned_by_run = False
     try:
         try:
             runner = subprocess.Popen(runner_args, stdout=runner_out, stderr=runner_err, text=True)
@@ -355,6 +360,9 @@ def main() -> int:
             while time.monotonic() < deadline:
                 injected_status = lifecycle_status(args.namespace, mutation_name)
                 if injected_status and injected_status.get("injected_count", 0) >= 1:
+                    # The child runner applied and the mutation injected -> this
+                    # process owns the resource and may clean it up later.
+                    resource_owned_by_run = True
                     break
                 if runner.poll() is not None:
                     errors.append(f"runner exited before injection: {runner.returncode}")
@@ -409,24 +417,38 @@ def main() -> int:
             except subprocess.TimeoutExpired:
                 runner.kill()
                 runner.wait(timeout=5)
-        # The parent owns a final, idempotent cleanup attempt. This covers a
-        # runner killed during its recovery/finally block.
-        try:
-            resource_present = resource_exists(mutation_kind, mutation_namespace, str(mutation_name))
-        except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
-            # Cannot determine existence (e.g. RBAC or API timeout). Attempt
-            # cleanup anyway so a transient lookup failure cannot orphan the
-            # mutation resource.
-            errors.append(f"parent cleanup existence check failed: {exc}")
-            resource_present = True
-        if resource_present:
-            cleanup_fallback = cleanup_mutation(mutation_kind, mutation_namespace, str(mutation_name))
-        else:
+        # The parent owns a final cleanup attempt, but ONLY for a resource this
+        # run applied (Round-4 ownership): if the child runner never confirmed
+        # injection, the mutation may be pre-existing or hand-created and must
+        # not be deleted. An unknown existence state (RBAC/timeout) is also not
+        # a license to delete.
+        if not resource_owned_by_run:
+            errors.append(
+                "parent cleanup skipped: resource ownership not established "
+                "(no confirmed injection by this run)"
+            )
             cleanup_fallback = {
                 "attempted": False,
-                "confirmed": True,
-                "reason": "mutation resource is already absent; no parent delete required",
+                "confirmed": False,
+                "reason": "resource ownership not established; inspect manually",
             }
+        else:
+            try:
+                resource_present = resource_exists(mutation_kind, mutation_namespace, str(mutation_name))
+            except (OSError, RuntimeError, subprocess.TimeoutExpired) as exc:
+                # Ownership is confirmed but the existence lookup failed (e.g.
+                # RBAC or API timeout). Cleanup is attempted because we know we
+                # created it; if that also fails the report flags it loudly.
+                errors.append(f"parent cleanup existence check failed: {exc}")
+                resource_present = True
+            if resource_present:
+                cleanup_fallback = cleanup_mutation(mutation_kind, mutation_namespace, str(mutation_name))
+            else:
+                cleanup_fallback = {
+                    "attempted": False,
+                    "confirmed": True,
+                    "reason": "mutation resource is already absent; no parent delete required",
+                }
         if not cleanup_fallback.get("confirmed"):
             errors.append("parent cleanup did not confirm mutation absence")
         runner_out.close()
@@ -461,6 +483,9 @@ def main() -> int:
         "safety": {
             "cgroup_started_only_after_injected": bool(injected_status and injected_status.get("injected_count", 0) >= 1),
             "runner_owns_recovery_and_cleanup": False,
+            # Round-4 ownership: True only when this run confirmed injection
+            # (child applied). Cleanup is gated on this flag.
+            "resource_owned_by_run": resource_owned_by_run,
             "parent_cleanup_fallback": cleanup_fallback,
             "runner_timed_out": runner_timed_out,
             "cgroup_timed_out": cgroup_timed_out,

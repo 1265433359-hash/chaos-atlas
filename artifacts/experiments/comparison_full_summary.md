@@ -4,6 +4,8 @@
 > 候选池：12 → 20 → +18 prospective；受控注入约 80 次，全部 baseline→inject→recover→cleanup
 > 项目：train-ticket / Online Boutique / OpenTelemetry Demo（kind + Chaos Mesh 2.8.3 + WSL2）
 
+> **归档状态注记（2026-08-09）**：本文为历史快照（当时口径"约 80 次"、三项目）。精确统一口径见 `artifacts/experiments/archive/run_ledger_master.json`（107 记录 = 91 独立注入 + 9 确认 + 7 无效基线，83 历史与 r2 24 分开计数）；四项目总览见 `archive/ARCHIVE_INDEX.md`。本文原始数字未被修改。
+
 ## 一、对比了什么
 
 | 方法 | 定义 | 状态 |
