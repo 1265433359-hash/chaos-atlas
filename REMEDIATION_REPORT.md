@@ -350,3 +350,80 @@ python -c "import json; d=json.load(open('artifacts/experiments/execution/remedi
 | 多副本 PodChaos 真实 UID 替换时序 | 单元测试覆盖身份替换判定；真实集群副本重建与 UID 轮换时序未验证 |
 | 历史 stress orchestration 产物无 fingerprint | 不可回溯，仅新产物生效 |
 | universe 统计功效 | weakness=6 较 v2 提升，但 universe 仍小（12），排名仅描述性 |
+
+---
+
+# 第四轮审查修复（round-4，资源所有权 + mode=one UID 语义 + lifecycle 测试补足）
+
+> 日期：2026-08-09（第四轮）
+> 约束：未执行真实 Kubernetes 注入；未修改历史 artifacts；未使用 git reset --hard / git checkout --；未删除既有未跟踪文件（归档产物由并行归档会话提交为 6acb7c6，本轮如实记录）。新重算结果写入 `execution/remediation_v4/`。
+
+## 验证总览
+
+- **`python -m pytest -q`**：**177 passed, 5 subtests passed**（修复前 171）
+- **`git diff --check`**：干净
+- **7 个受保护 artifacts hash**：全部 UNCHANGED
+- 未执行真实 Kubernetes 混沌注入
+
+## 修复 1（P1）：stress 资源所有权——`resource_owned_by_run`
+
+- **最终语义**：父进程**只有在本运行确认注入后（child runner `injected_count >= 1`）才置 `resource_owned_by_run=True`**。之前"resource_exists 异常 → resource_present=True → 强制 cleanup"在 child runner 未成功启动时可能删除非本进程资源。
+- **实现**（`tools/run_stress_with_cgroup.py`）：
+  - 新增 `resource_owned_by_run` 状态，默认 False；`lifecycle_status` 确认注入时置 True。
+  - 正常路径 finally 只在 `resource_owned_by_run=True` 时清理；未确认注入 → `attempted=false, confirmed=false, reason="resource ownership not established; inspect manually"`。
+  - Popen 失败、preflight 通过但 lifecycle 未确认、状态查询未知 → 不调用 `cleanup_mutation`。
+  - 报告 `safety.resource_owned_by_run` 显式记录。
+- **测试**：`test_popen_failure_unknown_state_never_cleans_up`（preflight 通过 + Popen OSError + 未知状态 → `cleanup_mutation.assert_not_called` + `resource_owned_by_run=False`）。
+- **注意**：该改动与归档会话提交 `6acb7c6` 重叠（并行归档提交了修复 1 的 55 行），本报告以工作区最终状态为准，不重复提交。
+
+## 修复 2（P2）：PodChaos mode=one 多副本 UID 语义
+
+- **问题**：`pre_kill_uids` 含所有副本 UID，而 mode=one 只替换一个 Pod；旧逻辑要求所有旧 UID 消失，多副本永远无法恢复。
+- **最终语义**（`tools/run_chaos_experiment.py` `wait_for_target_ready`）：
+  - `expected_pod_count=N` 时：active Pod 数量**恰好等于 N**（多了说明替换先于终止完成，非干净恢复）、全部 Ready、且 **active Ready UID 中必须出现至少一个不在 pre_kill_uids 中的新 UID**；旧 UID 允许保留 N-1 个。
+  - 单副本：原 UID 消失 + 新 UID Ready + `stable_checks` 连续稳定。
+- **测试**（`test_remediation_round2_podchaos_recovery.py`）：`test_multi_replica_one_replacement_recovers`（old-1,old-2 → new-1,old-2, expected=2 → True）、`test_multi_replica_no_replacement_fails`（old-1,old-2 无新 UID → False）、`test_multi_replica_extra_active_replica_fails`（old-1,old-2,new-1 三副本 → False）；stable 测试用**两个不同 snapshot 序列**（Round-4 要求）。
+
+## 修复 3（P2）：lifecycle 异常测试补足
+
+- **问题**：`test_lifecycle_exception_still_writes_report` 让 Popen 先抛 OSError，lifecycle_status 根本没执行。
+- **补足**（`test_remediation_round2_stress_preflight.py`）：
+  - `test_lifecycle_timeout_expired_writes_report`：Popen 返回可控 mock process + lifecycle_status 抛 `subprocess.TimeoutExpired` → report 写出 + errors 含 "lifecycle failed" + 无 NameError。
+  - `test_lifecycle_json_decode_error_writes_report`：lifecycle_status 抛 `json.JSONDecodeError` → report 写出。
+  - 保留 Popen OSError 测试（`test_popen_failure_unknown_state_never_cleans_up`）。
+
+## 重算 remediation_v4
+
+| 指标 | v3 | v4 |
+|---|---|---|
+| universe | 12 | 12 |
+| known（compare = robustness = 共享） | 12 | 12（三处一致验证通过） |
+| weakness | 6 | 6 |
+| below_threshold | 6 | 6 |
+| invalid | 0 | 0 |
+| known_outside_universe | 8 | 8 |
+
+- 产物：`execution/remediation_v4/compare_selection_r1_remediated_v4.json` + `selection_robustness_r1_remediated_v4.json`
+- 本轮改动不改变分类规则（v3 已修正），v4 与 v3 数据一致，作为与代码修复同步的最新快照；旧 `remediation/`、`remediation_v2/`、`remediation_v3/` 均未覆盖。
+
+## 修改文件清单（round-4）
+
+- `tools/run_stress_with_cgroup.py`（ownership；随 6acb7c6 已提交）
+- `tools/run_chaos_experiment.py`（mode=one UID 判定 + 精确副本数）
+- `tools/tests/test_remediation_round2_podchaos_recovery.py`（mode=one 多副本 + 序列 stable 测试）
+- `tools/tests/test_remediation_round2_stress_preflight.py`（lifecycle TimeoutExpired/JSONDecodeError + ownership 测试改名）
+- 重算产物：`execution/remediation_v4/`
+
+## 未验证风险（round-4）
+
+| 项 | 说明 |
+|---|---|
+| 真实集群 kubectl/Chaos Mesh 行为 | 约束禁止真实注入；所有权/mode=one 判定经单元测试验证，真实集群待集成验证 |
+| 多副本 PodChaos 真实 UID 轮换时序 | 单元测试覆盖判定逻辑；真实副本重建/UID 轮换时序未验证 |
+| 归档产物与代码修复并行提交（6acb7c6） | 归档会话与修复会话并行，run_stress 修复 1 被归档提交携带；本报告以工作区最终状态为准，未重复提交 |
+
+## 并行归档状态说明
+
+- 归档会话已提交 `6acb7c6 docs(archive)`：A1-A7 全部落地（archive/ 7 文件 + overall/unified 更新 + build 脚本 + .planning）。
+- 本轮开始时归档文件在 `git status` 为未跟踪（未提交）；并行会话提交后已入库。
+- 本会话未删除、未覆盖任何归档产物；remediation_v4 为本轮新产物。

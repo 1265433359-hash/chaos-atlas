@@ -9,6 +9,7 @@ Pure unit tests: patch sys.argv / resource_exists / cleanup_mutation; no cluster
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -187,10 +188,64 @@ class StressPreflightExceptionTests(unittest.TestCase):
             self.assertIn("runner_exit", report)
             self.assertIn("parent_cleanup_fallback", report["safety"])
 
-    def test_popen_failure_with_unknown_state_never_cleans_up(self):
-        # Round-4 ownership: Popen raises (runner never started) and the final
-        # existence check raises too. The parent must NOT call cleanup_mutation
-        # because ownership was never established (injection never confirmed).
+    def _run_with_popen_mock(self, tmp: Path, lifecycle_error):
+        """Shared helper: preflight passes, Popen returns a controllable mock
+        process, lifecycle_status raises the given error. Asserts the report is
+        always written and no NameError escapes."""
+        mutation = tmp / "mutation.yaml"
+        mutation.write_text(MUTATION_YAML, encoding="utf-8")
+        orch = tmp / "orchestration.json"
+        sys.argv = [
+            "run_stress_with_cgroup", str(mutation),
+            "--namespace", "train-ticket-lab", "--service", "demo",
+            "--remote-port", "1", "--local-port", "2",
+            "--request-path", "/", "--runner-report", str(tmp / "r.json"),
+            "--cgroup-report", str(tmp / "c.json"),
+            "--orchestration-report", str(orch),
+        ]
+        proc = mock.Mock()
+        proc.poll.return_value = 1  # child already exited
+        proc.returncode = 1
+        with mock.patch.object(rswc, "resource_exists", return_value=False), \
+             mock.patch.object(rswc, "lifecycle_status", side_effect=lifecycle_error), \
+             mock.patch.object(rswc, "cleanup_mutation", return_value={
+                 "attempted": True, "confirmed": True,
+             }), \
+             mock.patch.object(rswc.subprocess, "Popen", return_value=proc):
+            rc = rswc.main()
+        return rc, json.loads(orch.read_text(encoding="utf-8"))
+
+    def test_lifecycle_timeout_expired_writes_report(self):
+        # Round-4: Popen returns a real mock process (runner started), but
+        # lifecycle_status raises subprocess.TimeoutExpired. The report must be
+        # written, errors must contain 'lifecycle failed', and no NameError may
+        # escape from the finally block.
+        with tempfile.TemporaryDirectory() as d:
+            rc, report = self._run_with_popen_mock(
+                Path(d), subprocess.TimeoutExpired(cmd=["kubectl"], timeout=30)
+            )
+        self.assertIsNone(report["preflight_blocked"])
+        self.assertTrue(any("lifecycle failed" in e for e in report["errors"]))
+        self.assertIn("runner_exit", report)
+        self.assertIn("parent_cleanup_fallback", report["safety"])
+        self.assertFalse(report["safety"]["resource_owned_by_run"])
+
+    def test_lifecycle_json_decode_error_writes_report(self):
+        # Round-4: lifecycle_status raises json.JSONDecodeError -> report still
+        # written with 'lifecycle failed' recorded.
+        with tempfile.TemporaryDirectory() as d:
+            rc, report = self._run_with_popen_mock(
+                Path(d),
+                json.JSONDecodeError("Expecting value", doc="not-json", pos=0),
+            )
+        self.assertTrue(any("lifecycle failed" in e for e in report["errors"]))
+        self.assertIn("runner_exit", report)
+
+    def test_popen_failure_unknown_state_never_cleans_up(self):
+        # Round-4 ownership: preflight passes (resource absent), but Popen
+        # raises (runner never started) so injection is never confirmed. Even
+        # though the resource state is unknown, the parent must NOT call
+        # cleanup_mutation because ownership was never established.
         with tempfile.TemporaryDirectory() as d:
             mutation = Path(d) / "mutation.yaml"
             mutation.write_text(MUTATION_YAML, encoding="utf-8")
@@ -203,11 +258,9 @@ class StressPreflightExceptionTests(unittest.TestCase):
                 "--cgroup-report", str(Path(d) / "c.json"),
                 "--orchestration-report", str(orch),
             ]
-
-            def _exists_raises(*_a, **_k):
-                raise RuntimeError("cannot determine existence")
-
-            with mock.patch.object(rswc, "resource_exists", side_effect=_exists_raises), \
+            # preflight: resource absent (False). No other existence checks
+            # should run because ownership is never established.
+            with mock.patch.object(rswc, "resource_exists", return_value=False) as exists_mock, \
                  mock.patch.object(rswc, "lifecycle_status", return_value=None), \
                  mock.patch.object(rswc, "cleanup_mutation", return_value={
                      "attempted": True, "confirmed": True,
@@ -221,6 +274,9 @@ class StressPreflightExceptionTests(unittest.TestCase):
             self.assertFalse(fb["attempted"])
             self.assertFalse(fb["confirmed"])
             self.assertIn("ownership not established", fb["reason"])
+            # resource_exists is only consulted for the preflight existence
+            # check; it must NOT be re-queried for cleanup.
+            self.assertEqual(exists_mock.call_count, 1)
 
 
 class StressProvenanceContractTests(unittest.TestCase):

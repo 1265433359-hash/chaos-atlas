@@ -230,16 +230,26 @@ def wait_for_target_ready(
             "stable_checks": stable_checks,
         }
         if expected_pod_count is not None:
-            # Multi-replica: need at least the pre-injection count of non-
-            # terminating Pods, ALL Ready.
-            recovered = len(active) >= expected_pod_count and all_active_ready
+            # Multi-replica: the selector must be back to EXACTLY the
+            # pre-injection replica count (not more - a third active replica
+            # means a replacement happened before the killed pod finished
+            # terminating, which is not a clean recovery), and all of them Ready.
+            recovered = len(active) == expected_pod_count and all_active_ready
         else:
             # Legacy single-replica semantics: any Ready Pod is sufficient.
             recovered = bool(ready_names)
         if recovered and pre_kill_uids:
-            # Identity check: none of the pre-injection UIDs may remain among
-            # the active Ready pods (the killed identity must be gone).
-            if ready_uids & pre_kill_uids:
+            # Round-4 mode=one identity check: the gate restricts injections to
+            # mode=one, so only ONE target Pod is killed and replaced. Recovery
+            # therefore requires that at least one NEW UID (not among the
+            # pre-kill set) is present and Ready. The other N-1 replicas keep
+            # their old UIDs — requiring ALL pre-kill UIDs to disappear would
+            # make a multi-replica selector unrecoverable.
+            #   single-replica: the replacement has a new UID, so the old UID
+            #     is automatically gone; no-replacement => no new UID => False.
+            #   multi-replica: old-1, old-2 -> new-1, old-2 => recovered; but
+            #     old-1, old-2 (no replacement) => no new UID => False.
+            if not (ready_uids - pre_kill_uids):
                 recovered = False
                 stable_run = 0
         if recovered:
