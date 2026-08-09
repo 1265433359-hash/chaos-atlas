@@ -51,16 +51,17 @@
 ## 修复后的诚实结论（论文警示）
 
 1. **决策引擎 vs 盲选**：不是等时序公平对比。引擎的 4/4 是"知识资产化后验行为"的证据；M1 单次 4/4 是运气（不可复现）；M0 49% 期望浪费是分布事实。
+   - **重验证完成（方案1）**：`sock_frozen_knowledge_rerun.py` 仅凭**预实验静态字节码**（jar javap: Future.get x3 @153/178/201, `${http.timeout:5}`, TimeoutException）预测 8 边 → **8/8 与实验真值对齐**。证明引擎价值来自知识资产化而非事后偷看——同样的预测在实验前就可得出。
 2. **16/16**：只能证明"引擎与自己的注册知识一致"，不是独立真值验证。论文引用时须以实验文件（real-chain/pod-kill/CE parity）为真值来源。
-3. **C8 叠加效应**：定性推理，future work。论文不得写成"已验证发现"。
-4. **可用性层 vs CE**：确认偏误已标注，"追平"限定为"CE 结论之后的独立复现"。
+3. **C8 叠加效应**：**重验证完成（方案4）**：`sock_combined_frontend_carts.json` 证明两故障（downstream delay 2s + pod-kill）可并发注入互不干扰，front-end 全瘫 124s。定量延迟放大被本轮环境负载污染（基线 3.5s），不报告；契约层放大由 SOCK-FRONTEND-CARTS-DELAY-2000 独立证据支撑。论文可写"并发注入可行性已验证"，定量叠加数字需低负载补测。
+4. **可用性层 vs CE**：确认偏误已标注，**重验证完成（方案3）**：`sock_blind_availability_predict.py` 不看 CE 报告、仅凭 manifest 对 8 服务预测 → **5/5 runtime 对齐**（其余 3 服务静态推断）。CE 对照降为佐证，"追平"限定为"CE 结论之后的独立复现"。
 5. **DP 库**：只存"防御存在"的模式（source_verified 优先）；缺位规则在 contract_inventory / decision_engine，不在 DP 库。
 
 ## 未修复项（超出本轮范围，记录）
 
 | 项 | 状态 |
 |---|---|
-| C8 联合注入实证（delay+kill） | future work（需实验） |
+| C8 定量叠加数字（低负载下 delay+kill 联合测量） | future work（需低负载集群） |
 | 多副本正例对照 | future work（集群无 replicas>1 服务） |
 | 6 个未实测服务可用性（payment/catalogue/queue-master） | 静态推断（AD-REDUNDANCY-001），可选补测 |
 | 外部真值（issue 提交） | 待用户确认（reporting/issue_template.md） |

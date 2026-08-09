@@ -214,6 +214,9 @@
 - `artifacts/experiments/chaos_eater_deployed_vs_ours.md` — CE 真实部署对比
 - `tools/sock_dual_track_pool.py` — 双轨统一池生成器（论文实验章可复现）
 - `tools/backfill_experience_gaps.py` — 知识库缺口回填（审计→补全可复现）
+- `tools/sock_frozen_knowledge_rerun.py` + `sock_frozen_knowledge_predictions.json` — **重验证1**：仅凭预实验静态字节码预测 8 边 → 8/8 对齐（堵自证循环）
+- `tools/sock_blind_availability_predict.py` + `sock_blind_availability_predictions.json` — **重验证3**：不看 CE 报告、仅凭 manifest 预测可用性 → 5/5 runtime 对齐（堵确认偏误）
+- `tools/sock_combined_inject.sh` + `sock_combined_frontend_carts.json` — **重验证4**：delay+kill 并发注入 → front-end 全瘫 124s（C8 并发可行性实证）
 
 ### 知识库（JSON 资产）
 - `contract_inventory.json` / `defense_pattern_library.json` / `judgment_experience.json` / `selection_experience.json` / `knowledge_audit_log.json` / `our_evidence_chain_root_causes.json` / `environment_fingerprint.json` / `issue_tracker.json`

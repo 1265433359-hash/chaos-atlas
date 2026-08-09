@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "tool": "sock_blind_availability_predictions",
+  "date": "2026-08-09",
+  "audit_fix": "round-2 #3: availability prediction blind w.r.t. ChaosEater report and runtime curves",
+  "rule": "replicas==1 and no PDB -> weakness; replicas>1 or PDB -> defended (AD-REDUNDANCY-001, static only)",
+  "inputs": "contract_inventory.AVAILABILITY (manifest-derived static facts) ONLY; CE report NOT consulted",
+  "rows": [
+    {
+      "service": "front-end",
+      "prediction": "weakness",
+      "mechanism": "single-replica no-PDB -> kill = total outage",
+      "replicas": 1,
+      "pdb": null,
+      "runtime_verdict": "weakness",
+      "aligned": true
+    },
+    {
+      "service": "orders",
+      "prediction": "weakness",
+      "mechanism": "single-replica no-PDB -> kill = total outage",
+      "replicas": 1,
+      "pdb": null,
+      "runtime_verdict": "weakness",
+      "aligned": true
+    },
+    {
+      "service": "user",
+      "prediction": "weakness",
+      "mechanism": "single-replica no-PDB -> kill = total outage",
+      "replicas": 1,
+      "pdb": null,
+      "runtime_verdict": "weakness",
+      "aligned": true
+    },
+    {
+      "service": "carts",
+      "prediction": "weakness",
+      "mechanism": "single-replica no-PDB -> kill = total outage",
+      "replicas": 1,
+      "pdb": null,
+      "runtime_verdict": "weakness",
+      "aligned": true
+    },
+    {
+      "service": "shipping",
+      "prediction": "weakness",
+      "mechanism": "single-replica no-PDB -> kill = total outage",
+      "replicas": 1,
+      "pdb": null,
+      "runtime_verdict": "weakness",
+      "aligned": true
+    },
+    {
+      "service": "payment",
+      "prediction": "weakness",
+      "mechanism": "single-replica no-PDB -> kill = total outage",
+      "replicas": 1,
+      "pdb": null,
+      "runtime_verdict": "static-inferred (not runtime-tested)",
+      "aligned": null
+    },
+    {
+      "service": "catalogue",
+      "prediction": "weakness",
+      "mechanism": "single-replica no-PDB -> kill = total outage",
+      "replicas": 1,
+      "pdb": null,
+      "runtime_verdict": "static-inferred (not runtime-tested)",
+      "aligned": null
+    },
+    {
+      "service": "queue-master",
+      "prediction": "weakness",
+      "mechanism": "single-replica no-PDB -> kill = total outage",
+      "replicas": 1,
+      "pdb": null,
+      "runtime_verdict": "static-inferred (not runtime-tested)",
+      "aligned": null
+    }
+  ],
+  "summary": {
+    "runtime_aligned": 5,
+    "runtime_tested": 5,
+    "static_inferred_only": 3
+  }
+}
