@@ -1,0 +1,39 @@
+{
+  "candidate_id": "OB-CHECKOUT-LOSS-100",
+  "app": "checkoutservice",
+  "tool": "r2_execute_one",
+  "started_at": "2026-08-09T15:00:58Z",
+  "mutation": "remediation/r2_mutations/ob-checkout-loss-100-checkoutservice.yaml",
+  "injection_status": "True",
+  "baseline": {
+    "samples": 3,
+    "ok_count": 2,
+    "error_count": 1,
+    "errors": [
+      "rpc_error code=INTERNAL details=cart failure: failed to get user cart during che"
+    ],
+    "median_latency_ms": 34.1,
+    "max_latency_ms": 34.1,
+    "client_return_code": 0,
+    "client_stderr_hint": null,
+    "client_hung": false
+  },
+  "workload": {
+    "samples": 3,
+    "ok_count": 0,
+    "error_count": 3,
+    "errors": [
+      "rpc_error code=DEADLINE_EXCEEDED details=Deadline Exceeded (10003.5ms)",
+      "rpc_error code=DEADLINE_EXCEEDED details=Deadline Exceeded (10002.8ms)",
+      "rpc_error code=UNAVAILABLE details=Stream removed (Socket closed) (3042.8ms)"
+    ],
+    "median_latency_ms": null,
+    "max_latency_ms": null,
+    "client_return_code": 0,
+    "client_stderr_hint": null,
+    "client_hung": false
+  },
+  "cleanup": "absent",
+  "cleanup_absent_confirmed": true,
+  "result_classification": "TBD_BLIND"
+}

@@ -1,0 +1,33 @@
+{
+  "candidate_id": "OB-EMAIL-DELAY-2000",
+  "app": "emailservice",
+  "tool": "r2_execute_one",
+  "started_at": "2026-08-09T14:55:53Z",
+  "mutation": "remediation/r2_mutations/ob-email-delay-2000-emailservice.yaml",
+  "injection_status": "True",
+  "baseline": {
+    "samples": 3,
+    "ok_count": 3,
+    "error_count": 0,
+    "errors": [],
+    "median_latency_ms": 18.1,
+    "max_latency_ms": 20.4,
+    "client_return_code": 0,
+    "client_stderr_hint": null,
+    "client_hung": false
+  },
+  "workload": {
+    "samples": 3,
+    "ok_count": 3,
+    "error_count": 0,
+    "errors": [],
+    "median_latency_ms": 2018.1,
+    "max_latency_ms": 2018.4,
+    "client_return_code": 0,
+    "client_stderr_hint": null,
+    "client_hung": false
+  },
+  "cleanup": "absent",
+  "cleanup_absent_confirmed": true,
+  "result_classification": "TBD_BLIND"
+}

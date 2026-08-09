@@ -1,0 +1,41 @@
+{
+  "candidate_id": "OB-CART-LOSS-100",
+  "app": "cartservice",
+  "tool": "r2_execute_one",
+  "started_at": "2026-08-09T14:54:15Z",
+  "mutation": "remediation/r2_mutations/ob-cart-loss-100-cartservice.yaml",
+  "injection_status": "True",
+  "baseline": {
+    "samples": 3,
+    "ok_count": 0,
+    "error_count": 3,
+    "errors": [
+      "rpc_error code=INTERNAL details=failed to prepare order: failed to get product #",
+      "rpc_error code=INTERNAL details=failed to prepare order: failed to get product #",
+      "rpc_error code=INTERNAL details=failed to prepare order: failed to get product #"
+    ],
+    "median_latency_ms": null,
+    "max_latency_ms": null,
+    "client_return_code": 0,
+    "client_stderr_hint": null,
+    "client_hung": false
+  },
+  "workload": {
+    "samples": 3,
+    "ok_count": 0,
+    "error_count": 3,
+    "errors": [
+      "cart_add_failed (<_InactiveRpcError of RPC that terminated with:",
+      "cart_add_failed (<_InactiveRpcError of RPC that terminated with:",
+      "cart_add_failed (<_InactiveRpcError of RPC that terminated with:"
+    ],
+    "median_latency_ms": null,
+    "max_latency_ms": null,
+    "client_return_code": 0,
+    "client_stderr_hint": null,
+    "client_hung": false
+  },
+  "cleanup": "absent",
+  "cleanup_absent_confirmed": true,
+  "result_classification": "TBD_BLIND"
+}

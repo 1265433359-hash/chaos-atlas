@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: ob-cart-loss-one
+  namespace: online-boutique-lab
+  labels:
+    chaos.candidate-id: OB-CART-LOSS-100
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+      - online-boutique-lab
+    labelSelectors:
+      app: cartservice
+  loss:
+    loss: "100"
+  duration: 30s
+  direction: to
