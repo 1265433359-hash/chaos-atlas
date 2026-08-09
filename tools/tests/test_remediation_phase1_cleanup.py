@@ -10,8 +10,12 @@ touch a real cluster, and they do not write to versioned artifacts.
 
 from __future__ import annotations
 
+import sys
 import unittest
+from pathlib import Path
 from unittest import mock
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import run_chaos_experiment as rce
 import run_stress_with_cgroup as rswc
