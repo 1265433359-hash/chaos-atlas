@@ -144,7 +144,7 @@
 - 含义：任何"我们选择候选更准"的声称都没有统计背书。这与方法论优劣无关，是实验设计问题（池子无信息不对称时，选择方法必然无差异）。
 
 **C2. 产出形态可验证、可锚定、可复用。**
-- 证据：约 80 次 baseline→inject→recover→cleanup 受控注入；15 个源码锚定根因（含 OTel main.go:494、train-ticket OrderServiceImpl.java:192-206 两份可提交 bug 报告）；20 知识卡 + 防御模式库 + 判定经验；契约清单 11 边（含 loss_bounded 语义扩展）；B3 判定一致率 0.933。
+- 证据：**83 次受控注入**（run_ledger 统一台账精确计数，见 `execution/remediation/run_ledger.json`；旧口径"约 55 次"为核心实验子集、"约 80 次"为全部 runner 文件，83 为 lifecycle-complete 的精确数；150 个 JSON 中预测/分类/汇总/状态为派生文件，非独立实验）；15 个源码锚定根因（含 OTel main.go:494、train-ticket OrderServiceImpl.java:192-206 两份可提交 bug 报告）；20 知识卡 + 防御模式库 + 判定经验；契约清单 11 边（含 loss_bounded 语义扩展）；B3 判定一致率 0.933。
 
 ### 第二层：本次实验确立的实证主张（第 8 轮，可复现）
 
