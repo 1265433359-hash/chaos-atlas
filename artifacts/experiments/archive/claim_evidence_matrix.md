@@ -36,6 +36,7 @@
 | Claim | Evidence | Scope | Status | Limitation |
 |---|---|---|---|---|
 | r2 实际只在 OB 执行（8 候选 24 次尝试，8/8 confirmed weakness）；OTEL 4 + TT 1 候选 environment_blocked | r2_head_to_head.md；candidate_pool_registry.json（10 env_blocked）；run_ledger_master.json（r2 24 条） | OB only | **confirmed（作为事实）；作为完整 head-to-head 则 blocked** | 不是跨项目验证；跨项目优于 CE 需 held-out 项目 |
+| r2 U@8 = 6 vs 6 vs 5 不构成方法差异 | r2_head_to_head.md（结论强度定位节） | OB only, 8 候选 | **blocked（作为 superiority 证据）** | 未执行正式显著性检验；样本 8 功效不足；候选池全 weakness 存在 ceiling/saturation effect；推荐措辞"当前样本未显示明确差异，统计功效不足"，不得写三方法全面优越/超过 CE/跨项目有效 |
 
 ## 其他重要结论
 

@@ -10,7 +10,8 @@
 |---|---|---|
 | 项目注册表 | `archive/project_registry_archive.json` | 四项目（TT/OB/OTEL/SOCK）：repo、namespace、镜像可用性、执行/未执行候选、held-out 状态 |
 | 方法注册表 | `archive/method_registry_archive.json` | 三条方法轴（选择/测量/证据），CE-adapter 与 CE-official 严格分开 |
-| 主实验台账 | `archive/run_ledger_master.json` / `.md` | 107 条运行记录（91 独立注入 + 9 确认 + 7 无效基线），67 派生文件不计入 |
+| 主实验台账 | `archive/run_ledger_master.json` / `.md` | **普通 run records 107 = 83（历史 lifecycle-complete）+ 24（r2）**；独立注入总数 91 = 83（历史）+ 8（r2 首跑）；r2 确认 9、无效基线 7；67 派生文件不计入 |
+| Sock Shop 独立轨道 | `archive/sock_track_ledger.json` / `.md` | **13 条 Sock 独立证据（8 契约/真实链路边判定 + 5 availability pod-kill），单独统计，不并入 107** |
 | 候选池注册表 | `archive/candidate_pool_registry.json` | 54 唯一候选，OTEL/TT 未部署标记 environment_blocked（不删除） |
 | 结论证据矩阵 | `archive/claim_evidence_matrix.md` | 关键结论 + 状态枚举（confirmed/pilot/supplementary/self_referential/blocked/future_work） |
 | 综合方法对比 | `overall_project_method_comparison.md` | 三方法轴总表（A7 更新） |

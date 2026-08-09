@@ -36,7 +36,7 @@
 
 ---
 
-## 一、实验地图（7 轮，按时间顺序）
+## 一、实验地图（12 个实验模块，按时间顺序）
 
 | # | 实验 | 对象 | 对比 | 测量轴 | 一句话结果 |
 |---|---|---|---|---|---|
@@ -51,7 +51,7 @@
 | 9 | **Sock 可用性层** | 服务级 kill（4 实测 + 4 静态） | 我们 vs CE（追平） | **可用性采样** | **单副本无 PDB kill 必瘫：front-end 130s、orders 56s、user 155s、carts/shipping 全瘫瞬间（无门控假恢复）；与 CE 判定一致（独立复现）** |
 | 10 | **双轨统一池** | 契约 8 边 + 可用性 8 服务 | decision_engine 双硬过滤 | 双轨 | **16/16 与真值对齐：契约 4 protected 跳过、可用性 8 kill 全判 weakness** |
 | 11 | **经验缺口回填** | 知识库审计 + 补全 | DP 3→5, SE 6→10 | — | **防御模式库原来几乎空（3 条未验证）；补齐 Future.get/无冗余 + 探针污染/镜像兼容/端口错配/OOM** |
-| 12 | **r2 三方法 head-to-head** | OB 8 候选（r2 冻结池） | Ours-full vs CE-adapter vs Random | 统一 runner | **U@8 6 vs 6 vs 5（ceiling/saturation effect，8/8 全 weakness）；OTEL 4 + TT 1 候选 environment_blocked 未执行** |
+| 12 | **r2 三方法 head-to-head** | OB 8 候选（r2 冻结池） | Ours-full vs CE-adapter vs Random | 统一 runner | **U@8 6 vs 6 vs 5（pilot/blocked：未执行正式显著性检验，统计功效不足，ceiling/saturation effect 8/8 全 weakness）；OTEL 4 + TT 1 候选 environment_blocked 未执行** |
 
 > 注：#8/#9/#10/#11/#12 是本总结的核心新证据（2026-08-09），#1-7 为既有落盘事实。
 
@@ -148,7 +148,7 @@
 - 含义：任何"我们选择候选更准"的声称都没有统计背书。这与方法论优劣无关，是实验设计问题（池子无信息不对称时，选择方法必然无差异）。
 
 **C2. 产出形态可验证、可锚定、可复用。**
-- 证据：**历史 83 次受控注入 + r2 24 次尝试分开计数**（master 台账 `archive/run_ledger_master.json`：107 条运行记录 = 91 独立注入 + 9 确认 + 7 无效基线；67 个派生/预测/汇总文件明确不计入独立实验。历史 83 见 `execution/remediation/run_ledger.json`；r2 24 见 `execution/remediation/r2_runs/`）；15 个源码锚定根因（含 OTel main.go:494、train-ticket OrderServiceImpl.java:192-206 两份可提交 bug 报告）；20 知识卡 + 防御模式库 + 判定经验；契约清单 11 边（含 loss_bounded 语义扩展）；B3 判定一致率 0.933。
+- 证据：**历史 83 次受控注入 + r2 24 次尝试分开计数**（master 台账 `archive/run_ledger_master.json`：**总 run records 107 = 83（历史 lifecycle-complete）+ 24（r2）；独立注入总数 91 = 83（历史）+ 8（r2 首跑）**；r2 确认运行 9、r2 无效基线 7（r2 有效观测 17 = 8 首跑 + 9 确认，是观测分类非独立数）；67 个派生/预测/汇总文件明确不计入独立实验。历史 83 见 `execution/remediation/run_ledger.json`；r2 24 见 `execution/remediation/r2_runs/`）；15 个源码锚定根因（含 OTel main.go:494、train-ticket OrderServiceImpl.java:192-206 两份可提交 bug 报告）；20 知识卡 + 防御模式库 + 判定经验；契约清单 11 边（含 loss_bounded 语义扩展）；B3 判定一致率 0.933。
 
 ### 第二层：本次实验确立的实证主张（第 8 轮，可复现）
 

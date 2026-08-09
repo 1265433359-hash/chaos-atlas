@@ -1,7 +1,7 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "tool": "candidate_pool_registry",
-  "generated_at": "2026-08-09T15:49:37.801469+00:00",
+  "generated_at": "2026-08-09T16:08:20.965754+00:00",
   "source_pools": {
     "core12": 12,
     "extended20": 20,
@@ -13,19 +13,25 @@
   "executed_count": 36,
   "not_executed_count": 18,
   "environment_blocked_count": 10,
-  "note": "OTEL/TT r2 candidates are marked environment_blocked/not_executed, NOT deleted.",
+  "ground_truth_status_counts": {
+    "confirmed_weakness": 32,
+    "unknown": 18,
+    "confirmed_non_weakness": 4
+  },
+  "note": "OTEL/TT r2 candidates are marked environment_blocked/not_executed, NOT deleted. ground_truth_status is best-effort from existing evidence; 'unknown' where evidence is absent.",
   "candidates": [
     {
       "candidate_id": "OB-CART-DELAY-2000",
       "project_id": "OB",
       "target_edge": "unknown",
-      "fault": "2000",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-CART-LOSS-100",
@@ -38,32 +44,35 @@
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-CHECKOUT-CART-DELAY-2000",
       "project_id": "OB",
       "target_edge": "checkout->cart",
-      "fault": "2000",
+      "fault": "delay",
       "contract_label_in_pool": "no_timeout",
       "source_registry": "mixed8",
       "executed_status": "not_executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OB-CHECKOUT-DELAY-2000",
       "project_id": "OB",
       "target_edge": "unknown",
-      "fault": "2000",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-CHECKOUT-LOSS-100",
@@ -76,33 +85,36 @@
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "unknown"
+      "protected_status": "unknown",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-CHECKOUT-PAYMENT-DELAY-2000",
       "project_id": "OB",
       "target_edge": "checkout->payment",
-      "fault": "2000",
+      "fault": "delay",
       "contract_label_in_pool": "no_timeout",
       "source_registry": "mixed8",
       "executed_status": "not_executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OB-CHECKOUT-SHIPPING-DELAY-2000",
       "project_id": "OB",
       "target_edge": "checkout->shipping",
-      "fault": "2000",
+      "fault": "delay",
       "contract_label_in_pool": "no_timeout",
       "source_registry": "mixed8",
       "executed_status": "not_executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OB-CURRENCY-DELAY-2000",
@@ -115,7 +127,8 @@
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "unknown"
+      "protected_status": "unknown",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-CURRENCY-LOSS-100",
@@ -128,7 +141,8 @@
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "unknown"
+      "protected_status": "unknown",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-EMAIL-DELAY-2000",
@@ -141,7 +155,8 @@
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "unknown"
+      "protected_status": "unknown",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-EMAIL-LOSS-100",
@@ -154,120 +169,130 @@
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "unknown"
+      "protected_status": "unknown",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-FRONTEND-ADSERVICE-DELAY-2000",
       "project_id": "OB",
       "target_edge": "frontend->adservice",
-      "fault": "2000",
+      "fault": "delay",
       "contract_label_in_pool": "explicit_timeout",
       "source_registry": "mixed8",
       "executed_status": "not_executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": false,
-      "protected_status": "protected"
+      "protected_status": "protected",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OB-FRONTEND-ADSERVICE-DELAY-500",
       "project_id": "OB",
       "target_edge": "frontend->adservice",
-      "fault": "500",
+      "fault": "delay",
       "contract_label_in_pool": "explicit_timeout",
       "source_registry": "mixed8",
       "executed_status": "not_executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": false,
-      "protected_status": "protected"
+      "protected_status": "protected",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OB-FRONTEND-ADSERVICE-LOSS-100",
       "project_id": "OB",
       "target_edge": "frontend->adservice",
-      "fault": "100",
+      "fault": "loss",
       "contract_label_in_pool": "explicit_timeout(但loss不被超时覆盖)",
       "source_registry": "mixed8",
       "executed_status": "not_executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": false,
-      "protected_status": "protected"
+      "protected_status": "protected",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OB-FRONTEND-CURRENCY-DELAY-2000",
       "project_id": "OB",
       "target_edge": "frontend->currency",
-      "fault": "2000",
+      "fault": "delay",
       "contract_label_in_pool": "no_timeout",
       "source_registry": "mixed8",
       "executed_status": "not_executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OB-FRONTEND-PRODUCTCATALOG-DELAY-2000",
       "project_id": "OB",
       "target_edge": "frontend->productcatalog",
-      "fault": "2000",
+      "fault": "delay",
       "contract_label_in_pool": "no_timeout",
       "source_registry": "mixed8",
       "executed_status": "not_executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OB-PAYMENT-DELAY-2000",
       "project_id": "OB",
       "target_edge": "unknown",
-      "fault": "2000",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-PAYMENT-LOSS-100",
       "project_id": "OB",
       "target_edge": "unknown",
-      "fault": "100",
+      "fault": "loss",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-PRODUCTCATALOG-DELAY-500",
       "project_id": "OB",
       "target_edge": "unknown",
-      "fault": "500",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-PRODUCTCATALOG-KILL",
       "project_id": "OB",
       "target_edge": "unknown",
-      "fault": "KILL",
+      "fault": "kill",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-PRODUCTCATALOG-LOSS-100",
@@ -280,19 +305,21 @@
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "explicit_timeout"
+      "protected_status": "explicit_timeout",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-SHIPPING-DELAY-2000",
       "project_id": "OB",
       "target_edge": "unknown",
-      "fault": "2000",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OB-SHIPPING-LOSS-100",
@@ -305,7 +332,8 @@
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "unknown"
+      "protected_status": "unknown",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OTEL-CART-DELAY-2000",
@@ -318,7 +346,8 @@
       "environment_blocked": true,
       "exclusion_reason": "r2 executed only on OB (cluster had OB images; OTEL/TT not deployed)",
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OTEL-CART-LOSS-100",
@@ -331,19 +360,21 @@
       "environment_blocked": true,
       "exclusion_reason": "r2 executed only on OB (cluster had OB images; OTEL/TT not deployed)",
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OTEL-CHECKOUT-DELAY-2000",
       "project_id": "OTEL",
       "target_edge": "unknown",
-      "fault": "2000",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OTEL-CHECKOUT-LOSS-100",
@@ -356,67 +387,73 @@
       "environment_blocked": true,
       "exclusion_reason": "r2 executed only on OB (cluster had OB images; OTEL/TT not deployed)",
       "usable_for_head_to_head": false,
-      "protected_status": "unknown"
+      "protected_status": "unknown",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OTEL-CURRENCY-DELAY-2000",
       "project_id": "OTEL",
       "target_edge": "unknown",
-      "fault": "2000",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OTEL-EMAIL-DELAY-2000",
       "project_id": "OTEL",
       "target_edge": "unknown",
-      "fault": "2000",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OTEL-EMAIL-LOSS-100",
       "project_id": "OTEL",
       "target_edge": "unknown",
-      "fault": "100",
+      "fault": "loss",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OTEL-PAYMENT-DELAY-2000",
       "project_id": "OTEL",
       "target_edge": "unknown",
-      "fault": "2000",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OTEL-PAYMENT-LOSS-100",
       "project_id": "OTEL",
       "target_edge": "unknown",
-      "fault": "100",
+      "fault": "loss",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "OTEL-PRODUCTCATALOG-LOSS-100",
@@ -429,7 +466,8 @@
       "environment_blocked": true,
       "exclusion_reason": "r2 executed only on OB (cluster had OB images; OTEL/TT not deployed)",
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OTEL-QUOTE-DELAY-2000",
@@ -442,7 +480,8 @@
       "environment_blocked": true,
       "exclusion_reason": "r2 executed only on OB (cluster had OB images; OTEL/TT not deployed)",
       "usable_for_head_to_head": false,
-      "protected_status": "unknown"
+      "protected_status": "unknown",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OTEL-QUOTE-LOSS-100",
@@ -455,7 +494,8 @@
       "environment_blocked": true,
       "exclusion_reason": "r2 executed only on OB (cluster had OB images; OTEL/TT not deployed)",
       "usable_for_head_to_head": false,
-      "protected_status": "unknown"
+      "protected_status": "unknown",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "OTEL-SHIPPING-LOSS-100",
@@ -468,135 +508,146 @@
       "environment_blocked": true,
       "exclusion_reason": "r2 executed only on OB (cluster had OB images; OTEL/TT not deployed)",
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "SOCK-FRONTEND-CARTS-DELAY-2000",
       "project_id": "SOCK",
       "target_edge": "front-end->carts",
-      "fault": "unknown",
+      "fault": "delay",
       "verdict": "weakness",
       "source_registry": "sock8",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "unprotected"
+      "protected_status": "unprotected",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "SOCK-FRONTEND-CARTS-LOSS-100",
       "project_id": "SOCK",
       "target_edge": "front-end->carts",
-      "fault": "unknown",
+      "fault": "loss",
       "verdict": "weakness",
       "source_registry": "sock8",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "unprotected"
+      "protected_status": "unprotected",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "SOCK-FRONTEND-CATALOGUE-DELAY-2000",
       "project_id": "SOCK",
       "target_edge": "front-end->catalogue",
-      "fault": "unknown",
+      "fault": "delay",
       "verdict": "weakness",
       "source_registry": "sock8",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "unprotected"
+      "protected_status": "unprotected",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100",
       "project_id": "SOCK",
       "target_edge": "front-end->catalogue",
-      "fault": "unknown",
+      "fault": "loss",
       "verdict": "weakness",
       "source_registry": "sock8",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "unprotected"
+      "protected_status": "unprotected",
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "SOCK-ORDERS-PAYMENT-DELAY-2000",
       "project_id": "SOCK",
       "target_edge": "orders->payment",
-      "fault": "unknown",
+      "fault": "delay",
       "verdict": "defended",
       "source_registry": "sock8",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "protected"
+      "protected_status": "protected",
+      "ground_truth_status": "confirmed_non_weakness"
     },
     {
       "candidate_id": "SOCK-ORDERS-PAYMENT-LOSS-100",
       "project_id": "SOCK",
       "target_edge": "orders->payment",
-      "fault": "unknown",
+      "fault": "loss",
       "verdict": "defended",
       "source_registry": "sock8",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "protected"
+      "protected_status": "protected",
+      "ground_truth_status": "confirmed_non_weakness"
     },
     {
       "candidate_id": "SOCK-ORDERS-SHIPPING-DELAY-2000",
       "project_id": "SOCK",
       "target_edge": "orders->shipping",
-      "fault": "unknown",
+      "fault": "delay",
       "verdict": "defended",
       "source_registry": "sock8",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "protected"
+      "protected_status": "protected",
+      "ground_truth_status": "confirmed_non_weakness"
     },
     {
       "candidate_id": "SOCK-ORDERS-SHIPPING-LOSS-100",
       "project_id": "SOCK",
       "target_edge": "orders->shipping",
-      "fault": "unknown",
+      "fault": "loss",
       "verdict": "defended",
       "source_registry": "sock8",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
       "usable_for_head_to_head": true,
-      "protected_status": "protected"
+      "protected_status": "protected",
+      "ground_truth_status": "confirmed_non_weakness"
     },
     {
       "candidate_id": "TT-BASIC-DELAY-100",
       "project_id": "TT",
       "target_edge": "unknown",
-      "fault": "100",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "TT-BASIC-DELAY-500",
       "project_id": "TT",
       "target_edge": "unknown",
-      "fault": "500",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "TT-BASIC-LOSS-100",
@@ -609,19 +660,21 @@
       "environment_blocked": true,
       "exclusion_reason": "r2 executed only on OB (cluster had OB images; OTEL/TT not deployed)",
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "TT-ORDER-DELAY-2000",
       "project_id": "TT",
       "target_edge": "unknown",
-      "fault": "2000",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "TT-ORDER-LOSS-100",
@@ -634,55 +687,60 @@
       "environment_blocked": true,
       "exclusion_reason": "r2 executed only on OB (cluster had OB images; OTEL/TT not deployed)",
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     },
     {
       "candidate_id": "TT-STATION-CPU-80",
       "project_id": "TT",
       "target_edge": "unknown",
-      "fault": "80",
+      "fault": "cpu",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "TT-STATION-DELAY-100",
       "project_id": "TT",
       "target_edge": "unknown",
-      "fault": "100",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "TT-STATION-DELAY-2000",
       "project_id": "TT",
       "target_edge": "unknown",
-      "fault": "2000",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "TT-STATION-DELAY-500",
       "project_id": "TT",
       "target_edge": "unknown",
-      "fault": "500",
+      "fault": "delay",
       "protected_status": "unknown",
       "source_registry": "extended20",
       "executed_status": "executed",
       "environment_blocked": false,
       "exclusion_reason": null,
-      "usable_for_head_to_head": true
+      "usable_for_head_to_head": true,
+      "ground_truth_status": "confirmed_weakness"
     },
     {
       "candidate_id": "TT-STATION-LOSS-100",
@@ -695,7 +753,8 @@
       "environment_blocked": true,
       "exclusion_reason": "r2 executed only on OB (cluster had OB images; OTEL/TT not deployed)",
       "usable_for_head_to_head": false,
-      "protected_status": "no_timeout"
+      "protected_status": "no_timeout",
+      "ground_truth_status": "unknown"
     }
   ]
 }
