@@ -8,7 +8,8 @@
   "availability_layer": {
     "track": "deployment-availability",
     "method": "static manifest (replicas/pdb/probes) + PodChaos pod-kill runtime (500ms Ready sampling)",
-    "summary": "8/8 Sock Shop business services are single-replica with no PDB and no HPA -> any single pod kill = total outage (AD-REDUNDANCY-001). Verified on 2: front-end (outage 130s) and orders (outage 56s).",
+    "summary": "8/8 Sock Shop business services are single-replica with no PDB and no HPA -> any single pod kill = total outage (AD-REDUNDANCY-001). Runtime-verified on 4: front-end (130s), orders (56s), user (155s), carts/shipping (0s window = no readiness gate, new pod marked Ready immediately). All min_ready=0.",
+    "note": "outage_window varies: services WITH readiness probes (front-end/orders/user) show tens-of-seconds outage (probe gate + slow start); services WITHOUT probes (carts/shipping) show ~0s window because the new pod is marked Ready the instant it Runs - a gate-lack artifact, NOT fast self-heal. Absolute recovery times include image cache/load; relative conclusion (single-replica kill always hits a full-outage moment) holds for all 4.",
     "verdicts": [
       {
         "service": "front-end",
@@ -31,9 +32,41 @@
         "recovered_s": 57,
         "evidence": "PodChaos pod-kill -> Ready 1->0 for 56s; static: single-replica no-PDB. artifacts/sock-shop/avail_orders_kill.json",
         "ce_parity": "not in CE candidate set"
+      },
+      {
+        "service": "user",
+        "replicas": 1,
+        "pdb": null,
+        "verdict": "weakness",
+        "severity": 3,
+        "outage_window_s": 155,
+        "recovered_s": null,
+        "evidence": "PodChaos pod-kill -> Ready 1->0, outage detected; recovery capture missed (scheduler flake during test), verdict unambiguous. artifacts/sock-shop/avail_user_kill.json",
+        "ce_parity": "not in CE candidate set"
+      },
+      {
+        "service": "carts",
+        "replicas": 1,
+        "pdb": null,
+        "verdict": "weakness",
+        "severity": 3,
+        "outage_window_s": 0,
+        "recovered_s": 4,
+        "evidence": "PodChaos pod-kill -> min_ready=0 (full-outage moment hit); ~0s window because NO readiness probe: new pod marked Ready on Running. Gate-lack artifact, not fast self-heal. artifacts/sock-shop/avail_carts_kill.json",
+        "ce_parity": "not in CE candidate set"
+      },
+      {
+        "service": "shipping",
+        "replicas": 1,
+        "pdb": null,
+        "verdict": "weakness",
+        "severity": 3,
+        "outage_window_s": 0,
+        "recovered_s": 3,
+        "evidence": "PodChaos pod-kill -> min_ready=0; no readiness probe (gate-lack artifact). artifacts/sock-shop/avail_shipping_kill.json",
+        "ce_parity": "not in CE candidate set"
       }
-    ],
-    "note": "8/8 services single-replica no-PDB (static inventory). Verified 2 (front-end, orders); remaining 6 (payment/shipping/user/carts/catalogue/queue-master) share identical manifest shape -> same verdict by AD-REDUNDANCY-001 (static rule), runtime verification pending."
+    ]
   },
   "candidates": [
     {

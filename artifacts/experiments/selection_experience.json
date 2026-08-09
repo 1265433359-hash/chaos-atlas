@@ -181,7 +181,73 @@
       "confidence": "high",
       "source": "OTel/OB email \u53cc\u9879\u76ee\u590d\u73b0 + \u5224\u5b9a\u7ecf\u9a8c JE-COUPLING-001",
       "evidence_count": 2
+    },
+    {
+      "id": "SE-TEST-HYGIENE-PROBE-001",
+      "rule": "liveness/readiness probe timeout must exceed the injected latency, else the kubelet SIGKILLs the pod mid-experiment and the injection 'escapes' - the observed failure is probe self-kill, not the system's defense behavior. Check probe timeouts BEFORE designing delay injections (Sock Shop payment: 1s probe killed pod on 2s+ injection; relaxed to 25s for clean experiments).",
+      "dimensions": [
+        "test_design"
+      ],
+      "corpus_evidence": [],
+      "experiment_evidence": [
+        "SOCK-PAYMENT: 1s liveness + 2s delay -> pod SIGKILL (experiment polluted)",
+        "OB probe-restart escape (1s probe vs 2s+ delay, prior session)"
+      ],
+      "counter_example": "probe timeout >= injected latency, or probes disabled, keeps the experiment valid",
+      "transferable_to": "\u4efb\u4f55\u7528\u5ef6\u8fdf\u6ce8\u5165\u6d4b\u8bd5\u6709\u63a2\u9488\u7684\u670d\u52a1\uff1b\u5148\u8bfb deployment \u63a2\u9488\u914d\u7f6e",
+      "confidence": "high",
+      "source": "Sock Shop payment \u63a2\u9488\u6c61\u67d3\u5b9e\u6d4b + OB \u63a2\u9488\u91cd\u542f\u9003\u9038(\u65e2\u6709)",
+      "evidence_count": 2
+    },
+    {
+      "id": "SE-TEST-HYGIENE-IMAGECOMPAT-001",
+      "rule": "DB image 'latest' (mongo 8.x) breaks legacy app drivers: 'Unsupported OP_QUERY command: find/insert (code 352)'. If an old Spring/Go app fails with 352, pin the DB to the era-appropriate major (mongo:4.0) rather than debugging the app.",
+      "dimensions": [
+        "infrastructure"
+      ],
+      "corpus_evidence": [],
+      "experiment_evidence": [
+        "carts-db mongo:latest -> carts 500 (OP_QUERY 352); mongo:4.0 -> 201",
+        "orders-db mongo:latest -> orders insert 500 (OP_QUERY 352); mongo:4.0 -> 201"
+      ],
+      "counter_example": "modern driver / gRPC clients speak wire protocol v2+ (no OP_QUERY)",
+      "transferable_to": "\u4efb\u4f55 'latest' DB \u955c\u50cf + \u8001\u5fae\u670d\u52a1\uff1b\u5148\u9a8c\u8bc1\u9a71\u52a8\u517c\u5bb9\u518d\u6392\u67e5\u5e94\u7528",
+      "confidence": "high",
+      "source": "Sock Shop carts/orders-db \u964d\u7ea7\u5b9e\u6d4b",
+      "evidence_count": 2
+    },
+    {
+      "id": "SE-TEST-HYGIENE-PORTMISMATCH-001",
+      "rule": "Container listening port may differ from the Service targetPort in real YAML (front-end listens 8079, svc targetPort was 80 -> silent connection refused). Verify the container's actual listen port (netstat/ss) before blaming the mesh or the app - patch svc targetPort to the real port.",
+      "dimensions": [
+        "infrastructure"
+      ],
+      "corpus_evidence": [],
+      "experiment_evidence": [
+        "front-end: pod IP :80 refused; :8079 200; patched svc targetPort 8079 -> svc OK"
+      ],
+      "counter_example": "container port == svc targetPort (most manifests)",
+      "transferable_to": "\u4efb\u4f55 svc \u8fde\u63a5\u62d2\u7edd\u5148\u67e5 targetPort \u4e00\u81f4\u6027",
+      "confidence": "high",
+      "source": "Sock Shop front-end 8079/80 \u6392\u67e5",
+      "evidence_count": 1
+    },
+    {
+      "id": "SE-TEST-HYGIENE-OOM-001",
+      "rule": "Services without resource limits can OOM-crashloop independently of probes or injections (catalogue-db OOMKilled repeatedly). Distinguish infra OOM from probe/liveness issues before attributing it to the injected fault.",
+      "dimensions": [
+        "infrastructure"
+      ],
+      "corpus_evidence": [],
+      "experiment_evidence": [
+        "catalogue-db OOMKilled exit 137 crash-loop (no resource limits in deployment)"
+      ],
+      "counter_example": "resources.limits set (survives normal load)",
+      "transferable_to": "\u4efb\u4f55\u65e0 resources.limits \u7684\u670d\u52a1\uff1b\u6d4b\u524d\u5148\u67e5 limit",
+      "confidence": "medium",
+      "source": "Sock Shop catalogue-db OOM \u89c2\u5bdf",
+      "evidence_count": 1
     }
   ],
-  "generated_at": "2026-08-08T08:43:49.696238+00:00"
+  "generated_at": "2026-08-09T12:01:03.614213+00:00"
 }

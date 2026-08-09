@@ -45,9 +45,11 @@
 | 6 | CE 真实部署 cycle | Sock Shop | CE vs 我们直连 | 直连 | **零重叠**：CE 判 front-end 单副本，我们 8/8 契约弱 |
 | 7 | OB 混合池 | 8 候选（3 protected） | decision_engine vs M1 vs M0 | 直连 | 打平 5/6 vs 5/6，88%<95% 不显著 |
 | 8 | **Sock 真实链路** | 8 候选（4 protected） | decision_engine vs M1 vs M0 | **真实链路** | **decision_engine 4/4，M0 49% 浪费；且直连在此边系统性误判** |
-| 9 | **Sock 可用性层** | 服务级 kill（2 实测 + 6 静态） | 我们 vs CE（追平） | **可用性采样** | **单副本无 PDB kill 必瘫：front-end 130s、orders 56s；与 CE 判定一致（独立复现）** |
+| 9 | **Sock 可用性层** | 服务级 kill（4 实测 + 4 静态） | 我们 vs CE（追平） | **可用性采样** | **单副本无 PDB kill 必瘫：front-end 130s、orders 56s、user 155s、carts/shipping 全瘫瞬间（无门控假恢复）；与 CE 判定一致（独立复现）** |
+| 10 | **双轨统一池** | 契约 8 边 + 可用性 8 服务 | decision_engine 双硬过滤 | 双轨 | **16/16 与真值对齐：契约 4 protected 跳过、可用性 8 kill 全判 weakness** |
+| 11 | **经验缺口回填** | 知识库审计 + 补全 | DP 3→5, SE 6→10 | — | **防御模式库原来几乎空（3 条未验证）；补齐 Future.get/无冗余 + 探针污染/镜像兼容/端口错配/OOM** |
 
-> 注：#8/#9 是本总结的核心新证据（本次会话完成），#1-7 为既有落盘事实。
+> 注：#8/#9/#10/#11 是本总结的核心新证据（本次会话完成），#1-7 为既有落盘事实。
 
 ---
 
@@ -107,6 +109,29 @@
 - 三方法对比暴露 decision_engine 只过滤 DELAY 不认 LOSS → 新增 loss_bounded 语义
 - 契约清单从"只认配置层超时"扩展到"认代码层异步超时"（Future.get）
 - 一个不敢推翻自己旧结论的方法论，和"永远全对"一样可疑
+
+---
+
+## 三·五、经验缺口审计（2026-08-09，回答"是不是还有很多经验没加进去"）
+
+### 审计结果：是的，有大量经验未结构化
+| 库 | 审计前 | 问题 | 回填 |
+|---|---|---|---|
+| defense_pattern_library | 3 条（全部未验证 absorbed_by_design） | **实测的防御机制一条没进库**：Future.get 超时、单副本无冗余 | +2（DP-BOUNDED-TIMEOUT-FUTUREGET-001 已验证、DP-REDUNDANCY-ABSENT-001） |
+| selection_experience | 6 条 | 全是"选择/判定"经验，**没有测试卫生/部署经验** | +4（探针污染、镜像兼容、端口错配、OOM） |
+
+### 回填内容（全部带本会话实测证据）
+1. **DP-BOUNDED-TIMEOUT-FUTUREGET-001**（bounded_timeout, source_verified=True）：`Future.get(5s)` 对 delay 和 loss 都有界，直连测不到——知识资产化核心案例。
+2. **DP-REDUNDANCY-ABSENT-001**（redundancy）：单副本无 PDB → kill 必瘫，静态 manifest 即可先验判定。
+3. **SE-TEST-HYGIENE-PROBE-001**：探针 timeout < 注入延迟 → pod 被 SIGKILL，注入"逃逸"污染实验（Sock payment 实测 + OB 既有）。
+4. **SE-TEST-HYGIENE-IMAGECOMPAT-001**：mongo:latest(8.x) 破坏旧驱动 OP_QUERY → 降级 mongo:4.0（carts/orders-db 实测）。
+5. **SE-TEST-HYGIENE-PORTMISMATCH-001**：容器监听端口 ≠ svc targetPort → 静默拒绝（front-end 8079/80）。
+6. **SE-TEST-HYGIENE-OOM-001**：无 resources.limits → OOM crash-loop（catalogue-db），与探针/注入无关。
+
+### 含义
+- 知识库的"选择/判定"维度当时是满的，但"防御模式"和"测试卫生"两个维度严重欠账——这两类恰恰是**真实部署里最贵、最反复踩的坑**。
+- 回填后：DP 库 5 条（含 2 条 source_verified）、SE 库 10 条。审计+回填脚本：`tools/backfill_experience_gaps.py`。
+- **方法论教训**：知识资产化的范围应覆盖"防御机制 + 测试卫生 + 判定经验"三维，不能只记判定规则。
 
 ---
 

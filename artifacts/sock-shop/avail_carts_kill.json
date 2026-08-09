@@ -1,0 +1,42 @@
+{
+  "track": "availability",
+  "service": "carts",
+  "old_pod": "carts-65c7845c68-qd5d4",
+  "injection": "PodChaos pod-kill (mode=one)",
+  "baseline_s": 2.0,
+  "samples_total": 5,
+  "min_ready": 0,
+  "max_ready": 1,
+  "outage_detected": true,
+  "outage_window_s": 0,
+  "recovered_s": 4,
+  "recovery_delta_from_kill_s": 2.0,
+  "verdict": "weakness (no redundancy: single replica, total outage on kill)",
+  "curve": [
+    {
+      "rel_s": 0,
+      "ready": 1,
+      "phase": "Running"
+    },
+    {
+      "rel_s": 1,
+      "ready": 1,
+      "phase": "Running"
+    },
+    {
+      "rel_s": 2,
+      "ready": 1,
+      "phase": "Running"
+    },
+    {
+      "rel_s": 3,
+      "ready": 0,
+      "phase": "Pending"
+    },
+    {
+      "rel_s": 4,
+      "ready": 1,
+      "phase": "Running"
+    }
+  ]
+}

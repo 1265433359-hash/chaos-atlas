@@ -36,12 +36,24 @@
 - **outage_window = 56s**，恢复 ~57s
 - **verdict: weakness（无冗余，单点故障）**
 
+### 补测3-5：user / carts / shipping kill（订单链路完整覆盖）
+| 服务 | 探针 | min_ready | outage_window | verdict |
+|---|---|---|---|---|
+| user | liveness+readiness 1s | 0（全瘫时刻命中） | 155s | weakness |
+| carts | 无探针 | 0 | ~0s（无 readiness 门控） | weakness |
+| shipping | 无探针 | 0 | ~0s（无 readiness 门控） | weakness |
+
+**gate-lack 发现（补测的新机制）**：无 readiness 探针的服务（carts/shipping），新 pod 一旦 Running 立即被标记 Ready——outage_window 显示 ~0s **不是"自愈快"，而是"没有就绪门控"**：流量在新 pod 真正可用前就被导入了（可能打到未就绪的 pod）。这本身是另一个可用性弱点（AD-PROBE 类），与"单副本必瘫"叠加：kill 触发全瘫瞬间（min_ready=0），随后因无门控"假恢复"。
+
 | 服务 | kill 后全瘫时长 | 恢复时长 | 判定 |
 |---|---|---|---|
 | front-end | 130s | ~131s | weakness（无冗余） |
 | orders | 56s | ~57s | weakness（无冗余） |
+| user | 155s | 未捕获（scheduler 抖动） | weakness（无冗余） |
+| carts | 全瘫瞬间（门控缺失） | 4s（假恢复） | weakness（无冗余 + 无门控） |
+| shipping | 全瘫瞬间（门控缺失） | 3s（假恢复） | weakness（无冗余 + 无门控） |
 
-原始曲线：`artifacts/sock-shop/avail_frontend_kill.json` / `avail_orders_kill.json`
+原始曲线：`artifacts/sock-shop/avail_{frontend,orders,user,carts,shipping}_kill.json`
 
 ## 三、与 ChaosEater 的对照（追平 + 增量）
 

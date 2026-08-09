@@ -93,7 +93,10 @@
 |---|---|---|---|
 | front-end | replicas=1, 无 PDB | 全瘫 130s | ~131s |
 | orders | replicas=1, 无 PDB | 全瘫 56s | ~57s |
-| 其余 6 服务 | replicas=1, 无 PDB | 静态推断同形态（AD-REDUNDANCY-001） | — |
+| user | replicas=1, 无 PDB | 全瘫 155s | 未捕获（scheduler 抖动） |
+| carts | replicas=1, 无 PDB | 全瘫瞬间（无 readiness 门控） | 4s（假恢复） |
+| shipping | replicas=1, 无 PDB | 全瘫瞬间（无 readiness 门控） | 3s（假恢复） |
+| payment/catalogue/queue-master | replicas=1, 无 PDB | 静态推断同形态（AD-REDUNDANCY-001） | — |
 
 ### 三方法对比（Sock 池，预算 4）
 | 方法 | protected 浪费 | 弱点命中 |
@@ -202,12 +205,15 @@
 - `artifacts/experiments/p4_closed_loop_validation.md` — 闭环验证
 
 ### 本轮核心（2026-08-09）
-- `artifacts/experiments/unified_experiments_summary.md` — 统一结论（C1-C8）
+- `artifacts/experiments/unified_experiments_summary.md` — 统一结论（C1-C8）+ 经验缺口审计（§3.5）
 - `artifacts/experiments/availability_defense_design.md` — 可用性层设计
 - `artifacts/sock-shop/sock_orders_future_get_verified.md` — 契约层实证
-- `artifacts/sock-shop/sock_availability_layer_verified.md` — 可用性层实证
-- `artifacts/sock-shop/sock_shop_verdicts.json` — 判定数据 v3
+- `artifacts/sock-shop/sock_availability_layer_verified.md` — 可用性层实证（4 服务 kill + gate-lack 发现）
+- `artifacts/sock-shop/sock_shop_verdicts.json` — 判定数据 v3（可用性 5 服务实测）
+- `artifacts/sock-shop/sock_dual_track_pool.json` — 双轨统一池（16/16 对齐，引擎级端到端）
 - `artifacts/experiments/chaos_eater_deployed_vs_ours.md` — CE 真实部署对比
+- `tools/sock_dual_track_pool.py` — 双轨统一池生成器（论文实验章可复现）
+- `tools/backfill_experience_gaps.py` — 知识库缺口回填（审计→补全可复现）
 
 ### 知识库（JSON 资产）
 - `contract_inventory.json` / `defense_pattern_library.json` / `judgment_experience.json` / `selection_experience.json` / `knowledge_audit_log.json` / `our_evidence_chain_root_causes.json` / `environment_fingerprint.json` / `issue_tracker.json`
