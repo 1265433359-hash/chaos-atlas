@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: unittestfrontenddeploymentavailablereplicasmod0-pod
+spec:
+  containers:
+  - name: unittestfrontenddeploymentavailablereplicasmod0-pod-container
+    image: chaos-eater/k8sapi:1.0
+    imagePullPolicy: IfNotPresent
+    command: ["/bin/bash", "-c"]
+    args: ["python /chaos-eater/sandbox/cycle_20260809_031539/hypothesis/unittest_frontendDeploymentAvailableReplicas_mod0.py --duration 5"]
+    volumeMounts:
+      - name: pvc-volume
+        mountPath: /chaos-eater
+  restartPolicy: Never
+  volumes:
+    - name: pvc-volume
+      persistentVolumeClaim:
+        claimName: pvc

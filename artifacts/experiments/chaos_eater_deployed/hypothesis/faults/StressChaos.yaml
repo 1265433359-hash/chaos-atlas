@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: chaos-test
+  namespace: chaos-eater
+spec:
+  containerNames:
+    - carts-db
+  mode: one
+  selector:
+    labelSelectors:
+      name: carts-db
+    namespaces:
+      - sock-shop
+  stressors:
+    cpu:
+      load: 100
+      workers: 1
+    memory:
+      size: 512MB
+      workers: 1
+  value: '1'

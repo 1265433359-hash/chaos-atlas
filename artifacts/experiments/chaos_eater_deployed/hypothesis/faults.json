@@ -1,0 +1,164 @@
+{
+    "event": "Black Friday cyber attack: a flash sale coinciding with a DDoS attack and targeted pod destruction, causing extreme traffic and malicious disruption of critical services.",
+    "faults": [
+        [
+            {
+                "name": "StressChaos",
+                "name_id": 0,
+                "params": {
+                    "mode": "one",
+                    "value": "1",
+                    "stressors": {
+                        "cpu": {
+                            "workers": 1,
+                            "load": 100
+                        },
+                        "memory": {
+                            "workers": 1,
+                            "size": "256MB"
+                        }
+                    },
+                    "containerNames": [
+                        "front-end"
+                    ],
+                    "selector": {
+                        "namespaces": [
+                            "sock-shop"
+                        ],
+                        "labelSelectors": {
+                            "name": "front-end"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "StressChaos",
+                "name_id": 1,
+                "params": {
+                    "mode": "one",
+                    "value": "1",
+                    "stressors": {
+                        "cpu": {
+                            "workers": 1,
+                            "load": 100
+                        },
+                        "memory": {
+                            "workers": 1,
+                            "size": "512MB"
+                        }
+                    },
+                    "containerNames": [
+                        "carts-db"
+                    ],
+                    "selector": {
+                        "namespaces": [
+                            "sock-shop"
+                        ],
+                        "labelSelectors": {
+                            "name": "carts-db"
+                        }
+                    }
+                }
+            }
+        ],
+        [
+            {
+                "name": "NetworkChaos",
+                "name_id": 2,
+                "params": {
+                    "action": "loss",
+                    "direction": "to",
+                    "mode": "all",
+                    "selector": {
+                        "namespaces": [
+                            "sock-shop"
+                        ],
+                        "labelSelectors": {
+                            "name": "front-end"
+                        }
+                    },
+                    "loss": {
+                        "loss": "50",
+                        "correlation": "0"
+                    }
+                }
+            },
+            {
+                "name": "NetworkChaos",
+                "name_id": 3,
+                "params": {
+                    "action": "loss",
+                    "direction": "to",
+                    "mode": "all",
+                    "selector": {
+                        "namespaces": [
+                            "sock-shop"
+                        ],
+                        "labelSelectors": {
+                            "name": "carts-db"
+                        }
+                    },
+                    "loss": {
+                        "loss": "50"
+                    }
+                }
+            }
+        ],
+        [
+            {
+                "name": "PodChaos",
+                "name_id": 4,
+                "params": {
+                    "action": "pod-kill",
+                    "mode": "one",
+                    "selector": {
+                        "namespaces": [
+                            "sock-shop"
+                        ],
+                        "labelSelectors": {
+                            "name": "front-end"
+                        }
+                    }
+                }
+            },
+            {
+                "name": "PodChaos",
+                "name_id": 5,
+                "params": {
+                    "action": "pod-kill",
+                    "mode": "one",
+                    "selector": {
+                        "namespaces": [
+                            "sock-shop"
+                        ],
+                        "labelSelectors": {
+                            "name": "carts-db"
+                        }
+                    }
+                }
+            }
+        ],
+        [
+            {
+                "name": "PodChaos",
+                "name_id": 6,
+                "params": {
+                    "action": "container-kill",
+                    "mode": "one",
+                    "selector": {
+                        "namespaces": [
+                            "sock-shop"
+                        ],
+                        "labelSelectors": {
+                            "name": "rabbitmq"
+                        }
+                    },
+                    "containerNames": [
+                        "rabbitmq-exporter"
+                    ]
+                }
+            }
+        ]
+    ],
+    "description": "The Sock Shop microservices are all single-replica deployments, so each component is a single point of failure. The front-end is the only ingress, so killing it directly makes the store unavailable, violating steady state 1. The carts-db backend has no persistent storage, sets readOnlyRootFilesystem without a writable /data/db volume, and lacks probes; if it is killed, its pod may crash-loop or lose data, violating steady state 2. The sequence first applies StressChaos to front-end and carts-db to simulate heavy promotion traffic and database load, exposing resource limits and the lack of scaling/redundancy. Next, NetworkChaos injects packet loss/partition on the same pods to mimic a DDoS attack, which can cause liveness/readiness failures and force restarts. Then PodChaos pod-kill on front-end and carts-db simulates attackers deliberately killing critical pods, which is maximally impactful because there are no redundant replicas, and the carts-db restart reveals the read-only filesystem/persistence flaw that prevents recovery. Finally, PodChaos container-kill on the rabbitmq-exporter sidecar simulates a sidecar crash, which restarts the whole rabbitmq pod due to shared process group, disrupting order/queue processing. This sequence reveals the vulnerabilities of single replicas, storage misconfiguration, missing probes, and sidecar-caused pod restarts."
+}

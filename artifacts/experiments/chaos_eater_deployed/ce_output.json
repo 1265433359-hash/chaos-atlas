@@ -1,0 +1,958 @@
+{
+    "output_dir": "",
+    "work_dir": "sandbox/cycle_20260809_031539",
+    "run_time": {
+        "preprocess": 400.80031657218933,
+        "hypothesis": 450.5953493118286,
+        "experiment_plan": 92.09072160720825,
+        "analysis": [
+            51.374027729034424
+        ],
+        "improvement": [
+            261.7061011791229
+        ],
+        "experiment_execution": [
+            566.3081862926483
+        ]
+    },
+    "ce_cycle": {
+        "processed_data": {
+            "work_dir": "sandbox/cycle_20260809_031539/inputs",
+            "input": {
+                "skaffold_yaml": {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/skaffold.yaml",
+                    "content": "apiVersion: skaffold/v3\r\nkind: Config\r\nmetadata:\r\n  name: sock-shop-app\r\nmanifests:\r\n  rawYaml:\r\n    - manifests/00-sock-shop-ns.yaml\r\n    - manifests/01-carts-dep.yaml\r\n    - manifests/02-carts-svc.yaml\r\n    - manifests/03-carts-db-dep.yaml\r\n    - manifests/04-carts-db-svc.yaml\r\n    - manifests/05-catalogue-dep.yaml\r\n    - manifests/06-catalogue-svc.yaml\r\n    - manifests/07-catalogue-db-dep.yaml\r\n    - manifests/08-catalogue-db-svc.yaml\r\n    - manifests/09-front-end-dep.yaml\r\n    - manifests/10-front-end-svc.yaml\r\n    - manifests/11-orders-dep.yaml\r\n    - manifests/12-orders-svc.yaml\r\n    - manifests/13-orders-db-dep.yaml\r\n    - manifests/14-orders-db-svc.yaml\r\n    - manifests/15-payment-dep.yaml\r\n    - manifests/16-payment-svc.yaml\r\n    - manifests/17-queue-master-dep.yaml\r\n    - manifests/18-queue-master-svc.yaml\r\n    - manifests/19-rabbitmq-dep.yaml\r\n    - manifests/20-rabbitmq-svc.yaml\r\n    - manifests/21-session-db-dep.yaml\r\n    - manifests/22-session-db-svc.yaml\r\n    - manifests/23-shipping-dep.yaml\r\n    - manifests/24-shipping-svc.yaml\r\n    - manifests/25-user-dep.yaml\r\n    - manifests/26-user-svc.yaml\r\n    - manifests/27-user-db-dep.yaml\r\n    - manifests/28-user-db-svc.yaml",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/skaffold.yaml"
+                },
+                "files": [
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/00-sock-shop-ns.yaml",
+                        "content": "apiVersion: v1\nkind: Namespace\nmetadata:\n  labels:\n    project: chaos-eater\n  name: sock-shop\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/00-sock-shop-ns.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/01-carts-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: carts\r\n  labels:\r\n    name: carts\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: carts\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: carts\r\n    spec:\r\n      containers:\r\n      - name: carts\r\n        image: weaveworksdemos/carts:0.4.8\r\n        env:\r\n        - name: JAVA_OPTS\r\n          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom\r\n            -Dspring.zipkin.enabled=false\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 200Mi\r\n        ports:\r\n        - containerPort: 80\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/01-carts-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/02-carts-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: carts\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: carts\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: carts\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/02-carts-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/03-carts-db-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: carts-db\r\n  labels:\r\n    name: carts-db\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: carts-db\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: carts-db\r\n    spec:\r\n      containers:\r\n      - name: carts-db\r\n        image: mongo\r\n        ports:\r\n        - name: mongo\r\n          containerPort: 27017\r\n        securityContext:\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - CHOWN\r\n            - SETGID\r\n            - SETUID\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        resources:\r\n          limits:\r\n            memory: 1Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/03-carts-db-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/04-carts-db-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: carts-db\n  labels:\n    name: carts-db\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 27017\n    targetPort: 27017\n  selector:\n    name: carts-db\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/04-carts-db-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/05-catalogue-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: catalogue\r\n  labels:\r\n    name: catalogue\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: catalogue\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: catalogue\r\n    spec:\r\n      containers:\r\n      - name: catalogue\r\n        image: weaveworksdemos/catalogue:0.3.5\r\n        command:\r\n        - /app\r\n        args:\r\n        - -port=80\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 100Mi\r\n        ports:\r\n        - containerPort: 80\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        livenessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 300\r\n          periodSeconds: 3\r\n        readinessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 180\r\n          periodSeconds: 3\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/05-catalogue-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/06-catalogue-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: catalogue\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: catalogue\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: catalogue\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/06-catalogue-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/07-catalogue-db-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: catalogue-db\r\n  labels:\r\n    name: catalogue-db\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: catalogue-db\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: catalogue-db\r\n    spec:\r\n      containers:\r\n      - name: catalogue-db\r\n        image: weaveworksdemos/catalogue-db:0.3.0\r\n        env:\r\n        - name: MYSQL_ROOT_PASSWORD\r\n          value: fake_password\r\n        - name: MYSQL_DATABASE\r\n          value: socksdb\r\n        ports:\r\n        - name: mysql\r\n          containerPort: 3306\r\n        resources:\r\n          limits:\r\n            memory: 2Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/07-catalogue-db-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/08-catalogue-db-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: catalogue-db\n  labels:\n    name: catalogue-db\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 3306\n    targetPort: 3306\n  selector:\n    name: catalogue-db\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/08-catalogue-db-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/09-front-end-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  labels:\r\n    project: chaos-eater\r\n  name: front-end\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: front-end\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: front-end\r\n    spec:\r\n      containers:\r\n      - name: front-end\r\n        image: weaveworksdemos/front-end:0.3.12\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 300Mi\r\n        ports:\r\n        - containerPort: 8079\r\n        env:\r\n        - name: SESSION_REDIS\r\n          value: 'true'\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n          readOnlyRootFilesystem: true\r\n        livenessProbe:\r\n          httpGet:\r\n            path: /\r\n            port: 8079\r\n          initialDelaySeconds: 300\r\n          periodSeconds: 3\r\n        readinessProbe:\r\n          httpGet:\r\n            path: /\r\n            port: 8079\r\n          initialDelaySeconds: 30\r\n          periodSeconds: 3\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/09-front-end-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/10-front-end-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: front-end\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: front-end\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  type: NodePort\n  ports:\n  - port: 80\n    targetPort: 8079\n    nodePort: 30001\n  selector:\n    name: front-end\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/10-front-end-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/11-orders-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: orders\r\n  labels:\r\n    name: orders\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: orders\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: orders\r\n    spec:\r\n      containers:\r\n      - name: orders\r\n        image: weaveworksdemos/orders:0.4.7\r\n        env:\r\n        - name: JAVA_OPTS\r\n          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom\r\n            -Dspring.zipkin.enabled=false\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 300Mi\r\n        ports:\r\n        - containerPort: 80\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/11-orders-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/12-orders-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: orders\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: orders\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: orders\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/12-orders-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/13-orders-db-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: orders-db\r\n  labels:\r\n    name: orders-db\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: orders-db\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: orders-db\r\n    spec:\r\n      containers:\r\n      - name: orders-db\r\n        image: mongo\r\n        ports:\r\n        - name: mongo\r\n          containerPort: 27017\r\n        securityContext:\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - CHOWN\r\n            - SETGID\r\n            - SETUID\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        resources:\r\n          limits:\r\n            memory: 1Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/13-orders-db-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/14-orders-db-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: orders-db\n  labels:\n    name: orders-db\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 27017\n    targetPort: 27017\n  selector:\n    name: orders-db\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/14-orders-db-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/15-payment-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: payment\r\n  labels:\r\n    name: payment\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: payment\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: payment\r\n    spec:\r\n      containers:\r\n      - name: payment\r\n        image: weaveworksdemos/payment:0.4.3\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 99m\r\n            memory: 100Mi\r\n        ports:\r\n        - containerPort: 80\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        livenessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 300\r\n          periodSeconds: 3\r\n        readinessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 180\r\n          periodSeconds: 3\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/15-payment-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/16-payment-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: payment\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: payment\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: payment\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/16-payment-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/17-queue-master-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: queue-master\r\n  labels:\r\n    name: queue-master\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: queue-master\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: queue-master\r\n    spec:\r\n      containers:\r\n      - name: queue-master\r\n        image: weaveworksdemos/queue-master:0.3.1\r\n        env:\r\n        - name: JAVA_OPTS\r\n          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom\r\n            -Dspring.zipkin.enabled=false\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 300Mi\r\n        ports:\r\n        - containerPort: 80\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/17-queue-master-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/18-queue-master-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: queue-master\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: queue-master\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: queue-master",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/18-queue-master-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/19-rabbitmq-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: rabbitmq\r\n  labels:\r\n    name: rabbitmq\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: rabbitmq\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: rabbitmq\r\n      annotations:\r\n        prometheus.io/scrape: 'false'\r\n    spec:\r\n      containers:\r\n      - name: rabbitmq\r\n        image: rabbitmq:3.6.8-management\r\n        ports:\r\n        - containerPort: 15672\r\n          name: management\r\n        - containerPort: 5672\r\n          name: rabbitmq\r\n        securityContext:\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - CHOWN\r\n            - SETGID\r\n            - SETUID\r\n            - DAC_OVERRIDE\r\n          readOnlyRootFilesystem: true\r\n        resources:\r\n          limits:\r\n            memory: 2Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      - name: rabbitmq-exporter\r\n        image: kbudde/rabbitmq-exporter\r\n        ports:\r\n        - containerPort: 9090\r\n          name: exporter\r\n        resources:\r\n          limits:\r\n            memory: 2Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/19-rabbitmq-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/20-rabbitmq-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: rabbitmq\n  annotations:\n        prometheus.io/scrape: 'true'\n        prometheus.io/port: '9090'\n  labels:\n    name: rabbitmq\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 5672\n    name: rabbitmq\n    targetPort: 5672\n  - port: 9090\n    name: exporter\n    targetPort: exporter\n    protocol: TCP\n  selector:\n    name: rabbitmq\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/20-rabbitmq-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/21-session-db-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: session-db\r\n  labels:\r\n    name: session-db\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: session-db\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: session-db\r\n      annotations:\r\n        prometheus.io.scrape: 'false'\r\n    spec:\r\n      containers:\r\n      - name: session-db\r\n        image: redis:alpine\r\n        ports:\r\n        - name: redis\r\n          containerPort: 6379\r\n        securityContext:\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - CHOWN\r\n            - SETGID\r\n            - SETUID\r\n          readOnlyRootFilesystem: true\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/21-session-db-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/22-session-db-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: session-db\n  labels:\n    name: session-db\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 6379\n    targetPort: 6379\n  selector:\n    name: session-db\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/22-session-db-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/23-shipping-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: shipping\r\n  labels:\r\n    name: shipping\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: shipping\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: shipping\r\n    spec:\r\n      containers:\r\n      - name: shipping\r\n        image: weaveworksdemos/shipping:0.4.8\r\n        env:\r\n        - name: ZIPKIN\r\n          value: zipkin.jaeger.svc.cluster.local\r\n        - name: JAVA_OPTS\r\n          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom\r\n            -Dspring.zipkin.enabled=false\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 300Mi\r\n        ports:\r\n        - containerPort: 80\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/23-shipping-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/24-shipping-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: shipping\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: shipping\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: shipping\n\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/24-shipping-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/25-user-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: user\r\n  labels:\r\n    name: user\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: user\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: user\r\n    spec:\r\n      containers:\r\n      - name: user\r\n        image: weaveworksdemos/user:0.4.7\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 100Mi\r\n        ports:\r\n        - containerPort: 80\r\n        env:\r\n        - name: mongo\r\n          value: user-db:27017\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        livenessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 300\r\n          periodSeconds: 3\r\n        readinessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 180\r\n          periodSeconds: 3\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/25-user-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/26-user-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: user\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: user\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: user\n\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/26-user-svc.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/27-user-db-dep.yaml",
+                        "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: user-db\r\n  labels:\r\n    name: user-db\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: user-db\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: user-db\r\n    spec:\r\n      containers:\r\n      - name: user-db\r\n        image: weaveworksdemos/user-db:0.3.0\r\n        ports:\r\n        - name: mongo\r\n          containerPort: 27017\r\n        securityContext:\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - CHOWN\r\n            - SETGID\r\n            - SETUID\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        resources:\r\n          limits:\r\n            memory: 1Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/27-user-db-dep.yaml"
+                    },
+                    {
+                        "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/28-user-db-svc.yaml",
+                        "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: user-db\n  labels:\n    name: user-db\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 27017\n    targetPort: 27017\n  selector:\n    name: user-db\n\n",
+                        "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                        "fname": "sock-shop-2/manifests/28-user-db-svc.yaml"
+                    }
+                ],
+                "ce_instructions": ""
+            },
+            "k8s_yamls": [
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/00-sock-shop-ns.yaml",
+                    "content": "apiVersion: v1\nkind: Namespace\nmetadata:\n  labels:\n    project: chaos-eater\n  name: sock-shop\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/00-sock-shop-ns.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/01-carts-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: carts\r\n  labels:\r\n    name: carts\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: carts\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: carts\r\n    spec:\r\n      containers:\r\n      - name: carts\r\n        image: weaveworksdemos/carts:0.4.8\r\n        env:\r\n        - name: JAVA_OPTS\r\n          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom\r\n            -Dspring.zipkin.enabled=false\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 200Mi\r\n        ports:\r\n        - containerPort: 80\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/01-carts-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/02-carts-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: carts\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: carts\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: carts\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/02-carts-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/03-carts-db-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: carts-db\r\n  labels:\r\n    name: carts-db\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: carts-db\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: carts-db\r\n    spec:\r\n      containers:\r\n      - name: carts-db\r\n        image: mongo\r\n        ports:\r\n        - name: mongo\r\n          containerPort: 27017\r\n        securityContext:\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - CHOWN\r\n            - SETGID\r\n            - SETUID\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        resources:\r\n          limits:\r\n            memory: 1Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/03-carts-db-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/04-carts-db-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: carts-db\n  labels:\n    name: carts-db\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 27017\n    targetPort: 27017\n  selector:\n    name: carts-db\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/04-carts-db-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/05-catalogue-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: catalogue\r\n  labels:\r\n    name: catalogue\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: catalogue\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: catalogue\r\n    spec:\r\n      containers:\r\n      - name: catalogue\r\n        image: weaveworksdemos/catalogue:0.3.5\r\n        command:\r\n        - /app\r\n        args:\r\n        - -port=80\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 100Mi\r\n        ports:\r\n        - containerPort: 80\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        livenessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 300\r\n          periodSeconds: 3\r\n        readinessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 180\r\n          periodSeconds: 3\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/05-catalogue-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/06-catalogue-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: catalogue\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: catalogue\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: catalogue\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/06-catalogue-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/07-catalogue-db-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: catalogue-db\r\n  labels:\r\n    name: catalogue-db\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: catalogue-db\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: catalogue-db\r\n    spec:\r\n      containers:\r\n      - name: catalogue-db\r\n        image: weaveworksdemos/catalogue-db:0.3.0\r\n        env:\r\n        - name: MYSQL_ROOT_PASSWORD\r\n          value: fake_password\r\n        - name: MYSQL_DATABASE\r\n          value: socksdb\r\n        ports:\r\n        - name: mysql\r\n          containerPort: 3306\r\n        resources:\r\n          limits:\r\n            memory: 2Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/07-catalogue-db-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/08-catalogue-db-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: catalogue-db\n  labels:\n    name: catalogue-db\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 3306\n    targetPort: 3306\n  selector:\n    name: catalogue-db\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/08-catalogue-db-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/09-front-end-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  labels:\r\n    project: chaos-eater\r\n  name: front-end\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: front-end\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: front-end\r\n    spec:\r\n      containers:\r\n      - name: front-end\r\n        image: weaveworksdemos/front-end:0.3.12\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 300Mi\r\n        ports:\r\n        - containerPort: 8079\r\n        env:\r\n        - name: SESSION_REDIS\r\n          value: 'true'\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n          readOnlyRootFilesystem: true\r\n        livenessProbe:\r\n          httpGet:\r\n            path: /\r\n            port: 8079\r\n          initialDelaySeconds: 300\r\n          periodSeconds: 3\r\n        readinessProbe:\r\n          httpGet:\r\n            path: /\r\n            port: 8079\r\n          initialDelaySeconds: 30\r\n          periodSeconds: 3\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/09-front-end-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/10-front-end-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: front-end\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: front-end\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  type: NodePort\n  ports:\n  - port: 80\n    targetPort: 8079\n    nodePort: 30001\n  selector:\n    name: front-end\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/10-front-end-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/11-orders-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: orders\r\n  labels:\r\n    name: orders\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: orders\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: orders\r\n    spec:\r\n      containers:\r\n      - name: orders\r\n        image: weaveworksdemos/orders:0.4.7\r\n        env:\r\n        - name: JAVA_OPTS\r\n          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom\r\n            -Dspring.zipkin.enabled=false\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 300Mi\r\n        ports:\r\n        - containerPort: 80\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/11-orders-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/12-orders-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: orders\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: orders\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: orders\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/12-orders-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/13-orders-db-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: orders-db\r\n  labels:\r\n    name: orders-db\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: orders-db\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: orders-db\r\n    spec:\r\n      containers:\r\n      - name: orders-db\r\n        image: mongo\r\n        ports:\r\n        - name: mongo\r\n          containerPort: 27017\r\n        securityContext:\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - CHOWN\r\n            - SETGID\r\n            - SETUID\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        resources:\r\n          limits:\r\n            memory: 1Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/13-orders-db-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/14-orders-db-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: orders-db\n  labels:\n    name: orders-db\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 27017\n    targetPort: 27017\n  selector:\n    name: orders-db\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/14-orders-db-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/15-payment-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: payment\r\n  labels:\r\n    name: payment\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: payment\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: payment\r\n    spec:\r\n      containers:\r\n      - name: payment\r\n        image: weaveworksdemos/payment:0.4.3\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 99m\r\n            memory: 100Mi\r\n        ports:\r\n        - containerPort: 80\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        livenessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 300\r\n          periodSeconds: 3\r\n        readinessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 180\r\n          periodSeconds: 3\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/15-payment-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/16-payment-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: payment\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: payment\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: payment\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/16-payment-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/17-queue-master-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: queue-master\r\n  labels:\r\n    name: queue-master\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: queue-master\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: queue-master\r\n    spec:\r\n      containers:\r\n      - name: queue-master\r\n        image: weaveworksdemos/queue-master:0.3.1\r\n        env:\r\n        - name: JAVA_OPTS\r\n          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom\r\n            -Dspring.zipkin.enabled=false\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 300Mi\r\n        ports:\r\n        - containerPort: 80\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/17-queue-master-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/18-queue-master-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: queue-master\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: queue-master\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: queue-master",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/18-queue-master-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/19-rabbitmq-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: rabbitmq\r\n  labels:\r\n    name: rabbitmq\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: rabbitmq\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: rabbitmq\r\n      annotations:\r\n        prometheus.io/scrape: 'false'\r\n    spec:\r\n      containers:\r\n      - name: rabbitmq\r\n        image: rabbitmq:3.6.8-management\r\n        ports:\r\n        - containerPort: 15672\r\n          name: management\r\n        - containerPort: 5672\r\n          name: rabbitmq\r\n        securityContext:\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - CHOWN\r\n            - SETGID\r\n            - SETUID\r\n            - DAC_OVERRIDE\r\n          readOnlyRootFilesystem: true\r\n        resources:\r\n          limits:\r\n            memory: 2Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      - name: rabbitmq-exporter\r\n        image: kbudde/rabbitmq-exporter\r\n        ports:\r\n        - containerPort: 9090\r\n          name: exporter\r\n        resources:\r\n          limits:\r\n            memory: 2Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/19-rabbitmq-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/20-rabbitmq-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: rabbitmq\n  annotations:\n        prometheus.io/scrape: 'true'\n        prometheus.io/port: '9090'\n  labels:\n    name: rabbitmq\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 5672\n    name: rabbitmq\n    targetPort: 5672\n  - port: 9090\n    name: exporter\n    targetPort: exporter\n    protocol: TCP\n  selector:\n    name: rabbitmq\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/20-rabbitmq-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/21-session-db-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: session-db\r\n  labels:\r\n    name: session-db\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: session-db\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: session-db\r\n      annotations:\r\n        prometheus.io.scrape: 'false'\r\n    spec:\r\n      containers:\r\n      - name: session-db\r\n        image: redis:alpine\r\n        ports:\r\n        - name: redis\r\n          containerPort: 6379\r\n        securityContext:\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - CHOWN\r\n            - SETGID\r\n            - SETUID\r\n          readOnlyRootFilesystem: true\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/21-session-db-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/22-session-db-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: session-db\n  labels:\n    name: session-db\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 6379\n    targetPort: 6379\n  selector:\n    name: session-db\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/22-session-db-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/23-shipping-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: shipping\r\n  labels:\r\n    name: shipping\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: shipping\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: shipping\r\n    spec:\r\n      containers:\r\n      - name: shipping\r\n        image: weaveworksdemos/shipping:0.4.8\r\n        env:\r\n        - name: ZIPKIN\r\n          value: zipkin.jaeger.svc.cluster.local\r\n        - name: JAVA_OPTS\r\n          value: -Xms64m -Xmx128m -XX:+UseG1GC -Djava.security.egd=file:/dev/urandom\r\n            -Dspring.zipkin.enabled=false\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 300Mi\r\n        ports:\r\n        - containerPort: 80\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/23-shipping-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/24-shipping-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: shipping\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: shipping\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: shipping\n\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/24-shipping-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/25-user-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: user\r\n  labels:\r\n    name: user\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: user\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: user\r\n    spec:\r\n      containers:\r\n      - name: user\r\n        image: weaveworksdemos/user:0.4.7\r\n        resources:\r\n          limits:\r\n            memory: 512Mi\r\n            cpu: 1000m\r\n          requests:\r\n            cpu: 100m\r\n            memory: 100Mi\r\n        ports:\r\n        - containerPort: 80\r\n        env:\r\n        - name: mongo\r\n          value: user-db:27017\r\n        securityContext:\r\n          runAsNonRoot: true\r\n          runAsUser: 10001\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - NET_BIND_SERVICE\r\n          readOnlyRootFilesystem: true\r\n        livenessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 300\r\n          periodSeconds: 3\r\n        readinessProbe:\r\n          httpGet:\r\n            path: /health\r\n            port: 80\r\n          initialDelaySeconds: 180\r\n          periodSeconds: 3\r\n        imagePullPolicy: IfNotPresent\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/25-user-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/26-user-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: user\n  annotations:\n        prometheus.io/scrape: 'true'\n  labels:\n    name: user\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 80\n    targetPort: 80\n  selector:\n    name: user\n\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/26-user-svc.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/27-user-db-dep.yaml",
+                    "content": "---\r\napiVersion: apps/v1\r\nkind: Deployment\r\nmetadata:\r\n  name: user-db\r\n  labels:\r\n    name: user-db\r\n    project: chaos-eater\r\n  namespace: sock-shop\r\nspec:\r\n  replicas: 1\r\n  selector:\r\n    matchLabels:\r\n      name: user-db\r\n  template:\r\n    metadata:\r\n      labels:\r\n        name: user-db\r\n    spec:\r\n      containers:\r\n      - name: user-db\r\n        image: weaveworksdemos/user-db:0.3.0\r\n        ports:\r\n        - name: mongo\r\n          containerPort: 27017\r\n        securityContext:\r\n          capabilities:\r\n            drop:\r\n            - all\r\n            add:\r\n            - CHOWN\r\n            - SETGID\r\n            - SETUID\r\n          readOnlyRootFilesystem: true\r\n        volumeMounts:\r\n        - mountPath: /tmp\r\n          name: tmp-volume\r\n        resources:\r\n          limits:\r\n            memory: 1Gi\r\n            cpu: 1000m\r\n        imagePullPolicy: IfNotPresent\r\n      volumes:\r\n      - name: tmp-volume\r\n        emptyDir:\r\n          medium: Memory\r\n      nodeSelector:\r\n        beta.kubernetes.io/os: linux\r\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/27-user-db-dep.yaml"
+                },
+                {
+                    "path": "sandbox/cycle_20260809_031539/inputs/sock-shop-2/manifests/28-user-db-svc.yaml",
+                    "content": "apiVersion: v1\nkind: Service\nmetadata:\n  name: user-db\n  labels:\n    name: user-db\n\n    project: chaos-eater\n  namespace: sock-shop\nspec:\n  ports:\n    # the port that this service should serve on\n  - port: 27017\n    targetPort: 27017\n  selector:\n    name: user-db\n\n",
+                    "work_dir": "sandbox/cycle_20260809_031539/inputs",
+                    "fname": "sock-shop-2/manifests/28-user-db-svc.yaml"
+                }
+            ],
+            "k8s_summaries": [
+                "- This manifest defines a Kubernetes Namespace called 'sock-shop'.\n- A Namespace is a way to organize and isolate resources within a Kubernetes cluster.\n- The namespace has a label 'project: chaos-eater', which can be used for selecting or grouping resources.",
+                "- This manifest defines a Kubernetes Deployment named 'carts' in the 'sock-shop' namespace.\n- It specifies 1 replica (pod) to run the application.\n- The pod runs a container named 'carts' using the image 'weaveworksdemos/carts:0.4.8'.\n- The container sets a Java environment variable JAVA_OPTS with memory and garbage collection settings.\n- It requests 100m CPU and 200Mi memory, with limits of 1000m CPU and 512Mi memory.\n- The container exposes port 80.\n- Security settings: runs as non-root user (UID 10001), drops all Linux capabilities except NET_BIND_SERVICE, and uses a read-only root filesystem.\n- A volume named 'tmp-volume' is mounted at /tmp, using an emptyDir with memory medium.\n- The pod is scheduled on Linux nodes using a node selector.\n- The image pull policy is set to IfNotPresent.",
+                "- This manifest defines a Kubernetes Service named 'carts'.\n- The Service is placed in the 'sock-shop' namespace.\n- It has labels: 'name: carts' and 'project: chaos-eater'.\n- An annotation 'prometheus.io/scrape: true' enables Prometheus to collect metrics from this Service.\n- The Service listens on port 80 and forwards traffic to port 80 on the selected pods.\n- It selects pods that have the label 'name: carts', providing a stable network endpoint to access the carts application.",
+                "- This manifest defines a Kubernetes Deployment named 'carts-db' in the 'sock-shop' namespace.\n- It runs a single replica (pod) of the MongoDB database using the 'mongo' Docker image.\n- The container inside the pod listens on port 27017, which is the default MongoDB port.\n- For security, the container drops all Linux capabilities and only adds CHOWN, SETGID, and SETUID, and it has a read-only root filesystem.\n- It mounts an in-memory empty directory (tmp-volume) at /tmp so the container can write temporary files.\n- Resource limits are set to 1 GiB of memory and 1 CPU core (1000m).\n- The image pull policy is 'IfNotPresent', meaning it uses the local image if available, otherwise pulls from the registry.\n- The pod is scheduled only on nodes with the label 'beta.kubernetes.io/os=linux'.",
+                "- This manifest defines a Kubernetes Service named \"carts-db\".\n- It is created in the \"sock-shop\" namespace.\n- The service has labels: \"name: carts-db\" and \"project: chaos-eater\".\n- It exposes port 27017 and forwards traffic to the same port (27017) on the selected pods.\n- It selects pods that have the label \"name: carts-db\".\n- This Service provides a stable network endpoint for a database (likely MongoDB) used by the carts component.",
+                "- This manifest defines a Kubernetes Deployment named 'catalogue' in the 'sock-shop' namespace.\n- It runs 1 replica (pod) of the container image 'weaveworksdemos/catalogue:0.3.5'.\n- The container runs the command '/app' with the argument '-port=80'.\n- It requests 100m CPU and 100Mi memory, and is limited to 1000m CPU and 512Mi memory.\n- The container exposes port 80.\n- Security settings: runs as non-root user (UID 10001), drops all Linux capabilities except NET_BIND_SERVICE, and has a read-only root filesystem.\n- It includes a liveness probe that checks the '/health' endpoint on port 80, starting after 300 seconds and checking every 3 seconds.\n- It includes a readiness probe that also checks '/health' on port 80, starting after 180 seconds and checking every 3 seconds.\n- The image pull policy is 'IfNotPresent'.\n- The pod is scheduled only on nodes with the label 'beta.kubernetes.io/os: linux'.",
+                "- This manifest creates a Kubernetes Service named 'catalogue' in the namespace 'sock-shop'.\n- The Service exposes port 80 and forwards traffic to the same port (targetPort: 80) on the selected pods.\n- It selects pods that have the label 'name: catalogue', meaning traffic will be routed to those pods.\n- The Service has an annotation 'prometheus.io/scrape: true' which enables Prometheus to scrape metrics from it.\n- It also includes labels such as 'name: catalogue' and 'project: chaos-eater' for organization and identification.",
+                "- This manifest defines a Kubernetes Deployment named `catalogue-db` in the `sock-shop` namespace.\n- It creates and manages a single pod (replica count is 1) that runs the `catalogue-db` container.\n- The pod is labeled with `name: catalogue-db`, and the Deployment uses that label to select and manage its pods.\n- The container uses the Docker image `weaveworksdemos/catalogue-db:0.3.0`.\n- It sets two environment variables: `MYSQL_ROOT_PASSWORD` (set to `fake_password`) and `MYSQL_DATABASE` (set to `socksdb`), which are likely used by the MySQL database inside the container.\n- The container exposes port `3306` (the default MySQL port) and names that port `mysql`.\n- Resource limits are set: the container can use up to `2Gi` of memory and `1000m` (1 CPU core) of CPU.\n- The image pull policy is `IfNotPresent`, meaning Kubernetes will only pull the image if it is not already present on the node.\n- A node selector is used to schedule the pod only on Linux nodes (`beta.kubernetes.io/os: linux`).",
+                "- This manifest defines a Kubernetes Service named 'catalogue-db'.\n- It is created in the 'sock-shop' namespace.\n- The Service is labeled with 'name: catalogue-db' and 'project: chaos-eater'.\n- It exposes port 3306 (the default MySQL port) on the Service and forwards traffic to the same port (3306) on the selected pods.\n- The Service selects pods that have the label 'name: catalogue-db'.\n- This allows other components in the cluster to connect to the database pods using a stable network endpoint.",
+                "- The manifest creates a Deployment named 'front-end' in the 'sock-shop' namespace.\n- It is labeled with 'project: chaos-eater'.\n- The Deployment runs one replica of the container image 'weaveworksdemos/front-end:0.3.12'.\n- The container name is 'front-end' and it exposes port 8079.\n- It sets the environment variable SESSION_REDIS to 'true'.\n- Resource requests are 100m CPU and 300Mi memory, while limits are 1000m CPU and 512Mi memory.\n- The container runs as a non-root user (UID 10001) with a read-only root filesystem and all Linux capabilities dropped.\n- Liveness and readiness probes are configured using HTTP GET on path '/' at port 8079, with initial delays of 300s and 30s respectively, and a period of 3s.\n- The image pull policy is IfNotPresent, and the pod is scheduled on nodes with 'beta.kubernetes.io/os: linux'.",
+                "- This manifest defines a Kubernetes Service named 'front-end' in the 'sock-shop' namespace.\n- The Service type is NodePort, which makes the application accessible from outside the cluster using a node's IP and the port 30001.\n- It forwards incoming traffic on port 80 to port 8079 on the selected pods.\n- The Service selects pods that have the label 'name: front-end'.\n- It includes an annotation for Prometheus scraping, enabling monitoring.\n- The Service has labels 'name: front-end' and 'project: chaos-eater'.",
+                "- This manifest defines a Deployment named \"orders\" in the \"sock-shop\" namespace.\n- It creates 1 replica (pod) of the orders service.\n- The pod runs a single container using the image `weaveworksdemos/orders:0.4.7`.\n- The container listens on port 80.\n- It sets the `JAVA_OPTS` environment variable to configure JVM memory and garbage collection.\n- It requests 100m CPU and 300Mi memory, with limits of 1000m CPU and 512Mi memory.\n- It runs as a non-root user (UID 10001) with a read-only root filesystem.\n- It drops all Linux capabilities except `NET_BIND_SERVICE` to allow binding to port 80.\n- It mounts an in-memory emptyDir volume at `/tmp` for temporary files.\n- The pod is scheduled only on Linux nodes via node selector.",
+                "- This manifest defines a Kubernetes Service named 'orders' in the 'sock-shop' namespace.\n- The Service is annotated to enable Prometheus scraping (prometheus.io/scrape: 'true').\n- It has labels 'name: orders' and 'project: chaos-eater'.\n- The Service exposes port 80 and forwards traffic to the target port 80 on the selected pods.\n- Pods are selected using the selector 'name: orders'.",
+                "- Creates a Deployment named `orders-db` in the `sock-shop` namespace.\n- Runs 1 replica (pod) of the MongoDB database, labeled `name: orders-db`.\n- Uses the `mongo` Docker image and exposes port 27017 for MongoDB traffic.\n- Enhances security: drops all Linux capabilities, then adds back only `CHOWN`, `SETGID`, and `SETUID`; runs with a read-only root filesystem.\n- Mounts an in-memory emptyDir volume at `/tmp` for temporary storage.\n- Sets resource limits: up to 1Gi memory and 1 CPU core (1000m).\n- Sets the image pull policy to `IfNotPresent` to avoid re-pulling if already present.\n- Restricts the pod to run on Linux nodes via a node selector (`beta.kubernetes.io/os: linux`).",
+                "- This manifest defines a Kubernetes Service named `orders-db`.\n- The Service is created in the `sock-shop` namespace.\n- It exposes port `27017` on the Service and forwards traffic to the same port (`27017`) on the selected pods.\n- The Service selects pods that have the label `name: orders-db`.\n- The Service also has a custom label `project: chaos-eater` for organizational or identification purposes.\n- This Service is likely used to provide stable networking for a database component (MongoDB typically uses port 27017).",
+                "- This is a Kubernetes Deployment named `payment` in the `sock-shop` namespace.\n- It creates 1 replica (pod) of the payment service, ensuring it runs continuously.\n- Each pod runs a container called `payment` using the image `weaveworksdemos/payment:0.4.3`.\n- The container requests 99 millicores of CPU and 100 MiB of memory, with limits of 1 CPU core and 512 MiB of memory.\n- The container listens on port 80.\n- Security settings: the container runs as a non-root user (UID 10001), uses a read-only root filesystem, drops all Linux capabilities, and only adds `NET_BIND_SERVICE` so it can bind to port 80.\n- A liveness probe checks the `/health` endpoint on port 80 every 3 seconds, starting after an initial delay of 300 seconds, to restart the container if it becomes unhealthy.\n- A readiness probe checks the same `/health` endpoint every 3 seconds, starting after 180 seconds, to determine when the container is ready to serve traffic.\n- The image pull policy is set to `IfNotPresent`, meaning the image is only pulled if not already present locally.\n- Pods are scheduled only on Linux nodes (via the node selector `beta.kubernetes.io/os: linux`).",
+                "- This manifest defines a Kubernetes Service named `payment` in the `sock-shop` namespace.\n- It is configured to be scraped by Prometheus via the annotation `prometheus.io/scrape: 'true'`.\n- The Service is labeled with `name: payment` and `project: chaos-eater`.\n- It exposes port 80 and forwards traffic to the same port (targetPort: 80) on the selected pods.\n- The Service selects pods that have the label `name: payment`, so it routes traffic to those pods.",
+                "- This manifest creates a Kubernetes Deployment named 'queue-master'.\n- The Deployment runs in the 'sock-shop' namespace.\n- It is labeled with 'name: queue-master' and 'project: chaos-eater'.\n- The Deployment specifies exactly 1 replica (pod) to run.\n- The pod selector matches the label 'name: queue-master'.\n- The container inside the pod is also named 'queue-master' and uses the image 'weaveworksdemos/queue-master:0.3.1'.\n- It sets an environment variable 'JAVA_OPTS' with JVM tuning options like memory settings, G1GC, and disabling Spring Cloud Zipkin.\n- Resource limits are set to 512Mi memory and 1000m (1 CPU core), with requests of 100m CPU and 300Mi memory.\n- The container exposes port 80.\n- The image pull policy is 'IfNotPresent', meaning the image is only pulled if not already present locally.\n- The pod is scheduled only on Linux nodes using the node selector 'beta.kubernetes.io/os: linux'.",
+                "- This manifest creates a Kubernetes Service named `queue-master` in the `sock-shop` namespace.\n- It exposes port 80 and forwards incoming traffic to port 80 on the selected pods.\n- The Service selects pods that have the label `name: queue-master`.\n- It includes an annotation `prometheus.io/scrape: 'true'` to enable Prometheus metrics scraping.\n- The Service is also labeled with `name: queue-master` and `project: chaos-eater`.",
+                "- This manifest defines a Kubernetes Deployment named 'rabbitmq' in the 'sock-shop' namespace.\n- It creates one replica (pod) of the RabbitMQ message broker, which is used for messaging between services.\n- The pod runs two containers: the main RabbitMQ container and a sidecar exporter container for metrics.\n- The RabbitMQ container uses the image 'rabbitmq:3.6.8-management' and exposes port 15672 for the management UI and port 5672 for AMQP messaging.\n- This container has a security context that drops all Linux capabilities except CHOWN, SETGID, SETUID, and DAC_OVERRIDE, and uses a read-only root filesystem for better security.\n- The resource limits for the RabbitMQ container are 2Gi of memory and 1000m (1 CPU core).\n- The sidecar container, named 'rabbitmq-exporter', uses the image 'kbudde/rabbitmq-exporter' and exposes port 9090 to export RabbitMQ metrics for monitoring.\n- It also has resource limits of 2Gi memory and 1000m CPU.\n- The pod is scheduled only on Linux nodes (via the node selector 'beta.kubernetes.io/os: linux').",
+                "- This manifest defines a Kubernetes Service named \"rabbitmq\" in the \"sock-shop\" namespace.\n- It selects Pods with the label \"name: rabbitmq\" to expose them.\n- The Service exposes two ports: port 5672 (named \"rabbitmq\") which forwards to targetPort 5672 on the Pods, and port 9090 (named \"exporter\") which forwards to a targetPort named \"exporter\".\n- It is configured to be scraped by Prometheus on port 9090 via annotations.",
+                "- This manifest creates a Deployment named `session-db` in the `sock-shop` namespace.\n- It runs a single replica (pod) of the `redis:alpine` container image, which provides a Redis database for session storage.\n- The container listens on port 6379, the default Redis port, named `redis`.\n- Security settings: the container drops all Linux capabilities, then adds back only `CHOWN`, `SETGID`, and `SETUID`, and uses a read-only root filesystem for better security.\n- Resource limits are set: maximum 512 MiB of memory and 1000m (1 CPU core) of CPU.\n- The image pull policy is `IfNotPresent`, meaning the image is pulled only if it is not already present locally.\n- The pod is scheduled only on nodes with the label `beta.kubernetes.io/os: linux`.\n- The pod has an annotation `prometheus.io.scrape: 'false'` to disable Prometheus scraping from this pod.\n- The deployment selects pods with the label `name: session-db`.",
+                "- This manifest defines a Kubernetes Service named \"session-db\".\n- It is created in the \"sock-shop\" namespace.\n- The service exposes port 6379 and forwards traffic to port 6379 on the selected pods.\n- It selects pods with the label \"name: session-db\".\n- It also has a custom label \"project: chaos-eater\".",
+                "- This manifest defines a Kubernetes Deployment named \"shipping\" in the \"sock-shop\" namespace.\n- It ensures that exactly 1 replica (pod) of the shipping application is running at all times.\n- The pod runs a single container named \"shipping\" using the Docker image \"weaveworksdemos/shipping:0.4.8\".\n- The container sets environment variables: \"ZIPKIN\" (pointing to a zipkin service) and \"JAVA_OPTS\" (JVM options for memory and garbage collection, disabling Spring Cloud Zipkin).\n- Resource requests and limits are specified: it requests 100m CPU and 300Mi memory, and limits to 1000m CPU and 512Mi memory.\n- The container listens on port 80.\n- It runs under a non-root security context: user 10001, drops all Linux capabilities except adding NET_BIND_SERVICE, and has a read-only root filesystem.\n- It mounts a temporary in-memory volume (emptyDir with memory medium) at /tmp for scratch space.\n- The pod is scheduled only on nodes with the label \"beta.kubernetes.io/os=linux\".",
+                "- This manifest defines a Kubernetes Service named 'shipping'.\n- It is created in the 'sock-shop' namespace.\n- The Service exposes port 80 and forwards traffic to port 80 on the selected pods.\n- It selects pods with the label 'name: shipping'.\n- The Service has additional labels such as 'project: chaos-eater' and 'name: shipping'.\n- An annotation 'prometheus.io/scrape: true' is set to enable Prometheus metric scraping.",
+                "- This manifest creates a Kubernetes Deployment named 'user' in the 'sock-shop' namespace.\n- It runs 1 replica (pod) of the container image 'weaveworksdemos/user:0.4.7'.\n- The container is named 'user' and listens on port 80.\n- It has resource limits: maximum 512Mi memory and 1000m (1 CPU core), with requests of 100m CPU and 100Mi memory.\n- It sets an environment variable 'mongo' to 'user-db:27017', likely for database connection.\n- Security settings: the container runs as a non-root user (UID 10001), with a read-only root filesystem, and drops all Linux capabilities except 'NET_BIND_SERVICE' needed to bind to port 80.\n- It includes a liveness probe (HTTP GET /health on port 80) that starts after 300 seconds and checks every 3 seconds.\n- It includes a readiness probe (HTTP GET /health on port 80) that starts after 180 seconds and checks every 3 seconds.\n- The image pull policy is 'IfNotPresent', meaning it uses the local image if available, otherwise pulls from the registry.\n- The pod is scheduled only on nodes with the label 'beta.kubernetes.io/os: linux'.",
+                "- This manifest defines a Kubernetes Service named \"user\".\n- It is deployed in the \"sock-shop\" namespace.\n- The service is labeled with \"name: user\" and \"project: chaos-eater\".\n- It has an annotation for Prometheus scraping (prometheus.io/scrape: 'true').\n- The service listens on port 80 and forwards traffic to port 80 on the selected pods.\n- It selects pods that have the label \"name: user\".",
+                "- This manifest defines a Kubernetes Deployment named `user-db` in the `sock-shop` namespace.\n- It is labeled with `name: user-db` and `project: chaos-eater`, and it runs 1 replica.\n- The pod selector matches pods with the label `name: user-db`.\n- The container uses the image `weaveworksdemos/user-db:0.3.0` and exposes port 27017 (MongoDB).\n- The container has a security context that drops all Linux capabilities and adds only `CHOWN`, `SETGID`, and `SETUID`.\n- The root filesystem is set to read-only, and a temporary in-memory volume is mounted at `/tmp` (emptyDir with `medium: Memory`).\n- Resource limits are set to 1Gi of memory and 1000m (1 CPU core).\n- The image pull policy is `IfNotPresent`.\n- The pod is scheduled only on Linux nodes via the node selector `beta.kubernetes.io/os: linux`.",
+                "- This manifest defines a Kubernetes Service named `user-db`.\n- The Service is created in the `sock-shop` namespace.\n- It has labels: `name: user-db` and `project: chaos-eater`.\n- The Service exposes port `27017` and forwards traffic to the same port `27017` on the selected pods.\n- It selects pods that have the label `name: user-db`."
+            ],
+            "k8s_weakness_summary": "Issue #0: Single replica points of failure\n\n- details: All deployments run exactly one replica. If the pod is killed, crashes, or its node fails, the service has no redundant instance to handle traffic, resulting in downtime until a replacement is scheduled. For stateful components, a single replica also puts data at risk if the pod is rescheduled.\n- manifests having the issues: ['sock-shop-2/manifests/01-carts-dep.yaml', 'sock-shop-2/manifests/03-carts-db-dep.yaml', 'sock-shop-2/manifests/05-catalogue-dep.yaml', 'sock-shop-2/manifests/07-catalogue-db-dep.yaml', 'sock-shop-2/manifests/09-front-end-dep.yaml', 'sock-shop-2/manifests/11-orders-dep.yaml', 'sock-shop-2/manifests/13-orders-db-dep.yaml', 'sock-shop-2/manifests/15-payment-dep.yaml', 'sock-shop-2/manifests/17-queue-master-dep.yaml', 'sock-shop-2/manifests/19-rabbitmq-dep.yaml', 'sock-shop-2/manifests/21-session-db-dep.yaml', 'sock-shop-2/manifests/23-shipping-dep.yaml', 'sock-shop-2/manifests/25-user-dep.yaml', 'sock-shop-2/manifests/27-user-db-dep.yaml']\n- problematic config: replicas: 1 in all Deployment specs\n\nIssue #1: No persistent storage for stateful services\n\n- details: Database and message broker deployments (carts-db, catalogue-db, orders-db, rabbitmq, session-db, user-db) do not use PersistentVolumeClaims. Their data is stored in the ephemeral container filesystem. On pod deletion, node failure, or rescheduling, the data is lost, causing service unavailability and inconsistency.\n- manifests having the issues: ['sock-shop-2/manifests/03-carts-db-dep.yaml', 'sock-shop-2/manifests/07-catalogue-db-dep.yaml', 'sock-shop-2/manifests/13-orders-db-dep.yaml', 'sock-shop-2/manifests/19-rabbitmq-dep.yaml', 'sock-shop-2/manifests/21-session-db-dep.yaml', 'sock-shop-2/manifests/27-user-db-dep.yaml']\n- problematic config: No persistent volume claim; no volume mounted to the data directory (e.g., /data/db, /var/lib/mysql, /var/lib/rabbitmq, /data)\n\nIssue #2: Read-only root filesystem without writable data volume\n\n- details: Stateful containers set `readOnlyRootFilesystem: true` but do not mount a writable volume at their data directory. This prevents the application from writing data and can cause immediate crash loops or inability to start. For mongo, directory /data/db; for rabbitmq, /var/lib/rabbitmq; for redis, /data. This is a fatal misconfiguration that becomes evident during any pod restart or failover.\n- manifests having the issues: ['sock-shop-2/manifests/03-carts-db-dep.yaml', 'sock-shop-2/manifests/13-orders-db-dep.yaml', 'sock-shop-2/manifests/19-rabbitmq-dep.yaml', 'sock-shop-2/manifests/21-session-db-dep.yaml', 'sock-shop-2/manifests/27-user-db-dep.yaml']\n- problematic config: securityContext.readOnlyRootFilesystem: true without a writable volume mount for the application's data directory\n\nIssue #3: Missing liveness and readiness probes\n\n- details: Several deployments do not define liveness or readiness probes. If a container becomes unresponsive (e.g., due to deadlock, OOM, heavy load) but the process remains alive, Kubernetes continues to send traffic to the pod, causing failed requests. Readiness probes are also necessary to avoid routing traffic to pods that are still starting up. During failure injection, this can amplify outages.\n- manifests having the issues: ['sock-shop-2/manifests/01-carts-dep.yaml', 'sock-shop-2/manifests/03-carts-db-dep.yaml', 'sock-shop-2/manifests/07-catalogue-db-dep.yaml', 'sock-shop-2/manifests/11-orders-dep.yaml', 'sock-shop-2/manifests/13-orders-db-dep.yaml', 'sock-shop-2/manifests/17-queue-master-dep.yaml', 'sock-shop-2/manifests/19-rabbitmq-dep.yaml', 'sock-shop-2/manifests/21-session-db-dep.yaml', 'sock-shop-2/manifests/23-shipping-dep.yaml', 'sock-shop-2/manifests/27-user-db-dep.yaml']\n- problematic config: Absence of livenessProbe and readinessProbe in container spec\n\nIssue #4: Sidecar container failure restarts entire pod\n\n- details: In rabbitmq deployment, the pod contains a sidecar (rabbitmq-exporter) alongside the main rabbitmq container. If the sidecar exits or fails, the pod restarts (default restartPolicy: Always), causing downtime for the rabbitmq message broker and potentially losing in-memory messages or connections.\n- manifests having the issues: ['sock-shop-2/manifests/19-rabbitmq-dep.yaml']\n- problematic config: Two containers in one pod with default restartPolicy and no isolation; failure of rabbitmq-exporter triggers pod restart\n\n",
+            "k8s_app": {
+                "thought": "The manifests define a namespace 'sock-shop' and multiple deployments/services that together form a microservices application. Components like front-end, catalogue, carts, orders, payment, shipping, and user are typical of an e-commerce platform. The images are from weaveworksdemos, which is the well-known Sock Shop demo application. Therefore, this is an e-commerce microservices application for selling socks.",
+                "k8s_application": "Sock Shop: an online store for purchasing socks, demonstrating a microservices-based e-commerce system with features like product catalog, shopping cart, order processing, payment, shipping, and user accounts."
+            },
+            "ce_instructions": ""
+        },
+        "hypothesis": {
+            "steady_states": {
+                "elems": [
+                    {
+                        "id": 0,
+                        "name": "frontendDeploymentAvailableReplicas",
+                        "description": "The most glaring issue is that every deployment runs a single replica, creating a single point of failure. I selected the front-end deployment because it is the sole entry point to the Sock Shop application; if its only pod becomes unavailable, the entire store is inaccessible from outside. The steady state that reflects normal operation is that the front-end deployment has exactly 1 available replica, meaning the pod is ready and serving traffic. This is easily measured via the deployment's status.availableReplicas field and is directly disrupted by pod deletion, node failure, or container crashes, making it the easiest issue to verify with chaos engineering.",
+                        "inspection": {
+                            "tool_type": "k8s",
+                            "duration": "5s",
+                            "script": {
+                                "path": "sandbox/cycle_20260809_031539/hypothesis/k8s_frontendDeploymentAvailableReplicas.py",
+                                "content": "import os\nimport time\nimport argparse\nfrom kubernetes import client, config\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--duration\", type=int, default=5, help=\"Duration in seconds\")\n    args = parser.parse_args()\n\n    if os.getenv(\"KUBERNETES_SERVICE_HOST\"):\n        config.load_incluster_config()\n    else:\n        config.load_kube_config()\n\n    v1 = client.AppsV1Api()\n    namespace = \"sock-shop\"\n    name = \"front-end\"\n    available_replicas_list = []\n    for i in range(args.duration):\n        try:\n            dep = v1.read_namespaced_deployment(name=name, namespace=namespace)\n            available = dep.status.available_replicas or 0\n            available_replicas_list.append(available)\n            print(\"Time {}: availableReplicas={}\".format(i+1, available))\n        except Exception as e:\n            print(\"Error at time {}: {}\".format(i+1, e))\n            available_replicas_list.append(None)\n        if i < args.duration - 1:\n            time.sleep(1)\n    print(\"Summary over {} seconds: \".format(args.duration))\n    print(\"Available replicas values: {}\".format(available_replicas_list))\n    if all(x == 1 for x in available_replicas_list):\n        print(\"Steady state: front-end deployment has 1 available replica consistently.\")\n    elif any(x == 1 for x in available_replicas_list):\n        print(\"Front-end deployment had some non-1 or missing replicas.\")\n    else:\n        print(\"Front-end deployment has no available replicas.\")\n\nif __name__ == \"__main__\":\n    main()",
+                                "work_dir": "sandbox/cycle_20260809_031539/hypothesis",
+                                "fname": "k8s_frontendDeploymentAvailableReplicas.py"
+                            },
+                            "result": "Time 1: availableReplicas=1\nTime 2: availableReplicas=1\nTime 3: availableReplicas=1\nTime 4: availableReplicas=1\nTime 5: availableReplicas=1\nSummary over 5 seconds: \nAvailable replicas values: [1, 1, 1, 1, 1]\nSteady state: front-end deployment has 1 available replica consistently.\n"
+                        },
+                        "threshold": {
+                            "threshold": "The front-end deployment must have availableReplicas >= 1 for at least 99% of the monitoring period, and no single observation of availableReplicas == 0 lasting more than 1 consecutive second.",
+                            "reason": "The steady state measures the number of available replicas for the front-end deployment, which is the sole entry point. Currently, the deployment consistently has 1 available replica. Since the deployment runs a single replica without redundancy, the minimum required value is 1. To account for minor transient fluctuations (e.g., during pod rescheduling or brief unavailability), I will set a threshold that requires at least 1 available replica for the vast majority of the monitoring period, allowing for a small tolerance. Specifically, the availableReplicas must be >= 1 for at least 99% of the observed time, and any dip to 0 must be extremely brief (no more than 1 consecutive observation). This ensures the system is effectively normal while tolerating negligible transient events."
+                        },
+                        "unittest": {
+                            "path": "sandbox/cycle_20260809_031539/hypothesis/unittest_frontendDeploymentAvailableReplicas_mod0.py",
+                            "content": "import os\nimport time\nimport argparse\nfrom kubernetes import client, config\nfrom unittest_base import K8sAPIBase\n\nclass SteadyStateTest(K8sAPIBase):\n    def test_frontend_available_replicas(self, duration):\n        # Create an AppsV1Api client using the same configuration loaded in K8sAPIBase.\n        apps_v1 = client.AppsV1Api()\n        namespace = \"sock-shop\"\n        name = \"front-end\"\n\n        observations = []  # Boolean list: True if availableReplicas >= 1\n        consecutive_zeros = 0  # Current streak of observations with 0 available replicas\n        max_consecutive_zeros = 0  # Maximum streak observed\n\n        for i in range(duration):\n            try:\n                # Read the deployment's status to get available replicas.\n                dep = apps_v1.read_namespaced_deployment(name=name, namespace=namespace)\n                available = dep.status.available_replicas or 0\n                ok = available >= 1\n            except Exception as e:\n                # On error, treat as unavailable (availableReplicas = 0) to be conservative.\n                print(\"Error at time {}: {}\".format(i + 1, e))\n                available = 0\n                ok = False\n\n            observations.append(ok)\n\n            # Update consecutive zero tracking.\n            if ok:\n                consecutive_zeros = 0\n            else:\n                consecutive_zeros += 1\n                max_consecutive_zeros = max(max_consecutive_zeros, consecutive_zeros)\n\n            print(\"Time {}: availableReplicas={} -> {}\".format(i + 1, available, \"OK\" if ok else \"NOT OK\"))\n\n            if i < duration - 1:\n                time.sleep(1)\n\n        total = len(observations)\n        good = sum(observations)\n        availability_ratio = good / total if total > 0 else 0\n\n        # Threshold checks:\n        # 1. availableReplicas >= 1 for at least 99% of the observations.\n        meets_ratio = availability_ratio >= 0.99\n        # 2. No dip to 0 lasting more than 1 consecutive second.\n        meets_zero_tolerance = max_consecutive_zeros <= 1\n\n        # Summary output for both success and failure cases.\n        print()\n        print(\"Summary over {} seconds:\".format(duration))\n        print(\"Total observations: {}\".format(total))\n        print(\"Observations with availableReplicas >= 1: {} ({:.2f}%)\".format(good, availability_ratio * 100))\n        print(\"Max consecutive zeros: {}\".format(max_consecutive_zeros))\n        print(\"Availability ratio threshold (>=99%): {}\".format(\"PASS\" if meets_ratio else \"FAIL\"))\n        print(\"Consecutive zero threshold (<=1): {}\".format(\"PASS\" if meets_zero_tolerance else \"FAIL\"))\n\n        # Assert both conditions to verify the steady state.\n        assert meets_ratio, \"Availability ratio {:.2f}% is below 99% threshold\".format(availability_ratio * 100)\n        assert meets_zero_tolerance, \"Max consecutive zeros {} exceeds 1 second\".format(max_consecutive_zeros)\n        print(\"Steady-state threshold satisfied.\")\n\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--duration\", type=int, default=5, help=\"Duration in seconds\")\n    args = parser.parse_args()\n\n    # Instantiate the test class and run the steady-state check.\n    test = SteadyStateTest()\n    test.test_frontend_available_replicas(args.duration)\n\n\nif __name__ == \"__main__\":\n    main()\n",
+                            "work_dir": "sandbox/cycle_20260809_031539/hypothesis",
+                            "fname": "unittest_frontendDeploymentAvailableReplicas_mod0.py"
+                        }
+                    },
+                    {
+                        "id": 1,
+                        "name": "cartsDbDeploymentAvailableReplicas",
+                        "description": "The front-end availability is already covered, but a failure in a critical backend service can still break the application even if the front-end pod is up. The carts-db Deployment is particularly vulnerable because it runs a single replica, has no persistent storage, and sets readOnlyRootFilesystem: true without mounting a writable volume for MongoDB's /data/db directory. This fatal misconfiguration likely causes the database pod to crash-loop, making the carts service unusable. Therefore, I define a steady state that the carts-db deployment must have exactly 1 available replica, indicating the database is running and ready. This is measurable via availableReplicas and directly verifies the impact of the problematic read-only root filesystem and single-replica issues.",
+                        "inspection": {
+                            "tool_type": "k8s",
+                            "duration": "5s",
+                            "script": {
+                                "path": "sandbox/cycle_20260809_031539/hypothesis/k8s_cartsDbDeploymentAvailableReplicas.py",
+                                "content": "import os\nimport time\nimport argparse\nfrom kubernetes import client, config\n\ndef check_carts_db_available_replicas(duration):\n    if os.getenv('KUBERNETES_SERVICE_HOST'):\n        config.load_incluster_config()\n    else:\n        config.load_kube_config()\n    v1 = client.AppsV1Api()\n    observed = []\n    for _ in range(duration):\n        try:\n            dep = v1.read_namespaced_deployment_status(name='carts-db', namespace='sock-shop')\n            available = dep.status.available_replicas\n            observed.append(available)\n            print(f\"carts-db availableReplicas: {available}\")\n        except Exception as e:\n            observed.append(None)\n            print(f\"Error fetching carts-db deployment: {e}\")\n        time.sleep(1)\n    print(\"Summary:\")\n    print(f\"Observed availableReplicas: {observed}\")\n    exact_one = all(x == 1 for x in observed if x is not None) and len(observed) > 0 and None not in observed\n    print(f\"Exactly 1 available replica: {exact_one}\")\n\nif __name__ == \"__main__\":\n    parser = argparse.ArgumentParser()\n    parser.add_argument('--duration', type=int, default=5)\n    args = parser.parse_args()\n    check_carts_db_available_replicas(args.duration)\n",
+                                "work_dir": "sandbox/cycle_20260809_031539/hypothesis",
+                                "fname": "k8s_cartsDbDeploymentAvailableReplicas.py"
+                            },
+                            "result": "carts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\nSummary:\nObserved availableReplicas: [1, 1, 1, 1, 1]\nExactly 1 available replica: True\n"
+                        },
+                        "threshold": {
+                            "threshold": "carts-db Deployment must have availableReplicas >= 1 in at least 95% of the observations during the monitoring period. If a query fails, that observation counts as 0 available replicas. A single observation of 0 is tolerated only if it does not cause the total success rate to fall below 95%.",
+                            "reason": "The steady state measures the available replicas of the carts-db Deployment. The current state shows availableReplicas=1 in all 5 observations, indicating the normal healthy state for this single-replica deployment is exactly 1 available replica. Since there is no redundancy, at least 1 available replica is the minimum required for the service to function. To avoid false failures from brief, transient fluctuations (e.g., a pod restart during normal operations) while still detecting real availability problems, I define the threshold to require at least 1 available replica in at least 95% of the observations during the monitoring period. This tolerance makes the threshold more easily satisfied than a strict 'exactly 1 at 100%' requirement, while still ensuring the database is almost always available."
+                        },
+                        "unittest": {
+                            "path": "sandbox/cycle_20260809_031539/hypothesis/unittest_cartsDbDeploymentAvailableReplicas_mod0.py",
+                            "content": "import os\nimport time\nimport argparse\nfrom kubernetes import client, config\nfrom unittest_base import K8sAPIBase\n\nclass TestCartsDbAvailableReplicas(K8sAPIBase):\n    def __init__(self):\n        super().__init__()\n        self.apps_v1 = client.AppsV1Api()\n\n    def test_carts_db_available_replicas(self, duration):\n        # Record the availableReplicas of the carts-db deployment over the duration.\n        observed = []\n        for _ in range(duration):\n            try:\n                dep = self.apps_v1.read_namespaced_deployment_status(\n                    name=\"carts-db\", namespace=\"sock-shop\"\n                )\n                available = dep.status.available_replicas\n                if available is None:\n                    available = 0\n                observed.append(available)\n                print(f\"carts-db availableReplicas: {available}\")\n            except Exception as e:\n                # A failed fetch counts as 0 available replicas per the threshold.\n                observed.append(0)\n                print(f\"Error fetching carts-db deployment: {e}\")\n            time.sleep(1)\n\n        # Compute the ratio of observations meeting the minimum availability.\n        total = len(observed)\n        success_count = sum(1 for x in observed if x >= 1)\n        success_ratio = success_count / total if total > 0 else 0.0\n        threshold_ratio = 0.95\n\n        print(\"Summary:\")\n        print(f\"Observed availableReplicas: {observed}\")\n        print(f\"Observations with >=1 replica: {success_count}/{total} ({success_ratio:.2%})\")\n        print(f\"Threshold: >=1 replica in at least {threshold_ratio:.0%} of observations\")\n\n        # Assert that the steady-state threshold is satisfied.\n        assert success_ratio >= threshold_ratio, (\n            f\"Steady state violation: carts-db availableReplicas >= 1 in only \"\n            f\"{success_count}/{total} observations ({success_ratio:.2%}), \"\n            f\"which is below the required {threshold_ratio:.0%}\"\n        )\n        print(\"PASS: carts-db availability meets the steady-state threshold.\")\n\ndef main():\n    parser = argparse.ArgumentParser()\n    parser.add_argument(\"--duration\", type=int, default=5)\n    args = parser.parse_args()\n    test = TestCartsDbAvailableReplicas()\n    test.test_carts_db_available_replicas(args.duration)\n\nif __name__ == \"__main__\":\n    main()",
+                            "work_dir": "sandbox/cycle_20260809_031539/hypothesis",
+                            "fname": "unittest_cartsDbDeploymentAvailableReplicas_mod0.py"
+                        }
+                    }
+                ]
+            },
+            "fault": {
+                "event": "Black Friday cyber attack: a flash sale coinciding with a DDoS attack and targeted pod destruction, causing extreme traffic and malicious disruption of critical services.",
+                "faults": [
+                    [
+                        {
+                            "name": "StressChaos",
+                            "name_id": 0,
+                            "params": {
+                                "mode": "one",
+                                "value": "1",
+                                "stressors": {
+                                    "cpu": {
+                                        "workers": 1,
+                                        "load": 100
+                                    },
+                                    "memory": {
+                                        "workers": 1,
+                                        "size": "256MB"
+                                    }
+                                },
+                                "containerNames": [
+                                    "front-end"
+                                ],
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "front-end"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "name": "StressChaos",
+                            "name_id": 1,
+                            "params": {
+                                "mode": "one",
+                                "value": "1",
+                                "stressors": {
+                                    "cpu": {
+                                        "workers": 1,
+                                        "load": 100
+                                    },
+                                    "memory": {
+                                        "workers": 1,
+                                        "size": "512MB"
+                                    }
+                                },
+                                "containerNames": [
+                                    "carts-db"
+                                ],
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "carts-db"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "NetworkChaos",
+                            "name_id": 2,
+                            "params": {
+                                "action": "loss",
+                                "direction": "to",
+                                "mode": "all",
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "front-end"
+                                    }
+                                },
+                                "loss": {
+                                    "loss": "50",
+                                    "correlation": "0"
+                                }
+                            }
+                        },
+                        {
+                            "name": "NetworkChaos",
+                            "name_id": 3,
+                            "params": {
+                                "action": "loss",
+                                "direction": "to",
+                                "mode": "all",
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "carts-db"
+                                    }
+                                },
+                                "loss": {
+                                    "loss": "50"
+                                }
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "PodChaos",
+                            "name_id": 4,
+                            "params": {
+                                "action": "pod-kill",
+                                "mode": "one",
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "front-end"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "name": "PodChaos",
+                            "name_id": 5,
+                            "params": {
+                                "action": "pod-kill",
+                                "mode": "one",
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "carts-db"
+                                    }
+                                }
+                            }
+                        }
+                    ],
+                    [
+                        {
+                            "name": "PodChaos",
+                            "name_id": 6,
+                            "params": {
+                                "action": "container-kill",
+                                "mode": "one",
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "rabbitmq"
+                                    }
+                                },
+                                "containerNames": [
+                                    "rabbitmq-exporter"
+                                ]
+                            }
+                        }
+                    ]
+                ],
+                "description": "The Sock Shop microservices are all single-replica deployments, so each component is a single point of failure. The front-end is the only ingress, so killing it directly makes the store unavailable, violating steady state 1. The carts-db backend has no persistent storage, sets readOnlyRootFilesystem without a writable /data/db volume, and lacks probes; if it is killed, its pod may crash-loop or lose data, violating steady state 2. The sequence first applies StressChaos to front-end and carts-db to simulate heavy promotion traffic and database load, exposing resource limits and the lack of scaling/redundancy. Next, NetworkChaos injects packet loss/partition on the same pods to mimic a DDoS attack, which can cause liveness/readiness failures and force restarts. Then PodChaos pod-kill on front-end and carts-db simulates attackers deliberately killing critical pods, which is maximally impactful because there are no redundant replicas, and the carts-db restart reveals the read-only filesystem/persistence flaw that prevents recovery. Finally, PodChaos container-kill on the rabbitmq-exporter sidecar simulates a sidecar crash, which restarts the whole rabbitmq pod due to shared process group, disrupting order/queue processing. This sequence reveals the vulnerabilities of single replicas, storage misconfiguration, missing probes, and sidecar-caused pod restarts."
+            }
+        },
+        "experiment": {
+            "plan": {
+                "time_schedule": {
+                    "thought": "The experiment must validate the two steady states before, during, and after fault injection. Pre-validation needs enough time to establish a reliable baseline; I allocate 2 minutes to collect ~120 observations per steady state, which is sufficient to confirm the 99% and 95% availability thresholds with high confidence. Fault injection should cover all four fault groups in the described sequence: StressChaos on front-end and carts-db, NetworkChaos (packet loss) on the same services, PodChaos pod-kill targeting front-end and carts-db, and finally PodChaos container-kill on the rabbitmq-exporter sidecar. I allocate 6 minutes for fault injection: 1.5 minutes for StressChaos, 1.5 minutes for NetworkChaos, 2 minutes for PodChaos pod-kill (to observe potential crash-loops and recovery attempts), and 1 minute for the container-kill sidecar failure. This provides enough observation windows to detect steady-state violations. Post-validation runs for 2 minutes to verify that both deployments return to their expected available replica counts after the faults are withdrawn. The total time is the sum of 2m + 6m + 2m = 10m.",
+                    "total_time": "10m",
+                    "pre_validation_time": "2m",
+                    "fault_injection_time": "6m",
+                    "post_validation_time": "2m"
+                },
+                "pre_validation": {
+                    "thought": "In the pre-validation phase, both steady-state unit tests are scheduled to run concurrently from the very start of the phase (grace_period=0s) and continue for the entire 2-minute duration. This approach ensures that the front-end deployment and the carts-db deployment are observed simultaneously over a long period, confirming that the system is fully stable and meeting the availability thresholds before any faults are injected. Running them in parallel is particularly important because these services are part of the same microservices application and may affect each other's availability; observing both at the same time guarantees that the steady-state conditions hold for the whole system. The full 2-minute duration is used to maximize the confidence in the pre-injection state and to detect any subtle transient issues that might otherwise go unnoticed in a shorter observation window.",
+                    "unit_tests": [
+                        {
+                            "name": "frontendDeploymentAvailableReplicas",
+                            "grace_period": "0s",
+                            "duration": "2m",
+                            "workflow_name": "pre-unittest-frontenddeploymentavailablereplicas",
+                            "deadline": "7m",
+                            "file_path": "sandbox/cycle_20260809_031539/hypothesis/unittest_frontendDeploymentAvailableReplicas_mod0.py"
+                        },
+                        {
+                            "name": "cartsDbDeploymentAvailableReplicas",
+                            "grace_period": "0s",
+                            "duration": "2m",
+                            "workflow_name": "pre-unittest-cartsdbdeploymentavailablereplicas",
+                            "deadline": "7m",
+                            "file_path": "sandbox/cycle_20260809_031539/hypothesis/unittest_cartsDbDeploymentAvailableReplicas_mod0.py"
+                        }
+                    ]
+                },
+                "fault_injection": {
+                    "thought": "The fault-injection phase lasts 6 minutes. I divided the 6-minute window into four sequential fault blocks to mirror the described Black Friday attack sequence: (1) StressChaos on front-end and carts-db for the first 1m30s to simulate heavy load; (2) NetworkChaos packet loss on the same pods for the next 1m30s to simulate DDoS; (3) PodChaos pod-kill on front-end and carts-db for 1m30s to simulate targeted pod destruction; and (4) PodChaos container-kill on the rabbitmq-exporter sidecar for the final 1m30s to simulate a sidecar crash that restarts the rabbitmq pod. Each group starts precisely when the previous group ends, so the fault injections are sequential. Within each group, faults targeting different pods run simultaneously. I run both steady-state unit tests (frontendDeploymentAvailableReplicas and cartsDbDeploymentAvailableReplicas) continuously for the entire 6-minute phase, sampling every second, so that unavailability caused by any fault is captured. This continuous monitoring also ensures we observe the transition between fault periods and can detect if a steady-state violation persists beyond the fault window.",
+                    "fault_injection": [
+                        {
+                            "name": "StressChaos",
+                            "name_id": 0,
+                            "grace_period": "0s",
+                            "duration": "1m30s",
+                            "workflow_name": "fault-stresschaos",
+                            "deadline": "1m30s",
+                            "params": {
+                                "mode": "one",
+                                "value": "1",
+                                "stressors": {
+                                    "cpu": {
+                                        "workers": 1,
+                                        "load": 100
+                                    },
+                                    "memory": {
+                                        "workers": 1,
+                                        "size": "256MB"
+                                    }
+                                },
+                                "containerNames": [
+                                    "front-end"
+                                ],
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "front-end"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "name": "StressChaos",
+                            "name_id": 1,
+                            "grace_period": "0s",
+                            "duration": "1m30s",
+                            "workflow_name": "fault-stresschaos2",
+                            "deadline": "1m30s",
+                            "params": {
+                                "mode": "one",
+                                "value": "1",
+                                "stressors": {
+                                    "cpu": {
+                                        "workers": 1,
+                                        "load": 100
+                                    },
+                                    "memory": {
+                                        "workers": 1,
+                                        "size": "512MB"
+                                    }
+                                },
+                                "containerNames": [
+                                    "carts-db"
+                                ],
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "carts-db"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "name": "NetworkChaos",
+                            "name_id": 2,
+                            "grace_period": "1m30s",
+                            "duration": "1m30s",
+                            "workflow_name": "fault-networkchaos",
+                            "deadline": "1m30s",
+                            "params": {
+                                "action": "loss",
+                                "direction": "to",
+                                "mode": "all",
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "front-end"
+                                    }
+                                },
+                                "loss": {
+                                    "loss": "50",
+                                    "correlation": "0"
+                                }
+                            }
+                        },
+                        {
+                            "name": "NetworkChaos",
+                            "name_id": 3,
+                            "grace_period": "1m30s",
+                            "duration": "1m30s",
+                            "workflow_name": "fault-networkchaos2",
+                            "deadline": "1m30s",
+                            "params": {
+                                "action": "loss",
+                                "direction": "to",
+                                "mode": "all",
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "carts-db"
+                                    }
+                                },
+                                "loss": {
+                                    "loss": "50"
+                                }
+                            }
+                        },
+                        {
+                            "name": "PodChaos",
+                            "name_id": 4,
+                            "grace_period": "3m",
+                            "duration": "1m30s",
+                            "workflow_name": "fault-podchaos",
+                            "deadline": "1m30s",
+                            "params": {
+                                "action": "pod-kill",
+                                "mode": "one",
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "front-end"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "name": "PodChaos",
+                            "name_id": 5,
+                            "grace_period": "3m",
+                            "duration": "1m30s",
+                            "workflow_name": "fault-podchaos2",
+                            "deadline": "1m30s",
+                            "params": {
+                                "action": "pod-kill",
+                                "mode": "one",
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "carts-db"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "name": "PodChaos",
+                            "name_id": 6,
+                            "grace_period": "4m30s",
+                            "duration": "1m30s",
+                            "workflow_name": "fault-podchaos3",
+                            "deadline": "1m30s",
+                            "params": {
+                                "action": "container-kill",
+                                "mode": "one",
+                                "selector": {
+                                    "namespaces": [
+                                        "sock-shop"
+                                    ],
+                                    "labelSelectors": {
+                                        "name": "rabbitmq"
+                                    }
+                                },
+                                "containerNames": [
+                                    "rabbitmq-exporter"
+                                ]
+                            }
+                        }
+                    ],
+                    "unit_tests": [
+                        {
+                            "name": "frontendDeploymentAvailableReplicas",
+                            "grace_period": "0s",
+                            "duration": "6m",
+                            "workflow_name": "fault-unittest-frontenddeploymentavailablereplicas",
+                            "deadline": "11m",
+                            "file_path": "sandbox/cycle_20260809_031539/hypothesis/unittest_frontendDeploymentAvailableReplicas_mod0.py"
+                        },
+                        {
+                            "name": "cartsDbDeploymentAvailableReplicas",
+                            "grace_period": "0s",
+                            "duration": "6m",
+                            "workflow_name": "fault-unittest-cartsdbdeploymentavailablereplicas",
+                            "deadline": "11m",
+                            "file_path": "sandbox/cycle_20260809_031539/hypothesis/unittest_cartsDbDeploymentAvailableReplicas_mod0.py"
+                        }
+                    ]
+                },
+                "post_validation": {
+                    "thought": "In the post-validation phase, after the fault injection phase concludes, I allow a 30-second grace period for the system to stabilize: any pods killed or restarted by the chaos experiments should have been rescheduled and become ready, and the effects of stress and network loss should have dissipated. I then launch two steady-state verification tests concurrently: one for frontendDeploymentAvailableReplicas and one for cartsDbDeploymentAvailableReplicas. They run for 60 seconds, sampling the deployment status every second, which provides 60 observations per test. This is sufficient to statistically validate the 99%/95% availability thresholds. Running them in parallel is safe because they are read-only Kubernetes API queries and do not interfere with each other or with the system under test. The total elapsed time is 90 seconds, leaving 30 seconds of buffer within the 2-minute phase.",
+                    "unit_tests": [
+                        {
+                            "name": "frontendDeploymentAvailableReplicas",
+                            "grace_period": "30s",
+                            "duration": "60s",
+                            "workflow_name": "post-unittest-frontenddeploymentavailablereplicas",
+                            "deadline": "6m",
+                            "file_path": "sandbox/cycle_20260809_031539/hypothesis/unittest_frontendDeploymentAvailableReplicas_mod0.py"
+                        },
+                        {
+                            "name": "cartsDbDeploymentAvailableReplicas",
+                            "grace_period": "30s",
+                            "duration": "60s",
+                            "workflow_name": "post-unittest-cartsdbdeploymentavailablereplicas",
+                            "deadline": "6m",
+                            "file_path": "sandbox/cycle_20260809_031539/hypothesis/unittest_cartsDbDeploymentAvailableReplicas_mod0.py"
+                        }
+                    ]
+                },
+                "summary": "The chaos engineering experiment spans a total of 10 minutes, divided into three phases: pre-validation (2 minutes), fault injection (6 minutes), and post-validation (2 minutes). During the pre-validation phase, both steady-state verification workflows, frontendDeploymentAvailableReplicas and cartsDbDeploymentAvailableReplicas, run concurrently from the very beginning with a grace period of 0 seconds and a duration of exactly 2 minutes, allowing the system to be observed for 120 seconds per test to establish a reliable baseline and confirm availability thresholds before any faults are introduced. The fault-injection phase lasts 6 minutes and is organized into four sequential fault blocks, each starting immediately when the previous one ends, with the two steady-state verification workflows continuing to run concurrently for the entire 6-minute duration, sampling every second to capture any availability violations. The first fault block begins at time 0 seconds and runs for 1 minute 30 seconds, injecting StressChaos simultaneously on the front-end and carts-db services (two separate StressChaos fault injections, both with grace period 0 seconds and duration 1 minute 30 seconds). The second fault block starts at exactly 1 minute 30 seconds and also lasts 1 minute 30 seconds, injecting NetworkChaos (packet loss) concurrently on the same two services (two NetworkChaos fault injections, both with grace period 1 minute 30 seconds and duration 1 minute 30 seconds). The third fault block starts at 3 minutes and runs for 1 minute 30 seconds, injecting PodChaos pod-kill faults concurrently on front-end and carts-db (two PodChaos fault injections, both with grace period 3 minutes and duration 1 minute 30 seconds). The fourth and final fault block starts at 4 minutes 30 seconds and runs for 1 minute 30 seconds, injecting a PodChaos container-kill fault targeting the rabbitmq-exporter sidecar (one PodChaos fault injection with grace period 4 minutes 30 seconds and duration 1 minute 30 seconds), simulating a sidecar crash that restarts the rabbitmq pod. Throughout the entire 6-minute fault-injection phase, both steady-state checks run without interruption, ensuring continuous monitoring across fault transitions. The post-validation phase begins after the fault injection phase ends, with a 30-second grace period to allow the system to stabilize; after this grace period, at 30 seconds into the phase, both frontendDeploymentAvailableReplicas and cartsDbDeploymentAvailableReplicas steady-state verification workflows are launched concurrently and run for 60 seconds, providing 60 observations per test to statistically confirm that the deployments have returned to their expected available replica counts. This leaves a 30-second buffer at the end of the 2-minute phase. Overall, the experiment ensures that steady-state conditions are validated before, during, and after each fault injection, with precise timings for every action."
+            },
+            "workflow_name": "chaos-experiment-20260809-033124",
+            "workflow": {
+                "path": "sandbox/cycle_20260809_031539/experiment/workflow.yaml",
+                "content": "apiVersion: chaos-mesh.org/v1alpha1\nkind: Workflow\nmetadata:\n  name: chaos-experiment-20260809-033124\nspec:\n  entry: the-entry\n  templates:\n    #-------------------------------\n    # entry point of whole workflow\n    #-------------------------------\n    - name: the-entry\n      templateType: Serial\n      deadline: 39m\n      children:\n        - pre-validation-phase\n        - fault-injection-phase\n        - post-validation-phase\n\n    #-------------------------------------\n    # Entry point of pre-validation-phase\n    #-------------------------------------\n    - name: pre-validation-phase\n      templateType: Serial\n      deadline: 12m\n      children:\n        - pre-validation-parallel-workflows\n    \n    - name: pre-validation-parallel-workflows\n      templateType: Parallel\n      deadline: 7m\n      children:\n        - pre-unittest-frontenddeploymentavailablereplicas\n        - pre-unittest-cartsdbdeploymentavailablereplicas\n\n    # Definitions of children of pre-validation-phase\n    - name: pre-unittest-frontenddeploymentavailablereplicas\n      templateType: Task\n      deadline: 7m\n      task:\n        container:\n          name: pre-unittest-frontenddeploymentavailablereplicas-container\n          image: chaos-eater/k8sapi:1.0\n          imagePullPolicy: IfNotPresent\n          command: [\"/bin/bash\", \"-c\"]\n          args: [\"python /chaos-eater/sandbox/cycle_20260809_031539/hypothesis/unittest_frontendDeploymentAvailableReplicas_mod0.py --duration 120\"]\n          volumeMounts:\n            - name: pvc-volume\n              mountPath: /chaos-eater\n        volumes:\n          - name: pvc-volume\n            persistentVolumeClaim:\n              claimName: pvc\n\n    - name: pre-unittest-cartsdbdeploymentavailablereplicas\n      templateType: Task\n      deadline: 7m\n      task:\n        container:\n          name: pre-unittest-cartsdbdeploymentavailablereplicas-container\n          image: chaos-eater/k8sapi:1.0\n          imagePullPolicy: IfNotPresent\n          command: [\"/bin/bash\", \"-c\"]\n          args: [\"python /chaos-eater/sandbox/cycle_20260809_031539/hypothesis/unittest_cartsDbDeploymentAvailableReplicas_mod0.py --duration 120\"]\n          volumeMounts:\n            - name: pvc-volume\n              mountPath: /chaos-eater\n        volumes:\n          - name: pvc-volume\n            persistentVolumeClaim:\n              claimName: pvc\n    \n    #--------------------------------------\n    # Entry point of fault-injection-phase\n    #--------------------------------------\n    - name: fault-injection-phase\n      templateType: Serial\n      deadline: 16m\n      children:\n        - fault-injection-overlapped-workflows\n\n    - name: fault-injection-parallel-workflow\n      templateType: Parallel\n      deadline: 11m\n      children:\n        - fault-unittest-frontenddeploymentavailablereplicas\n        - fault-unittest-cartsdbdeploymentavailablereplicas\n        - fault-stresschaos\n        - fault-stresschaos2\n\n    - name: fault-injection-suspend-workflow\n      templateType: Serial\n      deadline: 3m\n      children:\n        - fault-injection-suspend\n        - fault-injection-parallel-workflows\n\n    - name: fault-injection-suspend\n      templateType: Suspend\n      deadline: 1m30s\n\n    - name: fault-injection-parallel-workflows\n      templateType: Parallel\n      deadline: 1m30s\n      children:\n        - fault-networkchaos\n        - fault-networkchaos2\n\n    - name: fault-injection-suspend-workflow2\n      templateType: Serial\n      deadline: 4m30s\n      children:\n        - fault-injection-suspend2\n        - fault-injection-parallel-workflows2\n\n    - name: fault-injection-suspend2\n      templateType: Suspend\n      deadline: 3m\n\n    - name: fault-injection-parallel-workflows2\n      templateType: Parallel\n      deadline: 1m30s\n      children:\n        - fault-podchaos\n        - fault-podchaos2\n\n    - name: fault-injection-suspend-workflow3\n      templateType: Serial\n      deadline: 6m\n      children:\n        - fault-injection-suspend3\n        - fault-podchaos3\n\n    - name: fault-injection-suspend3\n      templateType: Suspend\n      deadline: 4m30s\n\n    - name: fault-injection-overlapped-workflows\n      templateType: Parallel\n      deadline: 11m\n      children:\n        - fault-injection-parallel-workflow\n        - fault-injection-suspend-workflow\n        - fault-injection-suspend-workflow2\n        - fault-injection-suspend-workflow3\n\n    # Definitions of children of pre-validation-phase\n    # unit tests\n    - name: fault-unittest-frontenddeploymentavailablereplicas\n      templateType: Task\n      deadline: 11m\n      task:\n        container:\n          name: fault-unittest-frontenddeploymentavailablereplicas-container\n          image: chaos-eater/k8sapi:1.0\n          imagePullPolicy: IfNotPresent\n          command: [\"/bin/bash\", \"-c\"]\n          args: [\"python /chaos-eater/sandbox/cycle_20260809_031539/hypothesis/unittest_frontendDeploymentAvailableReplicas_mod0.py --duration 360\"]\n          volumeMounts:\n            - name: pvc-volume\n              mountPath: /chaos-eater\n        volumes:\n          - name: pvc-volume\n            persistentVolumeClaim:\n              claimName: pvc\n\n    - name: fault-unittest-cartsdbdeploymentavailablereplicas\n      templateType: Task\n      deadline: 11m\n      task:\n        container:\n          name: fault-unittest-cartsdbdeploymentavailablereplicas-container\n          image: chaos-eater/k8sapi:1.0\n          imagePullPolicy: IfNotPresent\n          command: [\"/bin/bash\", \"-c\"]\n          args: [\"python /chaos-eater/sandbox/cycle_20260809_031539/hypothesis/unittest_cartsDbDeploymentAvailableReplicas_mod0.py --duration 360\"]\n          volumeMounts:\n            - name: pvc-volume\n              mountPath: /chaos-eater\n        volumes:\n          - name: pvc-volume\n            persistentVolumeClaim:\n              claimName: pvc\n\n    # fault_injections\n    - name: fault-stresschaos\n      templateType: StressChaos\n      deadline: 1m30s\n      stressChaos:\n        containerNames:\n          - front-end\n        mode: one\n        selector:\n          labelSelectors:\n            name: front-end\n          namespaces:\n            - sock-shop\n        stressors:\n          cpu:\n            load: 100\n            workers: 1\n          memory:\n            size: 256MB\n            workers: 1\n        value: '1'\n\n\n    - name: fault-stresschaos2\n      templateType: StressChaos\n      deadline: 1m30s\n      stressChaos:\n        containerNames:\n          - carts-db\n        mode: one\n        selector:\n          labelSelectors:\n            name: carts-db\n          namespaces:\n            - sock-shop\n        stressors:\n          cpu:\n            load: 100\n            workers: 1\n          memory:\n            size: 512MB\n            workers: 1\n        value: '1'\n\n\n    - name: fault-networkchaos\n      templateType: NetworkChaos\n      deadline: 1m30s\n      networkChaos:\n        action: loss\n        direction: to\n        loss:\n          correlation: '0'\n          loss: '50'\n        mode: all\n        selector:\n          labelSelectors:\n            name: front-end\n          namespaces:\n            - sock-shop\n\n\n    - name: fault-networkchaos2\n      templateType: NetworkChaos\n      deadline: 1m30s\n      networkChaos:\n        action: loss\n        direction: to\n        loss:\n          loss: '50'\n        mode: all\n        selector:\n          labelSelectors:\n            name: carts-db\n          namespaces:\n            - sock-shop\n\n\n    - name: fault-podchaos\n      templateType: PodChaos\n      deadline: 1m30s\n      podChaos:\n        action: pod-kill\n        mode: one\n        selector:\n          labelSelectors:\n            name: front-end\n          namespaces:\n            - sock-shop\n\n\n    - name: fault-podchaos2\n      templateType: PodChaos\n      deadline: 1m30s\n      podChaos:\n        action: pod-kill\n        mode: one\n        selector:\n          labelSelectors:\n            name: carts-db\n          namespaces:\n            - sock-shop\n\n\n    - name: fault-podchaos3\n      templateType: PodChaos\n      deadline: 1m30s\n      podChaos:\n        action: container-kill\n        containerNames:\n          - rabbitmq-exporter\n        mode: one\n        selector:\n          labelSelectors:\n            name: rabbitmq\n          namespaces:\n            - sock-shop\n\n    \n    #--------------------------------------\n    # Entry point of post-validation phase\n    #--------------------------------------\n    - name: post-validation-phase\n      templateType: Serial\n      deadline: 11m\n      children:\n        - post-validation-parallel-workflows\n\n    - name: post-validation-parallel-workflows\n      templateType: Parallel\n      deadline: 6m\n      children:\n        - post-unittest-frontenddeploymentavailablereplicas\n        - post-unittest-cartsdbdeploymentavailablereplicas\n\n    # Definitions of children of pre-validation-phase\n    - name: post-unittest-frontenddeploymentavailablereplicas\n      templateType: Task\n      deadline: 6m\n      task:\n        container:\n          name: post-unittest-frontenddeploymentavailablereplicas-container\n          image: chaos-eater/k8sapi:1.0\n          imagePullPolicy: IfNotPresent\n          command: [\"/bin/bash\", \"-c\"]\n          args: [\"python /chaos-eater/sandbox/cycle_20260809_031539/hypothesis/unittest_frontendDeploymentAvailableReplicas_mod0.py --duration 60\"]\n          volumeMounts:\n            - name: pvc-volume\n              mountPath: /chaos-eater\n        volumes:\n          - name: pvc-volume\n            persistentVolumeClaim:\n              claimName: pvc\n\n    - name: post-unittest-cartsdbdeploymentavailablereplicas\n      templateType: Task\n      deadline: 6m\n      task:\n        container:\n          name: post-unittest-cartsdbdeploymentavailablereplicas-container\n          image: chaos-eater/k8sapi:1.0\n          imagePullPolicy: IfNotPresent\n          command: [\"/bin/bash\", \"-c\"]\n          args: [\"python /chaos-eater/sandbox/cycle_20260809_031539/hypothesis/unittest_cartsDbDeploymentAvailableReplicas_mod0.py --duration 60\"]\n          volumeMounts:\n            - name: pvc-volume\n              mountPath: /chaos-eater\n        volumes:\n          - name: pvc-volume\n            persistentVolumeClaim:\n              claimName: pvc",
+                "work_dir": "sandbox/cycle_20260809_031539/experiment",
+                "fname": "workflow.yaml"
+            }
+        },
+        "result_history": [
+            {
+                "pod_statuses": {
+                    "pre-unittest-frontenddeploymentavailablereplicas": {
+                        "exitcode": 0,
+                        "logs": "Time 1: availableReplicas=1 -> OK\nTime 2: availableReplicas=1 -> OK\nTime 3: availableReplicas=1 -> OK\nTime 4: availableReplicas=1 -> OK\nTime 5: availableReplicas=1 -> OK\nTime 6: availableReplicas=1 -> OK\nTime 7: availableReplicas=1 -> OK\nTime 8: availableReplicas=1 -> OK\nTime 9: availableReplicas=1 -> OK\nTime 10: availableReplicas=1 -> OK\nTime 11: availableReplicas=1 -> OK\nTime 12: availableReplicas=1 -> OK\nTime 13: availableReplicas=1 -> OK\nTime 14: availableReplicas=1 -> OK\nTime 15: availableReplicas=1 -> OK\nTime 16: availableReplicas=1 -> OK\nTime 17: availableReplicas=1 -> OK\nTime 18: availableReplicas=1 -> OK\nTime 19: availableReplicas=1 -> OK\nTime 20: availableReplicas=1 -> OK\nTime 21: availableReplicas=1 -> OK\nTime 22: availableReplicas=1 -> OK\nTime 23: availableReplicas=1 -> OK\nTime 24: availableReplicas=1 -> OK\nTime 25: availableReplicas=1 -> OK\nTime 26: availableReplicas=1 -> OK\nTime 27: availableReplicas=1 -> OK\nTime 28: availableReplicas=1 -> OK\nTime 29: availableReplicas=1 -> OK\nTime 30: availableReplicas=1 -> OK\nTime 31: availableReplicas=1 -> OK\nTime 32: availableReplicas=1 -> OK\nTime 33: availableReplicas=1 -> OK\nTime 34: availableReplicas=1 -> OK\nTime 35: availableReplicas=1 -> OK\nTime 36: availableReplicas=1 -> OK\nTime 37: availableReplicas=1 -> OK\nTime 38: availableReplicas=1 -> OK\nTime 39: availableReplicas=1 -> OK\nTime 40: availableReplicas=1 -> OK\nTime 41: availableReplicas=1 -> OK\nTime 42: availableReplicas=1 -> OK\nTime 43: availableReplicas=1 -> OK\nTi... OK\nTime 86: availableReplicas=1 -> OK\nTime 87: availableReplicas=1 -> OK\nTime 88: availableReplicas=1 -> OK\nTime 89: availableReplicas=1 -> OK\nTime 90: availableReplicas=1 -> OK\nTime 91: availableReplicas=1 -> OK\nTime 92: availableReplicas=1 -> OK\nTime 93: availableReplicas=1 -> OK\nTime 94: availableReplicas=1 -> OK\nTime 95: availableReplicas=1 -> OK\nTime 96: availableReplicas=1 -> OK\nTime 97: availableReplicas=1 -> OK\nTime 98: availableReplicas=1 -> OK\nTime 99: availableReplicas=1 -> OK\nTime 100: availableReplicas=1 -> OK\nTime 101: availableReplicas=1 -> OK\nTime 102: availableReplicas=1 -> OK\nTime 103: availableReplicas=1 -> OK\nTime 104: availableReplicas=1 -> OK\nTime 105: availableReplicas=1 -> OK\nTime 106: availableReplicas=1 -> OK\nTime 107: availableReplicas=1 -> OK\nTime 108: availableReplicas=1 -> OK\nTime 109: availableReplicas=1 -> OK\nTime 110: availableReplicas=1 -> OK\nTime 111: availableReplicas=1 -> OK\nTime 112: availableReplicas=1 -> OK\nTime 113: availableReplicas=1 -> OK\nTime 114: availableReplicas=1 -> OK\nTime 115: availableReplicas=1 -> OK\nTime 116: availableReplicas=1 -> OK\nTime 117: availableReplicas=1 -> OK\nTime 118: availableReplicas=1 -> OK\nTime 119: availableReplicas=1 -> OK\nTime 120: availableReplicas=1 -> OK\n\nSummary over 120 seconds:\nTotal observations: 120\nObservations with availableReplicas >= 1: 120 (100.00%)\nMax consecutive zeros: 0\nAvailability ratio threshold (>=99%): PASS\nConsecutive zero threshold (<=1): PASS\nSteady-state threshold satisfied.\n"
+                    },
+                    "pre-unittest-cartsdbdeploymentavailablereplicas": {
+                        "exitcode": 0,
+                        "logs": "carts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: ...: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\nSummary:\nObserved availableReplicas: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]\nObservations with >=1 replica: 120/120 (100.00%)\nThreshold: >=1 replica in at least 95% of observations\nPASS: carts-db availability meets the steady-state threshold.\n"
+                    },
+                    "fault-unittest-frontenddeploymentavailablereplicas": {
+                        "exitcode": 1,
+                        "logs": "Time 1: availableReplicas=1 -> OK\nTime 2: availableReplicas=1 -> OK\nTime 3: availableReplicas=1 -> OK\nTime 4: availableReplicas=1 -> OK\nTime 5: availableReplicas=1 -> OK\nTime 6: availableReplicas=1 -> OK\nTime 7: availableReplicas=1 -> OK\nTime 8: availableReplicas=1 -> OK\nTime 9: availableReplicas=1 -> OK\nTime 10: availableReplicas=1 -> OK\nTime 11: availableReplicas=1 -> OK\nTime 12: availableReplicas=1 -> OK\nTime 13: availableReplicas=1 -> OK\nTime 14: availableReplicas=1 -> OK\nTime 15: availableReplicas=1 -> OK\nTime 16: availableReplicas=1 -> OK\nTime 17: availableReplicas=1 -> OK\nTime 18: availableReplicas=1 -> OK\nTime 19: availableReplicas=1 -> OK\nTime 20: availableReplicas=1 -> OK\nTime 21: availableReplicas=1 -> OK\nTime 22: availableReplicas=1 -> OK\nTime 23: availableReplicas=1 -> OK\nTime 24: availableReplicas=1 -> OK\nTime 25: availableReplicas=1 -> OK\nTime 26: availableReplicas=1 -> OK\nTime 27: availableReplicas=1 -> OK\nTime 28: availableReplicas=1 -> OK\nTime 29: availableReplicas=1 -> OK\nTime 30: availableReplicas=1 -> OK\nTime 31: availableReplicas=1 -> OK\nTime 32: availableReplicas=1 -> OK\nTime 33: availableReplicas=1 -> OK\nTime 34: availableReplicas=1 -> OK\nTime 35: availableReplicas=1 -> OK\nTime 36: availableReplicas=1 -> OK\nTime 37: availableReplicas=1 -> OK\nTime 38: availableReplicas=1 -> OK\nTime 39: availableReplicas=1 -> OK\nTime 40: availableReplicas=1 -> OK\nTime 41: availableReplicas=1 -> OK\nTime 42: availableReplicas=1 -> OK\nTime 43: availableReplicas=1 -> OK\nTi...availableReplicas=1 -> OK\nTime 341: availableReplicas=1 -> OK\nTime 342: availableReplicas=1 -> OK\nTime 343: availableReplicas=1 -> OK\nTime 344: availableReplicas=1 -> OK\nTime 345: availableReplicas=1 -> OK\nTime 346: availableReplicas=1 -> OK\nTime 347: availableReplicas=1 -> OK\nTime 348: availableReplicas=1 -> OK\nTime 349: availableReplicas=1 -> OK\nTime 350: availableReplicas=1 -> OK\nTime 351: availableReplicas=1 -> OK\nTime 352: availableReplicas=1 -> OK\nTime 353: availableReplicas=1 -> OK\nTime 354: availableReplicas=1 -> OK\nTime 355: availableReplicas=1 -> OK\nTime 356: availableReplicas=1 -> OK\nTime 357: availableReplicas=1 -> OK\nTime 358: availableReplicas=1 -> OK\nTime 359: availableReplicas=1 -> OK\nTime 360: availableReplicas=1 -> OK\n\nSummary over 360 seconds:\nTotal observations: 360\nObservations with availableReplicas >= 1: 328 (91.11%)\nMax consecutive zeros: 32\nAvailability ratio threshold (>=99%): FAIL\nConsecutive zero threshold (<=1): FAIL\n    main()\n  File \"/chaos-eater/sandbox/cycle_20260809_031539/hypothesis/unittest_frontendDeploymentAvailableReplicas_mod0.py\", line 76, in main\n    test.test_frontend_available_replicas(args.duration)\n  File \"/chaos-eater/sandbox/cycle_20260809_031539/hypothesis/unittest_frontendDeploymentAvailableReplicas_mod0.py\", line 64, in test_frontend_available_replicas\n    assert meets_ratio, \"Availability ratio {:.2f}% is below 99% threshold\".format(availability_ratio * 100)\nAssertionError: Availability ratio 91.11% is below 99% threshold\n"
+                    },
+                    "fault-unittest-cartsdbdeploymentavailablereplicas": {
+                        "exitcode": 0,
+                        "logs": "carts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: ...s: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\nSummary:\nObserved availableReplicas: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]\nObservations with >=1 replica: 359/360 (99.72%)\nThreshold: >=1 replica in at least 95% of observations\nPASS: carts-db availability meets the steady-state threshold.\n"
+                    },
+                    "post-unittest-frontenddeploymentavailablereplicas": {
+                        "exitcode": 0,
+                        "logs": "Time 1: availableReplicas=1 -> OK\nTime 2: availableReplicas=1 -> OK\nTime 3: availableReplicas=1 -> OK\nTime 4: availableReplicas=1 -> OK\nTime 5: availableReplicas=1 -> OK\nTime 6: availableReplicas=1 -> OK\nTime 7: availableReplicas=1 -> OK\nTime 8: availableReplicas=1 -> OK\nTime 9: availableReplicas=1 -> OK\nTime 10: availableReplicas=1 -> OK\nTime 11: availableReplicas=1 -> OK\nTime 12: availableReplicas=1 -> OK\nTime 13: availableReplicas=1 -> OK\nTime 14: availableReplicas=1 -> OK\nTime 15: availableReplicas=1 -> OK\nTime 16: availableReplicas=1 -> OK\nTime 17: availableReplicas=1 -> OK\nTime 18: availableReplicas=1 -> OK\nTime 19: availableReplicas=1 -> OK\nTime 20: availableReplicas=1 -> OK\nTime 21: availableReplicas=1 -> OK\nTime 22: availableReplicas=1 -> OK\nTime 23: availableReplicas=1 -> OK\nTime 24: availableReplicas=1 -> OK\nTime 25: availableReplicas=1 -> OK\nTime 26: availableReplicas=1 -> OK\nTime 27: availableReplicas=1 -> OK\nTime 28: availableReplicas=1 -> OK\nTime 29: availableReplicas=1 -> OK\nTime 30: availableReplicas=1 -> OK\nTime 31: availableReplicas=1 -> OK\nTime 32: availableReplicas=1 -> OK\nTime 33: availableReplicas=1 -> OK\nTime 34: availableReplicas=1 -> OK\nTime 35: availableReplicas=1 -> OK\nTime 36: availableReplicas=1 -> OK\nTime 37: availableReplicas=1 -> OK\nTime 38: availableReplicas=1 -> OK\nTime 39: availableReplicas=1 -> OK\nTime 40: availableReplicas=1 -> OK\nTime 41: availableReplicas=1 -> OK\nTime 42: availableReplicas=1 -> OK\nTime 43: availableReplicas=1 -> OK\nTime 44: availableReplicas=1 -> OK\nTime 45: availableReplicas=1 -> OK\nTime 46: availableReplicas=1 -> OK\nTime 47: availableReplicas=1 -> OK\nTime 48: availableReplicas=1 -> OK\nTime 49: availableReplicas=1 -> OK\nTime 50: availableReplicas=1 -> OK\nTime 51: availableReplicas=1 -> OK\nTime 52: availableReplicas=1 -> OK\nTime 53: availableReplicas=1 -> OK\nTime 54: availableReplicas=1 -> OK\nTime 55: availableReplicas=1 -> OK\nTime 56: availableReplicas=1 -> OK\nTime 57: availableReplicas=1 -> OK\nTime 58: availableReplicas=1 -> OK\nTime 59: availableReplicas=1 -> OK\nTime 60: availableReplicas=1 -> OK\n\nSummary over 60 seconds:\nTotal observations: 60\nObservations with availableReplicas >= 1: 60 (100.00%)\nMax consecutive zeros: 0\nAvailability ratio threshold (>=99%): PASS\nConsecutive zero threshold (<=1): PASS\nSteady-state threshold satisfied.\n"
+                    },
+                    "post-unittest-cartsdbdeploymentavailablereplicas": {
+                        "exitcode": 0,
+                        "logs": "carts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\ncarts-db availableReplicas: 1\nSummary:\nObserved availableReplicas: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]\nObservations with >=1 replica: 60/60 (100.00%)\nThreshold: >=1 replica in at least 95% of observations\nPASS: carts-db availability meets the steady-state threshold.\n"
+                    }
+                }
+            }
+        ],
+        "analysis_history": [
+            {
+                "report": "The fault-injection phase failed to maintain the frontendDeploymentAvailableReplicas steady state. The measured availability was 91.11%, below the required 99% threshold, meaning that for approximately 8.9% of the 360-second fault-injection period (about 32 one-second observations) the front-end Deployment had zero available replicas. This directly violates the steady-state assertion and disproves the hypothesis that the system remains stable under the injected faults.\n\nRoot causes are directly tied to the front-end Deployment configuration and the fault sequence. The front-end Deployment (sock-shop-2/manifests/09-front-end-dep.yaml) runs exactly 1 replica (spec.replicas: 1). This makes the front-end pod a single point of failure: whenever that pod is killed, unhealthy, or not ready, there are no other pods to serve traffic, and availableReplicas drops to 0. The fault scenario deliberately targeted this single pod with three consecutive fault blocks: (1) StressChaos injecting 100% CPU load and 256MB memory stress; (2) NetworkChaos injecting 50% packet loss \u201cto\u201d the front-end pod; (3) PodChaos pod-kill on the front-end pod. The front-end container has resource limits of cpu: 1000m and memory: 512Mi, and it runs a web server on port 8079. Under CPU/memory stress, the existing readiness and liveness probes (httpGet on /, port 8079) can time out or fail, causing Kubernetes to mark the pod as unready or restart it. Under 50% packet loss, probes from the kubelet can also fail intermittently, leading to repeated unavailability and restarts. Most decisively, the pod-kill fault removes the only front-end replica. After a kill, Kubernetes must schedule and start a new pod, and the readiness probe has initialDelaySeconds: 30, so the replacement pod is not considered available for at least 30 seconds (plus container startup/image-pull time). Thus a single pod-kill alone can produce a 30-60 second outage, which in a 360-second observation window corresponds to ~8-16% unavailability\u2014enough to fail the 99% requirement. The observed ~32 zero-value seconds are consistent with a combination of stress-induced probe failures, network-loss-induced restarts, and the pod-kill recovery delay.\n\nAdditionally, the steady-state threshold also requires no consecutive zero observations longer than 1 second; a pod-kill recovery inherently takes many seconds, so this condition was certainly violated as well, even though the script reported the ratio assertion first.\n\nTo improve resiliency and prevent this failure, the following changes are recommended:\n- Increase the replica count for the front-end Deployment to at least 2 (ideally 3) so that the service remains available during a pod kill or node failure. The Service selector only matches the front-end pod label, and with multiple replicas the Service will send traffic to the healthy ones.\n- Add a PodDisruptionBudget (PDB) for the front-end Deployment to guarantee a minimum number of available replicas during voluntary disruptions.\n- Consider configuring anti-affinity or pod distribution constraints so that replicas are spread across different nodes, protecting against node-level failures.\n- For stress/load resilience, configure a HorizontalPodAutoscaler (HPA) based on CPU/memory usage so the deployment can scale out before becoming saturated.\n- Review and tune the readiness and liveness probe settings (e.g., timeoutSeconds, periodSeconds, failureThreshold) so transient CPU spikes or packet loss do not cause the sole replica to be marked unready unnecessarily; however, with multiple replicas, even if one pod is temporarily unready the steady-state availability is maintained.\n- The front-end container should not be a single point of failure; the above scaling and distribution changes directly address the observed failure and are sufficient to pass the steady-state threshold under the given fault scenario."
+            }
+        ],
+        "reconfig_history": [
+            {
+                "mod_k8s_yamls": {
+                    "thought": "The failure occurred because the front-end Deployment runs a single replica, making it a single point of failure. During the fault-injection phase, the pod was stressed, subjected to packet loss, and explicitly killed, causing availableReplicas to drop to 0 for many seconds. The simplest and most direct fix is to increase the replica count to 3, so that even if one pod is killed or becomes unhealthy, at least one other replica remains available to serve traffic. This is a minimal, non-invasive change that preserves the original application design and directly addresses the observed steady-state violation.",
+                    "modified_k8s_yamls": [
+                        {
+                            "mod_type": "replace",
+                            "fname": "sock-shop-2/manifests/09-front-end-dep.yaml",
+                            "explanation": "Increase the front-end Deployment replica count from 1 to 3. This eliminates the single point of failure: during pod-kill, stress, or network-loss faults, the remaining replicas continue to serve traffic, keeping availableReplicas >= 1 and satisfying the steady-state threshold.",
+                            "code": "---\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  labels:\n    project: chaos-eater\n  name: front-end\n  namespace: sock-shop\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      name: front-end\n  template:\n    metadata:\n      labels:\n        name: front-end\n    spec:\n      containers:\n      - name: front-end\n        image: weaveworksdemos/front-end:0.3.12\n        resources:\n          limits:\n            memory: 512Mi\n            cpu: 1000m\n          requests:\n            cpu: 100m\n            memory: 300Mi\n        ports:\n        - containerPort: 8079\n        env:\n        - name: SESSION_REDIS\n          value: 'true'\n        securityContext:\n          runAsNonRoot: true\n          runAsUser: 10001\n          capabilities:\n            drop:\n            - all\n          readOnlyRootFilesystem: true\n        livenessProbe:\n          httpGet:\n            path: /\n            port: 8079\n          initialDelaySeconds: 300\n          periodSeconds: 3\n        readinessProbe:\n          httpGet:\n            path: /\n            port: 8079\n          initialDelaySeconds: 30\n          periodSeconds: 3\n        imagePullPolicy: IfNotPresent\n      nodeSelector:\n        beta.kubernetes.io/os: linux\n"
+                        }
+                    ]
+                }
+            }
+        ],
+        "conducts_reconfig": true,
+        "completes_reconfig": false,
+        "summary": ""
+    }
+}
