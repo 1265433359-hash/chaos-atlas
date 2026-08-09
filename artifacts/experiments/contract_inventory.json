@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "tool": "contract_inventory",
-  "generated_at": "2026-08-08T06:29:17.330734+00:00",
+  "generated_at": "2026-08-09T04:47:50.087169+00:00",
   "principle": "Runner/request timeouts are the TEST CLIENT's budget, never a system contract. Only source/config-declared deadlines count for contract-violation judgment (A2 audit). 'unknown' means source not checked.",
   "contracts": {
     "OB-checkout->payment": {
@@ -23,31 +23,40 @@
       "note": "client process error at ~12s (connect+read); system has no cart timeout"
     },
     "OB-checkout->productcatalog": {
-      "contract": "explicit_timeout",
-      "evidence": "checkoutservice/main.go:161 context.WithTimeout(ctx, 3s) on catalog call",
+      "contract": "no_timeout",
+      "evidence": "checkoutservice/main.go:161 context.WithTimeout(ctx, 3s) is CONNECTION-LEVEL (otlptracegrpc collector setup), NOT per-request protection; chargeProduct call uses PlaceOrder ctx without deadline (2026-08-09 source re-verification)",
       "client_budget": {
         "source": "ob_client.py run_one timeout_s=10",
         "value_s": 10.0
       },
-      "note": "3s system timeout present; productcatalog delay 500ms stayed within it (no violation, partial degradation)"
+      "note": "REVISED 2026-08-09: previously mislabeled explicit_timeout; the 3s WithTimeout only guards connection setup, productcatalog calls are unprotected"
+    },
+    "OB-frontend->adservice": {
+      "contract": "explicit_timeout",
+      "evidence": "online-boutique/src/frontend/rpc.go:120 getAd -> context.WithTimeout(ctx, time.Millisecond*100) on GetAds per-request",
+      "client_budget": {
+        "source": "ob_client.py run_one timeout_s=10",
+        "value_s": 10.0
+      },
+      "note": "100ms per-request timeout is a REAL system defense: adservice delay beyond 100ms is absorbed by the frontend timeout (protected edge for mixed-pool experiment)"
     },
     "OTel-checkout->payment": {
-      "contract": "no_timeout",
-      "evidence": "otel-demo/src/checkout/main.go: PlaceOrder chain (chargeCard:353, quoteShipping:438, sendOrderConfirmation:403, GetProduct:538, Convert:555, GetItems:524) - no WithTimeout/WithDeadline anywhere in checkout",
+      "contract": "unknown",
+      "evidence": "OTel demo source not in workspace; not source-verified (honest gap)",
       "client_budget": {
         "source": "otel_client.py",
         "value_s": 12.0
       },
-      "note": "all OTel checkout downstream calls are unprotected (source-verified 2026-08-09)"
+      "note": "10s DEADLINE_EXCEEDED observed; contract status unknown pending source check"
     },
     "OTel-checkout->email": {
-      "contract": "no_timeout",
-      "evidence": "otel-demo/src/checkout/main.go: PlaceOrder chain (chargeCard:353, quoteShipping:438, sendOrderConfirmation:403, GetProduct:538, Convert:555, GetItems:524) - no WithTimeout/WithDeadline anywhere in checkout",
+      "contract": "unknown",
+      "evidence": "OTel demo source not in workspace; not source-verified (honest gap)",
       "client_budget": {
         "source": "otel_client.py",
         "value_s": 12.0
       },
-      "note": "all OTel checkout downstream calls are unprotected (source-verified 2026-08-09)"
+      "note": "email delay -> 4.9-5.3s, loss -> 10s hang; contract status unknown"
     },
     "TT-basic->station": {
       "contract": "no_timeout",
@@ -75,42 +84,6 @@
         "value_s": 8.0
       },
       "note": "order query delay -> ~4s response, no system timeout"
-    },
-    "OTel-checkout->shipping": {
-      "contract": "no_timeout",
-      "evidence": "otel-demo/src/checkout/main.go: PlaceOrder chain (chargeCard:353, quoteShipping:438, sendOrderConfirmation:403, GetProduct:538, Convert:555, GetItems:524) - no WithTimeout/WithDeadline anywhere in checkout",
-      "client_budget": {
-        "source": "otel_client.py",
-        "value_s": 12.0
-      },
-      "note": "all OTel checkout downstream calls are unprotected (source-verified 2026-08-09)"
-    },
-    "OTel-checkout->product-catalog": {
-      "contract": "no_timeout",
-      "evidence": "otel-demo/src/checkout/main.go: PlaceOrder chain (chargeCard:353, quoteShipping:438, sendOrderConfirmation:403, GetProduct:538, Convert:555, GetItems:524) - no WithTimeout/WithDeadline anywhere in checkout",
-      "client_budget": {
-        "source": "otel_client.py",
-        "value_s": 12.0
-      },
-      "note": "all OTel checkout downstream calls are unprotected (source-verified 2026-08-09)"
-    },
-    "OTel-checkout->currency": {
-      "contract": "no_timeout",
-      "evidence": "otel-demo/src/checkout/main.go: PlaceOrder chain (chargeCard:353, quoteShipping:438, sendOrderConfirmation:403, GetProduct:538, Convert:555, GetItems:524) - no WithTimeout/WithDeadline anywhere in checkout",
-      "client_budget": {
-        "source": "otel_client.py",
-        "value_s": 12.0
-      },
-      "note": "all OTel checkout downstream calls are unprotected (source-verified 2026-08-09)"
-    },
-    "OTel-checkout->cart": {
-      "contract": "no_timeout",
-      "evidence": "otel-demo/src/checkout/main.go: PlaceOrder chain (chargeCard:353, quoteShipping:438, sendOrderConfirmation:403, GetProduct:538, Convert:555, GetItems:524) - no WithTimeout/WithDeadline anywhere in checkout",
-      "client_budget": {
-        "source": "otel_client.py",
-        "value_s": 12.0
-      },
-      "note": "all OTel checkout downstream calls are unprotected (source-verified 2026-08-09)"
     }
   },
   "candidate_map": {
@@ -119,6 +92,9 @@
     "OB-CART-DELAY-2000": "OB-checkout->cart",
     "OB-PRODUCTCATALOG-DELAY-500": "OB-checkout->productcatalog",
     "OB-PRODUCTCATALOG-KILL": "OB-checkout->productcatalog",
+    "OB-FRONTEND-ADSERVICE-DELAY-2000": "OB-frontend->adservice",
+    "OB-FRONTEND-ADSERVICE-DELAY-500": "OB-frontend->adservice",
+    "OB-FRONTEND-ADSERVICE-LOSS-100": "OB-frontend->adservice",
     "OTEL-PAYMENT-DELAY-2000": "OTel-checkout->payment",
     "OTEL-PAYMENT-LOSS-100": "OTel-checkout->payment",
     "OTEL-EMAIL-DELAY-2000": "OTel-checkout->email",
@@ -128,13 +104,6 @@
     "TT-STATION-DELAY-500": "TT-client->station",
     "TT-BASIC-DELAY-100": "TT-basic->station",
     "TT-BASIC-DELAY-500": "TT-basic->station",
-    "TT-ORDER-DELAY-2000": "TT-client->order",
-    "OB-PRODUCTCATALOG-DELAY-2000": "OB-checkout->productcatalog",
-    "OB-PRODUCTCATALOG-LOSS-100": "OB-checkout->productcatalog"
-  },
-  "hard_constraint_rule": {
-    "exclude": "candidate with edge contract=explicit_timeout AND fault family=delay",
-    "keep": "loss faults are NOT protected by timeout",
-    "source": "P2 decision_engine applies this as hard filter before scoring"
+    "TT-ORDER-DELAY-2000": "TT-client->order"
   }
 }

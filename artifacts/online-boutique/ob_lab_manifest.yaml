@@ -61,7 +61,7 @@ spec:
             privileged: false
             readOnlyRootFilesystem: true
           image: online-boutique-lab/frontend:lab
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 8080
           readinessProbe:
@@ -205,7 +205,7 @@ spec:
           privileged: false
           readOnlyRootFilesystem: true
         image: online-boutique-lab/adservice:lab
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9555
         env:
@@ -293,7 +293,7 @@ spec:
           privileged: false
           readOnlyRootFilesystem: true
         image: online-boutique-lab/currencyservice:lab
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - name: grpc
           containerPort: 7000
@@ -380,7 +380,7 @@ spec:
           privileged: false
           readOnlyRootFilesystem: true
         image: online-boutique-lab/cartservice:lab
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 7070
         env:
@@ -544,7 +544,7 @@ spec:
           privileged: false
           readOnlyRootFilesystem: true
         image: online-boutique-lab/recommendationservice:lab
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         readinessProbe:
@@ -633,7 +633,7 @@ spec:
             privileged: false
             readOnlyRootFilesystem: true
           image: online-boutique-lab/checkoutservice:lab
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
           - containerPort: 5050
           readinessProbe:
@@ -729,7 +729,7 @@ spec:
           privileged: false
           readOnlyRootFilesystem: true
         image: online-boutique-lab/emailservice:lab
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         env:
@@ -817,7 +817,7 @@ spec:
           privileged: false
           readOnlyRootFilesystem: true
         image: online-boutique-lab/paymentservice:lab
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 50051
         env:
@@ -902,7 +902,7 @@ spec:
           privileged: false
           readOnlyRootFilesystem: true
         image: online-boutique-lab/shippingservice:lab
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 50051
         env:
@@ -989,7 +989,7 @@ spec:
           privileged: false
           readOnlyRootFilesystem: true
         image: online-boutique-lab/productcatalogservice:lab
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3550
         env:

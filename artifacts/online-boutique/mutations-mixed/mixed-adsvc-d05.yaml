@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: mixed-adsvc-d05
+  namespace: online-boutique-lab
+  labels:
+    chaos.candidate-id: OB-FRONTEND-ADSERVICE-DELAY-500
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+      - online-boutique-lab
+    labelSelectors:
+      app: adservice
+  delay:
+    latency: "500ms"
+    correlation: "100"
+    jitter: "0ms"
+  duration: 30s
+  direction: to

@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: mixed-cart-d2
+  namespace: online-boutique-lab
+  labels:
+    chaos.candidate-id: OB-CHECKOUT-CART-DELAY-2000
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+      - online-boutique-lab
+    labelSelectors:
+      app: cartservice
+  delay:
+    latency: "2000ms"
+    correlation: "100"
+    jitter: "0ms"
+  duration: 30s
+  direction: to

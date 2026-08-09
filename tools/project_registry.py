@@ -12,7 +12,7 @@ from __future__ import annotations
 # Add a new project here (one place) and the gate / decision_engine /
 # knowledge_updater all pick it up.
 PROJECTS: dict[str, dict[str, object]] = {
-    "OB": {"namespace": "online-boutique-lab", "service_alias": {"PAYMENTSERVICE": "PAYMENT", "PRODUCTCATALOGSERVICE": "PRODUCTCATALOG", "CURRENCYSERVICE": "CURRENCY", "CHECKOUTSERVICE": "CHECKOUT", "SHIPPINGSERVICE": "SHIPPING", "CARTSERVICE": "CART", "EMAILSERVICE": "EMAIL"}},
+    "OB": {"namespace": "online-boutique-lab", "service_alias": {"PAYMENTSERVICE": "PAYMENT", "PRODUCTCATALOGSERVICE": "PRODUCTCATALOG", "CURRENCYSERVICE": "CURRENCY", "CHECKOUTSERVICE": "CHECKOUT", "SHIPPINGSERVICE": "SHIPPING", "CARTSERVICE": "CART", "EMAILSERVICE": "EMAIL", "ADSERVICE": "AD", "RECOMMENDATIONSERVICE": "RECOMMENDATION"}},
     "OTEL": {"namespace": "otel-demo-lab", "service_alias": {"PRODUCT-CATALOG": "PRODUCTCATALOG"}},
     "TT": {"namespace": "train-ticket-lab", "service_alias": {"TS-PAYMENT-SERVICE": "PAYMENT", "TS-ORDER-SERVICE": "ORDER", "TS-STATION-SERVICE": "STATION", "TS-BASIC-SERVICE": "BASIC", "TS-CART-SERVICE": "CART"}},
     "SOCK": {"namespace": "sock-shop-lab", "service_alias": {"CART": "CART", "CARTS": "CART", "CATALOGUE": "CATALOGUE", "CATALOG": "CATALOGUE", "ORDERS": "ORDER", "ORDER": "ORDER", "PAYMENT": "PAYMENT", "SHIPPING": "SHIPPING", "USER": "USER", "QUEUE-MASTER": "QUEUE-MASTER"}},
