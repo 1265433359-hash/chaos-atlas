@@ -95,24 +95,52 @@ def _load_current(rel: str) -> dict:
     return json.loads((EXPERIMENTS / rel).read_text(encoding="utf-8"))
 
 
+def _sha256(rel: str) -> str:
+    import hashlib
+
+    path = ROOT / rel
+    if not path.exists():
+        return "unavailable"
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+# Repo-local source files that are actually hashable. External image artifacts
+# (orders jar, front-end node source) are NOT in this repo -> unavailable.
+_REPO_SOURCE_FILES = {
+    "sock-shop-manifest": "artifacts/sock-shop/sock-shop-lab-manifest.yaml",
+    "contract_inventory_live": "artifacts/experiments/contract_inventory.json",
+    "selection_experience_live": "artifacts/experiments/selection_experience.json",
+    "defense_pattern_library_live": "artifacts/experiments/defense_pattern_library.json",
+    "judgment_experience_live": "artifacts/experiments/judgment_experience.json",
+}
+
+
 def main() -> int:
     # SE/DP/JE are copied from CURRENT working tree; provenance marks posthoc.
     se = _load_current("selection_experience.json")
     dp = _load_current("defense_pattern_library.json")
     je = _load_current("judgment_experience.json")
 
+    sha256 = {name: _sha256(rel) for name, rel in _REPO_SOURCE_FILES.items()}
+    # External image artifacts cannot be hashed from this repo.
+    sha256["orders_jar"] = "unavailable"
+    sha256["frontend_node_source"] = "unavailable"
+    sha256["frontend_api_cart_index_js"] = "unavailable"
+    sha256["frontend_api_catalogue"] = "unavailable"
+
     snapshot = {
         "schema_version": 1,
         "provenance": {
             "kind": "sock_static_reconstructed",
-            "source_commit": "unknown-or-commit",  # see note: no pre-Sock commit exists
+            "source_commit": "unknown",  # cannot prove a pre-Sock-experiment commit; do NOT fabricate
             "created_at": datetime.now(timezone.utc).isoformat(),
             "source_files": [
-                "orders:0.4.7 jar javap (bytecode offsets 153/178/201, ${http.timeout:5})",
-                "front-end api/cart/index.js + api/catalogue (synchronous request, no timeout)",
-                "sock-shop deployment YAML (replicas=1, no PDB)",
+                "orders:0.4.7 jar javap (bytecode offsets 153/178/201, ${http.timeout:5}) -> external image, unavailable",
+                "front-end api/cart/index.js + api/catalogue (synchronous request, no timeout) -> external image, unavailable",
+                "sock-shop deployment YAML (replicas=1, no PDB) -> artifacts/sock-shop/sock-shop-lab-manifest.yaml (repo-local)",
             ],
-            "sha256": {},
+            "sha256": sha256,
+            "provenance_completeness": "partial",
             "note": (
                 "contract + availability are STATIC-RECONSTRUCTED from pre-experiment evidence; "
                 "loss_bounded marked static_inferred. SE/DP/JE have NO pre-Sock-experiment clean "

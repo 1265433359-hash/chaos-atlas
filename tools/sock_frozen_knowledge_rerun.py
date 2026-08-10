@@ -31,7 +31,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from decision_engine import rank, score_candidate, validate_knowledge_snapshot  # noqa: E402
+from decision_engine import (  # noqa: E402
+    rank,
+    score_candidate,
+    snapshot_is_full_experiment_pre,
+    validate_knowledge_snapshot,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 SNAPSHOT = ROOT / "artifacts" / "sock-shop" / "sock_knowledge_snapshot_static.json"
@@ -115,7 +120,10 @@ def main() -> int:
 
     # ---------------- product 2: engine replay ----------------
     # Run the REAL engine with the injected snapshot. The engine reads nothing
-    # live when a snapshot is present.
+    # live when a snapshot is present. Because SE/DP/JE provenance is
+    # posthoc_or_current, the full experiment-pre replay is BLOCKED; the
+    # engine-vs-static alignment is reported ONLY as a diagnostic, never as a
+    # validated replay accuracy.
     replay_rows = []
     for cid in STATIC_PREDICTIONS:
         cand = {"candidate_id": cid, "edge": "unknown"}
@@ -134,18 +142,25 @@ def main() -> int:
             "static_prediction": pred,
             "experiment_ground_truth": truth,
             "alignment_definition": rule,
-            "aligned": aligned,
+            # Diagnostic only: aligned is null (never a validated replay accuracy
+            # count), diagnostic_aligned records the engine-vs-static comparison.
+            "aligned": None,
+            "diagnostic_aligned": aligned,
             "provenance_status": snapshot["source_provenance"],
         })
+    # Replay validity is DERIVED from provenance, not hardcoded.
+    full_pre = snapshot_is_full_experiment_pre(snapshot)
+    replay_status = "valid" if full_pre else "blocked"
     replay = {
         "schema_version": 1,
         "tool": "sock_frozen_decision_engine_replay",
         "date": "2026-08-10",
-        "status": "blocked",
+        "status": replay_status,
         "status_reason": (
             "Engine-replay mechanism is implemented and runs with zero live reads "
-            "(snapshot injected into all six consumers + rank), but SE/DP/JE in the "
-            "snapshot are posthoc_or_current — no pre-Sock-experiment clean commit "
+            "(snapshot injected into all six consumers + rank). "
+            f"full_experiment_pre={full_pre} derived from source_provenance. "
+            "SE/DP/JE are posthoc_or_current — no pre-Sock-experiment clean commit "
             "exists (f870e32 is r2-pre, not Sock-pre). A full four-source "
             "experiment-pre frozen engine replay therefore CANNOT claim experiment-pre "
             "knowledge. Only the static prediction audit (product 1) is a valid "
@@ -154,14 +169,18 @@ def main() -> int:
         "zero_live_read": True,
         "engine_outputs_are_engine": True,
         "static_prediction_not_overriding_engine": True,
-        "aligned_count": sum(1 for r in replay_rows if r["aligned"]),
+        # Diagnostic fields (NOT validated replay accuracy):
+        "alignment_status": "diagnostic_only_not_claimed",
+        "diagnostic_alignment_count": sum(1 for r in replay_rows if r["diagnostic_aligned"]),
+        "diagnostic_total": len(replay_rows),
+        "aligned_count": None,
         "total": len(replay_rows),
         "rows": replay_rows,
     }
     REPLAY_OUT.write_text(json.dumps(replay, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
 
     print(f"audit: {AUDIT_OUT.name} aligned {audit['aligned_count']}/{audit['total']}")
-    print(f"replay: {REPLAY_OUT.name} status={replay['status']} aligned {replay['aligned_count']}/{replay['total']}")
+    print(f"replay: {REPLAY_OUT.name} status={replay['status']} diagnostic {replay['diagnostic_alignment_count']}/{replay['diagnostic_total']}")
     for r in replay_rows:
         print(f"  {r['candidate_id']:38s} hard_skip={r['engine_output']['hard_skip']} "
               f"prio={r['engine_output']['priority']:<16} static={r['static_prediction']:9s} "

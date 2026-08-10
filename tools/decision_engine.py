@@ -116,8 +116,34 @@ def _snapshot_je(snapshot: dict[str, Any] | None, label: str) -> dict[str, Any]:
     return je
 
 
+# Allowed provenance enums for each of the five knowledge sections.
+PROVENANCE_ENUMS = {
+    "static_reconstructed_pre_experiment",
+    "pre_experiment_commit",
+    "posthoc_or_current",
+    "unknown",
+    "unavailable",
+}
+
+# The five source-provenance fields that must be present and enum-valid.
+PROVENANCE_SECTIONS = (
+    "contract",
+    "availability",
+    "selection_experience",
+    "defense_pattern_library",
+    "judgment_experience",
+)
+
+
 def validate_knowledge_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
-    """Validate the full snapshot schema; fail closed on any missing section."""
+    """Validate the full snapshot schema; fail closed on any missing section or
+    an illegal source-provenance enum.
+
+    A snapshot whose SE/DP/JE provenance is anything other than
+    static_reconstructed_pre_experiment / pre_experiment_commit cannot support
+    a full experiment-pre frozen engine replay -> callers should treat the
+    replay as blocked (see sock_frozen_knowledge_rerun).
+    """
     label = "knowledge_snapshot"
     if not isinstance(snapshot, dict):
         raise ValueError("knowledge_snapshot must be a dict")
@@ -128,11 +154,31 @@ def validate_knowledge_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
         )
     if not isinstance(snapshot.get("provenance"), dict) or not snapshot["provenance"].get("kind"):
         _fail_closed(label, "provenance.kind")
+    # Require the five source-provenance fields with a legal enum.
+    source_prov = snapshot.get("source_provenance")
+    if not isinstance(source_prov, dict):
+        _fail_closed(label, "source_provenance")
+    for section in PROVENANCE_SECTIONS:
+        value = source_prov.get(section)
+        if value not in PROVENANCE_ENUMS:
+            _fail_closed(label, f"source_provenance.{section} (must be one of {sorted(PROVENANCE_ENUMS)})")
     _snapshot_contract(snapshot, label)
     _snapshot_se(snapshot, label)
     _snapshot_dp(snapshot, label)
     _snapshot_je(snapshot, label)
     return snapshot
+
+
+def snapshot_is_full_experiment_pre(snapshot: dict[str, Any]) -> bool:
+    """True only when ALL five source-provenance fields are provably
+    experiment-pre (static_reconstructed_pre_experiment or pre_experiment_commit).
+    SE/DP/JE posthoc_or_current -> False (full four-source replay must be blocked)."""
+    source_prov = snapshot.get("source_provenance") or {}
+    pre_ok = {"static_reconstructed_pre_experiment", "pre_experiment_commit"}
+    return all(
+        source_prov.get(section) in pre_ok
+        for section in PROVENANCE_SECTIONS
+    )
 
 
 def _se_weight(entry: dict[str, Any]) -> float:
@@ -301,12 +347,14 @@ def contract_hard_filter(candidate: dict[str, Any], contract_snapshot: dict[str,
     # loss in the default model (loss == 100% packet drop is still high value).
     is_loss = "LOSS" in upper
     loss_covered = is_loss and bool(contract.get("loss_bounded"))
+    # Provenance label in the reason: snapshot-injected vs live registry.
+    source_label = "knowledge_snapshot.contract" if contract_snapshot is not None else "contract_inventory"
     if contract.get("contract") == "explicit_timeout" and (is_delay or loss_covered):
         return {
             "hard_skip": True,
             "reason": f"edge {edge} is source-verified explicit_timeout; "
                       f"{'delay' if is_delay else 'loss'} is covered by the timeout"
-                      f"{' (loss_bounded)' if loss_covered else ''} (contract_inventory)",
+                      f"{' (loss_bounded)' if loss_covered else ''} ({source_label})",
             "evidence": contract.get("evidence", "")[:80],
         }
     return {}

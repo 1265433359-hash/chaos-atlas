@@ -55,6 +55,34 @@ class SnapshotValidationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             de.validate_knowledge_snapshot(snap)
 
+    def test_missing_source_provenance_fails_closed(self):
+        snap = _snapshot()
+        del snap["source_provenance"]
+        with self.assertRaises(ValueError):
+            de.validate_knowledge_snapshot(snap)
+
+    def test_illegal_provenance_enum_fails_closed(self):
+        snap = _snapshot()
+        snap["source_provenance"]["contract"] = "made_up_enum"
+        with self.assertRaises(ValueError):
+            de.validate_knowledge_snapshot(snap)
+
+    def test_missing_single_provenance_section_fails_closed(self):
+        snap = _snapshot()
+        del snap["source_provenance"]["judgment_experience"]
+        with self.assertRaises(ValueError):
+            de.validate_knowledge_snapshot(snap)
+
+    def test_posthoc_provenance_blocks_full_replay(self):
+        snap = _snapshot()
+        # SE/DP/JE posthoc -> not a full experiment-pre snapshot
+        self.assertFalse(de.snapshot_is_full_experiment_pre(snap))
+        # Making all five pre -> True
+        snap["source_provenance"] = {
+            k: "static_reconstructed_pre_experiment" for k in de.PROVENANCE_SECTIONS
+        }
+        self.assertTrue(de.snapshot_is_full_experiment_pre(snap))
+
     def test_loss_bounded_source_enum(self):
         snap = _snapshot()
         edge = snap["contract"]["contracts"]["SOCK-orders->payment"]
@@ -137,10 +165,15 @@ class ReplayProductTests(unittest.TestCase):
         self.assertTrue(replay["engine_outputs_are_engine"])
         self.assertTrue(replay["static_prediction_not_overriding_engine"])
         self.assertEqual(replay["status"], "blocked")  # SE/DP/JE posthoc -> honest blocked
-        # engine hard_skip values recorded, not the static predictions
+        # blocked replay must NOT expose a validated accuracy count
+        self.assertIsNone(replay.get("aligned_count"))
+        self.assertEqual(replay["alignment_status"], "diagnostic_only_not_claimed")
         for row in replay["rows"]:
             self.assertIn("engine_output", row)
             self.assertIn("hard_skip", row["engine_output"])
+            # aligned is null; diagnostic_aligned carries the comparison
+            self.assertIsNone(row.get("aligned"))
+            self.assertIn("diagnostic_aligned", row)
 
     def test_audit_product_remains_valid(self):
         audit = json.loads((ROOT / "artifacts/sock-shop/sock_frozen_static_prediction_audit.json").read_text(encoding="utf-8"))
@@ -155,6 +188,17 @@ class ReplayProductTests(unittest.TestCase):
         self.assertIn("f870e32", note)
         self.assertIn("r2-pre", note)
         self.assertIn("not sock-pre", note)
+
+    def test_snapshot_provenance_completeness_and_sha(self):
+        snap = _snapshot()
+        self.assertEqual(snap["provenance"]["provenance_completeness"], "partial")
+        sha = snap["provenance"]["sha256"]
+        # repo-local sources have a hash; external image artifacts are unavailable
+        self.assertNotEqual(sha["sock-shop-manifest"], "unavailable")
+        self.assertEqual(sha["orders_jar"], "unavailable")
+        self.assertEqual(sha["frontend_node_source"], "unavailable")
+        # source_commit must not be fabricated
+        self.assertEqual(snap["provenance"]["source_commit"], "unknown")
 
 
 if __name__ == "__main__":
