@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "tool": "hotel_intake_report",
+  "date": "2026-08-10",
+  "go_no_go": "blocked",
+  "go_no_go_reason": [
+    "仓库内无 Hotel Reservation 源码/manifest (全仓库 *hotel* 搜索无源码目录)",
+    "仅有的 hotel-booking-* raw_yaml 是 chaos-mesh 注入模板, 非部署 manifest",
+    "协议禁止下载/部署, 无法在当前阶段取得项目本体",
+    "P2 静态知识快照因 blocked 不创建 (避免空壳文件)"
+  ],
+  "project": {
+    "name": "Hotel Reservation",
+    "suggested_repository": "DeathStarBench (delimitrou) subproject, 见 findings.md:84",
+    "version": "unknown",
+    "commit": "unknown",
+    "source_in_repo": false
+  },
+  "repo_references": [
+    {
+      "path": "findings.md:84",
+      "content": "推荐 DeathStarBench 含 Hotel Reservation, 未归档",
+      "nature": "文档建议, 非项目本体"
+    },
+    {
+      "path": "artifacts/experiments/comparative_evaluation_protocol.md:109,154",
+      "content": "计划用 hotel-reservation 作 FastFI 对照; 含样例 M4 plan JSON (reserve-hotel)",
+      "nature": "计划草案 + 样例 plan, 非部署产物"
+    },
+    {
+      "path": "raw_yaml/NetworkChaos/089f360e346cb3e041d5e690.yaml",
+      "content": "hotel-booking-f06-db-slow NetworkChaos 模板 (namespace vibe-coding)",
+      "nature": "chaos-mesh 注入模板, 非 Hotel 部署 manifest"
+    },
+    {
+      "path": "raw_yaml/TimeChaos/f2042a14bb08d7f908ff01ca.yaml",
+      "content": "hotel-booking-f13-time-skew TimeChaos 模板",
+      "nature": "chaos-mesh 注入模板, 非 Hotel 部署 manifest"
+    }
+  ],
+  "services_count": "unknown",
+  "workflows_count": "unknown",
+  "observability_entrypoints": "unknown",
+  "available_sources": {
+    "deployment_manifests": "unavailable",
+    "source_code": "unavailable",
+    "image_refs": "unavailable",
+    "raw_yaml_chaos_templates": [
+      "raw_yaml/NetworkChaos/089f360e346cb3e041d5e690.yaml",
+      "raw_yaml/TimeChaos/f2042a14bb08d7f908ff01ca.yaml"
+    ]
+  },
+  "constructible_contract_facts": [],
+  "constructible_availability_facts": [],
+  "unconfirmed_fields": {
+    "repository_version_commit": "无源码, 未下载 (禁止)",
+    "services_workflows_observability": "无 manifest",
+    "contract_availability": "无静态证据源"
+  },
+  "neutral_candidate_generation_30_plus": "not_satisfied",
+  "neutral_candidate_reason": "候选生成依赖中性规则 + 静态分层, 需要服务图/manifest; 当前无 Hotel 拓扑",
+  "fault_families": "unconfirmable (目标为 delay/loss/kill, 但 Hotel 侧无目标可列)",
+  "gates": {
+    "bringup_max_2h": "not_run",
+    "stable_observation_30min": "not_run",
+    "two_consecutive_baseline_failures_blocked": "not_run",
+    "note": "本阶段禁止启动集群, 闸门一律 not_run, 不得伪造 passed"
+  },
+  "next_steps_require_human": "提供 Hotel 仓库路径或批准受限下载后重做 intake; 否则保持 blocked"
+}
