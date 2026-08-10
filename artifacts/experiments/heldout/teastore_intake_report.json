@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "tool": "teastore_intake_report",
+  "date": "2026-08-10",
+  "stage": "C3",
+  "go_no_go": "ready_for_snapshot",
+  "canonical_source": {
+    "url": "https://github.com/DescartesResearch/TeaStore",
+    "commit": "34b37f7e7be433ce72d5f9455e66922a13116749",
+    "ref": "master (shallow, 2026-08-10)",
+    "license": "Apache-2.0",
+    "local_path": "/root/heldout_src/teastore (outside repo, not committed)",
+    "tech_stack": "Java (Spring Boot)"
+  },
+  "sha256": {
+    "examples/helm/values.yaml": "4b5dcbfd2752b8206343fb0b2029e1a632bb626c39b7273af5ec295e73c2d36e",
+    "examples/kubernetes/teastore-ribbon.yaml": "3e7b473c3086b208d7699081fe4091ca90b3fb20ae8489922ad01d57ad6934c9",
+    "examples/docker/docker-compose_default.yaml": "cf26a369810edb8714f277deb4ec75afafe7772eb8a27bcd5703055904bd577d",
+    "utilities/.../loadbalancers/ServiceLoadBalancer.java": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+    "utilities/.../registryclient/RegistryClient.java": "a2e77b0e11bb8e2a6aefd3986ab5bb9a9fb3741b81fcb71b4ebe9c44ee18f302",
+    "pom.xml": "198cb1cbd27dc8bcda09134ae4fc24f8ebaf9fe44a83295f497493255037fe6c"
+  },
+  "deployment_paths": {
+    "helm": {"path": "examples/helm/", "status": "verified", "services": ["auth", "db", "image", "persistence", "recommender", "registry", "webui"]},
+    "kubernetes_ribbon": {"path": "examples/kubernetes/teastore-ribbon.yaml", "status": "verified", "deployments": 7, "note": "Ribbon load-balanced path"},
+    "docker_compose": {"path": "examples/docker/docker-compose_default.yaml", "status": "verified"},
+    "excluded_all_in_one": {"path": "examples/kubernetes/teastore-all.yaml", "reason": "all-in-one backup, not formal multi-service deployment"}
+  },
+  "services": {
+    "business": ["registry", "persistence", "auth", "image", "recommender", "webui"],
+    "infra": ["db"]
+  },
+  "call_edges": {
+    "mechanism": "RegistryClient service discovery -> ServiceLoadBalancer (Ribbon)",
+    "webui_downstream": ["auth", "image", "persistence", "recommender"],
+    "all_via": "RegistryClient.getServersForService(Service)"
+  },
+  "resilience": {
+    "retry": "DefaultLoadBalancerRetryHandler(0, 2, true) -> 0 same-server, 2 cross-server retries (ServiceLoadBalancer.java)",
+    "timeout": "LoadBalancerTimeoutException on 408 + repeated socket timeouts",
+    "fallback": "unknown",
+    "circuit_breaker": "unknown"
+  },
+  "observability": {
+    "kieker": "examples/kubernetes/teastore-ribbon-kieker.yaml",
+    "opentracing": "webui GlobalTracer.register(Tracing.init(...))",
+    "rabbitmq_variant": "teastore-rabbitmq.yaml"
+  },
+  "availability": {
+    "ribbon_replicas": "no explicit replicas (default 1)",
+    "pdb": "none (grep 0 hits)",
+    "hpa": "helm values.yaml has autoscaling config, enabled value UNKNOWN",
+    "probes": "no explicit probe in ribbon.yaml (unknown if defaults)",
+    "ports": "8080 (image/recommender/persistence etc)"
+  },
+  "fault_families": {
+    "delay": "constructible (REST/Ribbon edge, NetworkChaos)",
+    "loss": "constructible (same)",
+    "kill": "constructible (PodChaos, ribbon 7 deployments)"
+  },
+  "candidate_potential": {
+    "pilot_24": "feasible (6 business services + discovery edges + Ribbon retry states)",
+    "formal_48": "feasible",
+    "protected_states": "constructible (Ribbon retry absorbs transient loss/delay)"
+  },
+  "leakage": {
+    "kb_scan_zero_hits": true,
+    "note": "SE/DP/JE 对 TeaStore/teastore/Descartes/Ribbon 全部 0 命中; contract 独立从 TeaStore 源码构造"
+  },
+  "gates": {"bringup_2h": "not_run", "stable_30min": "not_run", "two_baseline_fail_blocked": "not_run"}
+}
