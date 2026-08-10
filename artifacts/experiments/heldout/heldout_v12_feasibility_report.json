@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "protocol": "heldout_protocol_v1_2",
+  "read_only": true,
+  "projects": [
+    {
+      "project_id": "HOTEL",
+      "source_file": "artifacts/experiments/heldout/hotel_candidate_pool_formal.json",
+      "pool_status": {
+        "project": "HOTEL",
+        "status": "quota_shortfall",
+        "counts": {
+          "total": 16,
+          "protected": 0,
+          "unprotected": 16,
+          "unknown": 0,
+          "fault_family": {
+            "delay": 6,
+            "loss": 5,
+            "kill": 5
+          }
+        },
+        "shortfall": {
+          "protected": {
+            "quota": 16,
+            "available": 0,
+            "missing": 16
+          },
+          "unknown": {
+            "quota": 16,
+            "available": 0,
+            "missing": 16
+          }
+        },
+        "reason": "protection-class quota shortfall: protected=0/16, unknown=0/16; pool size 16 < budget 48"
+      },
+      "total": 16,
+      "protected": 0,
+      "unprotected": 16,
+      "unknown": 0,
+      "project_legal_min_pass": true
+    },
+    {
+      "project_id": "SOCIALNET",
+      "source_file": "artifacts/experiments/heldout/socialnet_candidate_pool_formal.json",
+      "pool_status": {
+        "project": "SOCIALNET",
+        "status": "quota_shortfall",
+        "counts": {
+          "total": 44,
+          "protected": 16,
+          "unprotected": 12,
+          "unknown": 16,
+          "fault_family": {
+            "delay": 16,
+            "kill": 12,
+            "loss": 16
+          }
+        },
+        "shortfall": {
+          "unprotected": {
+            "quota": 16,
+            "available": 12,
+            "missing": 4
+          }
+        },
+        "reason": "protection-class quota shortfall: unprotected=12/16; pool size 44 < budget 48"
+      },
+      "total": 44,
+      "protected": 16,
+      "unprotected": 12,
+      "unknown": 16,
+      "project_legal_min_pass": true
+    },
+    {
+      "project_id": "TEASTORE",
+      "source_file": "artifacts/experiments/heldout/teastore_candidate_pool_formal.json",
+      "pool_status": {
+        "project": "TEASTORE",
+        "status": "quota_shortfall",
+        "counts": {
+          "total": 23,
+          "protected": 0,
+          "unprotected": 7,
+          "unknown": 16,
+          "fault_family": {
+            "kill": 7,
+            "delay": 8,
+            "loss": 8
+          }
+        },
+        "shortfall": {
+          "protected": {
+            "quota": 16,
+            "available": 0,
+            "missing": 16
+          },
+          "unprotected": {
+            "quota": 16,
+            "available": 7,
+            "missing": 9
+          }
+        },
+        "reason": "protection-class quota shortfall: protected=0/16, unprotected=7/16; pool size 23 < budget 48"
+      },
+      "total": 23,
+      "protected": 0,
+      "unprotected": 7,
+      "unknown": 16,
+      "project_legal_min_pass": true
+    }
+  ],
+  "pooled": {
+    "protected": 16,
+    "unprotected": 35,
+    "unknown": 32,
+    "legal_total": 83
+  },
+  "thresholds": {
+    "protected": 16,
+    "unprotected": 16,
+    "unknown": 16,
+    "legal_total": 48
+  },
+  "pooled_gate": {
+    "protected": true,
+    "unprotected": true,
+    "unknown": true,
+    "legal_total": true
+  },
+  "all_pooled_gates_pass": true,
+  "min_project_legal": 8,
+  "all_project_minimums_pass": true,
+  "class_project_support": {
+    "protected": 1,
+    "unprotected": 3,
+    "unknown": 2
+  },
+  "inferential_class_support": {
+    "protected": false,
+    "unprotected": true,
+    "unknown": true
+  },
+  "descriptive_only_classes": [
+    "protected"
+  ],
+  "qualification": "pass",
+  "no_experiment_run": true,
+  "no_candidate_pool_mutation": true,
+  "note": "Pooled eligibility is separate from v1.1 per-project eligibility. Inference remains equally weighted by project; classes supported by fewer than two projects are descriptive-only."
+}

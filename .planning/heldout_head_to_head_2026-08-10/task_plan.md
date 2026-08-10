@@ -6,14 +6,19 @@ Objective: test whether the complete Ours pipeline beats ChaosEater on held-out 
 
 | Phase | Scope | Status | Exit condition |
 |---|---|---|---|
-| P0 | preregister claims, metrics, budgets, failure policy | pending | protocol frozen before Hotel intake results are used |
-| P1 | Hotel bring-up and static intake | pending | 2h bring-up, 30min stable observation, two baseline failures => blocked |
-| P2 | build and freeze Hotel snapshot | pending | contract/availability/SE/DP/JE provenance and hashes recorded |
-| P3 | neutral candidate pool | pending | 30+ candidates, mixed protected/unprotected/unknown, no result-derived filtering |
-| P4 | method setup | pending | Ours-full-pre, Ours-generic, CE official, CE adapter, Random definitions frozen |
-| P5 | pilot | pending | 24-32 candidates; CE official and baseline gates pass; otherwise blocked |
-| P6 | confirmatory comparison | pending | 48-64 candidates across at least 3 held-out projects |
-| P7 | analysis and archive | pending | project-clustered CIs, separate coverage/evidence/cost outcomes |
+| P0 | v1.1 claims, metrics, budgets, failure policy | complete | v1.1 corrected; K, seeds, aggregation and blocked denominator fixed |
+| P1 | Hotel read-only intake | complete | canonical source/commit fixed; static intake recorded; runtime gates remain not_run |
+| P1b | held-out project set | complete (conditional) | ESHOP+SOCIALNET selected; comparable count remains conditional on intake/deployment gates |
+| P2 | static intake and frozen snapshots | in_progress | Hotel valid; ESHOP/SOCIALNET intake recorded but snapshots blocked until deployment availability and contract coverage are complete |
+| P3 | neutral candidate pools | pending | pilot=24 and formal=48 per project; fixed quotas; no result-derived filtering |
+| P4 | method setup | pending | five method IDs, seed mapping, runner, cleanup and blindness frozen |
+| P5 | pilot | pending | each project passes bring-up/baseline gates with K=8; otherwise that project is blocked |
+| P6 | confirmatory comparison | pending | at least 3 comparable projects, 48 candidates/project, K=10 |
+| P7 | analysis and archive | pending | project-clustered CIs, separate coverage/evidence/cost outcomes, claim matrix updated |
+
+## Immediate decision gate
+
+Do not start P3, P5 or P6 until ESHOP/SOCIALNET snapshots are valid and their verified contract edge inventories can support the registered candidate quotas. Hotel REVIEW/ATTRACTIONS Kubernetes-specific candidates remain unavailable. A blocked CE line cannot be replaced by deleting its candidates and cannot count as a win.
 
 ## Required method lines
 
@@ -30,3 +35,15 @@ Objective: test whether the complete Ours pipeline beats ChaosEater on held-out 
 - Equal-weight composite scores are prohibited unless justified and frozen before data collection.
 - Environment-blocked CE is not an algorithm win; report it separately.
 - No superiority claim from a single Hotel project.
+
+## Parallel v1.1 / v1.2 track (2026-08-10)
+
+| Phase | Scope | Status | Exit condition |
+|---|---|---|---|
+| V12-0 | Define pooled estimand without changing v1.1 | complete | v1.2 MD/JSON records coexistence and separate denominators |
+| V12-1 | Read-only pooled feasibility check | complete | Hotel/SOCIALNET/TeaStore recompute to 16/35/32/83 |
+| V12-2 | Amendment review and approval | pending | user approves v1.2 before execution pool freeze |
+| V12-3 | Fresh v1.2 candidate registry freeze | pending | no result-derived filtering; hashes and provenance locked |
+| V12-4 | v1.2 pilot/formal execution | pending | only after method/runner/CE gates pass |
+
+v1.1 remains frozen and may proceed only with its per-project quotas. v1.2 uses pooled quotas and project-equal inference; neither protocol may relabel the other's results.

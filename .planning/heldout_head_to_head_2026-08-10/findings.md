@@ -62,3 +62,11 @@
 - SOCIALNET pilot (8/8/8 = 24) is the only full-quota pool; its kill targets reuse the committed knowledge-ablation template labels (verified selector evidence). HOTEL/TEASTORE app labels are convention-based and are pre-registered for confirmation at the Stage F deployment gate.
 - 135 YAMLs, registry and freeze artifacts are hash-locked; candidate_map remains empty; blind ranking is null (Stage D runs no selection). ESHOP stays excluded (blocked, no k8s target).
 - Risk for P4: formal pools 16/44/23 are not comparable in size; any cross-method Weakness@K comparison must be per-selection-budget (K), not per-pool-size, and the shortfalls must be adjudicated before P5 pilot.
+
+## Parallel v1.2 decision
+
+- v1.1 remains the strict protocol and is not edited or reinterpreted.
+- v1.2 changes only the eligibility estimand: pooled class quotas with project as the inference cluster and equal project weight.
+- Existing formal pool counts recompute to 16 protected, 35 unprotected, 32 unknown, and 83 legal candidates across Hotel, SOCIALNET, and TeaStore.
+- Protected candidates occur in SOCIALNET only; protected-specific claims are descriptive_only until a second project contributes that class.
+- A fresh v1.2 registry must still be frozen after amendment approval. The current feasibility report is not an execution authorization.
