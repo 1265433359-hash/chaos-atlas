@@ -86,6 +86,7 @@ def align_engine(engine: dict, static_pred: str, truth: str) -> tuple[bool, str]
 def main() -> int:
     snapshot = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
     validate_knowledge_snapshot(snapshot)
+    full_pre = snapshot_is_full_experiment_pre(snapshot)
     candidates = [{"candidate_id": cid, "edge": "unknown"} for cid in STATIC_PREDICTIONS]
 
     # ---------------- product 1: static prediction audit ----------------
@@ -142,38 +143,48 @@ def main() -> int:
             "static_prediction": pred,
             "experiment_ground_truth": truth,
             "alignment_definition": rule,
-            # Diagnostic only: aligned is null (never a validated replay accuracy
-            # count), diagnostic_aligned records the engine-vs-static comparison.
-            "aligned": None,
+            # Blocked snapshots retain diagnostic alignment only. A genuinely
+            # experiment-pre snapshot may expose the same comparison as validated.
+            "aligned": aligned if full_pre else None,
             "diagnostic_aligned": aligned,
             "provenance_status": snapshot["source_provenance"],
         })
     # Replay validity is DERIVED from provenance, not hardcoded.
-    full_pre = snapshot_is_full_experiment_pre(snapshot)
     replay_status = "valid" if full_pre else "blocked"
+    if full_pre:
+        status_reason = (
+            "All five knowledge sections are experiment-pre and provenance is complete; "
+            "the engine replay used the injected snapshot with zero live reads."
+        )
+        alignment_status = "validated_replay"
+        aligned_count = sum(1 for r in replay_rows if r["diagnostic_aligned"])
+    else:
+        status_reason = (
+            "Engine-replay mechanism is implemented and runs with zero live reads "
+            "(snapshot injected into all six consumers + rank). "
+            "full_experiment_pre=False derived from source_provenance/completeness. "
+            "SE/DP/JE are posthoc_or_current - no pre-Sock-experiment clean commit "
+            "exists (f870e32 is r2-pre, not Sock-pre). A full four-source "
+            "experiment-pre frozen engine replay therefore CANNOT claim experiment-pre "
+            "knowledge. Only the static prediction audit (product 1) is a valid "
+            "evaluation-reproducibility claim."
+        )
+        alignment_status = "diagnostic_only_not_claimed"
+        aligned_count = None
     replay = {
         "schema_version": 1,
         "tool": "sock_frozen_decision_engine_replay",
         "date": "2026-08-10",
         "status": replay_status,
-        "status_reason": (
-            "Engine-replay mechanism is implemented and runs with zero live reads "
-            "(snapshot injected into all six consumers + rank). "
-            f"full_experiment_pre={full_pre} derived from source_provenance. "
-            "SE/DP/JE are posthoc_or_current — no pre-Sock-experiment clean commit "
-            "exists (f870e32 is r2-pre, not Sock-pre). A full four-source "
-            "experiment-pre frozen engine replay therefore CANNOT claim experiment-pre "
-            "knowledge. Only the static prediction audit (product 1) is a valid "
-            "evaluation-reproducibility claim."
-        ),
+        "status_reason": status_reason,
         "zero_live_read": True,
         "engine_outputs_are_engine": True,
         "static_prediction_not_overriding_engine": True,
         # Diagnostic fields (NOT validated replay accuracy):
-        "alignment_status": "diagnostic_only_not_claimed",
+        "alignment_status": alignment_status,
         "diagnostic_alignment_count": sum(1 for r in replay_rows if r["diagnostic_aligned"]),
         "diagnostic_total": len(replay_rows),
-        "aligned_count": None,
+        "aligned_count": aligned_count,
         "total": len(replay_rows),
         "rows": replay_rows,
     }

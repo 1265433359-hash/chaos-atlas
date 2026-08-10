@@ -23,6 +23,7 @@ from unittest import mock
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import decision_engine as de
+import sock_frozen_knowledge_rerun as rerun
 
 # Project root: tests live in <root>/tools/tests, so parents[2] is the repo root.
 ROOT = Path(__file__).resolve().parents[2]
@@ -81,7 +82,24 @@ class SnapshotValidationTests(unittest.TestCase):
         snap["source_provenance"] = {
             k: "static_reconstructed_pre_experiment" for k in de.PROVENANCE_SECTIONS
         }
+        self.assertFalse(de.snapshot_is_full_experiment_pre(snap))
+        snap["provenance"]["provenance_completeness"] = "complete"
+        snap["provenance"]["sha256"] = {"static_source": "a" * 64}
         self.assertTrue(de.snapshot_is_full_experiment_pre(snap))
+
+    def test_partial_provenance_never_full_pre(self):
+        snap = _snapshot()
+        snap["source_provenance"] = {
+            k: "static_reconstructed_pre_experiment" for k in de.PROVENANCE_SECTIONS
+        }
+        self.assertEqual(snap["provenance"]["provenance_completeness"], "partial")
+        self.assertFalse(de.snapshot_is_full_experiment_pre(snap))
+
+    def test_missing_provenance_completeness_fails_closed(self):
+        snap = _snapshot()
+        del snap["provenance"]["provenance_completeness"]
+        with self.assertRaises(ValueError):
+            de.validate_knowledge_snapshot(snap)
 
     def test_loss_bounded_source_enum(self):
         snap = _snapshot()
@@ -199,6 +217,31 @@ class ReplayProductTests(unittest.TestCase):
         self.assertEqual(sha["frontend_node_source"], "unavailable")
         # source_commit must not be fabricated
         self.assertEqual(snap["provenance"]["source_commit"], "unknown")
+
+    def test_full_pre_replay_uses_valid_status_and_alignment(self):
+        snap = _snapshot()
+        snap["provenance"]["provenance_completeness"] = "complete"
+        snap["provenance"]["sha256"] = {"static_source": "a" * 64}
+        snap["source_provenance"] = {
+            k: "static_reconstructed_pre_experiment" for k in de.PROVENANCE_SECTIONS
+        }
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            snapshot_path = tmp_path / "snapshot.json"
+            audit_path = tmp_path / "audit.json"
+            replay_path = tmp_path / "replay.json"
+            snapshot_path.write_text(json.dumps(snap), encoding="utf-8")
+            with mock.patch.object(rerun, "SNAPSHOT", snapshot_path), \
+                 mock.patch.object(rerun, "AUDIT_OUT", audit_path), \
+                 mock.patch.object(rerun, "REPLAY_OUT", replay_path):
+                self.assertEqual(rerun.main(), 0)
+            replay = json.loads(replay_path.read_text(encoding="utf-8"))
+            self.assertEqual(replay["status"], "valid")
+            self.assertEqual(replay["alignment_status"], "validated_replay")
+            self.assertEqual(replay["aligned_count"], replay["total"])
+            self.assertTrue(all(row["aligned"] for row in replay["rows"]))
 
 
 if __name__ == "__main__":

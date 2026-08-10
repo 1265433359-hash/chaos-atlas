@@ -3,7 +3,7 @@
   "tool": "sock_frozen_decision_engine_replay",
   "date": "2026-08-10",
   "status": "blocked",
-  "status_reason": "Engine-replay mechanism is implemented and runs with zero live reads (snapshot injected into all six consumers + rank). full_experiment_pre=False derived from source_provenance. SE/DP/JE are posthoc_or_current \u2014 no pre-Sock-experiment clean commit exists (f870e32 is r2-pre, not Sock-pre). A full four-source experiment-pre frozen engine replay therefore CANNOT claim experiment-pre knowledge. Only the static prediction audit (product 1) is a valid evaluation-reproducibility claim.",
+  "status_reason": "Engine-replay mechanism is implemented and runs with zero live reads (snapshot injected into all six consumers + rank). full_experiment_pre=False derived from source_provenance/completeness. SE/DP/JE are posthoc_or_current - no pre-Sock-experiment clean commit exists (f870e32 is r2-pre, not Sock-pre). A full four-source experiment-pre frozen engine replay therefore CANNOT claim experiment-pre knowledge. Only the static prediction audit (product 1) is a valid evaluation-reproducibility claim.",
   "zero_live_read": true,
   "engine_outputs_are_engine": true,
   "static_prediction_not_overriding_engine": true,

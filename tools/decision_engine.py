@@ -125,6 +125,8 @@ PROVENANCE_ENUMS = {
     "unavailable",
 }
 
+PROVENANCE_COMPLETENESS_ENUMS = {"complete", "partial"}
+
 # The five source-provenance fields that must be present and enum-valid.
 PROVENANCE_SECTIONS = (
     "contract",
@@ -154,6 +156,9 @@ def validate_knowledge_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
         )
     if not isinstance(snapshot.get("provenance"), dict) or not snapshot["provenance"].get("kind"):
         _fail_closed(label, "provenance.kind")
+    completeness = snapshot["provenance"].get("provenance_completeness")
+    if completeness not in PROVENANCE_COMPLETENESS_ENUMS:
+        _fail_closed(label, "provenance.provenance_completeness")
     # Require the five source-provenance fields with a legal enum.
     source_prov = snapshot.get("source_provenance")
     if not isinstance(source_prov, dict):
@@ -173,6 +178,15 @@ def snapshot_is_full_experiment_pre(snapshot: dict[str, Any]) -> bool:
     """True only when ALL five source-provenance fields are provably
     experiment-pre (static_reconstructed_pre_experiment or pre_experiment_commit).
     SE/DP/JE posthoc_or_current -> False (full four-source replay must be blocked)."""
+    validate_knowledge_snapshot(snapshot)
+    provenance = snapshot["provenance"]
+    if provenance.get("provenance_completeness") != "complete":
+        return False
+    hashes = provenance.get("sha256")
+    if not isinstance(hashes, dict) or not hashes:
+        return False
+    if any(value in (None, "", "unknown", "unavailable") for value in hashes.values()):
+        return False
     source_prov = snapshot.get("source_provenance") or {}
     pre_ok = {"static_reconstructed_pre_experiment", "pre_experiment_commit"}
     return all(
