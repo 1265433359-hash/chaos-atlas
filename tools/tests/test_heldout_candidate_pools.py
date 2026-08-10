@@ -212,3 +212,13 @@ def test_annotate_writes_yaml_to_tmp_only(tmp_path):
     # the out_dir parameter is the only write target: tmp_path must NOT be
     # under the versioned heldout tree.
     assert not str(tmp_path).startswith(str(HELDOUT))
+
+
+def test_freeze_records_concrete_yaml_parse_check():
+    freeze = json.loads(
+        (HELDOUT / "stage_d_candidate_pool_freeze.json").read_text(encoding="utf-8")
+    )
+    assert freeze["checks"]["all_yaml_parseable"] is True
+    assert freeze["checks"]["socialnet_unverified_edges_absent"] is True
+    assert freeze["checks"]["teastore_retry_not_protected"] is True
+    assert freeze["checks"]["hotel_unavailable_services_absent"] is True

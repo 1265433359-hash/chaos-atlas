@@ -48,6 +48,11 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+try:
+    import yaml
+except ImportError as exc:  # pragma: no cover - generation must fail closed
+    raise RuntimeError("PyYAML is required to validate frozen candidate YAML") from exc
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -338,6 +343,74 @@ def annotate_with_yaml(project: str, candidates: list[dict], out_dir: Path) -> l
     return candidates
 
 
+def validate_generated_yaml(results: dict[str, dict]) -> bool:
+    """Parse every generated manifest before declaring the pool frozen.
+
+    A freeze record must contain a concrete boolean, never a placeholder. The
+    check is intentionally performed from the generated files so the recorded
+    result covers the exact bytes whose SHA-256 values are frozen.
+    """
+    checked = 0
+    for project in PROJECTS:
+        for candidate in results[project]["all"]:
+            path = ROOT / candidate["yaml_path"]
+            text = path.read_text(encoding="utf-8")
+            document = yaml.safe_load(text)
+            if not isinstance(document, dict):
+                raise ValueError(f"{path}: YAML document is not a mapping")
+            spec = document.get("spec")
+            if not isinstance(spec, dict) or spec.get("mode") != "one":
+                raise ValueError(f"{path}: missing spec.mode=one")
+            checked += 1
+    return checked > 0
+
+
+def validate_snapshot_exclusions(results: dict[str, dict]) -> dict[str, bool]:
+    """Recompute the project-specific exclusion checks from frozen inputs."""
+    social_snapshot = load_snapshot("SOCIALNET")
+    social_unverified = set(
+        social_snapshot.get("contract", {}).get("unverified_contract_edges", [])
+    )
+    social_edges = {
+        candidate.get("source_edge")
+        for candidate in results["SOCIALNET"]["all"]
+        if candidate.get("source_edge")
+    }
+
+    tea_snapshot = load_snapshot("TEASTORE")
+    tea_contracts = tea_snapshot.get("contract", {}).get("contracts", {})
+    tea_retry_safe = all(
+        not (
+            tea_contracts.get(candidate.get("source_edge"), {}).get("contract")
+            == "retry_policy_timeout_unknown"
+            and candidate.get("protection_class") == "protected"
+        )
+        for candidate in results["TEASTORE"]["all"]
+        if candidate.get("source_edge")
+    )
+
+    hotel_snapshot = load_snapshot("HOTEL")
+    unavailable = set()
+    for section in (
+        hotel_snapshot.get("contract", {}).get("availability", {}).get("HOTEL", {}),
+        hotel_snapshot.get("contract", {}).get("availability_kubernetes", {}).get("HOTEL", {}),
+    ):
+        unavailable.update(
+            service
+            for service, profile in section.items()
+            if isinstance(profile, dict)
+            and profile.get("availability_status") == "unavailable"
+        )
+    hotel_targets = {
+        candidate.get("target_service") for candidate in results["HOTEL"]["all"]
+    }
+    return {
+        "socialnet_unverified_edges_absent": not (social_edges & social_unverified),
+        "teastore_retry_not_protected": tea_retry_safe,
+        "hotel_unavailable_services_absent": not (hotel_targets & unavailable),
+    }
+
+
 CLASS_ORDER = ("protected", "unprotected", "unknown")
 FAULT_ROTATION = ("delay", "loss", "kill")
 
@@ -481,6 +554,9 @@ def build_project(project: str, out_dir: Path) -> dict:
     return {
         "project": project,
         "snapshot_status": snapshot["status"],
+        # Keep the complete annotated set in-memory for the final YAML
+        # validation. It is not serialized into the freeze record.
+        "all": full,
         "full_candidate_count": len(full),
         "pilot": pilot,
         "formal": formal,
@@ -622,14 +698,15 @@ def main() -> int:
             "duplicate_candidate_ids": r["duplicate_candidate_ids"],
             "duplicate_semantic_groups": r["duplicate_semantic"],
         }
+    exclusion_checks = validate_snapshot_exclusions(results)
     freeze["checks"] = {
         "candidate_id_unique": all(not r["duplicate_candidate_ids"] for r in results.values()),
         "no_semantic_duplicates": all(not r["duplicate_semantic"] for r in results.values()),
-        "all_yaml_parseable": None,  # verified by the validation step below
-        "socialnet_unverified_edges_absent": True,
-        "teastore_retry_not_protected": True,
-        "hotel_unavailable_services_absent": True,
+        "all_yaml_parseable": validate_generated_yaml(results),
+        **exclusion_checks,
     }
+    if not all(freeze["checks"].values()):
+        raise RuntimeError(f"candidate-pool freeze checks failed: {freeze['checks']}")
     (HELDOUT / "stage_d_candidate_pool_freeze.json").write_text(
         json.dumps(freeze, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 

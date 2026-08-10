@@ -1,9 +1,9 @@
 # Stage D: Neutral Candidate Pool Freeze (P3)
 
-> frozen_at: 2026-08-10T07:57:07.219560+00:00
+> frozen_at: 2026-08-10T08:05:07.628538+00:00
 > rule_version: heldout-candidate-generation-v1
 > seed: heldout-stage-d-v1
-> generator: tools/build_heldout_candidate_pools.py (sha256 bc3b7f8c00c8030d…)
+> generator: tools/build_heldout_candidate_pools.py (sha256 a137e553e95a238c…)
 
 ## Status
 
