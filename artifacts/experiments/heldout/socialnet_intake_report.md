@@ -59,9 +59,9 @@ HomeTimelineService -> PostStorage, SocialGraph (2 下游)
 
 ## 6. fault family 可支持
 
-- delay/loss:thrift 边可注入（NetworkChaos 服务级）
-- kill:PodChaos（需 k8s 部署,helm-chart 存在 → 门槛中等）
-- **候选池潜力**:~12 业务服务 + thrift 边 → pilot 24 / formal 48 可行（服务数足够）
+- delay/loss:thrift 边理论上可注入，但只对来源核验的边开放候选
+- kill:helm-chart 存在但 replicas/probe/PDB/HPA 尚未逐文件核查，暂标 `potential_only`
+- **候选池潜力**:目前仅 7 条 ComposePost 边完成核验；HomeTimeline 和其他边仍需补齐，pilot 24/formal 48 暂标 `unknown`
 
 ## 7. 泄漏审计（追加,与 Hotel 同仓库）
 

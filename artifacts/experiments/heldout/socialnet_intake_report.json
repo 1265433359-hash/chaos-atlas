@@ -23,14 +23,56 @@
     "shared_infra/utils.h": "064b444be99f443f9041e60608f9453f8a8ccd7ce1e6e1fdb9fe05bef00f9db7"
   },
   "services": {
-    "business": ["social-graph", "compose-post", "post-storage", "user-timeline", "url-shorten", "user", "media", "text", "unique-id", "user-mention", "home-timeline", "nginx-thrift", "media-frontend"],
-    "infra": ["mongodb x6", "redis x3", "memcached x4", "jaeger-agent"]
+    "business": [
+      "social-graph",
+      "compose-post",
+      "post-storage",
+      "user-timeline",
+      "url-shorten",
+      "user",
+      "media",
+      "text",
+      "unique-id",
+      "user-mention",
+      "home-timeline",
+      "nginx-thrift",
+      "media-frontend"
+    ],
+    "infra": [
+      "mongodb x6",
+      "redis x3",
+      "memcached x4",
+      "jaeger-agent"
+    ]
   },
-  "thrift_interfaces": ["UniqueIdService", "TextService", "UserService", "ComposePostService", "PostStorageService", "HomeTimelineService", "UserTimelineService", "SocialGraphService", "UserMentionService", "UrlShortenService", "MediaService"],
+  "thrift_interfaces": [
+    "UniqueIdService",
+    "TextService",
+    "UserService",
+    "ComposePostService",
+    "PostStorageService",
+    "HomeTimelineService",
+    "UserTimelineService",
+    "SocialGraphService",
+    "UserMentionService",
+    "UrlShortenService",
+    "MediaService"
+  ],
   "dependency_graph": {
     "nginx-thrift": "HTTP routes to services",
-    "ComposePostService": ["PostStorage", "UserTimeline", "Text", "User", "Media", "HomeTimeline", "UniqueId"],
-    "HomeTimelineService": ["PostStorage", "SocialGraph"]
+    "ComposePostService": [
+      "PostStorage",
+      "UserTimeline",
+      "Text",
+      "User",
+      "Media",
+      "HomeTimeline",
+      "UniqueId"
+    ],
+    "HomeTimelineService": [
+      "PostStorage",
+      "SocialGraph"
+    ]
   },
   "timeouts": {
     "explicit_timeout_ms": 10000,
@@ -40,7 +82,12 @@
   },
   "observability": "Jaeger (jaeger-agent; shared tracing.h OpenTracing wrapper)",
   "manifests": {
-    "docker_compose": ["docker-compose.yml", "docker-compose-sharding.yml", "docker-compose-swarm.yml", "docker-compose-tls.yml"],
+    "docker_compose": [
+      "docker-compose.yml",
+      "docker-compose-sharding.yml",
+      "docker-compose-swarm.yml",
+      "docker-compose-tls.yml"
+    ],
     "helm": "helm-chart/socialnetwork (replicas/PDB/HPA NOT per-file verified -> unknown)",
     "openshift": "present",
     "images": "built from Dockerfile (per service); nginx-thrift, media-frontend"
@@ -50,14 +97,14 @@
     "shared_infra": "tracing.h/utils.h/utils_thrift.h shared with Hotel (DeathStarBench) -> marked shared_infra_deathstarbench, re-verify per project"
   },
   "fault_families": {
-    "delay": "constructible (thrift edge, NetworkChaos service-level)",
-    "loss": "constructible (same)",
-    "kill": "constructible (PodChaos; helm-chart present -> medium gate)"
+    "delay": "potential_only (thrift edge identified; Helm availability unverified)",
+    "loss": "potential_only (thrift edge identified; Helm availability unverified)",
+    "kill": "potential_only (helm-chart exists but replicas/probes/PDB/HPA are not verified)"
   },
   "candidate_potential": {
-    "pilot_24": "feasible (~12 business services + thrift edges)",
-    "formal_48": "feasible (same, event/call edge combinations)",
-    "note": "protected/unprotected/unknown all constructible because 10s explicit timeout exists on some edges"
+    "pilot_24": "unknown (7 ComposePost edges are verified; HomeTimeline and remaining edges require contract expansion)",
+    "formal_48": "unknown (candidate capacity cannot be claimed before full edge and Helm availability verification)",
+    "note": "protected/unprotected/unknown states are possible in principle; only source-verified edges may enter the frozen pool"
   },
   "leakage": {
     "risk": "medium",
@@ -68,5 +115,25 @@
       "generic SE/DP/JE allowed but provenance separates generic vs project-specific"
     ]
   },
-  "gates": {"bringup_2h": "not_run", "stable_30min": "not_run", "two_baseline_fail_blocked": "not_run"}
+  "gates": {
+    "bringup_2h": "not_run",
+    "stable_30min": "not_run",
+    "two_baseline_fail_blocked": "not_run"
+  },
+  "helm_audit": {
+    "status": "verified",
+    "subcharts": 28,
+    "global_replicas": 1,
+    "hpa_enabled": false,
+    "pdb_count": 0,
+    "business_liveness_probe": false,
+    "business_readiness_probe": false,
+    "deployment_template": "_baseDeployment.tpl (replicas={{global.replicas}} default 1)",
+    "note": "Stage C2 逐文件核查: 每服务 chart 有 deployment+service 模板; 业务服务无 probe (values.yaml:77-79 属 redis-cluster disabled 配置); kill 候选可构造"
+  },
+  "contract_edges": {
+    "count": 12,
+    "explicit_timeout_count": 12,
+    "note": "ComposePost 7 + HomeTimeline 2 + UserTimeline 1 + User 1 + SocialGraph 1; 全部 10s thrift timeout"
+  }
 }

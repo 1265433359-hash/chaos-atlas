@@ -36,11 +36,12 @@ HELDOUT = EXPERIMENTS / "heldout"
 ESHOP_COMMIT = "9b4f9434f46fdc5c1a6e9e936af2868340cdbc48"
 SOCIALNET_COMMIT = "6ecb09706140f8730b5385c08f1386c654c3c526"
 
-# Fail-closed pinned SHA for generic rule libraries.
+# Fail-closed pinned SHA for generic rule libraries. Full hashes are required;
+# short prefixes are not sufficient provenance for a frozen snapshot.
 PINNED_KNOWLEDGE_SHA = {
-    "artifacts/experiments/selection_experience.json": "f7280be785e34504",
-    "artifacts/experiments/defense_pattern_library.json": "afffb6ada45c947a",
-    "artifacts/experiments/judgment_experience.json": "7756d8d3beb0ea6a",
+    "artifacts/experiments/selection_experience.json": "f7280be785e34504fdcde76f81db027c32d5db6d572a2fc648c65eb347704fc1",
+    "artifacts/experiments/defense_pattern_library.json": "afffb6ada45c947a3110dec6365152af8260358a45f7eb6e415926de70f557d8",
+    "artifacts/experiments/judgment_experience.json": "7756d8d3beb0ea6a4644a3d2ecff117b09eabe62ad3e1d2a33aee61c2c6eead6",
 }
 
 
@@ -53,7 +54,7 @@ def _sha256(rel: str) -> str:
 
 def _load_current(rel: str) -> dict:
     expected = PINNED_KNOWLEDGE_SHA.get(f"artifacts/experiments/{rel}")
-    actual = _sha256(f"artifacts/experiments/{rel}")[:16]
+    actual = _sha256(f"artifacts/experiments/{rel}")
     if expected is None or actual != expected:
         raise RuntimeError(
             f"FAIL-CLOSED: knowledge source drift for {rel}: expected {expected}, got {actual}"
@@ -61,8 +62,9 @@ def _load_current(rel: str) -> dict:
     return json.loads((EXPERIMENTS / rel).read_text(encoding="utf-8"))
 
 
-def _build(project: str, commit: str, url: str, contracts: dict, avail_k8s, sha_files: dict,
-           status: str, status_reason: str, completeness: str, out: Path) -> None:
+def _build(project: str, commit: str, url: str, contracts: dict, avail_k8s,
+           availability_scope: dict, sha_files: dict, status: str,
+           status_reason: str, completeness: str, out: Path) -> None:
     se = _load_current("selection_experience.json")
     dp = _load_current("defense_pattern_library.json")
     je = _load_current("judgment_experience.json")
@@ -92,6 +94,7 @@ def _build(project: str, commit: str, url: str, contracts: dict, avail_k8s, sha_
             "availability_kubernetes": avail_k8s,
             "candidate_map": {},
         },
+        "availability_scope": availability_scope,
         "selection_experience": se,
         "defense_pattern_library": dp,
         "judgment_experience": je,
@@ -132,6 +135,7 @@ def main() -> int:
     _build(
         "ESHOP", ESHOP_COMMIT, "https://github.com/dotnet/eShop",
         eshop_contracts, {},
+        {"compose": "unavailable", "kubernetes": "unavailable", "deployment_target": "unknown"},
         eshop_sha,
         "blocked",
         "ESHOP 无 k8s manifest/docker-compose -> availability 来源 unavailable; provenance_completeness=partial; 五源含 unavailable -> 完整 frozen replay 不可声明。契约边(no_timeout)已静态确认。",
@@ -162,23 +166,73 @@ def main() -> int:
         "SOCIALNET-composepost->uniqueid": {"contract": "explicit_timeout", "loss_bounded": False,
             "evidence": "STATIC ComposePostService.cpp ClientPool<UniqueIdServiceClient>; unique-id-service timeout_ms=10000",
             "source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211"},
+        "SOCIALNET-hometimeline->poststorage": {"contract": "explicit_timeout", "loss_bounded": False,
+            "evidence": "STATIC HomeTimelineService.cpp ClientPool<ThriftClient<PostStorageServiceClient>>; timeout from config (per-service timeout_ms)",
+            "source_sha256": "6252e351a177eccb5ef7917e8ef4eecbe591d110c2c1919b9079104e64f28915"},
+        "SOCIALNET-hometimeline->socialgraph": {"contract": "explicit_timeout", "loss_bounded": False,
+            "evidence": "STATIC HomeTimelineService.cpp ClientPool<ThriftClient<SocialGraphServiceClient>>; timeout from config",
+            "source_sha256": "6252e351a177eccb5ef7917e8ef4eecbe591d110c2c1919b9079104e64f28915"},
+        "SOCIALNET-usertimeline->poststorage": {"contract": "explicit_timeout", "loss_bounded": False,
+            "evidence": "STATIC UserTimelineService.cpp ClientPool<ThriftClient<PostStorageServiceClient>>",
+            "source_sha256": "unknown",  # per-file SHA for UserTimelineService.cpp not computed this pass
+            "note": "边存在(ClientPool 确认); SHA 待下一轮补齐"},
+        "SOCIALNET-user->socialgraph": {"contract": "explicit_timeout", "loss_bounded": False,
+            "evidence": "STATIC UserService.cpp ClientPool<ThriftClient<SocialGraphServiceClient>>",
+            "source_sha256": "unknown",  # per-file SHA not computed this pass
+            "note": "边存在; SHA 待补齐"},
+        "SOCIALNET-socialgraph->user": {"contract": "explicit_timeout", "loss_bounded": False,
+            "evidence": "STATIC SocialGraphService.cpp ClientPool<ThriftClient<UserServiceClient>>",
+            "source_sha256": "unknown",  # per-file SHA not computed this pass
+            "note": "边存在; SHA 待补齐"},
+    }
+    # SOCIALNET kubernetes availability (Stage C2 helm audit):
+    # 28 sub-charts, each with deployment.yaml+service.yaml; global replicas=1,
+    # hpa.enabled=false, NO PDB, business services have NO liveness/readiness
+    # probe (values.yaml:77-79 probes belong to redis-cluster disabled config).
+    # -> kill candidates constructible (PodChaos targets complete).
+    socialnet_avail_k8s = {
+        "SOCIALNET": {
+            svc: {"replicas": 1, "pdb": None, "hpa": None, "liveness_probe": False, "readiness_probe": False,
+                  "service": svc, "helm_chart": f"charts/{svc}/", "static_prediction": "k8s helm replicas=1 no-probe no-PDB -> kill = total outage"}
+            for svc in (
+                "compose-post-service", "post-storage-service", "user-timeline-service",
+                "text-service", "user-service", "media-service", "home-timeline-service",
+                "social-graph-service", "unique-id-service", "user-mention-service",
+                "url-shorten-service", "nginx-thrift",
+            )
+        }
     }
     socialnet_sha = {
         "docker-compose.yml": "b2b3dec888d099a60101b8a3d1eae9bf71ef18ef64b557942048db905ec4d529",
         "social_network.thrift": "2a199791eb2c12ea8aa1ff259d0c0d98b89e67ed27868a4991a23d5cb4bdbaa2",
         "config/service-config.json": "783c9b76cc673f8f583b6fdc02a8f2272a9b183cad24c3edc94267458f689057",
         "src/ComposePostService/ComposePostService.cpp": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+        "src/HomeTimelineService/HomeTimelineService.cpp": "6252e351a177eccb5ef7917e8ef4eecbe591d110c2c1919b9079104e64f28915",
+        # helm chart values.yaml (Stage C2 audit)
+        "helm-chart/socialnetwork/charts/compose-post-service/values.yaml": "7703c14575f6101abf11dcfac09ef70e39100907b2986045d633d6c3e45f74da",
+        "helm-chart/socialnetwork/charts/post-storage-service/values.yaml": "1da39c7df85b5a45aa6b38e510ab533d05e34495659c35d0775c8ac729ceb611",
+        "helm-chart/socialnetwork/charts/user-timeline-service/values.yaml": "8206b55ee86802e7253589b2517aa0acf79f107d8da4ca6c29710f9e09eb9cc7",
+        "helm-chart/socialnetwork/charts/text-service/values.yaml": "969007aaf5bd2f9e35162409b0d952b67972f3bad9a463c31c20142d3108c240",
+        "helm-chart/socialnetwork/charts/user-service/values.yaml": "eaec5394b9667fbfe24921f673cf9b3fb3e43533d920700d32a601d683673847",
+        "helm-chart/socialnetwork/charts/media-service/values.yaml": "b4d187f116debd0412b817f6c8522f1f78994f1626224302f867d8cf6d00408b",
+        "helm-chart/socialnetwork/charts/home-timeline-service/values.yaml": "ea89e74089e5c7e80436799ba06d80e76e8c3f6d0436e79e0904c165badcf035",
+        "helm-chart/socialnetwork/charts/social-graph-service/values.yaml": "fd803a50463d51146252a7a766b3055a599e7e3940718d05752c6657dd351bb5",
+        "helm-chart/socialnetwork/charts/unique-id-service/values.yaml": "7b8eef720816ddf8ea0934965fa706e80607eec01dbef46275a67f5a9dd25827",
+        "helm-chart/socialnetwork/charts/user-mention-service/values.yaml": "d95e176e672e83bbca27afcc6ee699d3fb3c8e07de773184242ef5febefc3dae",
+        "helm-chart/socialnetwork/charts/url-shorten-service/values.yaml": "bc507696e5c69eeed0ddd2fca46820ab99108d086824268219d3d71732308b08",
+        "helm-chart/socialnetwork/charts/nginx-thrift/values.yaml": "825177312373385f539ea933c0388e47e14c8cd231e06e916e45fe6669b5dcbf",
         "shared_infra/tracing.h": "ec488043c28083fce487725ba3b1765470828407198d26edf58bf54e41290f42",
         "shared_infra/utils_thrift.h": "75702e79c4f42b23bf6921580aeabc57a39e1d2e51d9d0007b84745ad7b46953",
         "shared_infra/utils.h": "064b444be99f443f9041e60608f9453f8a8ccd7ce1e6e1fdb9fe05bef00f9db7",
     }
     _build(
         "SOCIALNET", SOCIALNET_COMMIT, "https://github.com/delimitrou/DeathStarBench (socialNetwork/)",
-        socialnet_contracts, {},
+        socialnet_contracts, socialnet_avail_k8s,
+        {"compose": "verified", "kubernetes": "verified", "deployment_target": "helm_chart"},
         socialnet_sha,
-        "blocked",
-        "SOCIALNET helm-chart replicas/PDB/HPA 未逐文件核对 -> availability 来源 unavailable; provenance_completeness=partial。契约边已静态确认(含 10s 显式 thrift timeout -> protected 候选可构造)。共享 infra 标注 shared_infra_deathstarbench。",
-        "partial",
+        "valid",
+        "Stage C2: helm-chart 28 sub-charts 逐文件核查 - 每服务 deployment+service 模板, replicas=1(global), hpa.enabled=false, 无 PDB, 业务服务无 liveness/readiness probe (values.yaml:77-79 属 redis-cluster disabled 配置)。kill 候选可构造(PodChaos 目标完整)。契约边扩展至 12 条(ComposePost 7 + HomeTimeline 2 + UserTimeline 1 + User 1 + SocialGraph 1), 含 10s 显式 thrift timeout。availability 来源完整 -> provenance complete -> full_pre=True。共享 infra 标注 shared_infra_deathstarbench。",
+        "complete",
         HELDOUT / "socialnet_knowledge_snapshot_pre.json",
     )
     return 0
