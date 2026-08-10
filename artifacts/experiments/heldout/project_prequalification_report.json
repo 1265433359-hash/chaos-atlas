@@ -278,7 +278,8 @@
         "business": 6,
         "db": 2,
         "load_tool": 1,
-        "total": 9,
+        "load_tool_eligible": false,
+        "total": 8,
         "replicas": "1",
         "pdb": "none",
         "hpa": "none",
@@ -286,9 +287,9 @@
       },
       "arithmetic": {
         "protected_possible": 12,
-        "unprotected_possible": 15,
+        "unprotected_possible": 14,
         "unknown_possible": 12,
-        "legal_total": 39,
+        "legal_total": 38,
         "delay_supported": true,
         "loss_supported": true,
         "kill_supported": true,
@@ -300,7 +301,7 @@
         ],
         "unprotected_edges": [
           "ledgerwriter->balancereader",
-          "kill x9"
+          "eligible kill x8 (loadgenerator excluded)"
         ],
         "unknown_edges": [
           "frontend->* (loss)"
@@ -316,9 +317,9 @@
       "qualification": "fail",
       "fail_reasons": [
         "protected_possible=12 < 16 (仅 frontend 4 条边显式 4s timeout x 3 delay 档)",
-        "unprotected_possible=15 < 16 (ledgerwriter->balancereader 无超时 x6 + kill x9)",
+        "unprotected_possible=14 < 16 (ledgerwriter->balancereader no timeout x6 + eligible kill x8; loadgenerator excluded)",
         "unknown_possible=12 < 16 (frontend 4 边 loss, loss_bounded 未验证)",
-        "legal_total=39 < 48"
+        "legal_total=38 < 48"
       ],
       "independence": "独立仓库 GoogleCloudPlatform/bank-of-anthos, 非 fork; 同 org 的 online-boutique 是不同代码库/技术栈 (Flask+Spring vs Go)",
       "leakage_audit": {
@@ -339,10 +340,10 @@
         "kubernetes-manifests/loadgenerator.yaml": "85313a84c66b70654073ea6a0fedeb18b49f86fa279b2e233fba2422cee9993a",
         "src/frontend/frontend.py": "b47b6c5b5f75e3249ea09d4cab19240e593349937c8aa3b592c487e684e4af71",
         "src/frontend/api_call.py": "06988a3abac225a7ee29e9f3ffeed55c8bf508ec86688bfbfd8fd73892ef65df",
-        "src/ledger/ledgerwriter/LedgerWriterController.java": "cecd648e7fbe7ef52930b4ee6e4be9594fc26d4faf65029b40b3b7f07df95d5c",
-        "src/ledger/ledgerwriter/LedgerWriterApplication.java": "5a4d6110b6ac3f6e214c24340615e7c111d9a06c966697e1bc3665740a64da94",
-        "src/ledger/balancereader/BalanceReaderController.java": "a5bd8e2e4e1f5e94d4023c3c9e0a2f9e1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7",
-        "src/ledger/transactionhistory/TransactionHistoryController.java": "61e11339b3ac9a086ab9afb788873aa05bfc14002c3105f0719c876340ac87f2",
+        "src/ledger/ledgerwriter/src/main/java/anthos/samples/bankofanthos/ledgerwriter/LedgerWriterController.java": "cecd648e7fbe7ef52930b4ee6e4be9594fc26d4faf65029b40b3b7f07df95d5c",
+        "src/ledger/ledgerwriter/src/main/java/anthos/samples/bankofanthos/ledgerwriter/LedgerWriterApplication.java": "eacd8afcc5e9acf9d4579bd3232907521e6ed06ad2d256a162b97a7105c28d18",
+        "src/ledger/balancereader/src/main/java/anthos/samples/bankofanthos/balancereader/BalanceReaderController.java": "5a4d6110b6ac3f6e214c24340615e7c111d9a06c966697e1bc3665740a64da94",
+        "src/ledger/transactionhistory/src/main/java/anthos/samples/bankofanthos/transactionhistory/TransactionHistoryController.java": "61e11339b3ac9a086ab9afb788873aa05bfc14002c3105f0719c876340ac87f2",
         "src/accounts/contacts/contacts.py": "d8db9fcd04efb5c10fa05d52bd5a8cd19a091fff28eb6c647ac338d9ea1a169c",
         "src/accounts/userservice/userservice.py": "320276107eb348baac7f365549e2236d4ae1b5f1e06937407e30a4c069058b43"
       }

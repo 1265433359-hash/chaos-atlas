@@ -30,9 +30,9 @@
 ### bank-of-anthos
 
 - `protected_possible` = **12** (protected 边: ['frontend->balancereader', 'frontend->transactionhistory', 'frontend->contacts', 'frontend->userservice'])
-- `unprotected_possible` = **15** (unprotected 边: ledgerwriter->balancereader, kill x9)
+- `unprotected_possible` = **14** (unprotected 边: ledgerwriter->balancereader, eligible kill x8；loadgenerator 不属于系统故障目标)
 - `unknown_possible` = **12** (unknown 边: frontend->* (loss))
-- `legal_total` = **39**
+- `legal_total` = **38**
 - delay/loss/kill: True/True/True
 
 ## 四、排除原因
@@ -42,9 +42,9 @@
 
 **bank-of-anthos** (fail):
 - protected_possible=12 < 16 (仅 frontend 4 条边显式 4s timeout x 3 delay 档)
-- unprotected_possible=15 < 16 (ledgerwriter->balancereader 无超时 x6 + kill x9)
+- unprotected_possible=14 < 16 (ledgerwriter->balancereader 无超时 x6 + eligible kill x8；loadgenerator 排除)
 - unknown_possible=12 < 16 (frontend 4 边 loss, loss_bounded 未验证)
-- legal_total=39 < 48
+- legal_total=38 < 48
 
 ## 五、知识泄漏审计
 
@@ -98,10 +98,10 @@
 | bank-of-anthos | `kubernetes-manifests/loadgenerator.yaml` | `85313a84c66b70654073ea6a0fedeb18b49f86fa279b2e233fba2422cee9993a` |
 | bank-of-anthos | `src/frontend/frontend.py` | `b47b6c5b5f75e3249ea09d4cab19240e593349937c8aa3b592c487e684e4af71` |
 | bank-of-anthos | `src/frontend/api_call.py` | `06988a3abac225a7ee29e9f3ffeed55c8bf508ec86688bfbfd8fd73892ef65df` |
-| bank-of-anthos | `src/ledger/ledgerwriter/LedgerWriterController.java` | `cecd648e7fbe7ef52930b4ee6e4be9594fc26d4faf65029b40b3b7f07df95d5c` |
-| bank-of-anthos | `src/ledger/ledgerwriter/LedgerWriterApplication.java` | `5a4d6110b6ac3f6e214c24340615e7c111d9a06c966697e1bc3665740a64da94` |
-| bank-of-anthos | `src/ledger/balancereader/BalanceReaderController.java` | `a5bd8e2e4e1f5e94d4023c3c9e0a2f9e1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7` |
-| bank-of-anthos | `src/ledger/transactionhistory/TransactionHistoryController.java` | `61e11339b3ac9a086ab9afb788873aa05bfc14002c3105f0719c876340ac87f2` |
+| bank-of-anthos | `src/ledger/ledgerwriter/src/main/java/anthos/samples/bankofanthos/ledgerwriter/LedgerWriterController.java` | `cecd648e7fbe7ef52930b4ee6e4be9594fc26d4faf65029b40b3b7f07df95d5c` |
+| bank-of-anthos | `src/ledger/ledgerwriter/src/main/java/anthos/samples/bankofanthos/ledgerwriter/LedgerWriterApplication.java` | `eacd8afcc5e9acf9d4579bd3232907521e6ed06ad2d256a162b97a7105c28d18` |
+| bank-of-anthos | `src/ledger/balancereader/src/main/java/anthos/samples/bankofanthos/balancereader/BalanceReaderController.java` | `5a4d6110b6ac3f6e214c24340615e7c111d9a06c966697e1bc3665740a64da94` |
+| bank-of-anthos | `src/ledger/transactionhistory/src/main/java/anthos/samples/bankofanthos/transactionhistory/TransactionHistoryController.java` | `61e11339b3ac9a086ab9afb788873aa05bfc14002c3105f0719c876340ac87f2` |
 | bank-of-anthos | `src/accounts/contacts/contacts.py` | `d8db9fcd04efb5c10fa05d52bd5a8cd19a091fff28eb6c647ac338d9ea1a169c` |
 | bank-of-anthos | `src/accounts/userservice/userservice.py` | `320276107eb348baac7f365549e2236d4ae1b5f1e06937407e30a4c069058b43` |
 
