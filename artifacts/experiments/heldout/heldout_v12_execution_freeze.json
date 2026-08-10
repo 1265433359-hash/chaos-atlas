@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "protocol": "heldout_protocol_v1_2",
+  "status": "config_frozen_runner_implementation_pending",
+  "freeze_date": "2026-08-10",
+  "candidate_registry": "artifacts/experiments/heldout/heldout_v12_candidate_registry.json",
+  "freeze_snapshot": "artifacts/experiments/heldout/heldout_v12_freeze_snapshot.json",
+  "methods": [
+    {
+      "method_id": "Ours-full-pre",
+      "selector": "tools/decision_engine.py",
+      "knowledge": "project snapshot + generic SE/DP/JE",
+      "selection_replicates": 1,
+      "seed_values": {"pilot": [0], "formal": [0]}
+    },
+    {
+      "method_id": "Ours-generic",
+      "selector": "tools/decision_engine.py",
+      "knowledge": "empty project contract/availability + generic SE/DP/JE",
+      "selection_replicates": 1,
+      "seed_values": {"pilot": [0], "formal": [0]}
+    },
+    {
+      "method_id": "ChaosEater-official",
+      "selector": "official ChaosEater pipeline, independent deployment",
+      "knowledge": "official declared inputs only",
+      "selection_replicates": 3,
+      "seed_values": {"pilot": [1001, 1002, 1003], "formal": [2001, 2002, 2003]}
+    },
+    {
+      "method_id": "ChaosEater-adapter",
+      "selector": "tools/chaos_eater_adapter",
+      "knowledge": "adapter-declared inputs only",
+      "selection_replicates": 3,
+      "seed_values": {"pilot": [1001, 1002, 1003], "formal": [2001, 2002, 2003]}
+    },
+    {
+      "method_id": "Random",
+      "selector": "stdlib seeded random permutation",
+      "knowledge": "none",
+      "selection_replicates": 20,
+      "seed_values": {
+        "pilot": [3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3011, 3012, 3013, 3014, 3015, 3016, 3017, 3018, 3019, 3020],
+        "formal": [4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010, 4011, 4012, 4013, 4014, 4015, 4016, 4017, 4018, 4019, 4020]
+      }
+    }
+  ],
+  "budgets": {
+    "pilot_k": 8,
+    "formal_k": 10,
+    "max_confirmation_runs_per_candidate": 2,
+    "selection_budget_unit": "project x method-seed",
+    "weakness_at_k_counts": "candidate ids, not confirmation runs"
+  },
+  "comparison_lines": {
+    "equal_information": {
+      "shared_descriptor_fields": ["candidate_id", "project_id", "source_edge", "target_service", "fault_family", "fault_parameters"],
+      "redacted_fields": ["protection_class", "availability_evidence", "contract_source_sha256", "snapshot provenance"],
+      "same_candidate_order_per_seed": true
+    },
+    "realistic_end_to_end": {
+      "ours_full_pre": "uses frozen project snapshot",
+      "ours_generic": "uses empty project-specific contract",
+      "ce_official": "uses official pipeline",
+      "ce_adapter": "uses adapter pipeline",
+      "random": "uses no knowledge"
+    }
+  },
+  "runner_contract": {
+    "status": "not_implemented",
+    "required_entrypoint": "one common runner accepting project_id, method_id, phase, seed, candidate_id and output_dir",
+    "selection_output_schema": ["project_id", "method_id", "phase", "seed", "selected_candidate_ids", "selection_started_at", "input_hashes"],
+    "injection_output_schema": ["candidate_id", "injected", "baseline", "observation", "verdict", "confirmation_runs", "cleanup", "runner_version"],
+    "lifecycle": ["preflight", "baseline", "apply_one_fault", "observe", "recover", "delete_fault", "assert_cleanup", "write_ledger"],
+    "network_faults": "NetworkChaos mode=one only",
+    "kill_faults": "PodChaos pod-kill mode=one only",
+    "cleanup_requirement": "No active chaos resource after every run; cleanup failure invalidates the run",
+    "forbidden": ["changing business code", "changing candidate YAML after freeze", "result-derived reselection", "selective cleanup"]
+  },
+  "environment_gates": {
+    "project_bringup_max_hours": 2,
+    "stable_observation_minutes": 30,
+    "consecutive_baseline_failures": 2,
+    "ce_official_bringup_max_hours": 4,
+    "ce_blocked_is_not_superiority": true
+  },
+  "execution_state": {
+    "cluster_started": false,
+    "deployment_started": false,
+    "selection_started": false,
+    "injection_started": false,
+    "pilot_started": false,
+    "formal_started": false
+  }
+}
