@@ -45,7 +45,8 @@
 | 可用性层：单副本无 PDB kill 必瘫（front-end 130s / orders 56s / user 155s / carts+shipping 全瘫瞬间） | sock_availability_layer_verified.md；avail_*_kill.json | SOCK | **confirmed** | 恢复时长含环境抖动；未测多副本正例 |
 | 可用性层与 CE 判定一致（front-end 单副本） | 同上 + chaos_eater_deployed_vs_ours.md | SOCK | **supplementary** | 我们的实验在 CE 结论之后设计（确认偏误已标注）；测量不对称（k6 流量 vs 无流量 Ready） |
 | 盲法静态预测可用性 5/5 runtime 对齐（不看 CE 报告） | sock_blind_availability_predictions.json | SOCK | **confirmed** | 3 服务（payment/catalogue/queue-master）仅静态推断 |
-| 冻结知识重放 8/8 对齐（仅凭预实验静态字节码） | sock_frozen_knowledge_predictions.json | SOCK | **confirmed** | 证明"知识资产化"而非"事后偷看"；仍是同项目 |
+| 冻结静态知识预测 8/8 对齐（仅凭预实验静态字节码） | sock_frozen_static_prediction_audit.json（原 sock_frozen_knowledge_predictions 语义，2026-08-10 改名） | SOCK | **confirmed（作为 static prediction audit）** | 只证明"预实验静态知识预测可复现"（evaluation reproducibility of knowledge），不是引擎冻结重放；仍同项目 |
+| 完整四源 frozen engine replay | sock_frozen_decision_engine_replay.json | SOCK | **blocked** | SE/DP/JE 无实验前干净 commit（f870e32 为 r2-pre 非 Sock-pre）；引擎机制已实现（snapshot 注入零 live 读取）但四源无法声明实验前知识；loss_bounded 为 static_inferred；不得宣称实验前冻结引擎重放 |
 | C8 叠加效应（契约弱 × 可用性弱） | sock_combined_frontend_carts.json（并发注入可行，front-end 全瘫 124s） | SOCK | **pilot** | 定量延迟放大被负载污染未报告；叠加为三证据合成，非独立交互实验 |
 | M1 扩展探索 5/5 验证为真实弱点 | comparison_full_summary.md（prospective r1） | TT/OB/OTEL | **confirmed** | 样本 5，执行后已知（探索成本未入对比模型） |
 | M1 vs M5-select（加评分反损探索） | m1_vs_m5select_comparison.md | TT/OB/OTEL | **pilot** | 单池单轮 |

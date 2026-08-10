@@ -46,6 +46,95 @@ def load(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+# ---------------------------------------------------------------------------
+# Knowledge-snapshot injection (frozen decision-engine replay, 2026-08-10).
+#
+# The engine's six knowledge consumers read live files by default. For a
+# frozen replay we inject an explicit KnowledgeSnapshot so the engine reads
+# NOTHING from live files/module registries. A snapshot is a dict:
+#
+#   {
+#     "schema_version": 1,
+#     "provenance": {...},                    # kind/source_commit/sha256 etc
+#     "contract": {"contracts": {}, "availability": {}, "candidate_map": {}},
+#     "selection_experience": {"entries": []},
+#     "defense_pattern_library": {"patterns": []},
+#     "judgment_experience": {"entries": []},
+#   }
+#
+# When a *_snapshot argument is None the consumer keeps the historical live
+# behavior; when non-None it MUST NOT touch live files or module-level
+# registries. Unknown/absent fields fail closed with a clear error.
+# ---------------------------------------------------------------------------
+
+SNAPSHOT_SCHEMA_VERSION = 1
+
+
+def _fail_closed(what: str, missing: str) -> None:
+    raise ValueError(
+        f"knowledge snapshot missing required field '{missing}' in {what}; "
+        "refusing to fall back to live knowledge (frozen replay must be isolated)"
+    )
+
+
+def _snapshot_contract(snapshot: dict[str, Any] | None, label: str) -> dict[str, Any]:
+    if snapshot is None:
+        return {}
+    contract = snapshot.get("contract")
+    if not isinstance(contract, dict):
+        _fail_closed(label, "contract")
+    for key in ("contracts", "availability", "candidate_map"):
+        if key not in contract:
+            _fail_closed(label, f"contract.{key}")
+    return contract
+
+
+def _snapshot_se(snapshot: dict[str, Any] | None, label: str) -> dict[str, Any]:
+    if snapshot is None:
+        return {}
+    se = snapshot.get("selection_experience")
+    if not isinstance(se, dict) or "entries" not in se:
+        _fail_closed(label, "selection_experience.entries")
+    return se
+
+
+def _snapshot_dp(snapshot: dict[str, Any] | None, label: str) -> dict[str, Any]:
+    if snapshot is None:
+        return {}
+    dp = snapshot.get("defense_pattern_library")
+    if not isinstance(dp, dict) or "patterns" not in dp:
+        _fail_closed(label, "defense_pattern_library.patterns")
+    return dp
+
+
+def _snapshot_je(snapshot: dict[str, Any] | None, label: str) -> dict[str, Any]:
+    if snapshot is None:
+        return {}
+    je = snapshot.get("judgment_experience")
+    if not isinstance(je, dict) or "entries" not in je:
+        _fail_closed(label, "judgment_experience.entries")
+    return je
+
+
+def validate_knowledge_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Validate the full snapshot schema; fail closed on any missing section."""
+    label = "knowledge_snapshot"
+    if not isinstance(snapshot, dict):
+        raise ValueError("knowledge_snapshot must be a dict")
+    if snapshot.get("schema_version") != SNAPSHOT_SCHEMA_VERSION:
+        raise ValueError(
+            f"knowledge_snapshot schema_version must be {SNAPSHOT_SCHEMA_VERSION}, "
+            f"got {snapshot.get('schema_version')!r}"
+        )
+    if not isinstance(snapshot.get("provenance"), dict) or not snapshot["provenance"].get("kind"):
+        _fail_closed(label, "provenance.kind")
+    _snapshot_contract(snapshot, label)
+    _snapshot_se(snapshot, label)
+    _snapshot_dp(snapshot, label)
+    _snapshot_je(snapshot, label)
+    return snapshot
+
+
 def _se_weight(entry: dict[str, Any]) -> float:
     """Weight of a selection rule: confidence-scaled, contested halved."""
     w = {"high": 1.0, "medium": 0.6, "low": 0.3}.get(entry.get("confidence"), 0.5)
@@ -54,11 +143,15 @@ def _se_weight(entry: dict[str, Any]) -> float:
     return w
 
 
-def selection_hits(candidate: dict[str, Any]) -> list[tuple[str, float]]:
-    """Which SE rules this candidate matches, with effective weight."""
+def selection_hits(candidate: dict[str, Any], se_snapshot: dict[str, Any] | None = None) -> list[tuple[str, float]]:
+    """Which SE rules this candidate matches, with effective weight.
+
+    se_snapshot=None -> live selection_experience.json (historical behavior).
+    se_snapshot given -> use ONLY the snapshot; never read the live file.
+    """
     from project_registry import fault_of, normalize_service
 
-    se = load(SE_PATH)
+    se = _snapshot_se(se_snapshot, "selection_hits") or load(SE_PATH)
     cid = candidate.get("candidate_id", "")
     service = normalize_service(cid, strict=True)
     fault = fault_of(cid)
@@ -82,19 +175,30 @@ def selection_hits(candidate: dict[str, Any]) -> list[tuple[str, float]]:
     return hits
 
 
-def defense_downgrade(candidate: dict[str, Any]) -> dict[str, Any]:
-    """Skip/priority-low recommendation from the defense-pattern library."""
+def defense_downgrade(candidate: dict[str, Any], dp_snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Skip/priority-low recommendation from the defense-pattern library.
+
+    dp_snapshot=None -> live defense_pattern_library.json (historical).
+    dp_snapshot given -> use ONLY the snapshot patterns.
+    """
     from defense_pattern_library import query_downgrade, load_library
 
-    lib = load_library(DP_PATH)
+    if dp_snapshot is not None:
+        lib = _snapshot_dp(dp_snapshot, "defense_downgrade")
+    else:
+        lib = load_library(DP_PATH)
     return query_downgrade(candidate, lib)
 
 
-def judgment_hint(candidate: dict[str, Any]) -> str:
-    """Severity-adjustment hint from judgment experience, or empty."""
+def judgment_hint(candidate: dict[str, Any], je_snapshot: dict[str, Any] | None = None) -> str:
+    """Severity-adjustment hint from judgment experience, or empty.
+
+    je_snapshot=None -> live judgment_experience.json (historical).
+    je_snapshot given -> use ONLY the snapshot entries.
+    """
     from project_registry import normalize_service
 
-    je = load(JE_PATH)
+    je = _snapshot_je(je_snapshot, "judgment_hint") or load(JE_PATH)
     service = normalize_service(candidate.get("candidate_id", "") or "")
     for entry in je.get("entries", []):
         if entry.get("id") == "JE-COUPLING-001" and service == "EMAIL":
@@ -104,7 +208,7 @@ def judgment_hint(candidate: dict[str, Any]) -> str:
     return ""
 
 
-def availability_hard_filter(candidate: dict[str, Any]) -> dict[str, Any]:
+def availability_hard_filter(candidate: dict[str, Any], contract_snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
     """Availability-layer hard constraint (dual-track, 2026-08-09).
 
     A KILL/CPU candidate on a service whose static deployment profile shows NO
@@ -117,6 +221,10 @@ def availability_hard_filter(candidate: dict[str, Any]) -> dict[str, Any]:
     comes from the contract-inventory AVAILABILITY registry (manifest facts),
     the rule is an auditable rule in this engine, and the evidence is
     static(manifest) + runtime(kill) dual-chain, not a single threshold.
+
+    contract_snapshot=None -> live behavior via contract_inventory.
+    contract_snapshot given -> use ONLY snapshot.contract.availability, NEVER
+    the module-level AVAILABILITY constant in contract_inventory.py.
     """
     from project_registry import project_of, normalize_service, fault_of
 
@@ -125,45 +233,62 @@ def availability_hard_filter(candidate: dict[str, Any]) -> dict[str, Any]:
         return {}
     if fault_of(cid) not in ("kill", "cpu"):
         return {}
-    from contract_inventory import availability_for_service
+    project = project_of(cid, strict=True)
+    service_key = normalize_service(cid, strict=True)
+    if contract_snapshot is not None:
+        contract = _snapshot_contract(contract_snapshot, "availability_hard_filter")
+        availability = contract.get("availability") or {}
+        avail_profile = availability.get(project) or {}
+        profile = avail_profile.get(service_key)
+    else:
+        from contract_inventory import availability_for_service
 
-    # Phase-4: strict=True so an unknown project fails closed instead of being
-    # silently routed into the train-ticket availability universe.
-    profile = availability_for_service(project_of(cid, strict=True), normalize_service(cid, strict=True))
+        profile = availability_for_service(project, service_key)
     if not profile:
         return {}
     redundant = int(profile.get("replicas", 1)) > 1 or bool(profile.get("pdb"))
+    service_name = profile.get("service", service_key)
     if not redundant:
         return {
             "hard_skip": True,
             "availability": True,
             "reason": (
-                f"service {profile['service']} is single-replica no-PDB "
+                f"service {service_name} is single-replica no-PDB "
                 f"(static manifest): {cid.split('-')[0]} kill/cpu of the only pod = "
                 f"total outage, verdict known a priori (AD-REDUNDANCY-001); "
                 f"execute only for evidence-chain completeness, not for selection"
             ),
             "evidence": profile.get("static_prediction", "")[:100],
         }
-    return {"redundant": True, "reason": f"service {profile['service']} has redundancy (replicas={profile['replicas']})"}
+    return {"redundant": True, "reason": f"service {service_name} has redundancy (replicas={profile.get('replicas')})"}
 
 
-def contract_hard_filter(candidate: dict[str, Any]) -> dict[str, Any]:
+def contract_hard_filter(candidate: dict[str, Any], contract_snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
     """Contract inventory as a HARD constraint (not a hint): a delay candidate
     on a source-verified explicit_timeout edge is protected (timeout covers
     delay) and must be skipped before any scoring. Loss faults are NOT
-    protected by a timeout. Returns the skip decision or empty dict."""
-    inv_path = EXPERIMENTS / "contract_inventory.json"
-    if not inv_path.exists():
-        return {}
-    inv = json.loads(inv_path.read_text(encoding="utf-8"))
-    cand_map = inv.get("candidate_map", {})
+    protected by a timeout. Returns the skip decision or empty dict.
+
+    contract_snapshot=None -> live contract_inventory.json (historical).
+    contract_snapshot given -> use ONLY snapshot.contract.{contracts,candidate_map};
+    NEVER read the live JSON file.
+    """
+    if contract_snapshot is not None:
+        contract = _snapshot_contract(contract_snapshot, "contract_hard_filter")
+        cand_map = contract.get("candidate_map") or {}
+        contracts = contract.get("contracts") or {}
+    else:
+        inv_path = EXPERIMENTS / "contract_inventory.json"
+        if not inv_path.exists():
+            return {}
+        inv = json.loads(inv_path.read_text(encoding="utf-8"))
+        cand_map = inv.get("candidate_map", {})
+        contracts = inv.get("contracts", {})
     cid = candidate.get("candidate_id", "")
     # Prefer the candidate->contract-edge map (business edge strings like
     # 'frontend->productcatalog' are NOT the contract keys); fall back to the
     # candidate-provided edge only if no map entry exists.
     edge = cand_map.get(cid) or candidate.get("edge")
-    contracts = inv.get("contracts", {})
     contract = contracts.get(edge or "")
     if not contract:
         return {}
@@ -187,11 +312,18 @@ def contract_hard_filter(candidate: dict[str, Any]) -> dict[str, Any]:
     return {}
 
 
-def score_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
-    """Score a candidate from the three libraries (no LLM)."""
+def score_candidate(candidate: dict[str, Any], knowledge_snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
+    """Score a candidate from the three libraries (no LLM).
+
+    knowledge_snapshot=None -> historical live behavior.
+    knowledge_snapshot given -> pass the SAME snapshot to every downstream
+    helper so the engine reads nothing from live files/module registries.
+    """
+    if knowledge_snapshot is not None:
+        validate_knowledge_snapshot(knowledge_snapshot)
     # Hard constraint 1: availability layer — single-replica no-PDB kill/cpu
     # verdict is known a priori (AD-REDUNDANCY-001), route to availability track.
-    avail = availability_hard_filter(candidate)
+    avail = availability_hard_filter(candidate, contract_snapshot=knowledge_snapshot)
     if avail.get("hard_skip"):
         return {
             "candidate_id": candidate.get("candidate_id"),
@@ -203,7 +335,7 @@ def score_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
             "availability_track": True,
         }
     # Hard constraint 2: contract layer — timeout-protected delay is excluded.
-    hard = contract_hard_filter(candidate)
+    hard = contract_hard_filter(candidate, contract_snapshot=knowledge_snapshot)
     if hard.get("hard_skip"):
         return {
             "candidate_id": candidate.get("candidate_id"),
@@ -213,10 +345,10 @@ def score_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
             "reasons": [hard["reason"]],
             "hard_skip": True,
         }
-    hits = selection_hits(candidate)
+    hits = selection_hits(candidate, se_snapshot=knowledge_snapshot)
     base = float(candidate.get("base_score", BASE))
     se_score = sum(weight for _, weight in hits) * 10.0
-    downgrade = defense_downgrade(candidate)
+    downgrade = defense_downgrade(candidate, dp_snapshot=knowledge_snapshot)
     score = base + se_score
     priority = "high"
     reasons = [f"base {base:.0f}"]
@@ -232,7 +364,7 @@ def score_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
             score -= 10.0
             priority = "low"
             reasons.append(f"DP downgrade: {downgrade.get('mechanism')}")
-    hint = judgment_hint(candidate)
+    hint = judgment_hint(candidate, je_snapshot=knowledge_snapshot)
     if hint:
         if "upgrade" in hint:
             score += 10.0
@@ -251,8 +383,13 @@ def score_candidate(candidate: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def rank(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    ranked = sorted((score_candidate(c) for c in candidates), key=lambda r: (-r["score"], r["candidate_id"]))
+def rank(candidates: list[dict[str, Any]], knowledge_snapshot: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+    """Rank candidates; when a snapshot is given it is forwarded to EVERY
+    score_candidate call so the replay reads nothing from live knowledge."""
+    ranked = sorted(
+        (score_candidate(c, knowledge_snapshot=knowledge_snapshot) for c in candidates),
+        key=lambda r: (-r["score"], r["candidate_id"]),
+    )
     for i, r in enumerate(ranked, 1):
         r["rank"] = i
     return ranked

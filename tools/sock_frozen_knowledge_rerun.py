@@ -1,31 +1,26 @@
-"""Frozen-knowledge rerun: decision_engine with PRE-EXPERIMENT static evidence only.
+"""Frozen-knowledge replay for Sock Shop: TWO products (2026-08-10).
 
-Purpose (audit round-2 fix #1, true re-validation): the earlier three-method
-comparison claimed "frozen_before_execution" but the contract_inventory SOCK
-entries were written AFTER the experiments (post-hoc backfill at 19:57). This
-rerun redoes the decision_engine prediction using ONLY knowledge derivable from
-STATIC analysis that predates the real-chain experiments:
+The old script called score_candidate() (which read live knowledge) and then
+overrode the prediction with a hardcoded FROZEN_KNOWLEDGE value. That is a
+STATIC PREDICTION AUDIT, not an engine replay. This rewrite splits into two
+independent products:
 
-  Static bytecode evidence (orders:0.4.7 jar, javap -p -c):
-    - OrdersController.newOrder: 3x Future.get(timeout, TimeUnit.SECONDS)
-      at bytecode offsets 153/178/201
-    - class constant string "${http.timeout:5}"  -> default timeout = 5s
-    - TimeoutException in catch; error msg "Unable to create order due to
-      timeout from one of the services."
-  Static manifest evidence (deployment yaml):
-    - front-end->carts/catalogue: no timeout config in code paths we read
+  1. sock_frozen_static_prediction_audit.json (KEPT, renamed from
+     sock_frozen_knowledge_predictions.json semantics): compares the static
+     prediction (derived only from pre-experiment bytecode/manifest) against
+     the experiment ground truth. This is evaluation reproducibility of the
+     STATIC KNOWLEDGE, not of the engine.
 
-This rerun does NOT read any experiment result file. The frozen registry below
-is derived ONLY from the static facts above. The engine output is then compared
-to the frozen ground truth (which came from the real-chain experiments) to show:
-  (a) the engine, given pre-experiment static knowledge, makes the SAME
-      defended/weakness calls the experiments later confirmed;
-  (b) that is a genuine knowledge-assetization result, not a post-hoc leak.
-
-The one honest caveat: "orders->payment/shipping are the key-path downstreams"
-is an architecture fact knowable before running experiments (orders is the
-order-placement service; payment/shipping are its direct calls). We assert that
-as pre-experiment knowledge too (it is structural, not behavioral).
+  2. sock_frozen_decision_engine_replay.json (NEW): runs the REAL engine
+     (score_candidate / rank) with a knowledge_snapshot injected so that NO
+     live JSON and NO module-level registry is read. The engine's actual
+     output (hard_skip/priority/score/reasons) is recorded; the static
+     prediction and ground truth are recorded SEPARATELY. hard_skip=False is
+     NOT interpreted as weakness. Because SE/DP/JE in the snapshot are marked
+     posthoc_or_current (no pre-Sock-experiment clean commit exists), the
+     replay product is marked status=blocked for a full four-source
+     experiment-pre claim — the engine-replay mechanism itself works, but it
+     cannot claim experiment-pre knowledge for SE/DP/JE.
 """
 
 from __future__ import annotations
@@ -34,59 +29,29 @@ import json
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from decision_engine import score_candidate  # noqa: E402
+from decision_engine import rank, score_candidate, validate_knowledge_snapshot  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / "artifacts" / "sock-shop" / "sock_frozen_knowledge_predictions.json"
+SNAPSHOT = ROOT / "artifacts" / "sock-shop" / "sock_knowledge_snapshot_static.json"
+AUDIT_OUT = ROOT / "artifacts" / "sock-shop" / "sock_frozen_static_prediction_audit.json"
+REPLAY_OUT = ROOT / "artifacts" / "sock-shop" / "sock_frozen_decision_engine_replay.json"
 
-# --- PRE-EXPERIMENT static knowledge (NO experiment data) ---
-# Derived only from jar javap (bytecode) + manifest reading.
-FROZEN_KNOWLEDGE: dict[str, dict] = {
-    "SOCK-ORDERS-PAYMENT-DELAY-2000": {
-        "edge": "orders->payment",
-        "static_evidence": "orders jar OrdersController.newOrder: Future.get(timeout,SECONDS) @153; ${http.timeout:5}",
-        "prediction": "defended",  # timeout 5s bounds delay <5s
-    },
-    "SOCK-ORDERS-PAYMENT-LOSS-100": {
-        "edge": "orders->payment",
-        "static_evidence": "same Future.get; loss -> connection error -> Future.get throws/fails bounded",
-        "prediction": "defended",
-    },
-    "SOCK-ORDERS-SHIPPING-DELAY-2000": {
-        "edge": "orders->shipping",
-        "static_evidence": "orders jar OrdersController.newOrder: Future.get(timeout,SECONDS) @178; ${http.timeout:5}",
-        "prediction": "defended",
-    },
-    "SOCK-ORDERS-SHIPPING-LOSS-100": {
-        "edge": "orders->shipping",
-        "static_evidence": "same Future.get @201",
-        "prediction": "defended",
-    },
-    "SOCK-FRONTEND-CARTS-DELAY-2000": {
-        "edge": "front-end->carts",
-        "static_evidence": "front-end api/cart/index.js: synchronous request(), no timeout on downstream fetch",
-        "prediction": "weakness",
-    },
-    "SOCK-FRONTEND-CARTS-LOSS-100": {
-        "edge": "front-end->carts",
-        "static_evidence": "same; no timeout -> caller hangs on loss",
-        "prediction": "weakness",
-    },
-    "SOCK-FRONTEND-CATALOGUE-DELAY-2000": {
-        "edge": "front-end->catalogue",
-        "static_evidence": "front-end api/catalogue: synchronous request(), no timeout",
-        "prediction": "weakness",
-    },
-    "SOCK-FRONTEND-CATALOGUE-LOSS-100": {
-        "edge": "front-end->catalogue",
-        "static_evidence": "same; no timeout -> caller hangs on loss",
-        "prediction": "weakness",
-    },
+# Static predictions derived ONLY from pre-experiment evidence (jar javap /
+# manifest), independent of the engine.
+STATIC_PREDICTIONS = {
+    "SOCK-ORDERS-PAYMENT-DELAY-2000": "defended",
+    "SOCK-ORDERS-PAYMENT-LOSS-100": "defended",
+    "SOCK-ORDERS-SHIPPING-DELAY-2000": "defended",
+    "SOCK-ORDERS-SHIPPING-LOSS-100": "defended",
+    "SOCK-FRONTEND-CARTS-DELAY-2000": "weakness",
+    "SOCK-FRONTEND-CARTS-LOSS-100": "weakness",
+    "SOCK-FRONTEND-CATALOGUE-DELAY-2000": "weakness",
+    "SOCK-FRONTEND-CATALOGUE-LOSS-100": "weakness",
 }
 
-# Ground truth came from the real-chain experiments (2026-08-09).
+# Ground truth from the real-chain / availability experiments (frozen).
 GROUND_TRUTH = {
     "SOCK-ORDERS-PAYMENT-DELAY-2000": "defended",
     "SOCK-ORDERS-PAYMENT-LOSS-100": "defended",
@@ -98,59 +63,109 @@ GROUND_TRUTH = {
     "SOCK-FRONTEND-CATALOGUE-LOSS-100": "weakness",
 }
 
+# Alignment rule: hard_skip=True on a contract edge whose static prediction is
+# 'defended' is an aligned protected-skip; hard_skip=False on an unprotected
+# edge (static 'weakness') means 'would execute' which is aligned with weakness
+# discovery. But hard_skip=False does NOT itself mean weakness — the engine
+# only recommends execution; the ground truth is the authority.
+def align_engine(engine: dict, static_pred: str, truth: str) -> tuple[bool, str]:
+    if static_pred == "defended":
+        # protected edge: engine should hard-skip
+        ok = bool(engine.get("hard_skip"))
+        return ok, "protected_skip_aligned" if ok else "protected_skip_missed"
+    # unprotected edge: engine should recommend execution (no hard skip)
+    ok = not engine.get("hard_skip")
+    return ok, "unprotected_execute_aligned" if ok else "unprotected_wrongly_skipped"
+
 
 def main() -> int:
-    # Build the engine's view from the FROZEN registry only: for each candidate,
-    # ask the engine, but first force the contract inventory to be ignored and
-    # use only FROZEN_KNOWLEDGE. We emulate "frozen" by feeding the engine a
-    # candidate with edge + a hard-coded contract hint the way contract_hard_filter
-    # would see it. Simplest honest approach: call score_candidate and then
-    # OVERRIDE the contract dimension with the frozen knowledge, documenting that
-    # the live registry (backfilled post-hoc) is NOT used here.
-    rows = []
-    for cid, truth in GROUND_TRUTH.items():
-        frozen = FROZEN_KNOWLEDGE[cid]
-        # engine call (its contract_hard_filter may or may not hit; we record both)
-        engine = score_candidate({"candidate_id": cid})
-        # frozen-knowledge verdict is the prediction
-        pred = frozen["prediction"]
-        aligned = pred == truth
-        rows.append({
-            "candidate_id": cid,
-            "edge": frozen["edge"],
-            "frozen_static_prediction": pred,
-            "engine_hard_skip": bool(engine.get("hard_skip")),
-            "experiment_ground_truth": truth,
-            "aligned": aligned,
-            "static_evidence": frozen["static_evidence"],
-        })
+    snapshot = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
+    validate_knowledge_snapshot(snapshot)
+    candidates = [{"candidate_id": cid, "edge": "unknown"} for cid in STATIC_PREDICTIONS]
 
-    result = {
+    # ---------------- product 1: static prediction audit ----------------
+    audit_rows = []
+    for cid in STATIC_PREDICTIONS:
+        pred = STATIC_PREDICTIONS[cid]
+        truth = GROUND_TRUTH[cid]
+        audit_rows.append({
+            "candidate_id": cid,
+            "static_prediction": pred,
+            "experiment_ground_truth": truth,
+            "aligned": pred == truth,
+        })
+    audit = {
         "schema_version": 1,
-        "tool": "sock_frozen_knowledge_rerun",
-        "date": "2026-08-09",
-        "audit_fix": "round-2 #1: decision_engine knowledge frozen at PRE-EXPERIMENT static bytecode (jar javap), not post-hoc backfill",
-        "knowledge_source": "static bytecode (OrdersController Future.get x3, ${http.timeout:5}, TimeoutException) + manifest reads - NO experiment result files read",
-        "caveat": "orders->payment/shipping being key-path downstreams is structural architecture knowledge (knowable pre-experiment), asserted not measured here",
-        "rows": rows,
-        "summary": {
-            "total": len(rows),
-            "aligned": sum(1 for r in rows if r["aligned"]),
-            "predicted_defended": sum(1 for r in rows if r["frozen_static_prediction"] == "defended"),
-            "predicted_weakness": sum(1 for r in rows if r["frozen_static_prediction"] == "weakness"),
-            "interpretation": (
-                "Frozen static knowledge alone predicts all 8 verdicts correctly "
-                "(aligned = experiment-confirmed). This shows the engine's value is "
-                "knowledge assetization, not post-hoc peeking: the SAME predictions "
-                "are obtainable before running the experiments."
-            ),
-        },
+        "tool": "sock_frozen_static_prediction_audit",
+        "date": "2026-08-10",
+        "status": "valid",
+        "product_note": (
+            "STATIC PREDICTION AUDIT (NOT engine replay): static predictions are "
+            "derived ONLY from pre-experiment bytecode/manifest (orders jar javap "
+            "Future.get x3 + ${http.timeout:5}; front-end synchronous request no-timeout). "
+            "This proves the static knowledge itself predicts the observed ground truth "
+            "(evaluation reproducibility of the knowledge), not that the engine was re-run "
+            "with frozen inputs."
+        ),
+        "aligned_count": sum(1 for r in audit_rows if r["aligned"]),
+        "total": len(audit_rows),
+        "rows": audit_rows,
     }
-    OUT.write_text(json.dumps(result, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
-    print(json.dumps(result["summary"], indent=2, ensure_ascii=False))
-    for r in rows:
-        mark = "OK " if r["aligned"] else "!! "
-        print(f"{mark}{r['candidate_id']:36s} frozen={r['frozen_static_prediction']:9s} truth={r['experiment_ground_truth']}")
+    AUDIT_OUT.write_text(json.dumps(audit, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+
+    # ---------------- product 2: engine replay ----------------
+    # Run the REAL engine with the injected snapshot. The engine reads nothing
+    # live when a snapshot is present.
+    replay_rows = []
+    for cid in STATIC_PREDICTIONS:
+        cand = {"candidate_id": cid, "edge": "unknown"}
+        engine = score_candidate(cand, knowledge_snapshot=snapshot)
+        pred = STATIC_PREDICTIONS[cid]
+        truth = GROUND_TRUTH[cid]
+        aligned, rule = align_engine(engine, pred, truth)
+        replay_rows.append({
+            "candidate_id": cid,
+            "engine_output": {
+                "hard_skip": bool(engine.get("hard_skip")),
+                "priority": engine.get("priority"),
+                "score": engine.get("score"),
+                "reasons": engine.get("reasons", [])[:4],
+            },
+            "static_prediction": pred,
+            "experiment_ground_truth": truth,
+            "alignment_definition": rule,
+            "aligned": aligned,
+            "provenance_status": snapshot["source_provenance"],
+        })
+    replay = {
+        "schema_version": 1,
+        "tool": "sock_frozen_decision_engine_replay",
+        "date": "2026-08-10",
+        "status": "blocked",
+        "status_reason": (
+            "Engine-replay mechanism is implemented and runs with zero live reads "
+            "(snapshot injected into all six consumers + rank), but SE/DP/JE in the "
+            "snapshot are posthoc_or_current — no pre-Sock-experiment clean commit "
+            "exists (f870e32 is r2-pre, not Sock-pre). A full four-source "
+            "experiment-pre frozen engine replay therefore CANNOT claim experiment-pre "
+            "knowledge. Only the static prediction audit (product 1) is a valid "
+            "evaluation-reproducibility claim."
+        ),
+        "zero_live_read": True,
+        "engine_outputs_are_engine": True,
+        "static_prediction_not_overriding_engine": True,
+        "aligned_count": sum(1 for r in replay_rows if r["aligned"]),
+        "total": len(replay_rows),
+        "rows": replay_rows,
+    }
+    REPLAY_OUT.write_text(json.dumps(replay, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+
+    print(f"audit: {AUDIT_OUT.name} aligned {audit['aligned_count']}/{audit['total']}")
+    print(f"replay: {REPLAY_OUT.name} status={replay['status']} aligned {replay['aligned_count']}/{replay['total']}")
+    for r in replay_rows:
+        print(f"  {r['candidate_id']:38s} hard_skip={r['engine_output']['hard_skip']} "
+              f"prio={r['engine_output']['priority']:<16} static={r['static_prediction']:9s} "
+              f"truth={r['experiment_ground_truth']:9s} {r['alignment_definition']}")
     return 0
 
 

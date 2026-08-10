@@ -51,7 +51,9 @@
 ## 修复后的诚实结论（论文警示）
 
 1. **决策引擎 vs 盲选**：不是等时序公平对比。引擎的 4/4 是"知识资产化后验行为"的证据；M1 单次 4/4 是运气（不可复现）；M0 49% 期望浪费是分布事实。
-   - **重验证完成（方案1）**：`sock_frozen_knowledge_rerun.py` 仅凭**预实验静态字节码**（jar javap: Future.get x3 @153/178/201, `${http.timeout:5}`, TimeoutException）预测 8 边 → **8/8 与实验真值对齐**。证明引擎价值来自知识资产化而非事后偷看——同样的预测在实验前就可得出。
+   - **重验证完成（方案1，2026-08-10 修正）**：原 `sock_frozen_knowledge_rerun.py` 曾调用读 live 的 `score_candidate()` 再用硬编码 `pred` 覆盖——那是 **static prediction audit**，不是 engine replay。修正后（第五锁点）：六函数 + `rank()` 支持 `knowledge_snapshot` 注入，非 None 时**零 live 读取**（测试用抛异常 loader 验证）；产物拆为两个：
+     - `sock_frozen_static_prediction_audit.json`（valid 8/8）：静态预测 vs 实验真值——仅证明**预实验静态知识可复现**（evaluation reproducibility of knowledge）；
+     - `sock_frozen_decision_engine_replay.json`（**blocked**）：引擎在注入 snapshot 下真实输出（hard_skip/priority/score/reasons），未被静态 pred 覆盖；但因 SE/DP/JE 无实验前干净 commit（f870e32 是 r2-pre 非 Sock-pre，已含 Sock 条目），四源快照无法声明实验前知识 → 完整 replay 标记 **blocked**，不得宣称实验前冻结引擎重放。`loss_bounded` 标记 `static_inferred`。
 2. **16/16**：只能证明"引擎与自己的注册知识一致"，不是独立真值验证。论文引用时须以实验文件（real-chain/pod-kill/CE parity）为真值来源。
 3. **C8 叠加效应**：**重验证完成（方案4）**：`sock_combined_frontend_carts.json` 证明两故障（downstream delay 2s + pod-kill）可并发注入互不干扰，front-end 全瘫 124s。定量延迟放大被本轮环境负载污染（基线 3.5s），不报告；契约层放大由 SOCK-FRONTEND-CARTS-DELAY-2000 独立证据支撑。论文可写"并发注入可行性已验证"，定量叠加数字需低负载补测。
 4. **可用性层 vs CE**：确认偏误已标注，**重验证完成（方案3）**：`sock_blind_availability_predict.py` 不看 CE 报告、仅凭 manifest 对 8 服务预测 → **5/5 runtime 对齐**（其余 3 服务静态推断）。CE 对照降为佐证，"追平"限定为"CE 结论之后的独立复现"。

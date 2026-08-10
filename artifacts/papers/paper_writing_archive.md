@@ -214,7 +214,7 @@
 - `artifacts/experiments/chaos_eater_deployed_vs_ours.md` — CE 真实部署对比
 - `tools/sock_dual_track_pool.py` — 双轨统一池生成器（论文实验章可复现）
 - `tools/backfill_experience_gaps.py` — 知识库缺口回填（审计→补全可复现）
-- `tools/sock_frozen_knowledge_rerun.py` + `sock_frozen_knowledge_predictions.json` — **重验证1**：仅凭预实验静态字节码预测 8 边 → 8/8 对齐（堵自证循环）
+- `tools/sock_frozen_knowledge_rerun.py` + `sock_frozen_static_prediction_audit.json`（原 sock_frozen_knowledge_predictions 语义，2026-08-10 改名）+ `sock_frozen_decision_engine_replay.json` — **重验证1（修正）**：静态预测审计 8/8 对齐（仅凭预实验静态字节码，堵自证循环）；完整四源 engine replay 因 SE/DP/JE 无实验前干净 commit 标记 **blocked**（机制已实现：snapshot 注入六函数+rank、零 live 读取；loss_bounded 为 static_inferred）
 - `tools/sock_blind_availability_predict.py` + `sock_blind_availability_predictions.json` — **重验证3**：不看 CE 报告、仅凭 manifest 预测可用性 → 5/5 runtime 对齐（堵确认偏误）
 - `tools/sock_combined_inject.sh` + `sock_combined_frontend_carts.json` — **重验证4**：delay+kill 并发注入 → front-end 全瘫 124s（C8 并发可行性实证）
 

@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "tool": "sock_frozen_static_prediction_audit",
+  "date": "2026-08-10",
+  "status": "valid",
+  "product_note": "STATIC PREDICTION AUDIT (NOT engine replay): static predictions are derived ONLY from pre-experiment bytecode/manifest (orders jar javap Future.get x3 + ${http.timeout:5}; front-end synchronous request no-timeout). This proves the static knowledge itself predicts the observed ground truth (evaluation reproducibility of the knowledge), not that the engine was re-run with frozen inputs.",
+  "aligned_count": 8,
+  "total": 8,
+  "rows": [
+    {
+      "candidate_id": "SOCK-ORDERS-PAYMENT-DELAY-2000",
+      "static_prediction": "defended",
+      "experiment_ground_truth": "defended",
+      "aligned": true
+    },
+    {
+      "candidate_id": "SOCK-ORDERS-PAYMENT-LOSS-100",
+      "static_prediction": "defended",
+      "experiment_ground_truth": "defended",
+      "aligned": true
+    },
+    {
+      "candidate_id": "SOCK-ORDERS-SHIPPING-DELAY-2000",
+      "static_prediction": "defended",
+      "experiment_ground_truth": "defended",
+      "aligned": true
+    },
+    {
+      "candidate_id": "SOCK-ORDERS-SHIPPING-LOSS-100",
+      "static_prediction": "defended",
+      "experiment_ground_truth": "defended",
+      "aligned": true
+    },
+    {
+      "candidate_id": "SOCK-FRONTEND-CARTS-DELAY-2000",
+      "static_prediction": "weakness",
+      "experiment_ground_truth": "weakness",
+      "aligned": true
+    },
+    {
+      "candidate_id": "SOCK-FRONTEND-CARTS-LOSS-100",
+      "static_prediction": "weakness",
+      "experiment_ground_truth": "weakness",
+      "aligned": true
+    },
+    {
+      "candidate_id": "SOCK-FRONTEND-CATALOGUE-DELAY-2000",
+      "static_prediction": "weakness",
+      "experiment_ground_truth": "weakness",
+      "aligned": true
+    },
+    {
+      "candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100",
+      "static_prediction": "weakness",
+      "experiment_ground_truth": "weakness",
+      "aligned": true
+    }
+  ]
+}
