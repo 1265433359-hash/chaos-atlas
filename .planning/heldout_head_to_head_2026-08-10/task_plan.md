@@ -42,8 +42,8 @@ Do not start P3, P5 or P6 until ESHOP/SOCIALNET snapshots are valid and their ve
 |---|---|---|---|
 | V12-0 | Define pooled estimand without changing v1.1 | complete | v1.2 MD/JSON records coexistence and separate denominators |
 | V12-1 | Read-only pooled feasibility check | complete | Hotel/SOCIALNET/TeaStore recompute to 16/35/32/83 |
-| V12-2 | Amendment review and approval | pending | user approves v1.2 before execution pool freeze |
-| V12-3 | Fresh v1.2 candidate registry freeze | pending | no result-derived filtering; hashes and provenance locked |
+| V12-2 | Amendment review and approval | complete | user approved v1.2 on 2026-08-10 |
+| V12-3 | Fresh v1.2 candidate registry freeze | complete | 83 unique candidates; source/protocol hashes locked |
 | V12-4 | v1.2 pilot/formal execution | pending | only after method/runner/CE gates pass |
 
 v1.1 remains frozen and may proceed only with its per-project quotas. v1.2 uses pooled quotas and project-equal inference; neither protocol may relabel the other's results.

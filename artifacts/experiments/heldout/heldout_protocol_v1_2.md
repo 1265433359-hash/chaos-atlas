@@ -1,8 +1,10 @@
 # Held-out Protocol v1.2 (Parallel Amendment)
 
-Status: `draft_ready_for_approval`
+Status: `frozen_user_approved`
 Coexists with: `heldout_protocol_v1_1`
 Execution status: not started
+
+Approval: user-approved on 2026-08-10. v1.1 remains unchanged.
 
 ## Why v1.2 exists
 
@@ -45,4 +47,6 @@ Ours-full-pre must not be worse than CE-official on `Weakness@K`, must beat CE o
 
 Freeze this amendment first. Then recompute feasibility, generate a fresh v1.2 candidate registry without result-derived filtering, freeze methods/runner/seeds/blindness/cleanup/analysis, run pilot gates, and only then run formal execution. Do not lower quotas, copy or pad candidates, use historical results for filtering, count load generators as business targets, confuse connection timeout with request timeout, or call retry/circuit without bounded timeout protected.
 
-No v1.2 candidate pool, deployment, injection, pilot, or formal run has started.
+The v1.2 candidate registry is now frozen at 83 candidates. Deployment, injection, pilot, and formal execution have not started.
+
+Source-pool hashes and the candidate-ID hash are recorded in `heldout_v12_freeze_snapshot.json`.

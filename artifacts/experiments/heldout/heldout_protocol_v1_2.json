@@ -3,7 +3,9 @@
   "protocol": "heldout_protocol_v1_2",
   "coexists_with": "heldout_protocol_v1_1",
   "supersedes": null,
-  "status": "draft_ready_for_approval",
+  "status": "frozen_user_approved",
+  "approved_at": "2026-08-10",
+  "approval_note": "User approved parallel v1.1/v1.2 execution planning; v1.1 remains unchanged.",
   "frozen_v1_1_unchanged": true,
   "purpose": "Pooled held-out comparison when per-project v1.1 quotas are infeasible, with project-stratified inference.",
   "change_of_estimand": {
@@ -101,7 +103,9 @@
     "selective removal of CE-blocked candidates to claim superiority"
   ],
   "execution_status": {
-    "candidate_pool_frozen_for_v1_2": false,
+    "candidate_pool_frozen_for_v1_2": true,
+    "candidate_registry": "artifacts/experiments/heldout/heldout_v12_candidate_registry.json",
+    "freeze_snapshot": "artifacts/experiments/heldout/heldout_v12_freeze_snapshot.json",
     "cluster_started": false,
     "deployment_started": false,
     "injection_started": false,
