@@ -29,6 +29,9 @@
 | `hotelReservation/README.md` | `6696c99eb4f698efb76c4360cc74bcb2ed6db8cdab5959cd7166433030463346` |
 | `hotelReservation/go.mod` | `a5a886b6b67cea384f09f4497cc273b1d710dbe719d9904bd9258446fa38ce90` |
 | `hotelReservation/kubernetes/README.md` | `8c8c3a1fb1a9ad7bb41b1727545e4d4252e2b8a6c59b0be8e662a9692371ef53` |
+| `hotelReservation/services/frontend/**` | `unavailable`（源码在仓库外 WSL，当前不可重新读取） |
+| `hotelReservation/services/search/**` | `unavailable`（源码在仓库外 WSL，当前不可重新读取） |
+| `hotelReservation/kubernetes/**` | `unavailable`（manifest 未逐文件读取） |
 
 ## 3. 服务 / 工作流 / manifest / 可观测
 
@@ -62,7 +65,7 @@
 - dialer 全局 `Timeout: 120 * time.Second`（连接级，**非 per-request 契约**——与 OB productcatalog 同类，须标记"连接级非请求级"）
 
 **Availability**
-- docker-compose 单副本（每服务 1 容器）；`kubernetes/` manifest 需逐一确认 replicas/PDB（本阶段仅静态确认 compose 单副本）
+- docker-compose 单副本（每服务 1 容器）；该事实仅适用于 Compose。`kubernetes/` manifest 需逐一确认 replicas/PDB，不能继承 Compose 事实。
 - memcached/mongo 为基础设施依赖，非业务副本冗余
 
 ## 5. 不能确认的字段和原因
@@ -75,7 +78,7 @@
 
 ## 6. ≥30 中性候选生成条件
 
-- **满足（静态）**：10 业务服务 + ≥6 条调用边 + delay/loss/kill 三类故障族 → 静态规则可生成 ≥30 中性候选（具体候选池在 P2 后按协议冻结，不在此生成）。
+- **尚未构造**：当前仅确认 5 条 gRPC 调用边，`candidate_map` 为空。候选数量、保护状态配额和故障族配额必须在 P3 实际生成并冻结后确认。
 
 ## 7. 可覆盖 fault families
 

@@ -24,31 +24,66 @@
     "hotelReservation/docker-compose.yml": "988b3e3d4c0c01c5032f47d6ff69db56a8245966ddb7dcaaef1b726ff641bc12",
     "hotelReservation/README.md": "6696c99eb4f698efb76c4360cc74bcb2ed6db8cdab5959cd7166433030463346",
     "hotelReservation/go.mod": "a5a886b6b67cea384f09f4497cc273b1d710dbe719d9904bd9258446fa38ce90",
-    "hotelReservation/kubernetes/README.md": "8c8c3a1fb1a9ad7bb41b1727545e4d4252e2b8a6c59b0be8e662a9692371ef53"
+    "hotelReservation/kubernetes/README.md": "8c8c3a1fb1a9ad7bb41b1727545e4d4252e2b8a6c59b0be8e662a9692371ef53",
+    "hotelReservation/services/frontend/**": "unavailable",
+    "hotelReservation/services/search/**": "unavailable",
+    "hotelReservation/kubernetes/**": "unavailable"
   },
   "services": {
     "business": [
-      "frontend", "reservation", "rate", "profile", "geo", "search",
-      "recommendation", "review", "attractions", "user"
+      "frontend",
+      "reservation",
+      "rate",
+      "profile",
+      "geo",
+      "search",
+      "recommendation",
+      "review",
+      "attractions",
+      "user"
     ],
     "infrastructure": [
-      "consul", "jaeger", "memcached-rate", "memcached-review", "memcached-profile",
-      "memcached-reserve", "mongodb-geo", "mongodb-profile", "mongodb-rate",
-      "mongodb-review", "mongodb-attractions", "mongodb-recommendation",
-      "mongodb-reservation", "mongodb-user"
+      "consul",
+      "jaeger",
+      "memcached-rate",
+      "memcached-review",
+      "memcached-profile",
+      "memcached-reserve",
+      "mongodb-geo",
+      "mongodb-profile",
+      "mongodb-rate",
+      "mongodb-review",
+      "mongodb-attractions",
+      "mongodb-recommendation",
+      "mongodb-reservation",
+      "mongodb-user"
     ]
   },
   "workflows": {
-    "frontend_downstream": ["search", "profile", "recommendation"],
-    "search_downstream": ["geo", "rate"],
+    "frontend_downstream": [
+      "search",
+      "profile",
+      "recommendation"
+    ],
+    "search_downstream": [
+      "geo",
+      "rate"
+    ],
     "reserve_flow": "reservation service (docker-compose); frontend HTTP port 5000 (wrk2 mixed-workload script)",
-    "gRPC_service_names": ["srv-search", "srv-profile", "srv-recommendation"]
+    "gRPC_service_names": [
+      "srv-search",
+      "srv-profile",
+      "srv-recommendation"
+    ]
   },
   "manifests_and_images": {
     "docker_compose": "hotelReservation/docker-compose.yml",
     "kubernetes_dir": "hotelReservation/kubernetes/ (frontend/geo/profile/rate/reccomend/reserve/search/user + consul + jaeger)",
     "helm": "hotelReservation/helm-chart/",
-    "other": ["openshift/", "knative/"],
+    "other": [
+      "openshift/",
+      "knative/"
+    ],
     "images": [
       "deathstarbench/hotel-reservation:latest",
       "hotel_reserv_review_single_node",
@@ -75,10 +110,11 @@
   },
   "static_availability_facts": {
     "compose_single_replica": "docker-compose 每业务服务 1 容器 (单副本, 无 PDB at compose level)",
-    "kubernetes_replicas_pdb": "待扩展静态检查 (kubernetes/ 子目录存在, 本阶段未逐文件确认 replicas/PDB)"
+    "kubernetes_replicas_pdb": "待扩展静态检查 (kubernetes/ 子目录存在, 本阶段未逐文件确认 replicas/PDB)",
+    "availability_scope": "docker-compose only; Kubernetes availability is unverified and must not inherit compose replica facts"
   },
   "unconfirmed_fields": {
-    "kubernetes_replicas_pdb_detail": "需 P2 前扩展静态检查",
+    "kubernetes_replicas_pdb_detail": "resolved: Stage A2 逐文件核查完成",
     "per_service_ports": "仅确认 frontend 5000; 其余端口待 docker-compose 逐条确认"
   },
   "gates": {
@@ -87,8 +123,22 @@
     "two_consecutive_baseline_failures_blocked": "not_run",
     "note": "本阶段禁止启动集群, 闸门一律 not_run, 不得伪造 passed"
   },
-  "neutral_candidate_generation_30_plus": "satisfied_statically",
-  "neutral_candidate_note": "10 业务服务 + >=6 条调用边 + delay/loss/kill 三类故障族 -> 静态规则可生成 >=30 中性候选; 具体候选池在协议冻结后构造",
-  "fault_families": ["delay", "loss", "kill"],
-  "no_runtime_experiment_run": true
+  "neutral_candidate_generation_30_plus": "not_yet_constructed",
+  "neutral_candidate_note": "当前仅确认 5 条 gRPC 调用边, candidate_map 为空; 候选数量、保护状态配额和故障族配额必须在 P3 实际生成并冻结后确认",
+  "fault_families": [
+    "delay",
+    "loss",
+    "kill"
+  ],
+  "no_runtime_experiment_run": true,
+  "kubernetes_audit": {
+    "status": "verified",
+    "business_deployments": 9,
+    "replicas_all": 1,
+    "liveness_probe": false,
+    "readiness_probe": false,
+    "pdb_count": 0,
+    "hpa_count": 0,
+    "note": "Stage A2 逐文件核查: frontend/geo/profile/rate/recommendation/reservation/search/user 8 个业务 deployment 全 replicas=1 无 probe 无 PDB 无 HPA; REVIEW/ATTRACTIONS 用 single-node 镜像无 k8s deploy yaml"
+  }
 }
