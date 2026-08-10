@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: socialnet-composepost-hometimeline-delay-2000
+  namespace: heldout-socialnet-lab
+  labels:
+    chaos.heldout.candidate-id: SOCIALNET-composepost-hometimeline-DELAY-2000
+    chaos.heldout.project: SOCIALNET
+    chaos.heldout.stage: d
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+      - heldout-socialnet-lab
+    labelSelectors:
+      app: home-timeline
+  delay:
+    latency: "2000ms"
+    correlation: "100"
+    jitter: "0ms"
+  duration: "30s"
+  direction: to

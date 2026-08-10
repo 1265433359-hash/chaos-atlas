@@ -1,0 +1,715 @@
+{
+  "schema_version": 1,
+  "stage": "D",
+  "project": "TEASTORE",
+  "phase": "formal",
+  "generation_rule_version": "heldout-candidate-generation-v1",
+  "seed": "heldout-stage-d-v1",
+  "status": {
+    "project": "TEASTORE",
+    "status": "quota_shortfall",
+    "counts": {
+      "total": 23,
+      "protected": 0,
+      "unprotected": 7,
+      "unknown": 16,
+      "fault_family": {
+        "kill": 7,
+        "delay": 8,
+        "loss": 8
+      }
+    },
+    "shortfall": {
+      "protected": {
+        "quota": 16,
+        "available": 0,
+        "missing": 16
+      },
+      "unprotected": {
+        "quota": 16,
+        "available": 7,
+        "missing": 9
+      }
+    },
+    "reason": "protection-class quota shortfall: protected=0/16, unprotected=7/16; pool size 23 < budget 48"
+  },
+  "counts": {
+    "total": 23,
+    "protected": 0,
+    "unprotected": 7,
+    "unknown": 16,
+    "fault_family": {
+      "kill": 7,
+      "delay": 8,
+      "loss": 8
+    }
+  },
+  "candidates": [
+    {
+      "candidate_id": "TEASTORE-auth-KILL",
+      "project_id": "TEASTORE",
+      "source_edge": null,
+      "target_service": "auth",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "auth",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": "examples/kubernetes/teastore-ribbon.yaml"
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-auth-KILL.yaml",
+      "yaml_sha256": "5f725a36edf659dcf8a7eacf0372588e72b3f6ccb367774d18812f32a5822b42",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "auth",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-db-KILL",
+      "project_id": "TEASTORE",
+      "source_edge": null,
+      "target_service": "db",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "db",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": "examples/kubernetes/teastore-ribbon.yaml"
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-db-KILL.yaml",
+      "yaml_sha256": "d51540060731bf46e8c66ae37b2d1d5c1ca3f77233f6c777ca3764a3aa9c55f7",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "db",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-image-KILL",
+      "project_id": "TEASTORE",
+      "source_edge": null,
+      "target_service": "image",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "image",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": "examples/kubernetes/teastore-ribbon.yaml"
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-image-KILL.yaml",
+      "yaml_sha256": "00c914092d04d31447da7db4e876b897dd705ef71a8bf63e982accaed89a5e7c",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "image",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-persistence-KILL",
+      "project_id": "TEASTORE",
+      "source_edge": null,
+      "target_service": "persistence",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "persistence",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": "examples/kubernetes/teastore-ribbon.yaml"
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-persistence-KILL.yaml",
+      "yaml_sha256": "d30f659b7ffd79b91645821e6034b4eef63e5d5845358ab08e0f81c9ff103c67",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "persistence",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-recommender-KILL",
+      "project_id": "TEASTORE",
+      "source_edge": null,
+      "target_service": "recommender",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "recommender",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": "examples/kubernetes/teastore-ribbon.yaml"
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-recommender-KILL.yaml",
+      "yaml_sha256": "fac42ce3226cc0280806e6ec21551a8a7a912ab156daa56ef4524b7a94124224",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "recommender",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-registry-KILL",
+      "project_id": "TEASTORE",
+      "source_edge": null,
+      "target_service": "registry",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "registry",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": "examples/kubernetes/teastore-ribbon.yaml"
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-registry-KILL.yaml",
+      "yaml_sha256": "f84b2f13e3b797161435272e0710b7158cb3ca1006f40336f4ab641a8d54acc6",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "registry",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-KILL",
+      "project_id": "TEASTORE",
+      "source_edge": null,
+      "target_service": "webui",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "webui",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": "examples/kubernetes/teastore-ribbon.yaml"
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-KILL.yaml",
+      "yaml_sha256": "7d47d605a17d688a46261d8fbf32ee1acb6b6f00f6e315b06c2ee1b7e09222ab",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "webui",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-auth-DELAY-1000",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->auth",
+      "target_service": "auth",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "1000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-auth-DELAY-1000.yaml",
+      "yaml_sha256": "a6fc49c3219518f1faef02cd5b463033ef68c00fee36d54a674f2764bb1104af",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "auth",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-auth-LOSS-010",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->auth",
+      "target_service": "auth",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "10",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-auth-LOSS-010.yaml",
+      "yaml_sha256": "21080e6e03f74a842b7f2bfa8482fdf2fac12fded10f4d33a1071fcae5f2ab17",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "auth",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-auth-DELAY-2000",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->auth",
+      "target_service": "auth",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "2000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-auth-DELAY-2000.yaml",
+      "yaml_sha256": "b91e07724e663620ff1a451bb5a0b958c1dcdb65a9a1484e75d2818dfd575cce",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "auth",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-auth-LOSS-050",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->auth",
+      "target_service": "auth",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "50",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-auth-LOSS-050.yaml",
+      "yaml_sha256": "2b3474fbde6c93d6c9a3de2a4bf708e15e632360b30d225240371209613e033c",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "auth",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-auth-DELAY-500",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->auth",
+      "target_service": "auth",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "500ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-auth-DELAY-500.yaml",
+      "yaml_sha256": "b9a8b89b92e82fd1774c4499bee77f453f9069e0c6725e2a1533bf501ce0e2f0",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "auth",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-auth-LOSS-100",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->auth",
+      "target_service": "auth",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "100",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-auth-LOSS-100.yaml",
+      "yaml_sha256": "d2f5a420bc1e41b0b02a6cd8ad1eed272c2310c3b4f23c2b7253548fd3bec4d4",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "auth",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-image-DELAY-1000",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->image",
+      "target_service": "image",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "1000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-image-DELAY-1000.yaml",
+      "yaml_sha256": "c1ec1fd69c063ca00d15a4a4a6d3b7ae0139b58067080777d9ca833ef763c3ca",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "image",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-image-LOSS-010",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->image",
+      "target_service": "image",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "10",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-image-LOSS-010.yaml",
+      "yaml_sha256": "aa248b7df063a2e0f85fa416d7747420c7609de5bf785cbb4638bc6e4970a1d2",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "image",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-image-DELAY-2000",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->image",
+      "target_service": "image",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "2000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-image-DELAY-2000.yaml",
+      "yaml_sha256": "96cbc43ad19b24cd2be22077e2ed5b83e71505f32ddbbd27cb5412373e5291e4",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "image",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-image-LOSS-050",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->image",
+      "target_service": "image",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "50",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-image-LOSS-050.yaml",
+      "yaml_sha256": "e79c833389a96c707513c885acad51f009afbef4193f7b876b7ba43cd974021e",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "image",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-image-DELAY-500",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->image",
+      "target_service": "image",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "500ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-image-DELAY-500.yaml",
+      "yaml_sha256": "c3a329cbee370d54478fc5352c5e45c55e3640131ecc6d1d9114cdb488ff07c2",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "image",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-image-LOSS-100",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->image",
+      "target_service": "image",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "100",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-image-LOSS-100.yaml",
+      "yaml_sha256": "0bada6b3bc57a03052b690e49027470482846069df950abb5814997c7edaf92e",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "image",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-persistence-DELAY-1000",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->persistence",
+      "target_service": "persistence",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "1000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-persistence-DELAY-1000.yaml",
+      "yaml_sha256": "aa02761a51fd07e142e229e401cf3d4381e916d12e65f0810047a31db4a87d38",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "persistence",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-persistence-LOSS-010",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->persistence",
+      "target_service": "persistence",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "10",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-persistence-LOSS-010.yaml",
+      "yaml_sha256": "910ab3d788aea2eeace4fef6e32d24bc7f3e54b8fc534e5a6a2bf7c367d44a84",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "persistence",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-persistence-DELAY-2000",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->persistence",
+      "target_service": "persistence",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "2000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-persistence-DELAY-2000.yaml",
+      "yaml_sha256": "117cec7329e6eb0212938783da80624a5865c069ee860ae4b06aeec289568cc3",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "persistence",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "TEASTORE-webui-persistence-LOSS-050",
+      "project_id": "TEASTORE",
+      "source_edge": "TEASTORE-webui->persistence",
+      "target_service": "persistence",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "50",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/TEASTORE/TEASTORE-webui-persistence-LOSS-050.yaml",
+      "yaml_sha256": "96c90b1415faae6947db4f8ef5daf41c7b48644b64ba5d97829cac2ec1c44b16",
+      "selector": {
+        "namespace": "heldout-teastore-lab",
+        "app_label": "persistence",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    }
+  ],
+  "snapshot": "artifacts/experiments/heldout/teastore_knowledge_snapshot_pre.json",
+  "note": "neutral static generation from frozen snapshot; no result-derived filtering; quota shortfalls are reported, never padded"
+}

@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: socialnet-compose-post-service-kill
+  namespace: heldout-socialnet-lab
+  labels:
+    chaos.heldout.candidate-id: SOCIALNET-compose-post-service-KILL
+    chaos.heldout.project: SOCIALNET
+    chaos.heldout.stage: d
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+      - heldout-socialnet-lab
+    labelSelectors:
+      app: compose-post-service
+  duration: "30s"

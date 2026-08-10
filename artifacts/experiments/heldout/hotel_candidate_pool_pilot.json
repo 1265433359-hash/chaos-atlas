@@ -1,0 +1,280 @@
+{
+  "schema_version": 1,
+  "stage": "D",
+  "project": "HOTEL",
+  "phase": "pilot",
+  "generation_rule_version": "heldout-candidate-generation-v1",
+  "seed": "heldout-stage-d-v1",
+  "status": {
+    "project": "HOTEL",
+    "status": "quota_shortfall",
+    "counts": {
+      "total": 8,
+      "protected": 0,
+      "unprotected": 8,
+      "unknown": 0,
+      "fault_family": {
+        "delay": 3,
+        "loss": 3,
+        "kill": 2
+      }
+    },
+    "shortfall": {
+      "protected": {
+        "quota": 8,
+        "available": 0,
+        "missing": 8
+      },
+      "unknown": {
+        "quota": 8,
+        "available": 0,
+        "missing": 8
+      }
+    },
+    "reason": "protection-class quota shortfall: protected=0/8, unknown=0/8; pool size 8 < budget 24"
+  },
+  "counts": {
+    "total": 8,
+    "protected": 0,
+    "unprotected": 8,
+    "unknown": 0,
+    "fault_family": {
+      "delay": 3,
+      "loss": 3,
+      "kill": 2
+    }
+  },
+  "candidates": [
+    {
+      "candidate_id": "HOTEL-frontend-profile-DELAY-1000",
+      "project_id": "HOTEL",
+      "source_edge": "HOTEL-frontend->profile",
+      "target_service": "profile",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "1000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": null,
+      "contract_source_sha256": "453d3efeeb27c28896434cd1e7fa18f1810678b82835be909094bc629fe7764c",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/HOTEL/HOTEL-frontend-profile-DELAY-1000.yaml",
+      "yaml_sha256": "fc000247a354c695c21a7df7b714d6a4d478aa64646fb7cc69e44164fc9c62a9",
+      "selector": {
+        "namespace": "heldout-hotel-lab",
+        "app_label": "profile",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "HOTEL-frontend-profile-LOSS-010",
+      "project_id": "HOTEL",
+      "source_edge": "HOTEL-frontend->profile",
+      "target_service": "profile",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "10",
+        "direction": "to"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": null,
+      "contract_source_sha256": "453d3efeeb27c28896434cd1e7fa18f1810678b82835be909094bc629fe7764c",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/HOTEL/HOTEL-frontend-profile-LOSS-010.yaml",
+      "yaml_sha256": "36e568bc9d2cd1e638bcd8c97967821cef287ff4d5f95760060353d94363fbdb",
+      "selector": {
+        "namespace": "heldout-hotel-lab",
+        "app_label": "profile",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "HOTEL-FRONTEND-KILL",
+      "project_id": "HOTEL",
+      "source_edge": null,
+      "target_service": "FRONTEND",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "FRONTEND",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": "6431e87a0617cc652eba261858657e03d630902bc03b39c0ad5e1710c5d7320e",
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/HOTEL/HOTEL-FRONTEND-KILL.yaml",
+      "yaml_sha256": "f7c398737d199761396824aa7f389e194f55fe3b43e39583c8babff77c291a79",
+      "selector": {
+        "namespace": "heldout-hotel-lab",
+        "app_label": "frontend",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "HOTEL-frontend-profile-DELAY-2000",
+      "project_id": "HOTEL",
+      "source_edge": "HOTEL-frontend->profile",
+      "target_service": "profile",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "2000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": null,
+      "contract_source_sha256": "453d3efeeb27c28896434cd1e7fa18f1810678b82835be909094bc629fe7764c",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/HOTEL/HOTEL-frontend-profile-DELAY-2000.yaml",
+      "yaml_sha256": "67329e5becad192f60b15d2375077879cd40dfa4756bfdc2569a2366677c345c",
+      "selector": {
+        "namespace": "heldout-hotel-lab",
+        "app_label": "profile",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "HOTEL-frontend-profile-LOSS-050",
+      "project_id": "HOTEL",
+      "source_edge": "HOTEL-frontend->profile",
+      "target_service": "profile",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "50",
+        "direction": "to"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": null,
+      "contract_source_sha256": "453d3efeeb27c28896434cd1e7fa18f1810678b82835be909094bc629fe7764c",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/HOTEL/HOTEL-frontend-profile-LOSS-050.yaml",
+      "yaml_sha256": "8b2e45362d0500f92911caae071a63b99f4d3a5e7c25647e205d640afee58a86",
+      "selector": {
+        "namespace": "heldout-hotel-lab",
+        "app_label": "profile",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "HOTEL-GEO-KILL",
+      "project_id": "HOTEL",
+      "source_edge": null,
+      "target_service": "GEO",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "GEO",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": "76d43ebab0cba27a6ea55894e49a0ea3a70ffc7eccc527e6485dbe69bbadf58d",
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/HOTEL/HOTEL-GEO-KILL.yaml",
+      "yaml_sha256": "883c14707fc349561fb781a0fccd5124bc74e051b3203a59f0626618bc229c5e",
+      "selector": {
+        "namespace": "heldout-hotel-lab",
+        "app_label": "geo",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "HOTEL-frontend-profile-DELAY-500",
+      "project_id": "HOTEL",
+      "source_edge": "HOTEL-frontend->profile",
+      "target_service": "profile",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "500ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": null,
+      "contract_source_sha256": "453d3efeeb27c28896434cd1e7fa18f1810678b82835be909094bc629fe7764c",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/HOTEL/HOTEL-frontend-profile-DELAY-500.yaml",
+      "yaml_sha256": "8e0a1086c7bbd7cdbbf747af0c35b8ba8e30d434423b9afd7980cfd8a5ba52f8",
+      "selector": {
+        "namespace": "heldout-hotel-lab",
+        "app_label": "profile",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    },
+    {
+      "candidate_id": "HOTEL-frontend-profile-LOSS-100",
+      "project_id": "HOTEL",
+      "source_edge": "HOTEL-frontend->profile",
+      "target_service": "profile",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "100",
+        "direction": "to"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": null,
+      "contract_source_sha256": "453d3efeeb27c28896434cd1e7fa18f1810678b82835be909094bc629fe7764c",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/HOTEL/HOTEL-frontend-profile-LOSS-100.yaml",
+      "yaml_sha256": "087e034767e468614039274441d9659d340e68cde16820995a4361c5ca480a07",
+      "selector": {
+        "namespace": "heldout-hotel-lab",
+        "app_label": "profile",
+        "selector_evidence": "convention_based_await_deployment_gate"
+      }
+    }
+  ],
+  "snapshot": "artifacts/experiments/heldout/hotel_knowledge_snapshot_pre.json",
+  "note": "neutral static generation from frozen snapshot; no result-derived filtering; quota shortfalls are reported, never padded"
+}

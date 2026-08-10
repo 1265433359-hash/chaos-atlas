@@ -1,0 +1,1310 @@
+{
+  "schema_version": 1,
+  "stage": "D",
+  "project": "SOCIALNET",
+  "phase": "formal",
+  "generation_rule_version": "heldout-candidate-generation-v1",
+  "seed": "heldout-stage-d-v1",
+  "status": {
+    "project": "SOCIALNET",
+    "status": "quota_shortfall",
+    "counts": {
+      "total": 44,
+      "protected": 16,
+      "unprotected": 12,
+      "unknown": 16,
+      "fault_family": {
+        "delay": 16,
+        "kill": 12,
+        "loss": 16
+      }
+    },
+    "shortfall": {
+      "unprotected": {
+        "quota": 16,
+        "available": 12,
+        "missing": 4
+      }
+    },
+    "reason": "protection-class quota shortfall: unprotected=12/16; pool size 44 < budget 48"
+  },
+  "counts": {
+    "total": 44,
+    "protected": 16,
+    "unprotected": 12,
+    "unknown": 16,
+    "fault_family": {
+      "delay": 16,
+      "kill": 12,
+      "loss": 16
+    }
+  },
+  "candidates": [
+    {
+      "candidate_id": "SOCIALNET-composepost-hometimeline-DELAY-1000",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->hometimeline",
+      "target_service": "hometimeline",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "1000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-hometimeline-DELAY-1000.yaml",
+      "yaml_sha256": "6a8e85810ea3c5f166235f924e814859b7471b41ed11d17aae56202b85ea46a4",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "home-timeline",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-hometimeline-DELAY-2000",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->hometimeline",
+      "target_service": "hometimeline",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "2000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-hometimeline-DELAY-2000.yaml",
+      "yaml_sha256": "5f7b2fc5c3fa6ad37284fa4bfcb3d845a36d5c42dac98b0fc5e479dbfda88b45",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "home-timeline",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-hometimeline-DELAY-500",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->hometimeline",
+      "target_service": "hometimeline",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "500ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-hometimeline-DELAY-500.yaml",
+      "yaml_sha256": "a0179d01eb600b1dae66837ee185ee7f2e51d181c149ebf297dcd20622b35597",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "home-timeline",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-media-DELAY-1000",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->media",
+      "target_service": "media",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "1000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-media-DELAY-1000.yaml",
+      "yaml_sha256": "54dba869363d89bd2a1a6410a4c8fd41172d0afa52acfbf589ce0792057b6442",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "media",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-media-DELAY-2000",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->media",
+      "target_service": "media",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "2000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-media-DELAY-2000.yaml",
+      "yaml_sha256": "3916583ea2ac9d317b862720219fb9e77e9e973d1934c22a08957339ff003331",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "media",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-media-DELAY-500",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->media",
+      "target_service": "media",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "500ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-media-DELAY-500.yaml",
+      "yaml_sha256": "50fb3bc26ed80d7f9bd165762804f7c536c91daa5b3b154cf4aa74b3628fbe27",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "media",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-poststorage-DELAY-1000",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->poststorage",
+      "target_service": "poststorage",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "1000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-poststorage-DELAY-1000.yaml",
+      "yaml_sha256": "79240dc1ef8ed81c86e7f944ce611f59116b735cf3e7ec3c6ee633d05e6f9b49",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "post-storage",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-poststorage-DELAY-2000",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->poststorage",
+      "target_service": "poststorage",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "2000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-poststorage-DELAY-2000.yaml",
+      "yaml_sha256": "985ca9461d2e7bb3613be57097fd6a5f637a22e1f465be031b96e5bac50ac560",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "post-storage",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-poststorage-DELAY-500",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->poststorage",
+      "target_service": "poststorage",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "500ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-poststorage-DELAY-500.yaml",
+      "yaml_sha256": "26a80ab3444c1c8b3c20bae5605b49cabb11d36332553d9f734c76b7323e9fb5",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "post-storage",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-text-DELAY-1000",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->text",
+      "target_service": "text",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "1000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-text-DELAY-1000.yaml",
+      "yaml_sha256": "9a67974b65584173230d441a8054c8601647d6422ee92cff29120fecdacda7bb",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "text",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-text-DELAY-2000",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->text",
+      "target_service": "text",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "2000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-text-DELAY-2000.yaml",
+      "yaml_sha256": "8acac0aac1b2bb930f1a0acba46ef3f63700832b89fce43af395bdc7c2bb6bf5",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "text",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-text-DELAY-500",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->text",
+      "target_service": "text",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "500ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-text-DELAY-500.yaml",
+      "yaml_sha256": "ef1dd68bf5f31b5c7409a497316c0a52ab8d9e5ab0095d9a35c7411989afa167",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "text",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-uniqueid-DELAY-1000",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->uniqueid",
+      "target_service": "uniqueid",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "1000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-uniqueid-DELAY-1000.yaml",
+      "yaml_sha256": "a58c200ba1b0d93b39a647591b7edca1d74646aba7a13e16e342f74a5badffc0",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "unique-id",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-uniqueid-DELAY-2000",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->uniqueid",
+      "target_service": "uniqueid",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "2000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-uniqueid-DELAY-2000.yaml",
+      "yaml_sha256": "b6bbb486269bbf9022b972de1f5d07bbb0e589f719aba9a8b91d91ce3a47c5bf",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "unique-id",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-uniqueid-DELAY-500",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->uniqueid",
+      "target_service": "uniqueid",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "500ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-uniqueid-DELAY-500.yaml",
+      "yaml_sha256": "ab8506c2f90e862b93084ad749b0e2b511828e73b4455938f63c137eaf2292ff",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "unique-id",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-user-DELAY-1000",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->user",
+      "target_service": "user",
+      "fault_family": "delay",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "duration": "30s",
+        "latency": "1000ms",
+        "jitter": "0ms",
+        "direction": "to"
+      },
+      "protection_class": "protected",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-user-DELAY-1000.yaml",
+      "yaml_sha256": "3cf41e00853b2a40c80cd3ab4ba4002e76f4fadfa944fb385c0ba5e047193070",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "user",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-service-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "compose-post-service",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "compose-post-service",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-compose-post-service-KILL.yaml",
+      "yaml_sha256": "6687f741bd8e42b05284c0741b897055834f17117c292dcb531fbadfac0132c0",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "compose-post-service",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-service-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "home-timeline-service",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "home-timeline-service",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-home-timeline-service-KILL.yaml",
+      "yaml_sha256": "9d4dd48a79bb50c47bc030ab4c0443b310b030e77169783f1c7bd5b1b0a78805",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "home-timeline-service",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-media-service-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "media-service",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "media-service",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-media-service-KILL.yaml",
+      "yaml_sha256": "b60d121455a9bf2ffe98fceba1d9d8aac5910bda487b90f8799c475b6fd4963d",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "media-service",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-nginx-thrift-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "nginx-thrift",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "nginx-thrift",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-nginx-thrift-KILL.yaml",
+      "yaml_sha256": "90662a56c558e98da8abe3eac42b12d7840185bd04ae21b80b4a880e9ef07154",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "nginx-thrift",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-post-storage-service-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "post-storage-service",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "post-storage-service",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-post-storage-service-KILL.yaml",
+      "yaml_sha256": "0c509489b40275f43e6db1e33b90062a39c2e097feada0d227c6d2db07c4a5ac",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "post-storage-service",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-social-graph-service-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "social-graph-service",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "social-graph-service",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-social-graph-service-KILL.yaml",
+      "yaml_sha256": "aea94611113a6195e8adcd221b2af07561723540c68aa74186c19e99c7fe8bd8",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "social-graph-service",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-text-service-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "text-service",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "text-service",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-text-service-KILL.yaml",
+      "yaml_sha256": "96f86c9e9a6b63829afcb05dd72fcff1d0d10cdfbce897bdc87d1d07fce49ec1",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "text-service",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-unique-id-service-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "unique-id-service",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "unique-id-service",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-unique-id-service-KILL.yaml",
+      "yaml_sha256": "b239c8e1f65a0bee7e3c72f3cd4138b335657e1f33e3c20658bf89a6fa33efba",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "unique-id-service",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-url-shorten-service-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "url-shorten-service",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "url-shorten-service",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-url-shorten-service-KILL.yaml",
+      "yaml_sha256": "30f07d8ecf906569837cf2a230f2122b3766abcf6e2ac9f1f68954a676b610db",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "url-shorten-service",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-user-mention-service-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "user-mention-service",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "user-mention-service",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-user-mention-service-KILL.yaml",
+      "yaml_sha256": "97d68a48ea73cc0abc87e8313eedf7c0edd364ecf6e4e633bf639aac530a25c4",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "user-mention-service",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-user-service-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "user-service",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "user-service",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-user-service-KILL.yaml",
+      "yaml_sha256": "5ea4d9a48f87aff3e0f613b6a86ddc687fb8903f3dd7899ec90976a8691d0c20",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "user-service",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-user-timeline-service-KILL",
+      "project_id": "SOCIALNET",
+      "source_edge": null,
+      "target_service": "user-timeline-service",
+      "fault_family": "kill",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s",
+        "recovery": "replica-set auto-recreate after injection window (single-replica deployments recreate the pod)"
+      },
+      "protection_class": "unprotected",
+      "availability_evidence": {
+        "service": "user-timeline-service",
+        "replicas": 1,
+        "pdb": null,
+        "hpa": null,
+        "manifest_sha256": null,
+        "source": null
+      },
+      "contract_source_sha256": null,
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-user-timeline-service-KILL.yaml",
+      "yaml_sha256": "28a1cd5140680c63aadf9635463dde6d6f42463042cb613003506a095d8bd6a4",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "user-timeline-service",
+        "selector_evidence": "verified_by_snapshot_availability_key"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-hometimeline-LOSS-010",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->hometimeline",
+      "target_service": "hometimeline",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "10",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-hometimeline-LOSS-010.yaml",
+      "yaml_sha256": "a0e80c67f8bd2b949c52f694dd5c386170eedf57701449f112868097a4b574ff",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "home-timeline",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-hometimeline-LOSS-050",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->hometimeline",
+      "target_service": "hometimeline",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "50",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-hometimeline-LOSS-050.yaml",
+      "yaml_sha256": "3956695d86acd6f1ec4a73994717d9dc3643a0947ceb45837c00a9610a338d66",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "home-timeline",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-hometimeline-LOSS-100",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->hometimeline",
+      "target_service": "hometimeline",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "100",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-hometimeline-LOSS-100.yaml",
+      "yaml_sha256": "77b763d350f0549b288f55708b3019897eaf894b17dc1ba628ef744000e7f9e4",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "home-timeline",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-media-LOSS-010",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->media",
+      "target_service": "media",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "10",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-media-LOSS-010.yaml",
+      "yaml_sha256": "0cf5d1f83c98dc07327ad35b17de48d2624f263ee3b2f4eca31aa30a675e9de6",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "media",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-media-LOSS-050",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->media",
+      "target_service": "media",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "50",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-media-LOSS-050.yaml",
+      "yaml_sha256": "bd66a8606ecb59bb5d5bdc5dc321ceee20cc04fdcfab045cb1f41076b0361201",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "media",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-media-LOSS-100",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->media",
+      "target_service": "media",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "100",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-media-LOSS-100.yaml",
+      "yaml_sha256": "82153d803c05a137a86c7b851a2a42cebc0b7ac822d088b2848b7a000e35a3df",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "media",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-poststorage-LOSS-010",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->poststorage",
+      "target_service": "poststorage",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "10",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-poststorage-LOSS-010.yaml",
+      "yaml_sha256": "16c8ba7d2c1fa87f5bdde5e7bfade7ca74b4d89e4d49a2d82de62563732a87b3",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "post-storage",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-poststorage-LOSS-050",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->poststorage",
+      "target_service": "poststorage",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "50",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-poststorage-LOSS-050.yaml",
+      "yaml_sha256": "da066020009ebea8069d0dea8b8af0172747adf6e81b666a71d435f1170bf25b",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "post-storage",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-poststorage-LOSS-100",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->poststorage",
+      "target_service": "poststorage",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "100",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-poststorage-LOSS-100.yaml",
+      "yaml_sha256": "eb21463807ddc70d971a1c0929e059ca674adeaa08b820e972bd31b000eb243c",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "post-storage",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-text-LOSS-010",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->text",
+      "target_service": "text",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "10",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-text-LOSS-010.yaml",
+      "yaml_sha256": "0cb401ba6fca88cc1f4a26348ba1feb51f7f418ad82feefe4c8c567ba89fa176",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "text",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-text-LOSS-050",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->text",
+      "target_service": "text",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "50",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-text-LOSS-050.yaml",
+      "yaml_sha256": "ee6a8229e5e862b867d7467d44b6afa3eaab290cba43fc7a0e006cc68595808d",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "text",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-text-LOSS-100",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->text",
+      "target_service": "text",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "100",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-text-LOSS-100.yaml",
+      "yaml_sha256": "881d63656996a86e4a98efac134ed76a244616a0a1b44e092202ed8ba163ec93",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "text",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-uniqueid-LOSS-010",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->uniqueid",
+      "target_service": "uniqueid",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "10",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-uniqueid-LOSS-010.yaml",
+      "yaml_sha256": "934a1db995d9674d42c50034047c471408040fa492c218a7106a644996c2a030",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "unique-id",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-uniqueid-LOSS-050",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->uniqueid",
+      "target_service": "uniqueid",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "50",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-uniqueid-LOSS-050.yaml",
+      "yaml_sha256": "aede2878834a1f9d09671541fb9c274bf38be3deb20534bb09abb543395d6dbe",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "unique-id",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-uniqueid-LOSS-100",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->uniqueid",
+      "target_service": "uniqueid",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "100",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-uniqueid-LOSS-100.yaml",
+      "yaml_sha256": "9e45231fd9fcc69def7455bd34b8249c7d646f2a99819dc74f67b2c9b8b1f573",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "unique-id",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    },
+    {
+      "candidate_id": "SOCIALNET-composepost-user-LOSS-010",
+      "project_id": "SOCIALNET",
+      "source_edge": "SOCIALNET-composepost->user",
+      "target_service": "user",
+      "fault_family": "loss",
+      "mode": "one",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "duration": "30s",
+        "loss": "10",
+        "direction": "to"
+      },
+      "protection_class": "unknown",
+      "availability_evidence": null,
+      "contract_source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "generation_rule_version": "heldout-candidate-generation-v1",
+      "seed": "heldout-stage-d-v1",
+      "yaml_path": "artifacts/experiments/heldout/candidate_pools/SOCIALNET/SOCIALNET-composepost-user-LOSS-010.yaml",
+      "yaml_sha256": "45eac5abbf5d08a5befb0b98e01d1567ecafe00ab37527f4f07f151f2738caa0",
+      "selector": {
+        "namespace": "heldout-socialnet-lab",
+        "app_label": "user",
+        "selector_evidence": "verified_by_prior_artifact"
+      }
+    }
+  ],
+  "snapshot": "artifacts/experiments/heldout/socialnet_knowledge_snapshot_pre.json",
+  "note": "neutral static generation from frozen snapshot; no result-derived filtering; quota shortfalls are reported, never padded"
+}

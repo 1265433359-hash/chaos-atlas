@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: hotel-search-geo-delay-500
+  namespace: heldout-hotel-lab
+  labels:
+    chaos.heldout.candidate-id: HOTEL-search-geo-DELAY-500
+    chaos.heldout.project: HOTEL
+    chaos.heldout.stage: d
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+      - heldout-hotel-lab
+    labelSelectors:
+      app: geo
+  delay:
+    latency: "500ms"
+    correlation: "100"
+    jitter: "0ms"
+  duration: "30s"
+  direction: to

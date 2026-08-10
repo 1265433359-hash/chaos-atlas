@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: socialnet-composepost-user-loss-010
+  namespace: heldout-socialnet-lab
+  labels:
+    chaos.heldout.candidate-id: SOCIALNET-composepost-user-LOSS-010
+    chaos.heldout.project: SOCIALNET
+    chaos.heldout.stage: d
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+      - heldout-socialnet-lab
+    labelSelectors:
+      app: user
+  loss:
+    loss: "10"
+    correlation: "100"
+  duration: "30s"
+  direction: to

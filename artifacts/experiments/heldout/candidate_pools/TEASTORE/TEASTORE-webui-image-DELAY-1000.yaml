@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: teastore-webui-image-delay-1000
+  namespace: heldout-teastore-lab
+  labels:
+    chaos.heldout.candidate-id: TEASTORE-webui-image-DELAY-1000
+    chaos.heldout.project: TEASTORE
+    chaos.heldout.stage: d
+spec:
+  action: delay
+  mode: one
+  selector:
+    namespaces:
+      - heldout-teastore-lab
+    labelSelectors:
+      app: image
+  delay:
+    latency: "1000ms"
+    correlation: "100"
+    jitter: "0ms"
+  duration: "30s"
+  direction: to

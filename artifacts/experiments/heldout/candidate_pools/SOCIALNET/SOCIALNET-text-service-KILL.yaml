@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: socialnet-text-service-kill
+  namespace: heldout-socialnet-lab
+  labels:
+    chaos.heldout.candidate-id: SOCIALNET-text-service-KILL
+    chaos.heldout.project: SOCIALNET
+    chaos.heldout.stage: d
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+      - heldout-socialnet-lab
+    labelSelectors:
+      app: text-service
+  duration: "30s"

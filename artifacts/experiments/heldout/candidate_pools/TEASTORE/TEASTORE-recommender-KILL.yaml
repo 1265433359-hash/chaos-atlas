@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: teastore-recommender-kill
+  namespace: heldout-teastore-lab
+  labels:
+    chaos.heldout.candidate-id: TEASTORE-recommender-KILL
+    chaos.heldout.project: TEASTORE
+    chaos.heldout.stage: d
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+      - heldout-teastore-lab
+    labelSelectors:
+      app: recommender
+  duration: "30s"

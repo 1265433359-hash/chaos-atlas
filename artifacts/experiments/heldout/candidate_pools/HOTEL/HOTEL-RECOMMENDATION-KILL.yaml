@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: hotel-recommendation-kill
+  namespace: heldout-hotel-lab
+  labels:
+    chaos.heldout.candidate-id: HOTEL-RECOMMENDATION-KILL
+    chaos.heldout.project: HOTEL
+    chaos.heldout.stage: d
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+      - heldout-hotel-lab
+    labelSelectors:
+      app: recommendation
+  duration: "30s"

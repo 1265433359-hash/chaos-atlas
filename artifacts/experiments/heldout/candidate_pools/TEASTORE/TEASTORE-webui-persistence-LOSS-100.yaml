@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: teastore-webui-persistence-loss-100
+  namespace: heldout-teastore-lab
+  labels:
+    chaos.heldout.candidate-id: TEASTORE-webui-persistence-LOSS-100
+    chaos.heldout.project: TEASTORE
+    chaos.heldout.stage: d
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+      - heldout-teastore-lab
+    labelSelectors:
+      app: persistence
+  loss:
+    loss: "100"
+    correlation: "100"
+  duration: "30s"
+  direction: to

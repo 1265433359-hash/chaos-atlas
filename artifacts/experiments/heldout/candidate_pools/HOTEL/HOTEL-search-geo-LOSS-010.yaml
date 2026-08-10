@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: hotel-search-geo-loss-010
+  namespace: heldout-hotel-lab
+  labels:
+    chaos.heldout.candidate-id: HOTEL-search-geo-LOSS-010
+    chaos.heldout.project: HOTEL
+    chaos.heldout.stage: d
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+      - heldout-hotel-lab
+    labelSelectors:
+      app: geo
+  loss:
+    loss: "10"
+    correlation: "100"
+  duration: "30s"
+  direction: to
