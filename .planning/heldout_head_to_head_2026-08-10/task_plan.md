@@ -44,7 +44,8 @@ Do not start P3, P5 or P6 until ESHOP/SOCIALNET snapshots are valid and their ve
 | V12-1 | Read-only pooled feasibility check | complete | Hotel/SOCIALNET/TeaStore recompute to 16/35/32/83 |
 | V12-2 | Amendment review and approval | complete | user approved v1.2 on 2026-08-10 |
 | V12-3 | Fresh v1.2 candidate registry freeze | complete | 83 unique candidates; source/protocol hashes locked |
-| V12-4 | v1.2 method/runner configuration freeze | in_progress | method IDs, seeds, redaction and lifecycle frozen; common runner still required |
-| V12-5 | v1.2 pilot/formal execution | pending | only after common runner and CE gates pass |
+| V12-4 | v1.2 method/runner configuration freeze | complete | method IDs, seeds, redaction and lifecycle frozen |
+| V12-5 | v1.2 common runner implementation | pending | one runner must cover all three projects and emit frozen schemas |
+| V12-6 | v1.2 pilot/formal execution | pending | only after common runner and CE gates pass |
 
 v1.1 remains frozen and may proceed only with its per-project quotas. v1.2 uses pooled quotas and project-equal inference; neither protocol may relabel the other's results.
