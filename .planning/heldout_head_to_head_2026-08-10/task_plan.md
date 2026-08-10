@@ -45,7 +45,7 @@ Do not start P3, P5 or P6 until ESHOP/SOCIALNET snapshots are valid and their ve
 | V12-2 | Amendment review and approval | complete | user approved v1.2 on 2026-08-10 |
 | V12-3 | Fresh v1.2 candidate registry freeze | complete | 83 unique candidates; source/protocol hashes locked |
 | V12-4 | v1.2 method/runner configuration freeze | complete | method IDs, seeds, redaction and lifecycle frozen |
-| V12-5 | v1.2 project adapters/business oracles | pending | dry-run boundary exists; adapters must enable real lifecycle execution |
+| V12-5 | v1.2 project adapters/business oracles | in_progress | source-cited static adapters and runner validation complete; runtime fixture/oracle/cleanup gate pending |
 | V12-6 | v1.2 pilot/formal execution | pending | only after common runner and CE gates pass |
 
 v1.1 remains frozen and may proceed only with its per-project quotas. v1.2 uses pooled quotas and project-equal inference; neither protocol may relabel the other's results.

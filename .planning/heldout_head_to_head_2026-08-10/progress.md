@@ -29,3 +29,5 @@
 2026-08-10 (v1.2 execution config): Method IDs, K budgets, numeric seed lists, equal-information redaction, realistic line, lifecycle/cleanup contract, and environment gates were frozen in heldout_v12_execution_freeze.json/md. A common read-only dry-run runner now validates registry/YAML/SHA and emits lifecycle plans; project adapters/business oracles remain required before execute mode.
 
 2026-08-10 (v1.2 gate): Configuration freeze and common dry-run runner are complete. The next gate is project adapter/business-oracle implementation and validation; pilot/formal remain blocked.
+
+2026-08-10 (v1.2 adapter boundary): Added `heldout_v12_adapter_freeze.json/md` with source-cited Hotel, SOCIALNET and TeaStore entry/health/business contracts, port-forward targets, baseline/observation/cleanup argv, and explicit runtime gate fields. The common runner now loads and validates this artifact in dry-run plans. Static adapter validation and runner tests pass; all projects remain `execution_ready=false` until runtime fixture/oracle/cleanup checks are performed. No cluster or Chaos Mesh call was made.

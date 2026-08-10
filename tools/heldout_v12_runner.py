@@ -20,6 +20,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REGISTRY = ROOT / "artifacts/experiments/heldout/heldout_v12_candidate_registry.json"
+DEFAULT_ADAPTERS = ROOT / "artifacts/experiments/heldout/heldout_v12_adapter_freeze.json"
 DEFAULT_OUTPUT = ROOT / "artifacts/experiments/heldout/runtime_plans"
 PROJECTS = {"HOTEL", "SOCIALNET", "TEASTORE"}
 METHODS = {"Ours-full-pre", "Ours-generic", "ChaosEater-official", "ChaosEater-adapter", "Random"}
@@ -43,6 +44,67 @@ def load_registry(path: Path) -> Dict[str, Any]:
     if not isinstance(candidates, list) or not registry.get("candidate_ids_unique"):
         raise ValueError("candidate registry uniqueness/schema check failed")
     return registry
+
+
+def load_adapters(path: Path) -> Dict[str, Any]:
+    adapters = json.loads(path.read_text(encoding="utf-8"))
+    if adapters.get("protocol") != "heldout_protocol_v1_2":
+        raise ValueError("adapter protocol mismatch")
+    projects = adapters.get("projects")
+    if not isinstance(projects, dict) or set(projects) != PROJECTS:
+        raise ValueError("adapter project set must exactly match frozen projects")
+    for project, adapter in projects.items():
+        required = {"namespace", "entry_service", "entry_port", "port_forward", "baseline", "health_probe", "business_oracle", "observation", "cleanup", "static_adapter_validated", "execution_ready"}
+        missing = required - set(adapter)
+        if missing:
+            raise ValueError(f"adapter {project} missing fields: {sorted(missing)}")
+        if not adapter["static_adapter_validated"]:
+            raise ValueError(f"adapter {project} is not statically validated")
+        if adapter["execution_ready"] and adapter.get("runtime_validation") != "passed":
+            raise ValueError(f"adapter {project} cannot be execution_ready without runtime validation")
+        port_forward = adapter["port_forward"]
+        if port_forward.get("service") != adapter["entry_service"] or port_forward.get("remote_port") != adapter["entry_port"]:
+            raise ValueError(f"adapter {project} port-forward does not match entry service")
+        for section in ("baseline", "observation", "cleanup"):
+            if not isinstance(adapter[section].get("argv"), list) or not adapter[section]["argv"]:
+                raise ValueError(f"adapter {project} {section} argv is required")
+        if adapter["cleanup"].get("expected_stdout") != "":
+            raise ValueError(f"adapter {project} cleanup must assert empty active-chaos output")
+        oracle = adapter["business_oracle"]
+        if oracle.get("kind") != "http_contract" or oracle.get("method") not in {"GET", "POST"} or not oracle.get("path", "/").startswith("/"):
+            raise ValueError(f"adapter {project} business oracle is not an HTTP contract")
+        if not isinstance(oracle.get("expected_status"), int):
+            raise ValueError(f"adapter {project} oracle expected_status is required")
+        evidence = oracle.get("evidence")
+        if not isinstance(evidence, dict) or not evidence.get("repo") or not evidence.get("commit") or not evidence.get("path"):
+            raise ValueError(f"adapter {project} oracle evidence is incomplete")
+    return adapters
+
+
+def validate_adapter_for_plan(adapters: Dict[str, Any], project: str) -> Dict[str, Any]:
+    adapter = adapters["projects"][project]
+    oracle = adapter["business_oracle"]
+    return {
+        "status": "static_configured_runtime_validation_pending" if not adapter["execution_ready"] else "runtime_validated",
+        "namespace": adapter["namespace"],
+        "entry_service": adapter["entry_service"],
+        "entry_port": adapter["entry_port"],
+        "port_forward": adapter["port_forward"],
+        "baseline_argv": adapter["baseline"]["argv"],
+        "health_probe": adapter["health_probe"],
+        "business_oracle": {
+            "kind": oracle["kind"],
+            "method": oracle["method"],
+            "path": oracle["path"],
+            "expected_status": oracle["expected_status"],
+            "fixture_required": oracle.get("fixture_required", False),
+            "evidence": oracle["evidence"],
+        },
+        "observation_argv": adapter["observation"]["argv"],
+        "cleanup_argv": adapter["cleanup"]["argv"],
+        "cleanup_expected_stdout": adapter["cleanup"]["expected_stdout"],
+        "execution_ready": adapter["execution_ready"],
+    }
 
 
 def resolve_repo_path(relative_path: str) -> Path:
@@ -91,7 +153,7 @@ def validate_candidate(candidate: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def build_plan(registry: Dict[str, Any], project: str, method: str, phase: str, seed: int, candidate_id: str) -> Dict[str, Any]:
+def build_plan(registry: Dict[str, Any], adapters: Dict[str, Any], project: str, method: str, phase: str, seed: int, candidate_id: str) -> Dict[str, Any]:
     if project not in PROJECTS:
         raise ValueError(f"unsupported project: {project}")
     if method not in METHODS:
@@ -104,6 +166,7 @@ def build_plan(registry: Dict[str, Any], project: str, method: str, phase: str, 
     if candidate.get("project_id") != project:
         raise ValueError(f"candidate/project mismatch: {candidate_id}")
     validated = validate_candidate(candidate)
+    validated_adapter = validate_adapter_for_plan(adapters, project)
     return {
         "schema_version": 1,
         "protocol": "heldout_protocol_v1_2",
@@ -129,12 +192,7 @@ def build_plan(registry: Dict[str, Any], project: str, method: str, phase: str, 
             "assert_no_active_chaos_resource": True,
             "cleanup_failure_invalidates_run": True,
         },
-        "adapter": {
-            "status": "required_before_execute",
-            "baseline_command": None,
-            "observe_command": None,
-            "business_oracle": None,
-        },
+        "adapter": validated_adapter,
         "execution_started": False,
         "kubectl_called": False,
         "chaos_mesh_called": False,
@@ -150,12 +208,16 @@ def main() -> int:
     parser.add_argument("--candidate-id", required=True)
     parser.add_argument("--registry", type=Path, default=DEFAULT_REGISTRY)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
-    parser.add_argument("--execute", action="store_true", help="reserved; execution refuses without adapters")
+    parser.add_argument("--adapters", type=Path, default=DEFAULT_ADAPTERS)
+    parser.add_argument("--execute", action="store_true", help="reserved; execution remains blocked until pilot authorization")
     args = parser.parse_args()
     registry = load_registry(args.registry)
-    plan = build_plan(registry, args.project.upper(), args.method, args.phase, args.seed, args.candidate_id)
+    adapters = load_adapters(args.adapters)
+    plan = build_plan(registry, adapters, args.project.upper(), args.method, args.phase, args.seed, args.candidate_id)
     if args.execute:
-        raise SystemExit("EXECUTION_BLOCKED: project adapter and business oracle are not configured")
+        if not plan["adapter"]["execution_ready"]:
+            raise SystemExit("EXECUTION_BLOCKED: adapter runtime validation and environment gates are not complete")
+        raise SystemExit("EXECUTION_BLOCKED: execution mode remains disabled until explicit pilot authorization")
     output_dir = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
     output = output_dir / f"{args.project.upper()}-{args.method}-{args.phase}-{args.seed}-{args.candidate_id}.json"

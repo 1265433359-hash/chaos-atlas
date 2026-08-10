@@ -76,3 +76,5 @@
 2026-08-10 (v1.2 execution config): Numeric seed mapping and equal-information field redaction are frozen. `tools/heldout_v12_runner.py` now provides a read-only common dry-run boundary; it does not call kubectl/Chaos Mesh and still requires project-specific adapters/business oracles for execution.
 
 The remaining adapter/oracle gap is a real execution prerequisite, not a documentation gap: Hotel, SOCIALNET, and TeaStore require different business clients and service protocols. Do not start a cluster or substitute `r2_execute_one.sh` for a common runner.
+
+2026-08-10 (adapter evidence): Fixed-commit source inspection established the adapter contracts. Hotel frontend serves `/` and exposes `/hotels` with required date/location parameters; the official wrk2 script is the fixture source. SOCIALNET nginx exposes `/wrk2-api/post/compose` and the Lua contract requires user_id, username, post_type and text. TeaStore WebUI exposes `/tools.descartes.teastore.webui/ready/isready` and the documented WebUI context path. These are static facts only. Runtime port-forward, baseline, fixture creation, oracle, observation, recovery and cleanup remain not_run.
