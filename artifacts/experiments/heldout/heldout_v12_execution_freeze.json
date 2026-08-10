@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "protocol": "heldout_protocol_v1_2",
-  "status": "config_frozen_runner_implementation_pending",
+  "status": "dry_run_runner_implemented_adapters_pending",
   "freeze_date": "2026-08-10",
   "candidate_registry": "artifacts/experiments/heldout/heldout_v12_candidate_registry.json",
   "freeze_snapshot": "artifacts/experiments/heldout/heldout_v12_freeze_snapshot.json",
@@ -67,7 +67,9 @@
     }
   },
   "runner_contract": {
-    "status": "not_implemented",
+    "status": "dry_run_implemented",
+    "dry_run_entrypoint": "tools/heldout_v12_runner.py",
+    "dry_run_guarantee": "validates frozen registry/YAML/SHA and emits a lifecycle plan without kubectl or Chaos Mesh calls",
     "required_entrypoint": "one common runner accepting project_id, method_id, phase, seed, candidate_id and output_dir",
     "selection_output_schema": ["project_id", "method_id", "phase", "seed", "selected_candidate_ids", "selection_started_at", "input_hashes"],
     "injection_output_schema": ["candidate_id", "injected", "baseline", "observation", "verdict", "confirmation_runs", "cleanup", "runner_version"],

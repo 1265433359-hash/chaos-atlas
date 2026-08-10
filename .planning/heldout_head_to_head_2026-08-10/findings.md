@@ -73,6 +73,6 @@
 
 2026-08-10 (v1.2 freeze): User approved v1.2. `heldout_v12_candidate_registry.json` now contains 83 unique candidates from HOTEL/SOCIALNET/TEASTORE, with `16/35/32/83` pooled counts and source/protocol hashes in `heldout_v12_freeze_snapshot.json`. This freeze is an input freeze only; method/runner/seed/cleanup freeze and environment gates remain pending.
 
-2026-08-10 (v1.2 execution config): Numeric seed mapping and equal-information field redaction are frozen. A repository-wide common injection runner does not yet exist; `heldout_v12_execution_freeze` marks this blocker explicitly rather than treating project-specific scripts as a common runner.
+2026-08-10 (v1.2 execution config): Numeric seed mapping and equal-information field redaction are frozen. `tools/heldout_v12_runner.py` now provides a read-only common dry-run boundary; it does not call kubectl/Chaos Mesh and still requires project-specific adapters/business oracles for execution.
 
-The missing runner is a real execution prerequisite, not a documentation gap: Hotel, SOCIALNET, and TeaStore require different business clients and service protocols. Do not start a cluster or substitute `r2_execute_one.sh` for a common runner.
+The remaining adapter/oracle gap is a real execution prerequisite, not a documentation gap: Hotel, SOCIALNET, and TeaStore require different business clients and service protocols. Do not start a cluster or substitute `r2_execute_one.sh` for a common runner.

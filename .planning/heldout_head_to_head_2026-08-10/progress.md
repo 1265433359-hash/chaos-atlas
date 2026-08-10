@@ -26,6 +26,6 @@
 
 2026-08-10 (v1.2 approved/frozen): User approved the amendment. Protocol status is frozen_user_approved. A separate 83-candidate pooled registry and freeze snapshot were generated from the three existing static pools; candidate IDs are unique, source-pool/protocol SHA-256 values are recorded, pooled quotas pass, and execution remains not_started.
 
-2026-08-10 (v1.2 execution config): Method IDs, K budgets, numeric seed lists, equal-information redaction, realistic line, lifecycle/cleanup contract, and environment gates were frozen in heldout_v12_execution_freeze.json/md. The common runner is explicitly not_implemented because existing runners are project-specific; no cluster or experiment may start until the common runner contract is implemented and validated.
+2026-08-10 (v1.2 execution config): Method IDs, K budgets, numeric seed lists, equal-information redaction, realistic line, lifecycle/cleanup contract, and environment gates were frozen in heldout_v12_execution_freeze.json/md. A common read-only dry-run runner now validates registry/YAML/SHA and emits lifecycle plans; project adapters/business oracles remain required before execute mode.
 
-2026-08-10 (v1.2 gate): Configuration freeze is complete. The next gate is implementation and dry-run validation of one common runner; pilot/formal remain blocked.
+2026-08-10 (v1.2 gate): Configuration freeze and common dry-run runner are complete. The next gate is project adapter/business-oracle implementation and validation; pilot/formal remain blocked.

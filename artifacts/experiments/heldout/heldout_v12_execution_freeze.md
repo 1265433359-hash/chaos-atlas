@@ -1,6 +1,6 @@
 # v1.2 Method and Execution Freeze
 
-Status: `config_frozen_runner_implementation_pending`
+Status: `dry_run_runner_implemented_adapters_pending`
 Freeze date: 2026-08-10
 
 The v1.2 method IDs, K budgets, numeric seeds, comparison lines, blindness fields, lifecycle, cleanup contract, and environment gates are now frozen. The candidate registry and freeze snapshot are the input references.
@@ -23,7 +23,7 @@ Equal-information views share candidate ID, project, edge, target, fault family,
 
 ## Runner gate
 
-The repository currently has project-specific runners but no common runner for all three projects. Therefore the runner status is explicitly `not_implemented`. A common entrypoint must accept project, method, phase, seed, candidate, and output directory, and emit the frozen selection and lifecycle schemas. It must execute preflight, baseline, one fault, observation, recovery, deletion, cleanup assertion, and ledger writing. Network faults are `NetworkChaos mode=one`; kills are `PodChaos mode=one`.
+The repository now has a common read-only dry-run entrypoint at `tools/heldout_v12_runner.py`. It accepts project, method, phase, seed, candidate, and output directory; validates the frozen registry/YAML/SHA; and emits the frozen lifecycle schema without calling `kubectl` or Chaos Mesh. A project adapter is still required before execution. The eventual adapter-backed runner must execute preflight, baseline, one fault, observation, recovery, deletion, cleanup assertion, and ledger writing. Network faults are `NetworkChaos mode=one`; kills are `PodChaos mode=one`.
 
 No run may start until this runner contract is implemented and validated. Cleanup failure invalidates a run; changing business code, changing frozen YAML, reselection from results, or selective cleanup is forbidden.
 
