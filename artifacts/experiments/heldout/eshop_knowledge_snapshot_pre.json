@@ -1,0 +1,557 @@
+{
+  "schema_version": 1,
+  "status": "blocked",
+  "status_reason": "ESHOP 无 k8s manifest/docker-compose -> availability 来源 unavailable; provenance_completeness=partial; 五源含 unavailable -> 完整 frozen replay 不可声明。契约边(no_timeout)已静态确认。",
+  "provenance": {
+    "kind": "ESHOP_static_reconstructed",
+    "source_commit": "9b4f9434f46fdc5c1a6e9e936af2868340cdbc48",
+    "created_at": "2026-08-10T06:13:41.779936+00:00",
+    "source_files": [
+      {
+        "path": "src/eShop.AppHost/Program.cs",
+        "purpose": "contract/availability source",
+        "sha256": "6c0e25977f2068211b776fc57fbb85898c3d6b576c99d3fb168d8dc2388fced7"
+      },
+      {
+        "path": "src/WebApp/Extensions/Extensions.cs",
+        "purpose": "contract/availability source",
+        "sha256": "d0009c09da7eb439964985e332e50d64d88f9ed317f6e254a279983655bac66a"
+      },
+      {
+        "path": "src/WebApp/Services/OrderingService.cs",
+        "purpose": "contract/availability source",
+        "sha256": "2e8578d1eda8e3ab7ce7e471d6e3d5447e4c80a1a0d1407af74734ce989932c2"
+      },
+      {
+        "path": "src/Basket.API/Grpc/BasketService.cs",
+        "purpose": "contract/availability source",
+        "sha256": "cb02d7b4fdf67553847490a0b5ab86614f17cb4c45e7ea53b515ab4fb193fdba"
+      },
+      {
+        "path": "src/eShop.ServiceDefaults/Extensions.cs",
+        "purpose": "contract/availability source",
+        "sha256": "61a80ad164411ba51026c5ea571ed3e5c9825186202302a1ff1464be76f8e442"
+      },
+      {
+        "path": "README.md",
+        "purpose": "contract/availability source",
+        "sha256": "3ef8cf674084750c4d5db6f9317226f8e0a6ebba932e0ee73c3f9060c2e41ae7"
+      }
+    ],
+    "sha256": {
+      "src/eShop.AppHost/Program.cs": "6c0e25977f2068211b776fc57fbb85898c3d6b576c99d3fb168d8dc2388fced7",
+      "src/WebApp/Extensions/Extensions.cs": "d0009c09da7eb439964985e332e50d64d88f9ed317f6e254a279983655bac66a",
+      "src/WebApp/Services/OrderingService.cs": "2e8578d1eda8e3ab7ce7e471d6e3d5447e4c80a1a0d1407af74734ce989932c2",
+      "src/Basket.API/Grpc/BasketService.cs": "cb02d7b4fdf67553847490a0b5ab86614f17cb4c45e7ea53b515ab4fb193fdba",
+      "src/eShop.ServiceDefaults/Extensions.cs": "61a80ad164411ba51026c5ea571ed3e5c9825186202302a1ff1464be76f8e442",
+      "README.md": "3ef8cf674084750c4d5db6f9317226f8e0a6ebba932e0ee73c3f9060c2e41ae7",
+      "selection_experience_live": "f7280be785e34504fdcde76f81db027c32d5db6d572a2fc648c65eb347704fc1",
+      "defense_pattern_library_live": "afffb6ada45c947a3110dec6365152af8260358a45f7eb6e415926de70f557d8",
+      "judgment_experience_live": "7756d8d3beb0ea6a4644a3d2ecff117b09eabe62ad3e1d2a33aee61c2c6eead6"
+    },
+    "provenance_completeness": "partial",
+    "note": "ESHOP STATIC-RECONSTRUCTED from https://github.com/dotnet/eShop @9b4f9434f46f; no runtime/CE/experiment evidence."
+  },
+  "contract": {
+    "contracts": {
+      "ESHOP-webapp->catalog": {
+        "contract": "no_timeout",
+        "loss_bounded": false,
+        "evidence": "STATIC WebApp/Extensions/Extensions.cs AddHttpClient<CatalogService>(BaseAddress catalog-api); no per-request timeout; no retry/circuit (grep 无命中)",
+        "source_sha256": "d0009c09da7eb439964985e332e50d64d88f9ed317f6e254a279983655bac66a"
+      },
+      "ESHOP-webapp->ordering": {
+        "contract": "no_timeout",
+        "loss_bounded": false,
+        "evidence": "STATIC WebApp/Extensions/Extensions.cs AddHttpClient<OrderingService>(BaseAddress ordering-api); no per-request timeout",
+        "source_sha256": "d0009c09da7eb439964985e332e50d64d88f9ed317f6e254a279983655bac66a"
+      }
+    },
+    "availability": {},
+    "availability_kubernetes": {},
+    "candidate_map": {}
+  },
+  "selection_experience": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "id": "SE-CORE-CHAIN-001",
+        "rule": "结算/支付/下单等核心同步链路的调用最常缺超时：OB payment/cart/checkout 与 OTel checkout 全在核心链路挂死（sev2-3）；这些边是最高价值优先测试目标。",
+        "dimensions": [
+          "business_path"
+        ],
+        "corpus_evidence": [],
+        "experiment_evidence": [
+          "OB-PAYMENT-DELAY/LOSS",
+          "OB-CART-DELAY-2000",
+          "OB-CHECKOUT-DELAY-2000",
+          "OTEL-CHECKOUT-DELAY-2000",
+          "OTEL-PAYMENT-DELAY/LOSS",
+          "OB-PAYMENT-DELAY-2000 (delay sev2)",
+          "OB-PAYMENT-LOSS-100 (loss sev3)",
+          "OTEL-PAYMENT-DELAY-2000 (delay sev2)",
+          "OTEL-PAYMENT-LOSS-100 (loss sev3)",
+          "OB-CHECKOUT-DELAY-2000 (delay sev3)",
+          "OB-CART-DELAY-2000 (delay sev3)",
+          "OTEL-CHECKOUT-DELAY-2000 (delay sev3)"
+        ],
+        "counter_example": "核心链路若已配置超时（OB productcatalog 3s timeout）则不爆——先查契约清单",
+        "transferable_to": "电商/交易类微服务：支付、购物车、结算服务优先",
+        "confidence": "high",
+        "source": "核心链路 5+ 候选确认弱点 + 契约清单（无超时）",
+        "evidence_count": 7
+      },
+      {
+        "id": "SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001",
+        "rule": "延迟（delay）的严重度取决于调用方是否同步等待且无超时，而不是 fault 类型本身：Sock Shop orders->payment 同步调用无超时，delay 2000ms 打挂客户端 10s（sev3），与 loss 同级。跨分布验证推翻了'loss 永远比 delay 严重'的先验。",
+        "dimensions": [
+          "fault_intensity",
+          "contract"
+        ],
+        "experiment_evidence": [],
+        "cross_project_evidence": [
+          "SOCK-ORDERS-PAYMENT-DELAY-2000 (sev3)",
+          "SOCK-FRONTEND-CARTS-DELAY-2000 (sev2)",
+          "SOCK-ORDERS-SHIPPING-DELAY-2000 (sev2)"
+        ],
+        "transferable_to": "任意微服务系统：判断 delay 严重度前先查调用方是否同步等待/有超时",
+        "confidence": "medium",
+        "source": "Sock Shop 跨分布验证（HTTPChaos 8 候选）",
+        "evidence_count": 3,
+        "corpus_evidence": [
+          {
+            "document_count": 0,
+            "kind": "cross_project",
+            "node": "delay_on_sync_no_timeout"
+          }
+        ],
+        "counter_example": "无（跨分布验证支持：delay 在同步无超时调用 = sev3）",
+        "adjudicated": "accepted",
+        "contested": false
+      },
+      {
+        "id": "SE-CROSSPROJECT-REPLICATION-001",
+        "rule": "在 A 项目确认的弱点模式，优先到 B 项目同名服务/边复测：payment 无超时在 OB 和 OTel 都验证挂死；email 耦合同理——跨项目复现是低成本高收益的选择策略。",
+        "dimensions": [
+          "transferability"
+        ],
+        "corpus_evidence": [],
+        "experiment_evidence": [
+          "OB-PAYMENT-LOSS-100 vs OTEL-PAYMENT-LOSS-100（都 10s 挂死）",
+          "OB email vs OTel email（都阻塞主流程）"
+        ],
+        "counter_example": "B 项目的同名服务可能有不同实现（如 OB catalog 有 3s timeout 而 OTel catalog 无）——复测前查契约",
+        "transferable_to": "多项目对比/迁移",
+        "confidence": "medium",
+        "source": "payment/email 双项目复现证据"
+      },
+      {
+        "id": "SE-LOSS-STRONGEST-001",
+        "rule": "100% 丢包（loss）是打穿无超时同步调用的最稳手段：我们注入的所有 loss（payment/email/checkout）100% 挂死到客户端 deadline（severity 3）；真实语料 network_loss 57 docs。",
+        "dimensions": [
+          "fault_intensity"
+        ],
+        "corpus_evidence": [
+          {
+            "node": "network_loss",
+            "document_count": 57,
+            "kind": "NetworkChaos"
+          }
+        ],
+        "experiment_evidence": [
+          "OB-PAYMENT-LOSS-100 (10s hang)",
+          "OTEL-PAYMENT-LOSS-100 (10s hang)",
+          "OTEL-EMAIL-LOSS-100 (10s hang)",
+          "OB-CART-DELAY-2000 (12s client timeout)",
+          "OB-PAYMENT-LOSS-100 (loss sev3)",
+          "OTEL-PAYMENT-LOSS-100 (loss sev3)",
+          "OTEL-EMAIL-LOSS-100 (loss sev3)"
+        ],
+        "counter_example": "有超时/重试保护的下游，loss 可能被兜住（如 OB productcatalog 3s timeout 对 delay 有效；对 loss 是否有效未测）",
+        "transferable_to": "发现'无超时'类弱点时，loss 是最短路径",
+        "confidence": "high",
+        "source": "全部 loss 实验 100% 挂死（severity 3）+ 语料 network_loss",
+        "evidence_count": 3
+      },
+      {
+        "id": "SE-NETWORK-FAMILY-001",
+        "rule": "优先在网络故障家族上找弱点：真实语料里 NetworkChaos 是最常注入的类型（delay 213/loss 57/partition 99 docs），且我们实验里 13/14 个确认弱点来自网络故障——网络是最可能的弱点藏身处。",
+        "dimensions": [
+          "fault_family"
+        ],
+        "corpus_evidence": [
+          {
+            "node": "network_delay",
+            "document_count": 213,
+            "kind": "NetworkChaos"
+          },
+          {
+            "node": "network_loss",
+            "document_count": 57,
+            "kind": "NetworkChaos"
+          },
+          {
+            "node": "network_partition",
+            "document_count": 99,
+            "kind": "NetworkChaos"
+          }
+        ],
+        "experiment_evidence": [
+          "OB-PAYMENT-DELAY-2000 (sev2)",
+          "OB-PAYMENT-LOSS-100 (sev3)",
+          "OTEL-PAYMENT-DELAY-2000 (sev2)",
+          "OTEL-PAYMENT-LOSS-100 (sev3)",
+          "OTEL-EMAIL-LOSS-100 (sev3)",
+          "OB-CHECKOUT-DELAY-2000 (sev3)",
+          "TT-STATION-DELAY-2000 (delay sev2)",
+          "OB-PAYMENT-DELAY-2000 (delay sev2)",
+          "OB-PAYMENT-LOSS-100 (loss sev3)",
+          "OB-PRODUCTCATALOG-DELAY-500 (delay sev2)",
+          "OTEL-PAYMENT-DELAY-2000 (delay sev2)",
+          "OTEL-PAYMENT-LOSS-100 (loss sev3)",
+          "OTEL-EMAIL-DELAY-2000 (delay sev2)",
+          "OTEL-EMAIL-LOSS-100 (loss sev3)",
+          "OB-CHECKOUT-DELAY-2000 (delay sev3)",
+          "OB-SHIPPING-DELAY-2000 (delay sev2)",
+          "OB-CART-DELAY-2000 (delay sev3)",
+          "OTEL-CHECKOUT-DELAY-2000 (delay sev3)",
+          "OTEL-CURRENCY-DELAY-2000 (delay sev2)",
+          "TT-ORDER-DELAY-2000 (delay sev2)"
+        ],
+        "counter_example": "HTTPChaos 语料 183 docs 但平台 blocked 未测；不能断言 HTTP 家族同样易爆（未实证）",
+        "transferable_to": "任意微服务系统：网络故障（延迟/丢包/分区）优先于 CPU/内存等资源类",
+        "confidence": "high",
+        "source": "语料频次 + 20 候选实验反推（13/14 weakness 为网络故障）",
+        "evidence_count": 14,
+        "counter_examples": [
+          "TT-STATION-DELAY-100 (delay sev1)",
+          "TT-STATION-CPU-80 (delay sev1)",
+          "TT-BASIC-DELAY-100 (delay sev1)",
+          "TT-BASIC-DELAY-500 (delay sev1)",
+          "TT-STATION-DELAY-500 (delay sev1)"
+        ],
+        "contested": true,
+        "contested_reason": "strong injection stayed 1:1 no-amplification (TT-STATION-DELAY-500 (delay sev1)), contradicting the rule's implied 'delay on this family amplifies'; human adjudication required",
+        "adjudicated": "accepted",
+        "adjudication_note": "TT-BASIC/STATION-500 single-call 1:1; rule needs boundary"
+      },
+      {
+        "id": "SE-SIDEEFFECT-COUPLING-001",
+        "rule": "email/通知这类旁路依赖在真实项目里常被同步耦合：OTel 与 OB 的 email 都同步阻塞主流程（10s 挂死/5s 延迟放大）；新项目优先查旁路依赖是否同步耦合主流程。",
+        "dimensions": [
+          "business_path"
+        ],
+        "corpus_evidence": [],
+        "experiment_evidence": [
+          "OTEL-EMAIL-LOSS-100 (10s hang)",
+          "OTEL-EMAIL-DELAY-2000 (4.9s block)",
+          "KB-OB-CHECKOUT-EMAIL-FAILURE-001",
+          "OTEL-EMAIL-DELAY-2000 (delay sev2)",
+          "OTEL-EMAIL-LOSS-100 (loss sev3)"
+        ],
+        "counter_example": "旁路正确隔离（异步/独立预算）则不构成弱点——需源码确认调用方式",
+        "transferable_to": "任意微服务：email/通知/日志/分析类旁路依赖",
+        "confidence": "high",
+        "source": "OTel/OB email 双项目复现 + 判定经验 JE-COUPLING-001",
+        "evidence_count": 2
+      },
+      {
+        "id": "SE-TEST-HYGIENE-PROBE-001",
+        "rule": "liveness/readiness probe timeout must exceed the injected latency, else the kubelet SIGKILLs the pod mid-experiment and the injection 'escapes' - the observed failure is probe self-kill, not the system's defense behavior. Check probe timeouts BEFORE designing delay injections (Sock Shop payment: 1s probe killed pod on 2s+ injection; relaxed to 25s for clean experiments).",
+        "dimensions": [
+          "test_design"
+        ],
+        "corpus_evidence": [],
+        "experiment_evidence": [
+          "SOCK-PAYMENT: 1s liveness + 2s delay -> pod SIGKILL (experiment polluted)",
+          "OB probe-restart escape (1s probe vs 2s+ delay, prior session)"
+        ],
+        "counter_example": "probe timeout >= injected latency, or probes disabled, keeps the experiment valid",
+        "transferable_to": "任何用延迟注入测试有探针的服务；先读 deployment 探针配置",
+        "confidence": "high",
+        "source": "Sock Shop payment 探针污染实测 + OB 探针重启逃逸(既有)",
+        "evidence_count": 2
+      },
+      {
+        "id": "SE-TEST-HYGIENE-IMAGECOMPAT-001",
+        "rule": "DB image 'latest' (mongo 8.x) breaks legacy app drivers: 'Unsupported OP_QUERY command: find/insert (code 352)'. If an old Spring/Go app fails with 352, pin the DB to the era-appropriate major (mongo:4.0) rather than debugging the app.",
+        "dimensions": [
+          "infrastructure"
+        ],
+        "corpus_evidence": [],
+        "experiment_evidence": [
+          "carts-db mongo:latest -> carts 500 (OP_QUERY 352); mongo:4.0 -> 201",
+          "orders-db mongo:latest -> orders insert 500 (OP_QUERY 352); mongo:4.0 -> 201"
+        ],
+        "counter_example": "modern driver / gRPC clients speak wire protocol v2+ (no OP_QUERY)",
+        "transferable_to": "任何 'latest' DB 镜像 + 老微服务；先验证驱动兼容再排查应用",
+        "confidence": "high",
+        "source": "Sock Shop carts/orders-db 降级实测",
+        "evidence_count": 2
+      },
+      {
+        "id": "SE-TEST-HYGIENE-PORTMISMATCH-001",
+        "rule": "Container listening port may differ from the Service targetPort in real YAML (front-end listens 8079, svc targetPort was 80 -> silent connection refused). Verify the container's actual listen port (netstat/ss) before blaming the mesh or the app - patch svc targetPort to the real port.",
+        "dimensions": [
+          "infrastructure"
+        ],
+        "corpus_evidence": [],
+        "experiment_evidence": [
+          "front-end: pod IP :80 refused; :8079 200; patched svc targetPort 8079 -> svc OK"
+        ],
+        "counter_example": "container port == svc targetPort (most manifests)",
+        "transferable_to": "任何 svc 连接拒绝先查 targetPort 一致性",
+        "confidence": "high",
+        "source": "Sock Shop front-end 8079/80 排查",
+        "evidence_count": 1
+      },
+      {
+        "id": "SE-TEST-HYGIENE-OOM-001",
+        "rule": "Services without resource limits can OOM-crashloop independently of probes or injections (catalogue-db OOMKilled repeatedly). Distinguish infra OOM from probe/liveness issues before attributing it to the injected fault.",
+        "dimensions": [
+          "infrastructure"
+        ],
+        "corpus_evidence": [],
+        "experiment_evidence": [
+          "catalogue-db OOMKilled exit 137 crash-loop (no resource limits in deployment)"
+        ],
+        "counter_example": "resources.limits set (survives normal load)",
+        "transferable_to": "任何无 resources.limits 的服务；测前先查 limit",
+        "confidence": "medium",
+        "source": "Sock Shop catalogue-db OOM 观察",
+        "evidence_count": 1
+      }
+    ],
+    "generated_at": "2026-08-09T12:01:03.614213+00:00"
+  },
+  "defense_pattern_library": {
+    "schema_version": 1,
+    "patterns": [
+      {
+        "pattern_id": "DP-DEFENSE-ABSORBED-001",
+        "defense_mechanism": "absorbed_by_design",
+        "evidence": {
+          "project": "train-ticket",
+          "candidate_id": "TT-BASIC-DELAY-500",
+          "mutation": "artifacts/experiments/execution/mutations_extended/tt-basic-delay-500-one.yaml",
+          "observation": "500ms injection -> 517-535ms response (1:1, no amplification), 5/5 HTTP 200 x3",
+          "evidence_files": [
+            "m1_ext_tt_basic_delay_500_r1.json",
+            "m1_ext_tt_basic_delay_500_r2.json",
+            "m1_ext_tt_basic_delay_500_r3.json"
+          ]
+        },
+        "inference": "basic->station is a single downstream call; latency propagates 1:1 with no fan-out compounding",
+        "source_verified": false,
+        "source_note": "observation-inferred; requires source/config confirmation"
+      },
+      {
+        "pattern_id": "DP-DEFENSE-ABSORBED-002",
+        "defense_mechanism": "absorbed_by_design",
+        "evidence": {
+          "project": "train-ticket",
+          "candidate_id": "TT-BASIC-DELAY-100",
+          "mutation": "artifacts/train-ticket/runtime/generated_mutations/network/basic-network-delay-candidate-r1.yaml",
+          "observation": "100ms injection -> 141ms response, 5/5 HTTP 200",
+          "evidence_files": [
+            "m1_batch_tt_basic_delay_100_r1.json"
+          ]
+        },
+        "inference": "weak latency injection on a single-call path; no amplification",
+        "source_verified": false,
+        "source_note": "observation-inferred; requires source/config confirmation"
+      },
+      {
+        "pattern_id": "DP-DEFENSE-ABSORBED_BY_DESIGN-TT-BASIC-DELAY-500",
+        "defense_mechanism": "absorbed_by_design",
+        "source": "m5_llm_attribution",
+        "confidence": "medium",
+        "evidence": {
+          "project": "train-ticket",
+          "candidate_id": "TT-BASIC-DELAY-500",
+          "mutation": "TT-BASIC-DELAY-500",
+          "observation": "LLM attributed 'downstream latency propagated 1:1 with no retries or compounding (bounded path tolerated the 500ms delay)' as the defense mechanism",
+          "evidence_files": []
+        },
+        "inference": "LLM (deepseek-v4-flash) attributed defense mechanism 'downstream latency propagated 1:1 with no retries or compounding (bounded path tolerated the 500ms delay)' from runtime evidence; human/behavior verification recommended",
+        "source_verified": false,
+        "source_note": "observation-inferred; requires source/config confirmation"
+      },
+      {
+        "pattern_id": "DP-BOUNDED-TIMEOUT-FUTUREGET-001",
+        "defense_mechanism": "bounded_timeout",
+        "source_verified": true,
+        "source_note": "jar javap (Future.get + TimeoutException) + runtime TimeoutException at 5.07s",
+        "evidence": {
+          "project": "sock-shop",
+          "candidate_id": "SOCK-ORDERS-PAYMENT-DELAY-2000",
+          "mutation": "tc netem delay 2s/6s on payment veth (real-chain POST /orders)",
+          "observation": "2s -> 201@4.15s (absorbed, RTT 4.0s); 6s -> 500@5.10s TimeoutException; direct curl -> 12s hang (position artifact)",
+          "evidence_files": [
+            "artifacts/sock-shop/sock_orders_future_get_verified.md"
+          ]
+        },
+        "inference": "Future.get(timeout, SECONDS) async timeout (OrdersController.java:139/160, @Value ${http.timeout:5}) bounds BOTH delay and loss (loss_bounded): never an infinite hang. Invisible to direct port measurement - only business-chain entry reveals it."
+      }
+    ],
+    "generated_at": "2026-08-09T12:01:03.613480+00:00",
+    "backfilled_at": "2026-08-08T06:03:42.453295+00:00",
+    "a1_audit": {
+      "weak_stressor_dropped": 2,
+      "applied_at": "2026-08-08T06:27:13.203060+00:00"
+    },
+    "a1_audit_note": "2026-08-09 audit: DP-REDUNDANCY-ABSENT-001 removed - it records an ABSENT defense (single-replica no-PDB), which violates A1 principle (absence is NOT a defense pattern). Absence rules live in contract_inventory AVAILABILITY static_prediction + decision_engine availability_hard_filter (AD-REDUNDANCY-001), not in the defense-pattern library."
+  },
+  "judgment_experience": {
+    "schema_version": 1,
+    "entries": [
+      {
+        "id": "JE-CONTRACT-001",
+        "rule": "系统源码/配置声明的契约（WithTimeout/gRPC deadline/SLO）违约 = 明确漏洞；但测试客户端自设的 timeout 是测量预算，永远不是系统契约——挂到客户端 deadline 暴露的是'系统缺超时'，判定依据不同（A2 修正）。",
+        "dimensions": [
+          "contract"
+        ],
+        "severity_adjustment": "confirm",
+        "evidence_cases": [
+          "OB-PAYMENT-LOSS-100: chargeCard 无 WithTimeout（main.go:369，系统无契约）；10s 挂死是 ob_client 10s 预算耗尽 → 弱点是'系统缺超时'而非'违约'",
+          "OB-CART-DELAY-2000: 12s 客户端超时 x3，cart 读无 deadline",
+          "TT 系: 无超时配置（application.yml），延迟放大无违约但无保护",
+          "TT-STATION-DELAY-2000 (delay sev2)",
+          "OB-PAYMENT-DELAY-2000 (delay sev2)",
+          "OB-PAYMENT-LOSS-100 (loss sev3)",
+          "OB-PRODUCTCATALOG-DELAY-500 (delay sev2)",
+          "OTEL-PAYMENT-DELAY-2000 (delay sev2)",
+          "OTEL-PAYMENT-LOSS-100 (loss sev3)",
+          "OTEL-EMAIL-DELAY-2000 (delay sev2)",
+          "OTEL-EMAIL-LOSS-100 (loss sev3)",
+          "OB-CHECKOUT-DELAY-2000 (delay sev3)",
+          "OB-SHIPPING-DELAY-2000 (delay sev2)",
+          "OB-CART-DELAY-2000 (delay sev3)",
+          "OTEL-CHECKOUT-DELAY-2000 (delay sev3)",
+          "OTEL-CURRENCY-DELAY-2000 (delay sev2)",
+          "TT-ORDER-DELAY-2000 (delay sev2)",
+          "SOCK-FRONTEND-CARTS-LOSS-100 (sev3)",
+          "SOCK-FRONTEND-CATALOGUE-LOSS-100 (sev3)",
+          "SOCK-ORDERS-PAYMENT-LOSS-100 (sev3)",
+          "SOCK-ORDERS-SHIPPING-LOSS-100 (sev2)",
+          "SOCK-FRONTEND-CARTS-DELAY-2000 (sev2)",
+          "SOCK-FRONTEND-CATALOGUE-DELAY-2000 (sev2)",
+          "SOCK-ORDERS-PAYMENT-DELAY-2000 (sev3)",
+          "SOCK-ORDERS-SHIPPING-DELAY-2000 (sev2)"
+        ],
+        "counter_example": "有系统级 timeout 且注入后仍违约（若存在）才是契约违约；TT-BASIC-500 1:1 无放大未触任何预算",
+        "transferable_to": "判定前必须查 contract_inventory.json 区分系统契约 vs 客户端预算",
+        "confidence": "high",
+        "source": "A2 审计 + 源码核查（OB chargeCard 无 WithTimeout）",
+        "source_verified": true,
+        "source_note": "OB chargeCard no WithTimeout confirmed at online-boutique/src/checkoutservice/main.go:369; TT application.yml no timeout config",
+        "en_rule": "A violation of a SOURCE-DECLARED contract (WithTimeout/gRPC deadline/SLO) is a clear vulnerability; but a test-client's own timeout is a measurement budget, never a system contract - hanging to the client deadline reveals the system LACKS a timeout, a different finding (A2 fix).",
+        "evidence_count": 14
+      },
+      {
+        "id": "JE-CONTRACT-002",
+        "rule": "系统无契约（无 SLO/无显式 deadline，见 contract_inventory）的延迟放大 ≠ 自动漏洞；应查是否有降级/兜底，无兜底则判'潜在风险'而非'确定漏洞'。runner 的 request_timeout 不算契约。",
+        "dimensions": [
+          "contract"
+        ],
+        "severity_adjustment": "downgrade",
+        "evidence_cases": [
+          "TT-STATION-DELAY-2000: 2s 注入 -> 4s 响应，HTTP 200；系统无超时配置（潜在风险）",
+          "TT-ORDER-DELAY-2000: 2s -> 4s HTTP 200（同上）"
+        ],
+        "counter_example": "有 SLO/预算声明的路径放大即违约（升级为确定漏洞）",
+        "transferable_to": "无显式 SLO 的内部服务间调用",
+        "confidence": "medium",
+        "source": "A2 审计：TT 系 application.yml 无超时配置；runner timeout 5s/8s 为测试参数",
+        "source_verified": true,
+        "source_note": "TT station/basic/order application.yml have no timeout config (verified); runner request_timeout is a test parameter",
+        "en_rule": "Latency amplification with no system contract (no SLO/explicit deadline, see contract_inventory) is NOT automatically a vulnerability; check for degradation/fallback first - without it, classify as 'potential risk', not 'confirmed vulnerability'. The runner's request_timeout is not a contract."
+      },
+      {
+        "id": "JE-COUPLING-001",
+        "rule": "旁路/非关键依赖（email/通知/日志）同步阻塞主流程并挂到客户端超时 = 架构级耦合缺陷（severity 3 且判定价值最高），因为暴露的是依赖隔离缺失而非单个缺超时。",
+        "dimensions": [
+          "business_path"
+        ],
+        "severity_adjustment": "upgrade",
+        "evidence_cases": [
+          "OTEL-EMAIL-LOSS-100: email 100% 丢包 -> PlaceOrder 10s DEADLINE_EXCEEDED x3",
+          "KB-OB-CHECKOUT-EMAIL-FAILURE-001: OB email 故障阻塞下单",
+          "OTEL-EMAIL-DELAY-2000 (delay sev2)",
+          "OTEL-EMAIL-LOSS-100 (loss sev3)"
+        ],
+        "counter_example": "独立旁路故障不影响主流程（若隔离正确）则不构成该缺陷",
+        "transferable_to": "任意微服务系统：优先查 email/通知/日志/分析这类旁路依赖是否同步耦合主流程",
+        "confidence": "high",
+        "source": "本项目案例反推 + 混沌工程实践（非关键依赖耦合是最常见架构反模式）",
+        "source_verified": false,
+        "source_note": "observation-inferred from OTEL-EMAIL-LOSS + OB email card; source check of checkout->email call pending",
+        "en_rule": "A non-critical dependency (email/notification/log) synchronously blocking the primary flow and hanging to the client deadline = architecture-level coupling defect (severity 3+, highest value): it reveals missing dependency isolation, not a single missing timeout.",
+        "evidence_count": 2
+      },
+      {
+        "id": "JE-OBSERVABILITY-001",
+        "rule": "故障被追踪系统完整记录（trace/事件可见）但无自动告警 = 部分弱点（可诊断、不可预警）；'故障发生时无法被看见'本身是弱点，即使功能正常。",
+        "dimensions": [
+          "observability"
+        ],
+        "severity_adjustment": "confirm",
+        "evidence_cases": [
+          "OTel payment: Jaeger 完整捕获注入窗口（payment span 4462ms + error event）但无 auto-alert"
+        ],
+        "counter_example": "故障完全不可见（无 trace 无日志）则严重度更高（完全黑洞）",
+        "transferable_to": "任何带 Jaeger/链路追踪但缺告警链路的系统",
+        "confidence": "medium",
+        "source": "OTel 可观测性缺口研究",
+        "source_verified": false,
+        "source_note": "observed via Jaeger capture (OTel payment); alert configuration not source-checked",
+        "en_rule": "A fault fully captured by tracing (visible events) but without auto-alert = partial weakness (diagnosable, not alertable); 'cannot be seen at fault time' is itself a weakness even if functionality is normal."
+      },
+      {
+        "id": "JE-RECOVERY-001",
+        "rule": "注入停止后系统不自动恢复（或恢复超时） = 严重度升级，无论原始症状强弱——恢复能力缺失是独立弱点。",
+        "dimensions": [
+          "recovery"
+        ],
+        "severity_adjustment": "upgrade",
+        "evidence_cases": [
+          "K7 探针重启：paymentservice 重启后 Ready 超时 + 业务连接拒绝（probe_restart_recovery_timeout）"
+        ],
+        "counter_example": "注入后恢复正常（TT 系、OB/OTel 所有延迟/loss 注入后 cleanup 恢复基线）不触发升级",
+        "transferable_to": "所有注入实验都应显式检查恢复是否自动完成",
+        "confidence": "high",
+        "source": "本项目探针重启逃逸机制研究",
+        "source_verified": false,
+        "source_note": "behavior-observed (K7 probe-restart recovery timeout); mechanism root not source-checked",
+        "en_rule": "Failure to auto-recover after injection stops (or recovery timeout) upgrades severity regardless of symptom strength - missing recovery capability is an independent weakness."
+      },
+      {
+        "id": "JE-RISK-001",
+        "rule": "高概率现实故障（支付商超时/网络分区/丢包）暴露的弱点，排序价值高于低概率极端场景——风险 = 概率 × 影响，概率是排序依据而非判定依据。",
+        "dimensions": [
+          "risk"
+        ],
+        "severity_adjustment": "n_a",
+        "evidence_cases": [
+          "所有 payment/email loss 场景（支付商超时是常态事件）",
+          "TT-STATION-CPU-80: 单 worker 80% CPU 是低概率弱压场景 -> 排序靠后"
+        ],
+        "counter_example": "低概率高影响（如全部节点同时宕机）在特殊系统（银行）中仍需升级",
+        "transferable_to": "候选排序/优先级，不改判定本身",
+        "confidence": "medium",
+        "source": "风险矩阵实践 + 本项目 CPU 弱影响观察",
+        "source_verified": true,
+        "source_note": "derived from executed experiments; probability assignment is practitioner judgment, flagged",
+        "en_rule": "Weaknesses exposed by high-probability real events (payment-provider timeout/network partition/packet loss) rank above low-probability extreme scenarios - risk = probability x impact; probability ranks, it does not judge."
+      }
+    ]
+  },
+  "source_provenance": {
+    "contract": "static_reconstructed_pre_experiment",
+    "availability": "unavailable",
+    "selection_experience": "pre_experiment_commit",
+    "defense_pattern_library": "pre_experiment_commit",
+    "judgment_experience": "pre_experiment_commit"
+  },
+  "full_pre": false
+}
