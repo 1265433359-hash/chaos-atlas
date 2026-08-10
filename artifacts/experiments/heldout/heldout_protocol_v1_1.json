@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "protocol": "heldout_protocol_v1_1",
+  "supersedes": "heldout_protocol_v1",
+  "amendment_reason": "budget/statistics/replicate semantics correction",
+  "frozen_at": "2026-08-10",
+  "status": "frozen",
+  "v1_kept_as_history": true,
+  "purpose": "第一个真正 held-out 项目 (Hotel Reservation) 的 confirmatory 对比协议 (v1.1 修正版)",
+  "methods": {
+    "Ours-full-pre": {
+      "definition": "Hotel 源码/manifest 静态 intake 后冻结的项目特定 contract/availability inventory + 通用 SE/DP/JE; decision_engine 在注入 knowledge snapshot 下运行 (零 live 读取)",
+      "input_information_tier": "项目特定静态契约 + 通用知识资产",
+      "measurement_evidence_axis": ["selection", "evidence"]
+    },
+    "Ours-generic": {
+      "definition": "消融组: 空项目特定 contract (无 Hotel contract/availability), 仅通用 SE/DP/JE; 即使在 Equal-information 线获得候选元数据也禁用项目特定契约",
+      "input_information_tier": "仅通用知识资产",
+      "measurement_evidence_axis": ["selection", "evidence"],
+      "note": "空 contract 不得称为 Ours-full"
+    },
+    "ChaosEater-official": {
+      "definition": "官方 ChaosEater 完整 pipeline (hypothesis->experiment->analysis->improvement), 独立部署",
+      "input_information_tier": "官方 manifests + steady states",
+      "measurement_evidence_axis": ["availability"]
+    },
+    "ChaosEater-adapter": {
+      "definition": "项目已有 adapter (LLM 盲排序, 经我们 OpenAI-compat 封装)",
+      "input_information_tier": "架构描述 (盲)",
+      "measurement_evidence_axis": ["selection"],
+      "note": "严格区别于 ChaosEater-official, 不得混称"
+    },
+    "Random": {
+      "definition": "同预算随机基线 (固定 seed, 20 个 seed)",
+      "input_information_tier": "无",
+      "measurement_evidence_axis": ["selection"]
+    }
+  },
+  "ce_official_bringup_budget_hours": 4,
+  "hotel_environment_gate": {
+    "bringup_max_hours": 2,
+    "stable_observation_minutes": 30,
+    "two_consecutive_baseline_failures": "environment_blocked",
+    "forbidden": "为通过闸门修改业务代码或方法规则",
+    "note": "CE 预算 (4h) 与 Hotel 环境闸门 (2h/30min/2-baseline) 是两个不同规则, 不得混为一谈"
+  },
+  "comparison_lines": {
+    "equal_information": "所有方法获得同一候选元数据 (edge/fault/静态契约提示, 无执行历史); 比选择器本身; Ours-generic 即使获得元数据也禁用项目特定契约",
+    "realistic_end_to_end": "各方法使用标准输入 (Ours 用冻结知识资产 full-pre/generic 分开; CE 用标准流程); 比完整工具链; 结果不得写成纯选择算法 superiority"
+  },
+  "seed_replicate_k": {
+    "method_seed_definition": "一个 method-seed = 一次独立候选选择",
+    "budget_per_selection": "固定 K",
+    "max_confirmation_runs_per_candidate": 2,
+    "weakness_at_k_counts_candidates": true,
+    "weakness_at_k_note": "按候选计数, 不按确认运行次数计数",
+    "decision_engine": {
+      "selection_replicates": 1,
+      "note": "确定性选择; 执行重复 (每候选 <=2 确认) 用于验证, 不增加选择样本量"
+    },
+    "llm_methods": {
+      "seeds": 3,
+      "note": "3 个预注册 seed, 每个 seed 独立消耗 K"
+    },
+    "random": {
+      "seeds": 20,
+      "note": "固定 20 个 seed, 每个 seed 独立消耗 K"
+    },
+    "aggregation": "报告 seed-level 分布, 均值, 中位数及预注册聚合规则 (预注册时固定)",
+    "sample_size_note": "不得把 LLM 的 3 个 seed 与 Ours 的一次确定性选择直接当作相同样本量"
+  },
+  "primary_metric": {
+    "name": "Weakness@K",
+    "definition": "预算 K 内确认的真实 weakness 候选数 (按候选计数, >=2 次一致 valid run 确认)"
+  },
+  "secondary_metrics": {
+    "coverage": {
+      "protected_waste_at_K": "选中 protected 候选数 / K",
+      "missed_estimate": "oracle pass 后: 未选候选中的真实 weakness / 总未选 weakness"
+    },
+    "evidence": {
+      "lifecycle_completeness_rate": "baseline->inject->recover->cleanup 全完整 run 占比",
+      "rca_anchor_rate": "根因锚定到源码行/服务的 confirmed issue 占比",
+      "traceability_rate": "每条结论有 source_file + 运行时证据"
+    },
+    "cost": {
+      "unit_effective_discovery_cost": "注入次数 / Weakness@K",
+      "analysis_time": "记录",
+      "manual_intervention": "记录",
+      "failure_recovery_cost": "记录"
+    },
+    "no_combined_score": "禁止将不同量纲指标等权相加成综合总分"
+  },
+  "statistics": {
+    "conclusion_levels": {
+      "single_project": "只能报告描述性结果, 不能声称 superiority",
+      "two_projects": "只能作为最小复现, 不支持强跨项目显著性",
+      "three_plus_projects": "才允许作跨项目结论"
+    },
+    "ci_rule": "CI 针对项目级配对差值做 clustered bootstrap 或 permutation (以项目为聚类单位); 不要求每个项目自己的 CI 不跨 0",
+    "candidate_nesting": "同一项目中的候选不能被当作独立项目样本; 样本单位是项目",
+    "cross_project_formal_wording": "至少 3 个 held-out 项目的项目级配对差值, clustered bootstrap/permutation 95% CI 不跨 0",
+    "v1_rule_removed": "已删除 '差值的 bootstrap 95% CI 不跨 0 (在单个 held-out 项目上)' 旧规则"
+  },
+  "ce_blocked_denominator_rule": {
+    "rule": "CE official 在某项目无法完成 bring-up 或稳态建立时: 该项目 CE 对比线标记 environment_blocked; 不得从剩余候选中删除后继续声称 Ours 胜出; 不得把 blocked 当作算法 superiority; 该项目比较结果只能报告为 blocked/不可比较",
+    "v1_fix_note": "v1 只写 'CE blocked 候选不进入主指标分母' - 已修正为整项目 CE 线不可比较, 避免选择性分母偏差"
+  },
+  "candidate_pool_scale": {
+    "pilot_per_project": "24-32",
+    "formal_per_project": "48-64",
+    "required_protected_states": ["protected", "unprotected", "unknown"],
+    "required_fault_families": ["delay", "loss", "kill"],
+    "unsupported_fault_marking": "若项目不支持某类注入, 明确标记 unavailable, 不强制补齐",
+    "generation_rule": "中性规则生成 + 静态证据分层, 不得用结果反向挑选候选"
+  },
+  "selection_audit_oracle": {
+    "selected": "按预注册方法选择执行 (budget K)",
+    "unselected_audit_set": "抽取独立 audit set, 估计漏检",
+    "oracle_pass": "选择实验结束后对全池建独立真值; 结果不回流到方法选择阶段"
+  },
+  "no_backfill": "实验结果/CE 输出/人工 runtime verdict 均不得回填到本轮 selection snapshot",
+  "preregistered_win_condition": {
+    "text": "Ours-full-pre 在至少 3 个 held-out 项目上 Weakness@K 不降低 (>= CE-official 的项目级配对差值), 且项目级配对差值的 clustered bootstrap/permutation 95% CI 不跨 0; 并在预注册的证据终点 (RCA 锚定率/证据可追溯率/单位有效发现成本) 之一优于 CE-official; 同时 Protected-waste@K 不更高",
+    "ce_blocked_not_win": "CE environment_blocked 的项目不得计入胜出 (也不计失败), 该项目报告 blocked/不可比较",
+    "realistic_only_win": "若 Ours 只在 Realistic 线胜出, 主张写'知识资产化流水线优势', 不写'选择算法全面优于'"
+  },
+  "anti_contamination_pipeline": [
+    "Hotel 源码/manifest 静态 intake",
+    "contract/availability inventory 构造 (静态)",
+    "knowledge snapshot 冻结 (validate_knowledge_snapshot 兼容)",
+    "candidate pool 冻结 (中性规则生成, 非结果反向挑选)",
+    "blind method selection (五组, K 预算, seed 规定见 seed_replicate_k)",
+    "common execution (同一 runner, 每选中候选 <=2 确认)",
+    "independent truth evaluation (oracle pass, 不回填)"
+  ],
+  "snapshot_rule": {
+    "full_pre_requires": "source_provenance 五字段全为 static_reconstructed_pre_experiment 或 pre_experiment_commit",
+    "else_blocked": "否则 Ours-full-pre 的 frozen replay 标 blocked"
+  },
+  "hotel_intake_status": {
+    "go_no_go": "blocked",
+    "note": "见 hotel_intake_report.md; 仓库内无 Hotel 源码/manifest, 禁止下载; blocked->ready 需人工决策",
+    "p2_snapshot_created": false,
+    "pilot_or_formal_run": false
+  }
+}
