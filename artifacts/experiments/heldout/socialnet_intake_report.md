@@ -54,14 +54,14 @@ HomeTimelineService -> PostStorage, SocialGraph (2 下游)
 
 - docker-compose.yml 多文件（docker-compose.yml / -sharding / -swarm / -tls）+ helm-chart/socialnetwork + openshift
 - 镜像:各服务构建（Dockerfile 存在）;nginx-thrift、media-frontend 等
-- k8s replicas/PDB/HPA/probe:helm-chart 存在但**未逐文件核对** → `unknown`
+- k8s replicas/PDB/HPA/probe:28 个 sub-chart 已核对；replicas=1、无业务 probe/PDB、HPA disabled → `verified`
 - 共享 infra（同仓库）:tracing.h / utils.h / utils_thrift.h —— **与 Hotel 共享 DeathStarBench 基础设施**,须标注 `shared_infra_deathstarbench` 并在 SOCIALNET 各自重新核对
 
 ## 6. fault family 可支持
 
 - delay/loss:thrift 边理论上可注入，但只对来源核验的边开放候选
-- kill:helm-chart 存在但 replicas/probe/PDB/HPA 尚未逐文件核查，暂标 `potential_only`
-- **候选池潜力**:目前仅 7 条 ComposePost 边完成核验；HomeTimeline 和其他边仍需补齐，pilot 24/formal 48 暂标 `unknown`
+- kill:helm-chart 28 个 sub-chart 已核查，replicas/probe/PDB/HPA 状态已验证，可进入 availability 候选
+- **候选池潜力**:目前 9 条边具有完整源码 SHA（ComposePost 7 + HomeTimeline 2）；另 3 条已发现但因源码 SHA 未完成而排除，pilot 24/formal 48 仍标 `unknown`
 
 ## 7. 泄漏审计（追加,与 Hotel 同仓库）
 
@@ -70,7 +70,7 @@ HomeTimelineService -> PostStorage, SocialGraph (2 下游)
   1. SOCIALNET contract 边**必须从 socialNetwork/ 源码独立重建**,不得复用 Hotel contract 结论;
   2. 共享 infra（tracing.h/utils.h/utils_thrift.h）标注 `shared_infra_deathstarbench`,不伪装成项目特定;
   3. 通用 SE/DP/JE 允许使用,但 snapshot provenance 中通用与项目特定分离
-- **结构性风险**:ComposePostService 有 7 下游、HomeTimeline 2 下游——**SOCIALNET 有显式 10s thrift timeout → 有 protected 候选**（与 Hotel/ESHOP 无超时不同,候选池将有 protected/unprotected 区分度）
+- **结构性风险**:ComposePostService 有 7 下游、HomeTimeline 2 下游——**SOCIALNET 有显式 10s thrift timeout → 有 protected 候选**；UserTimeline/User/SocialGraph 的 3 条边虽已发现，但源码 SHA 未完成，当前不得进入候选池
 
 ## 8. go_no_go
 

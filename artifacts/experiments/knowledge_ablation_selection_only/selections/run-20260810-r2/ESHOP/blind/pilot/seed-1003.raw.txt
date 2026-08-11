@@ -1,0 +1,44 @@
+{
+  "selected": [
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-delay",
+      "rank": 1,
+      "rationale": "Adding delay to the webapp→Ordering.API call propagates unbounded latency into the order-submission user flow. This can exceed client timeout or cause double-submit if no timeout/retry guard exists."
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-redis-delay",
+      "rank": 2,
+      "rationale": "Basket reads/writes hit Redis synchronously; a delay stalls every cart operation and can escalate basket API failures if no Redis timeout or fallback is configured. It directly affects checkout availability."
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-rabbitmq-loss",
+      "rank": 3,
+      "rationale": "Losing the checkout integration event from Basket.API to RabbitMQ silently breaks order initiation after the basket is cleared. This exposes missing persistence/retry for event bus publication."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-loss",
+      "rank": 4,
+      "rationale": "HTTP loss on the critical basket edge makes carts unavailable and may trigger non-idempotent retries or dropped cart actions. It exposes missing retry/recovery behavior on a revenue-impacting dependency."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-loss",
+      "rank": 5,
+      "rationale": "Mobile order submission is blocked when requests to Ordering.API are lost; without BFF retry/idempotency the user cannot place orders. This is an availability loss on the purchase path."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-delay",
+      "rank": 6,
+      "rationale": "Catalog APIs are on the main browsing path; latency here propagates directly to page render and mobile browsing. A missing client timeout would make the storefront hang when catalog is slow."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-identity-api-delay",
+      "rank": 7,
+      "rationale": "Delayed identity API calls slow login and authentication-related operations and can cascade into repeated auth timeouts. This exposes missing timeout handling at the auth boundary."
+    },
+    {
+      "candidate_id": "ESHOP-catalog-api-rabbitmq-loss",
+      "rank": 8,
+      "rationale": "Loss on catalog integration events leaves downstream services with stale product/price data. It reveals missing outbox/retry behavior for publishing domain updates."
+    }
+  ]
+}

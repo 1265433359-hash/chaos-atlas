@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "project_id": "SOCIALNET",
+  "check_type": "baseline",
+  "date": "2026-08-10",
+  "deployment_target": "post-storage-service (helm subset), commit 6ecb0970",
+  "namespace": "heldout-socialnet-lab",
+  "service": "post-storage-service",
+  "port": 9090,
+  "request_count": 2,
+  "status": "failed",
+  "baseline_requests": [
+    {
+      "attempt": 1,
+      "method": "nc -zvw3 post-storage-service 9090 (from probe pod in heldout-socialnet-lab)",
+      "result": "DNS resolution failed (CoreDNS plugin/ready: kubernetes not ready; cluster Service-DNS broken)",
+      "classification": "environment_blocked"
+    },
+    {
+      "attempt": 2,
+      "method": "nc -zvw3 post-storage-service 9090 (FQDN)", 
+      "result": "DNS resolution failed",
+      "classification": "environment_blocked"
+    },
+    {
+      "attempt": 3,
+      "method": "nc -zvw3 10.244.0.25 9090 (direct pod IP)",
+      "result": "Connection refused - container stuck retrying Jaeger tracer (tracing.h:77 SetUpTracer), thrift listener never opens",
+      "classification": "environment_blocked"
+    }
+  ],
+  "root_cause": "cluster Service-DNS broken (dockerd --iptables=false; WSL2 kernel lacks MASQUERADE/nf_nat_masquerade; kube-proxy cannot program ClusterIP NAT; KUBE-SERVICES chain absent; CoreDNS crash-looping) + app blocks on unresolved jaeger:6831",
+  "gate_4_eligible": false,
+  "classification": "environment_blocked"
+}

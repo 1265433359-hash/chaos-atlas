@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: eval-eshop-paymentprocessor-rabbitmq-loss
+  namespace: heldout-eshop-lab
+  labels:
+    chaos.evaluation: track-k
+spec:
+  action: loss
+  mode: one
+  selector:
+    namespaces:
+      - heldout-eshop-lab
+    labelSelectors:
+      app: RabbitMQ
+  loss:
+    loss: "100"
+    correlation: "100"
+  duration: "30s"
+  direction: to

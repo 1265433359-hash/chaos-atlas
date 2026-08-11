@@ -29,9 +29,10 @@
 | `hotelReservation/README.md` | `6696c99eb4f698efb76c4360cc74bcb2ed6db8cdab5959cd7166433030463346` |
 | `hotelReservation/go.mod` | `a5a886b6b67cea384f09f4497cc273b1d710dbe719d9904bd9258446fa38ce90` |
 | `hotelReservation/kubernetes/README.md` | `8c8c3a1fb1a9ad7bb41b1727545e4d4252e2b8a6c59b0be8e662a9692371ef53` |
-| `hotelReservation/services/frontend/**` | `unavailable`（源码在仓库外 WSL，当前不可重新读取） |
-| `hotelReservation/services/search/**` | `unavailable`（源码在仓库外 WSL，当前不可重新读取） |
-| `hotelReservation/kubernetes/**` | `unavailable`（manifest 未逐文件读取） |
+| `hotelReservation/services/frontend/server.go` | 已核查并记录 SHA（见 `hotel_knowledge_snapshot_pre.json`） |
+| `hotelReservation/services/search/server.go` | 已核查并记录 SHA（见 `hotel_knowledge_snapshot_pre.json`） |
+| `hotelReservation/dialer/dialer.go` | 已核查并记录 SHA（连接级 120s timeout） |
+| Kubernetes deployment/service/infra manifests | 已核查并记录 SHA（见 snapshot；REVIEW/ATTRACTIONS 无 deployment yaml） |
 
 ## 3. 服务 / 工作流 / manifest / 可观测
 
@@ -65,18 +66,19 @@
 - dialer 全局 `Timeout: 120 * time.Second`（连接级，**非 per-request 契约**——与 OB productcatalog 同类，须标记"连接级非请求级"）
 
 **Availability**
-- docker-compose 单副本（每服务 1 容器）；该事实仅适用于 Compose。`kubernetes/` manifest 需逐一确认 replicas/PDB，不能继承 Compose 事实。
+- docker-compose 单副本（每服务 1 容器）；Kubernetes 单独核查：8 个业务 deployment 为 replicas=1、无 probe/PDB/HPA。
+- REVIEW/ATTRACTIONS 只有 single-node 镜像、没有 Kubernetes deployment，Kubernetes-specific availability 候选标记 `unavailable`。
 - memcached/mongo 为基础设施依赖，非业务副本冗余
 
 ## 5. 不能确认的字段和原因
 
 | 字段 | 原因 |
 |---|---|
-| kubernetes manifest 的 replicas/PDB 明细 | 本阶段未逐文件确认（`kubernetes/` 子目录存在，需 P2 前扩展静态检查） |
+| Kubernetes manifest 的 replicas/PDB 明细 | 已逐文件确认；8 个业务 deployment verified，REVIEW/ATTRACTIONS 无 deployment yaml |
 | 各服务是否监听非 5000 端口 | 仅确认 frontend 5000（wrk2 脚本）；其余服务端口待 docker-compose 逐条确认 |
 | bring-up 2h / 稳定 30min / 2 baseline | **not_run**（本阶段禁止启动集群） |
 
-## 6. ≥30 中性候选生成条件
+## 6. 中性候选生成条件
 
 - **尚未构造**：当前仅确认 5 条 gRPC 调用边，`candidate_map` 为空。候选数量、保护状态配额和故障族配额必须在 P3 实际生成并冻结后确认。
 
@@ -108,3 +110,9 @@
 5. 尚未发生任何运行时实验 ✅
 
 > P2（静态知识快照）可创建；bring-up/稳定性闸门仍为 `not_run`。
+
+### Stage A2 补充
+
+- `kubernetes_audit.status = verified_with_unavailable`；8 个业务 deployment 已核查。
+- `REVIEW`、`ATTRACTIONS` 没有 Kubernetes deployment，不得把 Compose 单副本事实当作 Kubernetes 事实。
+- snapshot 的 `status=valid` 只表示已记录的 experiment-pre provenance 完整；不表示不存在的 Kubernetes deployment 已验证。

@@ -1,0 +1,54 @@
+{
+  "selected": [
+    {
+      "candidate_id": "SOCIALNET-kill-nginx-thrift",
+      "rank": 1,
+      "rationale": "Killing the single nginx-thrift ingress makes the whole API unreachable, confirming a single point of entry with no failover/redundancy. It directly tests availability loss and recovery behavior at the edge."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-compose-post-service",
+      "rank": 2,
+      "rationale": "Compose-post is the orchestrator for all post-creation requests; its loss brings the primary write path down. No redundant instance or client retry means user requests fail until the pod is rescheduled."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-post-storage-service",
+      "rank": 3,
+      "rationale": "Post-storage is shared by both compose-post writes and home-timeline reads, so killing it impacts write and read availability simultaneously. This exposes a critical state dependency with no replica or fallback."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-home-timeline-service",
+      "rank": 4,
+      "rationale": "Home-timeline service is on the compose-post fan-out and the timeline read path; killing it makes feed updates and reads unavailable. It also tests whether compose-post can tolerate a missing downstream dependency."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-loss",
+      "rank": 5,
+      "rationale": "Loss on the home-timeline edge happens after the post has been stored, producing a partial write: the post exists but follower feeds are not updated. The 10s timeout bounds the hang but no retry/outbox mechanism repairs the inconsistency."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-timeline-loss",
+      "rank": 6,
+      "rationale": "Similar partial-commit failure: the post can be persisted while the owner timeline update is lost, causing the user not to see their own post. No retry or compensation is configured on this synchronous write edge."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-unique-id-service",
+      "rank": 7,
+      "rationale": "Unique-id is the first mandatory dependency for every compose-post request; killing it blocks all new post creation. The service has no fallback ID generator, so unique-id becomes a critical availability single point."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-loss",
+      "rank": 8,
+      "rationale": "A transient loss on an idempotent read edge makes the entire timeline read fail after the timeout instead of retrying. This confirms a missing retry defense on a read-only dependency with no cache fallback."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-social-graph-loss",
+      "rank": 9,
+      "rationale": "The social-graph lookup is essential to assemble any home timeline; loss on this edge fails all reads and shows no retry/fallback for a read dependency. It is a high-probability network fault on the hot read path."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-loss",
+      "rank": 10,
+      "rationale": "Loss on the unique-id generation call forces every compose-post attempt to wait the full timeout and then fail. ID generation is a safe retry candidate, so the absence of retry is a confirmed weakness on the critical write path."
+    }
+  ]
+}

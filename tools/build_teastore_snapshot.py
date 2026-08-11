@@ -10,8 +10,8 @@ Provenance honesty:
                and LoadBalancerTimeoutException (retry+timeout semantics ->
                protected candidates constructible).
   - availability : ribbon.yaml 7 deployments (default replicas 1, no PDB, no
-               explicit probe); helm values.yaml autoscaling present but enabled
-               value UNKNOWN -> hpa marked unknown (NOT fabricated).
+               explicit probe); helm values.yaml autoscaling.enabled=false is
+               source-verified for the recorded services.
 No runtime verdict / CE output / experiment result enters this snapshot.
 candidate_map stays empty (pool frozen later, never from results).
 """
@@ -46,23 +46,27 @@ PINNED_KNOWLEDGE_SHA = {
 # TeaStore contract edges: STATIC from registryclient/Ribbon source.
 CONTRACTS_STATIC = {
     "TEASTORE-webui->auth": {
-        "contract": "bounded_retry", "loss_bounded": True,
-        "evidence": "STATIC: webui -> auth via RegistryClient/ServiceLoadBalancer; Ribbon DefaultLoadBalancerRetryHandler(0,2,true) retries 2x across servers; LoadBalancerTimeoutException bounds latency/loss",
+        "contract": "retry_policy_timeout_unknown", "loss_bounded": False,
+        "evidence": "STATIC: webui -> auth via RegistryClient/ServiceLoadBalancer; Ribbon DefaultLoadBalancerRetryHandler(0,2,true) retries 2x across servers; LoadBalancerTimeoutException exists but timeout bound is not configured/verified",
+        "timeout_ms": "unknown",
         "source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
     },
     "TEASTORE-webui->image": {
-        "contract": "bounded_retry", "loss_bounded": True,
-        "evidence": "STATIC: webui -> image via Ribbon load balancer with retry handler",
+        "contract": "retry_policy_timeout_unknown", "loss_bounded": False,
+        "evidence": "STATIC: webui -> image via Ribbon retry handler; timeout bound unknown",
+        "timeout_ms": "unknown",
         "source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
     },
     "TEASTORE-webui->persistence": {
-        "contract": "bounded_retry", "loss_bounded": True,
-        "evidence": "STATIC: webui -> persistence via Ribbon load balancer with retry handler",
+        "contract": "retry_policy_timeout_unknown", "loss_bounded": False,
+        "evidence": "STATIC: webui -> persistence via Ribbon retry handler; timeout bound unknown",
+        "timeout_ms": "unknown",
         "source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
     },
     "TEASTORE-webui->recommender": {
-        "contract": "bounded_retry", "loss_bounded": True,
-        "evidence": "STATIC: webui -> recommender via Ribbon load balancer with retry handler",
+        "contract": "retry_policy_timeout_unknown", "loss_bounded": False,
+        "evidence": "STATIC: webui -> recommender via Ribbon retry handler; timeout bound unknown",
+        "timeout_ms": "unknown",
         "source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
     },
 }
@@ -104,8 +108,8 @@ def main() -> int:
         "examples/helm/values.yaml": "4b5dcbfd2752b8206343fb0b2029e1a632bb626c39b7273af5ec295e73c2d36e",
         "examples/kubernetes/teastore-ribbon.yaml": "3e7b473c3086b208d7699081fe4091ca90b3fb20ae8489922ad01d57ad6934c9",
         "examples/docker/docker-compose_default.yaml": "cf26a369810edb8714f277deb4ec75afafe7772eb8a27bcd5703055904bd577d",
-        "utilities/.../loadbalancers/ServiceLoadBalancer.java": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
-        "utilities/.../registryclient/RegistryClient.java": "a2e77b0e11bb8e2a6aefd3986ab5bb9a9fb3741b81fcb71b4ebe9c44ee18f302",
+        "utilities/tools.descartes.teastore.registryclient/src/main/java/tools/descartes/teastore/registryclient/loadbalancers/ServiceLoadBalancer.java": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+        "utilities/tools.descartes.teastore.registryclient/src/main/java/tools/descartes/teastore/registryclient/RegistryClient.java": "a2e77b0e11bb8e2a6aefd3986ab5bb9a9fb3741b81fcb71b4ebe9c44ee18f302",
         "pom.xml": "198cb1cbd27dc8bcda09134ae4fc24f8ebaf9fe44a83295f497493255037fe6c",
     }
     source_files = [
@@ -118,9 +122,9 @@ def main() -> int:
         "status": "valid",
         "status_reason": (
             "TeaStore @34b37f7 源码/部署路径逐文件核验 (helm/ribbon/compose); contract 独立从 "
-            "registryclient/Ribbon 源码构造 (retry+LoadBalancerTimeoutException -> protected 候选可构造); "
+            "registryclient/Ribbon 源码构造 (retry count verified; timeout bound unknown, protected status remains unknown); "
             "availability 来自 ribbon.yaml 7 deployments (replicas=1 默认, 无 PDB, 无显式 probe); "
-            "五源 provenance 完整 -> valid/full_pre=True。helm autoscaling.enabled 值 unknown 已标注, 未伪造。"
+            "五源 provenance 完整 -> valid/full_pre=True。helm autoscaling.enabled=false 已核验; timeout bound unknown 已保留。"
         ),
         "provenance": {
             "kind": "teastore_static_reconstructed",
@@ -137,8 +141,8 @@ def main() -> int:
             "note": (
                 f"TeaStore STATIC-RECONSTRUCTED from {TEASTORE_URL} @{TEASTORE_COMMIT[:12]}; "
                 "no runtime/CE/experiment evidence. Contract edges independent from TeaStore "
-                "source (not reused from Hotel/SOCIALNET). Ribbon retry + LoadBalancerTimeout "
-                "semantics noted. helm autoscaling.enabled = unknown."
+                "source (not reused from Hotel/SOCIALNET). Ribbon retry semantics are noted, "
+                "but timeout bound remains unknown. helm autoscaling.enabled=false is verified."
             ),
         },
         "contract": {

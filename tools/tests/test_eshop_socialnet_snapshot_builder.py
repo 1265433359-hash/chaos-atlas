@@ -43,3 +43,31 @@ def test_stage_c_snapshots_remain_scoped_and_correct():
         assert data["status"] == expected["status"]
         assert data["full_pre"] is expected["full_pre"]
         assert data["contract"]["candidate_map"] == {}
+
+
+def test_socialnet_unverified_edges_are_not_executable_contracts():
+    import json
+
+    path = ROOT / "artifacts" / "experiments" / "heldout" / "socialnet_knowledge_snapshot_pre.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    contracts = data["contract"]["contracts"]
+    excluded = data["contract"]["unverified_contract_edges"]
+    assert excluded
+    assert all(edge not in contracts for edge in excluded)
+    assert all(
+        entry.get("source_sha256") not in {None, "", "unknown", "unavailable"}
+        for entry in contracts.values()
+    )
+
+
+def test_hotel_snapshot_has_explicit_full_pre_and_contract_hashes():
+    import json
+
+    path = ROOT / "artifacts" / "experiments" / "heldout" / "hotel_knowledge_snapshot_pre.json"
+    data = json.loads(path.read_text(encoding="utf-8"))
+    assert data["status"] == "valid"
+    assert data["full_pre"] is True
+    assert all(
+        entry.get("source_sha256") not in {None, "", "unknown", "unavailable"}
+        for entry in data["contract"]["contracts"].values()
+    )

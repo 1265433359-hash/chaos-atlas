@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "e5f183f4a3225144d2a0fe69896873250a2eaba19db1922131faab0d6537a55b",
+  "prompt_sha256": "0dc29911b08b1d9b2ce2f0d5152de692ec3146508f89b3551c16da82289a7bf2",
+  "project": "SOCIALNET",
+  "arm": "LLM-full-pre",
+  "phase": "formal",
+  "seed": 2001,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 105136,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 105136,
+    "prompt_tokens": 10417,
+    "completion_tokens": 10612,
+    "total_tokens": 21029
+  },
+  "selected": [
+    {
+      "candidate_id": "SOCIALNET-kill-url-shorten-service",
+      "rank": 1,
+      "rationale": "Killing a non-critical URL-shortening helper can block the compose-post primary flow if TextService calls it synchronously; this exposes missing dependency isolation/fallback, an architecture-level coupling defect."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-user-mention-service",
+      "rank": 2,
+      "rationale": "Killing user-mention couples a non-critical parsing dependency to post creation; a hard failure here propagates to the user-facing compose-post path with no degradation or fallback."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-loss",
+      "rank": 3,
+      "rationale": "100% loss on the compose-post->post-storage edge causes the synchronous thrift call to time out and fail; the static contract shows loss_bounded=false, exposing availability loss on the critical write path with no retry."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-loss",
+      "rank": 4,
+      "rationale": "Loss on the home-timeline->post-storage read edge makes timeline retrieval fail after the configured timeout; no fallback or retry is present, turning a transient network fault into a user-visible read outage."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-loss",
+      "rank": 5,
+      "rationale": "Loss of unique-id responses prevents post ID generation, failing the entire compose-post request after the 10s timeout; the edge lacks any loss tolerance or retry mechanism."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-loss",
+      "rank": 6,
+      "rationale": "If the user service call is lost, compose-post cannot resolve the author and the request fails after timeout; the synchronous dependency has no retry or fallback, exposing a missing defense on the core path."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-text-loss",
+      "rank": 7,
+      "rationale": "Loss on the compose-post->text edge blocks text composition and aborts post creation; the explicit timeout bounds the hang but not the failure, confirming no loss handling on a required dependency."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-timeline-loss",
+      "rank": 8,
+      "rationale": "Loss on the user-timeline edge prevents the post from appearing in the author's timeline and fails the request; the edge has a timeout but no retry/fallback, so transient loss becomes a confirmed availability defect."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-loss",
+      "rank": 9,
+      "rationale": "Loss during home-timeline fanout makes the compose-post call fail after timeout, showing that fanout is synchronously coupled with no retry or queue; a single lost packet can block new posts."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-social-graph-loss",
+      "rank": 10,
+      "rationale": "Loss on the social-graph read edge breaks home-timeline's followee lookup, causing the entire timeline request to fail after timeout; no fallback exists for a core read dependency."
+    }
+  ]
+}

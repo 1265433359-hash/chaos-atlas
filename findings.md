@@ -1,5 +1,26 @@
 # Findings
 
+## Project archive pass (2026-08-10)
+- The repository already contains substantial experiment evidence for three case-study systems: `train-ticket`, `online-boutique`, and `otel-demo`.
+- Existing top-level planning files are UTF-8; PowerShell's default reader displayed mojibake, so new documentation must be written and checked explicitly as UTF-8.
+- The worktree is intentionally dirty with user/generated experiment artifacts. Archive edits must not reset or rewrite those artifacts.
+- There is no top-level README yet. A project README and separate experiment/knowledge-base guides are required for a private GitHub handoff.
+- Current evidence is split across `artifacts/`, `reporting/`, `raw_yaml/`, and `tools/`; the archive should explain these ownership boundaries and distinguish static, runtime, blocked, pending, and exploratory evidence.
+
+## Project summary pass started (2026-08-10)
+- The requested deliverable is a repository-wide summary, not another runtime experiment. The summary will use machine-counted files/cards/tests and the existing pinned reports as its source of truth.
+- Current inventory: `raw_yaml/` has 1,935 YAML files; `artifacts/` has 1,166 files; `reporting/` has 13 files; `tools/` has 75 top-level Python tools, 6 shell tools, and 38 test modules; `docs/` has 5 guide files plus the top-level README.
+- Raw YAML distribution is led by NetworkChaos (428), StressChaos (352), PodChaos (341), HTTPChaos (183), IOChaos (125), TimeChaos (119), and PhysicalMachineChaos (114); the remaining 9 kinds are lower-volume.
+- Knowledge bases are present and indexed for three projects: Train Ticket 7 cards, Online Boutique 8 cards, OpenTelemetry Demo 2 cards; each has `index.json` and `validation_report.json`.
+- The repository total is currently about 7,227 files / 335.91 MB, but this includes nested source checkouts, generated artifacts, binaries, caches, and temporary outputs; it is not a recommended upload set without a final inclusion review.
+- Current Git state is branch `remediation/2026-08-09-review` with extensive pre-existing modified/untracked experiment files plus the documentation added in the prior pass. The workspace is not a clean release snapshot.
+- `artifacts/train-ticket/runtime/coverage_matrix.md` gives the clearest first-project accounting: 54 samples = 5 verified, 30 HTTPChaos platform-blocked, 1 not reachable, 1 static-only Workflow, and 17 not run.
+- Current card statuses are mostly runtime-validated: Train Ticket has 1 platform-blocked and 1 candidate card; Online Boutique has 8 runtime cards (one statistical repetition); OpenTelemetry Demo has 2 runtime cards.
+- The selection-only knowledge ablation completed 36/36 valid static selections with leakage audits passing, but it is descriptive only: ESHOP/SOCIALNET formal pools do not meet preregistered 48-candidate size, environment gates blocked runtime, and human review is pending.
+- The code/tool layer groups naturally into catalog/mapping (29), selection/decision (12), runtime execution (15), knowledge (6), reporting/LLM (5), and other helpers (8). The repository also contains 8 persistent `.planning` sessions, including the archive and held-out ablation tracks.
+- `governance/README.md` defines the intended publication boundary: nested source is pinned separately, generated logs/caches/credentials are excluded, and every runtime result must retain source mutation, pinned commit, classification, and cleanup evidence.
+- Summary pass completed: `docs/PROJECT_SUMMARY.md` is the canonical narrative snapshot; it deliberately marks the current working tree as a research workspace and keeps descriptive ablation results separate from formal runtime claims.
+
 ## Successful station oracle and fixture boundary
 - Station `SecurityConfig` protects POST/PUT/DELETE `/api/v1/stationservice/stations` with `ROLE_ADMIN`; an attempted temporary fixture creation returned HTTP 403 and produced no mutation. Reading Kubernetes Secrets to bypass that rule is out of scope.
 - The service's existing `InitData` seed provides a safe read-only success oracle: `shanghai` resolved to station UUID `80fad31f-143a-4906-a816-622098aef3d1` through both the Station API and Basic-to-Station path.
@@ -167,3 +188,15 @@
 The external review was substantially correct about the runtime safety risks. The namespace and mode checks were previously generator-only, HTTP prerequisite detection was fail-open, and the stress orchestrator could kill its runner before cleanup. Those paths are now enforced in the runtime gate and parent orchestration layer. Classification is centralized, candidate ranking is stable, and the compatibility fuzzy matcher is explicitly limited to legacy records with no `target_service` field.
 
 Artifact checks found nine classification-index mismatches rather than three; all now match their referenced reports. The line report has a canonical classification field, the HTTP blocked vocabulary is normalized, and validation output includes one audit object per card. The workspace now has a root Git baseline while preserving the pinned `train-ticket` repository as an independent nested checkout.
+
+## Archive cleanup finding (2026-08-11)
+
+- Files under `artifacts/experiments/knowledge_ablation_prompts/` are formal frozen inputs and must be retained.
+- The 9 `.planning/**/DEEPSEEK_*_PROMPT.md` files are agent handoff drafts, not evidence; they were removed after recording the paths in `docs/ARCHIVE_CLEANUP.md`.
+- `.pytest-tmp-final-all/` was disposable test output and was removed. `.pytest_cache/` could not be inspected due to Windows permissions and was left unchanged.
+
+## Paper-preparation review finding (2026-08-11)
+
+- The completed paper-facing core is the TestNode method, applicability gates, bounded runtime evidence, four case studies, knowledge-card schema, and conservative cross-project interpretation.
+- Knowledge-base selection ablation and final method head-to-head comparison are incomplete; retain all artifacts but classify both tracks as `parked_future_work`.
+- Formal claims require later independent oracle, remaining review gates, common candidate pool/oracle, and project-clustered statistics.

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "c6224234bcb93de938e2d331dbb01b1d3a60a9cf8ae029ab0feba00cf404f4dc",
+  "prompt_sha256": "ae5338562d4eb04a1b5609bff768aa3969aac4bb2d16456c3cf2c65e355ba717",
+  "project": "ESHOP",
+  "arm": "LLM-blind",
+  "phase": "pilot",
+  "seed": 1001,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 104789,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 104789,
+    "prompt_tokens": 3124,
+    "completion_tokens": 11757,
+    "total_tokens": 14881
+  },
+  "selected": [
+    {
+      "candidate_id": "ESHOP-basket-api-rabbitmq-loss",
+      "rank": 1,
+      "rationale": "Loss on the Basket.API->RabbitMQ edge drops the checkout integration event before it is persisted; Basket.API has no durable outbox, so orders are never created and no recovery is triggered."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-delay",
+      "rank": 2,
+      "rationale": "A delay on WebApp->Basket.API makes cart and checkout requests hang; without timeout or circuit-breaker protection, latency propagates into the UI and consumes web-server resources."
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-redis-loss",
+      "rank": 3,
+      "rationale": "Packet loss between Basket.API and Redis removes access to the cart state, causing add/load/checkout operations to fail; Basket.API lacks a fallback, turning a transient loss into availability loss."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-delay",
+      "rank": 4,
+      "rationale": "Injected delay on WebApp->Ordering.API stalls order-history/status calls and propagates latency to end users, exposing missing timeout or retry defenses on a synchronous user-facing path."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-catalog-api-delay",
+      "rank": 5,
+      "rationale": "A BFF-to-Catalog.API delay badly degrades mobile product browsing; the BFF lacks explicit deadlines, so the mobile app waits for the full injected latency."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-delay",
+      "rank": 6,
+      "rationale": "Delayed WebApp->Catalog.API calls block product catalog rendering; with no bounded client timeout, the storefront remains unacceptably slow under latency faults."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-loss",
+      "rank": 7,
+      "rationale": "Loss on the mobile BFF->Ordering.API edge prevents order submission or tracking from mobile clients; no retry/recovery is available, resulting in immediate user-facing failure."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-identity-api-delay",
+      "rank": 8,
+      "rationale": "A delay in WebApp->Identity.API hangs the login/authentication flow; the edge has no visible timeout, so all web users can be blocked during the injected delay."
+    }
+  ]
+}

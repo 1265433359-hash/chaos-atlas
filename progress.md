@@ -1,5 +1,20 @@
 # Progress
 
+## 2026-08-10 project archive pass
+- Added top-level `README.md` under the confirmed project name **ChaosAtlas**.
+- Added `docs/ARCHIVE_MAP.md`, `docs/EXPERIMENT_CATALOG.md`, `docs/KNOWLEDGE_BASE.md`, `docs/CODE_GUIDE.md`, and `docs/GITHUB_PRIVATE_HANDOFF.md`.
+- Documentation separates static, runtime, blocked, pending, and exploratory evidence; maps the three case-study families; and records the explicit no-upload-until-approved gate.
+- Existing user/generated experiment files were not reset or rewritten.
+- Verification complete: all three knowledge-base validators returned `valid: true`; Train Ticket reported 7 cards with no warnings, while generated YAML warnings for Online Boutique (8 cards) and OpenTelemetry Demo (2 cards) remain explicit and expected.
+- Full regression suite passed with an isolated repository temp directory: `249 passed, 1 warning, 5 subtests passed`. The warning is pytest cache permission noise; no test assertion failed.
+- Documentation path resolution, trailing-whitespace, and sensitive-token scans passed for the new README/docs files.
+- Upload remains gated on explicit owner approval; no remote was configured and no data was pushed.
+
+## 2026-08-10 project summary pass
+- Started a read-only repository-wide inventory for `docs/PROJECT_SUMMARY.md`; no runtime mutation or remote action is planned.
+- Completed the inventory and added `docs/PROJECT_SUMMARY.md` with the current repository scale, directory ownership, three case studies, evidence levels, knowledge-base/ablation status, paper boundaries, limitations, and prioritized next steps.
+- Consistency checks passed: concrete summary paths resolve, no high-signal credential patterns or trailing whitespace found, and `git diff --check` reports no content errors.
+
 ## Paper preparation checkpoint (2026-08-04)
 - Created `artifacts/train-ticket/paper_prep_stage_summary.md` as the evidence-backed stage report for paper writing.
 - The current stage is summarized as: real YAML inventory -> test-node-centered local graph -> applicability gate -> bounded injection -> dual Oracle and multi-signal observation -> result classification -> knowledge feedback.
@@ -198,5 +213,23 @@
 - **Injection**: payment 2s delay -> +1690/+2075/+1485ms (full propagation); 100% loss -> hang 10007.4ms DEADLINE_EXCEEDED. KEY: no-timeout + full-propagation + infinite-hang now replicated across 3 projects (train-ticket/OB/OTel-Demo).
 - **Observability gap detection (deep)**: deployed Jaeger all-in-one (OTLP direct from SDKs, collector Docker Hub 429-limited). Injected 2s payment delay -> Jaeger trace PaymentService/Charge span 4462ms + HttpRequestException event (baseline 513ms) - injected fault FULLY captured, NO observability gap, but NO auto-alert (manual Jaeger query needed).
 - **email degradation (deep)**: 2s delay -> 5410ms propagation; 100% loss -> hang 10008.8ms vs OB's 27.4ms (gRPC fast-fail vs HTTP hang) - degradation only affects pass/fail, not latency/挂起 propagation.
-- **Knowledge base**: 1 OTel card (KB-OTEL-CHECKOUT-PAYMENT-FAILURE-001); total 14 cards across 3 projects, all validate 0 errors.
+- **Knowledge base**: 2 OTel cards (including `KB-OTEL-CHECKOUT-PAYMENT-FAILURE-001`); current archive totals 17 cards across 3 projects (Train Ticket 7, Online Boutique 8, OpenTelemetry Demo 2), with all three validators returning `valid: true`.
 - **Environment**: jaeger + 10 services preserved in otel-demo-lab; chaos-kind cluster shared with OB experiments.
+
+## LLM knowledge-base ablation protocol (2026-08-10)
+- Added `artifacts/experiments/llm_knowledge_ablation_protocol_v1.md` as a draft DeepSeek execution handoff.
+- The protocol isolates `LLM-blind`, `LLM-generic`, and `LLM-full-pre` under the same model, prompt, candidate pool, seed, runner, and oracle conditions.
+- It requires pre-experiment snapshot provenance, leakage scans, independent full-pool oracle evaluation, project-clustered statistics, cost accounting, and human review gates before formal claims.
+- **2026-08-10 project archive pass started**: confirmed existing UTF-8 planning files, a deliberately dirty worktree with ongoing experiment artifacts, and no top-level README. Planned local-only documentation for paper preparation, comparison experiments, knowledge-base reuse, and a user-gated GitHub private-repository handoff. No remote or upload action authorized.
+
+## Workspace archive cleanup (2026-08-11)
+- Added `docs/ARCHIVE_CLEANUP.md` to distinguish retained evidence from disposable workspace instructions.
+- Retained formal ablation prompts under `artifacts/experiments/knowledge_ablation_prompts/` because they are frozen experiment inputs.
+- Removed 9 temporary `.planning/**/DEEPSEEK_*_PROMPT.md` files and the generated `.pytest-tmp-final-all/` directory; no experiment data or historical reports were removed.
+- `.pytest_cache/` was left untouched because Windows denied access; GitHub remote/upload remains disabled pending explicit approval.
+
+## Paper-preparation review (2026-08-11)
+- Re-read the repository-level archive, four case studies, TestNode evidence chain, knowledge-base guide, experiment catalog, and master archive index.
+- Added `analysis_outputs/SUMMARY.md`, `analysis_outputs/RISKS.md`, and `analysis_outputs/status.json`.
+- Updated project docs to freeze the current paper boundary: knowledge-base ablation and final method head-to-head comparison are preserved but parked as `parked_future_work`.
+- Regression suite remains green at 249 passed; no runtime experiment or GitHub upload was started.

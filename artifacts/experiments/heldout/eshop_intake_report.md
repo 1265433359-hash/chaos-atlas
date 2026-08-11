@@ -65,9 +65,9 @@ WebhookClient -> Webhooks.API
 
 ## 6. fault family 可支持
 
-- delay/loss:HTTP/gRPC 边可注入（NetworkChaos 服务级,需先部署）
-- kill:PodChaos 需 k8s 部署（当前无 manifest → 环境门槛高）
-- **候选池潜力**:8 API 服务 + ~8 调用边 → pilot 24 候选需依赖边级组合,formal 48 需结合事件总线边;**可用性候选因无 k8s manifest 受限** → 标记 `unknown`（部署形态决定,待部署验证）
+- delay/loss:HTTP/gRPC 边理论上可注入，但部署目标尚未确认，暂标 `potential_only`
+- kill:当前无 k8s/compose manifest，标记 `blocked_pending_deployment_target`
+- **候选池潜力**:当前只有 2 条 contract 边完成来源核验；pilot 24/formal 48 仍为 `unknown`，必须先扩展边清单并确认部署形态
 
 ## 7. go_no_go
 

@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "status": "valid",
-  "status_reason": "Stage C2: helm-chart 28 sub-charts 逐文件核查 - 每服务 deployment+service 模板, replicas=1(global), hpa.enabled=false, 无 PDB, 业务服务无 liveness/readiness probe (values.yaml:77-79 属 redis-cluster disabled 配置)。kill 候选可构造(PodChaos 目标完整)。契约边扩展至 12 条(ComposePost 7 + HomeTimeline 2 + UserTimeline 1 + User 1 + SocialGraph 1), 含 10s 显式 thrift timeout。availability 来源完整 -> provenance complete -> full_pre=True。共享 infra 标注 shared_infra_deathstarbench。",
+  "status_reason": "Stage C2: helm-chart 28 sub-charts 逐文件核查 - 每服务 deployment+service 模板, replicas=1(global), hpa.enabled=false, 无 PDB, 业务服务无 liveness/readiness probe (values.yaml:77-79 属 redis-cluster disabled 配置)。kill 候选可构造(PodChaos 目标完整)。9 条 contract 边具有完整源码 SHA (ComposePost 7 + HomeTimeline 2);另 3 条边已发现但因源码 SHA 未完成而排除出可执行 contract。availability 来源完整 -> provenance complete -> full_pre=True。共享 infra 标注 shared_infra_deathstarbench。",
   "provenance": {
     "kind": "SOCIALNET_static_reconstructed",
     "source_commit": "6ecb09706140f8730b5385c08f1386c654c3c526",
-    "created_at": "2026-08-10T06:39:05.529378+00:00",
+    "created_at": "2026-08-10T06:45:12.551750+00:00",
     "source_files": [
       {
         "path": "docker-compose.yml",
@@ -191,27 +191,6 @@
         "loss_bounded": false,
         "evidence": "STATIC HomeTimelineService.cpp ClientPool<ThriftClient<SocialGraphServiceClient>>; timeout from config",
         "source_sha256": "6252e351a177eccb5ef7917e8ef4eecbe591d110c2c1919b9079104e64f28915"
-      },
-      "SOCIALNET-usertimeline->poststorage": {
-        "contract": "explicit_timeout",
-        "loss_bounded": false,
-        "evidence": "STATIC UserTimelineService.cpp ClientPool<ThriftClient<PostStorageServiceClient>>",
-        "source_sha256": "unknown",
-        "note": "边存在(ClientPool 确认); SHA 待下一轮补齐"
-      },
-      "SOCIALNET-user->socialgraph": {
-        "contract": "explicit_timeout",
-        "loss_bounded": false,
-        "evidence": "STATIC UserService.cpp ClientPool<ThriftClient<SocialGraphServiceClient>>",
-        "source_sha256": "unknown",
-        "note": "边存在; SHA 待补齐"
-      },
-      "SOCIALNET-socialgraph->user": {
-        "contract": "explicit_timeout",
-        "loss_bounded": false,
-        "evidence": "STATIC SocialGraphService.cpp ClientPool<ThriftClient<UserServiceClient>>",
-        "source_sha256": "unknown",
-        "note": "边存在; SHA 待补齐"
       }
     },
     "availability": {},
@@ -339,7 +318,12 @@
         }
       }
     },
-    "candidate_map": {}
+    "candidate_map": {},
+    "unverified_contract_edges": [
+      "SOCIALNET-usertimeline->poststorage",
+      "SOCIALNET-user->socialgraph",
+      "SOCIALNET-socialgraph->user"
+    ]
   },
   "availability_scope": {
     "compose": "verified",

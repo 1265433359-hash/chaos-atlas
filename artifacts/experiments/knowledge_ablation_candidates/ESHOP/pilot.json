@@ -1,0 +1,508 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Basket.API",
+      "workload_id": "ESHOP/webapp->basket-api"
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph",
+        "heldout/eshop_knowledge_snapshot_pre.json#contract/contracts/ESHOP-webapp->catalog"
+      ],
+      "target": "Catalog.API",
+      "workload_id": "ESHOP/webapp->catalog-api"
+    },
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph",
+        "heldout/eshop_knowledge_snapshot_pre.json#contract/contracts/ESHOP-webapp->ordering"
+      ],
+      "target": "Ordering.API",
+      "workload_id": "ESHOP/webapp->ordering-api"
+    },
+    {
+      "candidate_id": "ESHOP-webapp-identity-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Identity.API",
+      "workload_id": "ESHOP/webapp->identity-api"
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-catalog-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Catalog.API",
+      "workload_id": "ESHOP/mobile-bff->catalog-api"
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Ordering.API",
+      "workload_id": "ESHOP/mobile-bff->ordering-api"
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-identity-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Identity.API",
+      "workload_id": "ESHOP/mobile-bff->identity-api"
+    },
+    {
+      "candidate_id": "ESHOP-webhookclient-webhooks-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Webhooks.API",
+      "workload_id": "ESHOP/webhookclient->webhooks-api"
+    },
+    {
+      "candidate_id": "ESHOP-webapp-rabbitmq-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "RabbitMQ",
+      "workload_id": "ESHOP/webapp->rabbitmq"
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-redis-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Redis",
+      "workload_id": "ESHOP/basket-api->redis"
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-rabbitmq-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "RabbitMQ",
+      "workload_id": "ESHOP/basket-api->rabbitmq"
+    },
+    {
+      "candidate_id": "ESHOP-catalog-api-rabbitmq-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "mode": "delay",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "RabbitMQ",
+      "workload_id": "ESHOP/catalog-api->rabbitmq"
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Basket.API",
+      "workload_id": "ESHOP/webapp->basket-api"
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph",
+        "heldout/eshop_knowledge_snapshot_pre.json#contract/contracts/ESHOP-webapp->catalog"
+      ],
+      "target": "Catalog.API",
+      "workload_id": "ESHOP/webapp->catalog-api"
+    },
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph",
+        "heldout/eshop_knowledge_snapshot_pre.json#contract/contracts/ESHOP-webapp->ordering"
+      ],
+      "target": "Ordering.API",
+      "workload_id": "ESHOP/webapp->ordering-api"
+    },
+    {
+      "candidate_id": "ESHOP-webapp-identity-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Identity.API",
+      "workload_id": "ESHOP/webapp->identity-api"
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-catalog-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Catalog.API",
+      "workload_id": "ESHOP/mobile-bff->catalog-api"
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Ordering.API",
+      "workload_id": "ESHOP/mobile-bff->ordering-api"
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-identity-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Identity.API",
+      "workload_id": "ESHOP/mobile-bff->identity-api"
+    },
+    {
+      "candidate_id": "ESHOP-webhookclient-webhooks-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Webhooks.API",
+      "workload_id": "ESHOP/webhookclient->webhooks-api"
+    },
+    {
+      "candidate_id": "ESHOP-webapp-rabbitmq-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "RabbitMQ",
+      "workload_id": "ESHOP/webapp->rabbitmq"
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-redis-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "Redis",
+      "workload_id": "ESHOP/basket-api->redis"
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-rabbitmq-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "RabbitMQ",
+      "workload_id": "ESHOP/basket-api->rabbitmq"
+    },
+    {
+      "candidate_id": "ESHOP-catalog-api-rabbitmq-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "mode": "loss",
+        "scope": "service_edge"
+      },
+      "information_tier": [
+        "I0",
+        "I1-local"
+      ],
+      "mutation_path": null,
+      "oracle_label": "stored-out-of-band",
+      "project_id": "ESHOP",
+      "static_evidence_refs": [
+        "heldout/eshop_intake_report.json#dependency_graph"
+      ],
+      "target": "RabbitMQ",
+      "workload_id": "ESHOP/catalog-api->rabbitmq"
+    }
+  ],
+  "kill_family": {
+    "available": false,
+    "reason": "no docker-compose/k8s manifest exists at the frozen commit 9b4f9434; kill (PodChaos) has no deployment target (intake fault_families.kill = blocked_pending_deployment_target)"
+  },
+  "phase": "pilot",
+  "pool_construction_rule": "1) candidate universe = statically-documented service call edges from the frozen intake (business edges first, then event-bus/infra edges, matching the intake dependency graph order), each edge yielding one candidate per supported network family, plus one kill candidate per documented business service where the kill family is supported; 2) kill family marked unavailable when no deployment manifest exists at the frozen commit (never borrowed from another project); 3) per-family quota filled by fixed rotation: pilot 8 per supported family / formal 16 per supported family; when fewer families are supported the same rotation fills the total pool size; 4) shortfalls (family targets the project cannot satisfy) are recorded as deviations, never silently rebalanced after seeing results.",
+  "pool_size_actual": 24,
+  "pool_size_deviation": 0,
+  "pool_size_deviation_reason": "verified-universe shortfall: the pool is built only from statically-documented call edges (intake dependency graph) and helm-verified kill targets at the frozen commit; no candidates are borrowed and none are invented to reach the target",
+  "pool_size_target": 24,
+  "project_id": "ESHOP",
+  "protection_note": "protection classes and quota compliance are recorded out-of-band in knowledge_ablation_oracle/<project>/candidate_protection_classification.json; oracle_label is a placeholder only - real labels live out-of-band.",
+  "protocol_sha256": "9dc24410830ac894326a0fb9eff5915dbbd2a1283ef842809214b8df9a5a6344",
+  "purpose": "ablation protocol v1 sections 4-5: method-neutral candidate pool",
+  "schema_version": 1,
+  "selection_budget_k": 8,
+  "supported_fault_families": [
+    "delay",
+    "loss"
+  ]
+}

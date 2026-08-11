@@ -1,0 +1,867 @@
+You are a senior chaos-engineering analyst participating in a fault-injection candidate-selection study. You will be given a frozen candidate pool for a microservice system. Each candidate is one fault injection targeting a specific service or service-to-service edge with one fault family (delay, loss, or kill).
+
+Your task is to select exactly 10 candidates from the pool that are most likely to expose a confirmed weakness of the system under test (for example: unbounded latency propagation, missing timeout or retry defenses, availability loss, or missing recovery behavior).
+
+Rules:
+- Select exactly 10 distinct candidates.
+- Select only candidates present in the pool; never invent candidates.
+- Rank the selected candidates from most to least impactful.
+- Provide a short rationale (at most two sentences) per selected candidate, naming the expected failure mechanism and the affected service/edge.
+A generic-rules-only knowledge supplement and a project-specific pre-experiment snapshot (static contracts, availability scope, source provenance) are provided in the user message for your reference.
+
+Reply with a single JSON object and nothing else (no markdown). Output schema:
+{
+  "properties": {
+    "selected": {
+      "description": "exactly K entries, ranks 1..K, all candidate_id in the pool, no duplicates",
+      "items": {
+        "properties": {
+          "candidate_id": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "integer"
+          },
+          "rationale": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "candidate_id",
+          "rank",
+          "rationale"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "selected"
+  ],
+  "type": "object"
+}
+
+
+===== USER =====
+PROJECT UNDER TEST - INTAKE SUMMARY
+{
+  "availability_scope": {
+    "compose": "verified",
+    "deployment_target": "helm_chart",
+    "kubernetes": "verified"
+  },
+  "call_edges": [
+    "compose-post->post-storage",
+    "compose-post->user-timeline",
+    "compose-post->text",
+    "compose-post->user",
+    "compose-post->media",
+    "compose-post->home-timeline",
+    "compose-post->unique-id",
+    "home-timeline->post-storage",
+    "home-timeline->social-graph"
+  ],
+  "observability": "Jaeger distributed tracing (OpenTracing)",
+  "project_id": "SOCIALNET",
+  "services": {
+    "business": [
+      "social-graph",
+      "compose-post",
+      "post-storage",
+      "user-timeline",
+      "url-shorten",
+      "user",
+      "media",
+      "text",
+      "unique-id",
+      "user-mention",
+      "home-timeline",
+      "nginx-thrift",
+      "media-frontend"
+    ],
+    "infra": [
+      "mongodb x6",
+      "redis x3",
+      "memcached x4",
+      "jaeger-agent"
+    ]
+  },
+  "source_commit": "6ecb09706140f8730b5385c08f1386c654c3c526",
+  "source_provenance": {
+    "availability": "static_reconstructed_pre_experiment",
+    "contract": "static_reconstructed_pre_experiment",
+    "defense_pattern_library": "pre_experiment_commit",
+    "judgment_experience": "pre_experiment_commit",
+    "selection_experience": "pre_experiment_commit"
+  },
+  "tech_stack": "C++/thrift (differs from Hotel Go/gRPC and ESHOP .NET)",
+  "workload": "documented call graph from the frozen intake (thrift services behind nginx-thrift entry)"
+}
+
+CANDIDATE POOL (30 candidates, in the order given)
+[
+  {
+    "candidate_id": "SOCIALNET-compose-post-text-loss",
+    "fault_family": "loss",
+    "fault_parameters": {
+      "mode": "loss",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "text",
+    "workload_id": "SOCIALNET/compose-post->text"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-user-timeline-delay",
+    "fault_family": "delay",
+    "fault_parameters": {
+      "mode": "delay",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "user-timeline",
+    "workload_id": "SOCIALNET/compose-post->user-timeline"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-media-delay",
+    "fault_family": "delay",
+    "fault_parameters": {
+      "mode": "delay",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "media",
+    "workload_id": "SOCIALNET/compose-post->media"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-user-timeline-service",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "user-timeline-service",
+    "workload_id": "SOCIALNET/user-timeline-service-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-unique-id-service",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "unique-id-service",
+    "workload_id": "SOCIALNET/unique-id-service-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-unique-id-loss",
+    "fault_family": "loss",
+    "fault_parameters": {
+      "mode": "loss",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "unique-id",
+    "workload_id": "SOCIALNET/compose-post->unique-id"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-post-storage-delay",
+    "fault_family": "delay",
+    "fault_parameters": {
+      "mode": "delay",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "post-storage",
+    "workload_id": "SOCIALNET/compose-post->post-storage"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-post-storage-service",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "post-storage-service",
+    "workload_id": "SOCIALNET/post-storage-service-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-social-graph-service",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "social-graph-service",
+    "workload_id": "SOCIALNET/social-graph-service-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-media-loss",
+    "fault_family": "loss",
+    "fault_parameters": {
+      "mode": "loss",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "media",
+    "workload_id": "SOCIALNET/compose-post->media"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-home-timeline-loss",
+    "fault_family": "loss",
+    "fault_parameters": {
+      "mode": "loss",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "home-timeline",
+    "workload_id": "SOCIALNET/compose-post->home-timeline"
+  },
+  {
+    "candidate_id": "SOCIALNET-home-timeline-social-graph-delay",
+    "fault_family": "delay",
+    "fault_parameters": {
+      "mode": "delay",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "social-graph",
+    "workload_id": "SOCIALNET/home-timeline->social-graph"
+  },
+  {
+    "candidate_id": "SOCIALNET-home-timeline-post-storage-loss",
+    "fault_family": "loss",
+    "fault_parameters": {
+      "mode": "loss",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "post-storage",
+    "workload_id": "SOCIALNET/home-timeline->post-storage"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-user-mention-service",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "user-mention-service",
+    "workload_id": "SOCIALNET/user-mention-service-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-unique-id-delay",
+    "fault_family": "delay",
+    "fault_parameters": {
+      "mode": "delay",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "unique-id",
+    "workload_id": "SOCIALNET/compose-post->unique-id"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-compose-post-service",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "compose-post-service",
+    "workload_id": "SOCIALNET/compose-post-service-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-text-delay",
+    "fault_family": "delay",
+    "fault_parameters": {
+      "mode": "delay",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "text",
+    "workload_id": "SOCIALNET/compose-post->text"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-media-service",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "media-service",
+    "workload_id": "SOCIALNET/media-service-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-user-timeline-loss",
+    "fault_family": "loss",
+    "fault_parameters": {
+      "mode": "loss",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "user-timeline",
+    "workload_id": "SOCIALNET/compose-post->user-timeline"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-home-timeline-delay",
+    "fault_family": "delay",
+    "fault_parameters": {
+      "mode": "delay",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "home-timeline",
+    "workload_id": "SOCIALNET/compose-post->home-timeline"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-nginx-thrift",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "nginx-thrift",
+    "workload_id": "SOCIALNET/nginx-thrift-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-user-loss",
+    "fault_family": "loss",
+    "fault_parameters": {
+      "mode": "loss",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "user",
+    "workload_id": "SOCIALNET/compose-post->user"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-text-service",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "text-service",
+    "workload_id": "SOCIALNET/text-service-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-home-timeline-service",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "home-timeline-service",
+    "workload_id": "SOCIALNET/home-timeline-service-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-post-storage-loss",
+    "fault_family": "loss",
+    "fault_parameters": {
+      "mode": "loss",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "post-storage",
+    "workload_id": "SOCIALNET/compose-post->post-storage"
+  },
+  {
+    "candidate_id": "SOCIALNET-home-timeline-post-storage-delay",
+    "fault_family": "delay",
+    "fault_parameters": {
+      "mode": "delay",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "post-storage",
+    "workload_id": "SOCIALNET/home-timeline->post-storage"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-url-shorten-service",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "url-shorten-service",
+    "workload_id": "SOCIALNET/url-shorten-service-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-home-timeline-social-graph-loss",
+    "fault_family": "loss",
+    "fault_parameters": {
+      "mode": "loss",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "social-graph",
+    "workload_id": "SOCIALNET/home-timeline->social-graph"
+  },
+  {
+    "candidate_id": "SOCIALNET-kill-user-service",
+    "fault_family": "kill",
+    "fault_parameters": {
+      "mode": "kill",
+      "scope": "pod"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "user-service",
+    "workload_id": "SOCIALNET/user-service-pod"
+  },
+  {
+    "candidate_id": "SOCIALNET-compose-post-user-delay",
+    "fault_family": "delay",
+    "fault_parameters": {
+      "mode": "delay",
+      "scope": "service_edge"
+    },
+    "mutation_path": null,
+    "project_id": "SOCIALNET",
+    "target": "user",
+    "workload_id": "SOCIALNET/compose-post->user"
+  }
+]
+
+GENERIC RULES-ONLY SUPPLEMENT (project-free, pinned frozen version)
+{
+  "defense_pattern_library": [
+    {
+      "defense_mechanism": "absorbed_by_design",
+      "pattern_id": "DP-DEFENSE-ABSORBED-001",
+      "rule": "A single downstream call with no fan-out propagates latency 1:1 with no amplification or compounding (bounded path tolerated the injected delay).",
+      "source_verified": false
+    },
+    {
+      "defense_mechanism": "absorbed_by_design",
+      "pattern_id": "DP-DEFENSE-ABSORBED-002",
+      "rule": "A weak latency injection on a single-call path produces no amplification.",
+      "source_verified": false
+    },
+    {
+      "defense_mechanism": "absorbed_by_design",
+      "note": "renamed from an original pattern ID that embedded a candidate identifier (excluded from the LLM view)",
+      "pattern_id": "DP-DEFENSE-ABSORBED-003",
+      "rule": "Downstream latency propagated 1:1 with no retries or compounding; a bounded path tolerated the injected delay (absorbed by design).",
+      "source_verified": false
+    },
+    {
+      "defense_mechanism": "bounded_timeout",
+      "pattern_id": "DP-BOUNDED-TIMEOUT-FUTUREGET-001",
+      "rule": "An async bounded timeout (e.g., Future.get with a timeout) bounds BOTH delay and loss: never an infinite hang. It is invisible to direct port measurement - only a business-chain entry reveals it.",
+      "source_verified": true
+    }
+  ],
+  "judgment_experience": [
+    {
+      "confidence": "high",
+      "dimensions": [
+        "contract"
+      ],
+      "en_rule": "A violation of a SOURCE-DECLARED contract (timeout/gRPC deadline/SLO) is a clear vulnerability; but a test-client's own timeout is a measurement budget, never a system contract - hanging to the client deadline reveals the system LACKS a timeout, a different finding.",
+      "id": "JE-CONTRACT-001",
+      "rule": "A violation of a source-declared contract (timeout/gRPC deadline/SLO) is a clear vulnerability; but a test client's own timeout is a measurement budget, never a system contract - hanging to the client deadline reveals the system LACKS a timeout, a different finding.",
+      "severity_adjustment": "confirm",
+      "transferable_to": "before judging, distinguish system contracts from client-side measurement budgets"
+    },
+    {
+      "confidence": "medium",
+      "dimensions": [
+        "contract"
+      ],
+      "en_rule": "Latency amplification with no system contract (no SLO/explicit deadline) is NOT automatically a vulnerability; check for degradation/fallback first - without it, classify as 'potential risk', not 'confirmed vulnerability'. The runner's request_timeout is not a contract.",
+      "id": "JE-CONTRACT-002",
+      "rule": "Latency amplification with no system contract (no SLO/explicit deadline) is NOT automatically a vulnerability; check for degradation/fallback first - without it, classify as 'potential risk', not 'confirmed vulnerability'. The runner's request_timeout is not a contract.",
+      "severity_adjustment": "downgrade",
+      "transferable_to": "internal service-to-service calls without explicit SLO"
+    },
+    {
+      "confidence": "high",
+      "dimensions": [
+        "business_path"
+      ],
+      "en_rule": "A non-critical dependency (email/notification/log) synchronously blocking the primary flow and hanging to the client deadline is an architecture-level coupling defect (highest value): it reveals missing dependency isolation, not a single missing timeout.",
+      "id": "JE-COUPLING-001",
+      "rule": "A non-critical dependency (email/notification/log) synchronously blocking the primary flow and hanging to the client deadline is an architecture-level coupling defect (highest value): it reveals missing dependency isolation, not a single missing timeout.",
+      "severity_adjustment": "upgrade",
+      "transferable_to": "any microservice system: check whether side dependencies (email/notification/log/analytics) are synchronously coupled to the primary flow"
+    },
+    {
+      "confidence": "medium",
+      "dimensions": [
+        "observability"
+      ],
+      "en_rule": "A fault fully captured by tracing (visible events) but without auto-alert is a partial weakness (diagnosable, not alertable); 'cannot be seen at fault time' is itself a weakness even if functionality is normal.",
+      "id": "JE-OBSERVABILITY-001",
+      "rule": "A fault fully captured by tracing (visible events) but without auto-alert is a partial weakness (diagnosable, not alertable); 'cannot be seen at fault time' is itself a weakness even if functionality is normal.",
+      "severity_adjustment": "confirm",
+      "transferable_to": "any system with tracing but without alerting"
+    },
+    {
+      "confidence": "high",
+      "dimensions": [
+        "recovery"
+      ],
+      "en_rule": "Failure to auto-recover after injection stops (or recovery timeout) upgrades severity regardless of symptom strength - missing recovery capability is an independent weakness.",
+      "id": "JE-RECOVERY-001",
+      "rule": "Failure to auto-recover after injection stops (or recovery timeout) upgrades severity regardless of symptom strength - missing recovery capability is an independent weakness.",
+      "severity_adjustment": "upgrade",
+      "transferable_to": "all injection experiments should explicitly check whether recovery completes automatically"
+    },
+    {
+      "confidence": "medium",
+      "dimensions": [
+        "risk"
+      ],
+      "en_rule": "Weaknesses exposed by high-probability real events (provider timeout/network partition/packet loss) rank above low-probability extreme scenarios - risk = probability x impact; probability ranks, it does not judge.",
+      "id": "JE-RISK-001",
+      "rule": "Weaknesses exposed by high-probability real events (provider timeout/network partition/packet loss) rank above low-probability extreme scenarios - risk = probability x impact; probability ranks, it does not judge.",
+      "severity_adjustment": "n_a",
+      "transferable_to": "candidate ranking/priority; does not change the verdict itself"
+    }
+  ],
+  "selection_experience": [
+    {
+      "confidence": "high",
+      "dimensions": [
+        "business_path"
+      ],
+      "id": "SE-CORE-CHAIN-001",
+      "rule": "Core synchronous business-path calls (payment/checkout/order placement) most commonly lack per-request timeouts; such edges are the highest-value test targets.",
+      "transferable_to": "e-commerce/transactional microservices: prioritize payment, cart, and checkout services"
+    },
+    {
+      "confidence": "medium",
+      "dimensions": [
+        "fault_intensity",
+        "contract"
+      ],
+      "id": "SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001",
+      "rule": "Delay severity depends on whether the caller waits synchronously without a timeout, not on the fault type itself: a delay on a synchronous no-timeout call can hang the client to its deadline, equivalent to loss. This contradicts the prior that loss is always more severe than delay.",
+      "transferable_to": "any microservice system: before judging delay severity, check whether the caller waits synchronously and has a timeout"
+    },
+    {
+      "confidence": "medium",
+      "dimensions": [
+        "transferability"
+      ],
+      "id": "SE-CROSSPROJECT-REPLICATION-001",
+      "rule": "A weakness pattern confirmed in one project should be re-tested on the same-named service/edge of another project; cross-project replication is a low-cost high-yield selection strategy.",
+      "transferable_to": "multi-project comparison/migration"
+    },
+    {
+      "confidence": "high",
+      "dimensions": [
+        "fault_intensity"
+      ],
+      "id": "SE-LOSS-STRONGEST-001",
+      "rule": "100% packet loss is the most reliable way to break a synchronous no-timeout call: loss on such calls hangs the client to its deadline.",
+      "transferable_to": "loss is the shortest path when looking for 'no-timeout' weaknesses"
+    },
+    {
+      "confidence": "high",
+      "dimensions": [
+        "fault_family"
+      ],
+      "id": "SE-NETWORK-FAMILY-001",
+      "rule": "Prioritize the network fault family when looking for weaknesses: network faults (delay/loss/partition) are the most common real-world failure class and the most likely place weaknesses hide.",
+      "transferable_to": "any microservice system: network faults (delay/loss/partition) take priority over resource faults (CPU/memory)"
+    },
+    {
+      "confidence": "high",
+      "dimensions": [
+        "business_path"
+      ],
+      "id": "SE-SIDEEFFECT-COUPLING-001",
+      "rule": "Side-channel dependencies (email/notification/log/analytics) are commonly synchronously coupled to the primary flow in real systems; check whether a side dependency blocks the main path.",
+      "transferable_to": "any microservice: email/notification/log/analytics side dependencies"
+    },
+    {
+      "confidence": "high",
+      "dimensions": [
+        "test_design"
+      ],
+      "id": "SE-TEST-HYGIENE-PROBE-001",
+      "rule": "Liveness/readiness probe timeout must exceed the injected latency, else the kubelet kills the pod mid-experiment and the injection 'escapes' - the observed failure is probe self-kill, not the system's defense behavior. Check probe timeouts BEFORE designing delay injections.",
+      "transferable_to": "any service with probes tested by delay injection; read the deployment probe configuration first"
+    },
+    {
+      "confidence": "high",
+      "dimensions": [
+        "infrastructure"
+      ],
+      "id": "SE-TEST-HYGIENE-IMAGECOMPAT-001",
+      "rule": "A 'latest' database image can break a legacy application driver (unsupported wire-protocol command). If an old application fails with such an error, pin the database to an era-appropriate major version rather than debugging the application.",
+      "transferable_to": "any 'latest' DB image with an older microservice; verify driver compatibility before debugging the application"
+    },
+    {
+      "confidence": "high",
+      "dimensions": [
+        "infrastructure"
+      ],
+      "id": "SE-TEST-HYGIENE-PORTMISMATCH-001",
+      "rule": "A container's actual listening port may differ from the Service targetPort in real manifests (silent connection refused). Verify the container's actual listen port before blaming the mesh or the app; patch the Service targetPort to the real port.",
+      "transferable_to": "any Service connection refusal: check targetPort consistency first"
+    },
+    {
+      "confidence": "medium",
+      "dimensions": [
+        "infrastructure"
+      ],
+      "id": "SE-TEST-HYGIENE-OOM-001",
+      "rule": "Services without resource limits can OOM-crashloop independently of probes or injections. Distinguish infrastructure OOM from probe/liveness issues before attributing the failure to the injected fault.",
+      "transferable_to": "any service without resources.limits; check limits before testing"
+    }
+  ]
+}
+
+PROJECT-SPECIFIC PRE-EXPERIMENT SNAPSHOT (static contracts, availability scope, source provenance; no runtime outcomes)
+{
+  "availability_scope": {
+    "compose": "verified",
+    "deployment_target": "helm_chart",
+    "kubernetes": "verified"
+  },
+  "contract": {
+    "contracts": {
+      "SOCIALNET-composepost->hometimeline": {
+        "contract": "explicit_timeout",
+        "evidence": "STATIC ComposePostService.cpp ClientPool<HomeTimelineServiceClient>; home-timeline-service timeout_ms=10000",
+        "loss_bounded": false,
+        "source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211"
+      },
+      "SOCIALNET-composepost->media": {
+        "contract": "explicit_timeout",
+        "evidence": "STATIC ComposePostService.cpp ClientPool<MediaServiceClient>; media-service timeout_ms=10000",
+        "loss_bounded": false,
+        "source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211"
+      },
+      "SOCIALNET-composepost->poststorage": {
+        "contract": "explicit_timeout",
+        "evidence": "STATIC ComposePostService.cpp ClientPool<ThriftClient<PostStorageServiceClient>>; config/service-config.json post-storage-service timeout_ms=10000 (10s explicit thrift timeout)",
+        "loss_bounded": false,
+        "source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211"
+      },
+      "SOCIALNET-composepost->text": {
+        "contract": "explicit_timeout",
+        "evidence": "STATIC ComposePostService.cpp ClientPool<TextServiceClient>; text-service timeout_ms=10000",
+        "loss_bounded": false,
+        "source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211"
+      },
+      "SOCIALNET-composepost->uniqueid": {
+        "contract": "explicit_timeout",
+        "evidence": "STATIC ComposePostService.cpp ClientPool<UniqueIdServiceClient>; unique-id-service timeout_ms=10000",
+        "loss_bounded": false,
+        "source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211"
+      },
+      "SOCIALNET-composepost->user": {
+        "contract": "explicit_timeout",
+        "evidence": "STATIC ComposePostService.cpp ClientPool<UserServiceClient>; user-service timeout_ms=10000",
+        "loss_bounded": false,
+        "source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211"
+      },
+      "SOCIALNET-composepost->usertimeline": {
+        "contract": "explicit_timeout",
+        "evidence": "STATIC ComposePostService.cpp ClientPool<UserTimelineServiceClient>; user-timeline-service timeout_ms=10000",
+        "loss_bounded": false,
+        "source_sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211"
+      },
+      "SOCIALNET-hometimeline->poststorage": {
+        "contract": "explicit_timeout",
+        "evidence": "STATIC HomeTimelineService.cpp ClientPool<ThriftClient<PostStorageServiceClient>>; timeout from config (per-service timeout_ms)",
+        "loss_bounded": false,
+        "source_sha256": "6252e351a177eccb5ef7917e8ef4eecbe591d110c2c1919b9079104e64f28915"
+      },
+      "SOCIALNET-hometimeline->socialgraph": {
+        "contract": "explicit_timeout",
+        "evidence": "STATIC HomeTimelineService.cpp ClientPool<ThriftClient<SocialGraphServiceClient>>; timeout from config",
+        "loss_bounded": false,
+        "source_sha256": "6252e351a177eccb5ef7917e8ef4eecbe591d110c2c1919b9079104e64f28915"
+      }
+    }
+  },
+  "provenance": {
+    "created_at": "2026-08-10T06:45:12.551750+00:00",
+    "kind": "SOCIALNET_static_reconstructed",
+    "note": "SOCIALNET STATIC-RECONSTRUCTED from https://github.com/delimitrou/DeathStarBench (socialNetwork/) @6ecb09706140; no runtime/CE/experiment evidence.",
+    "provenance_completeness": "complete",
+    "sha256": {
+      "config/service-config.json": "783c9b76cc673f8f583b6fdc02a8f2272a9b183cad24c3edc94267458f689057",
+      "defense_pattern_library_live": "afffb6ada45c947a3110dec6365152af8260358a45f7eb6e415926de70f557d8",
+      "docker-compose.yml": "b2b3dec888d099a60101b8a3d1eae9bf71ef18ef64b557942048db905ec4d529",
+      "helm-chart/socialnetwork/charts/compose-post-service/values.yaml": "7703c14575f6101abf11dcfac09ef70e39100907b2986045d633d6c3e45f74da",
+      "helm-chart/socialnetwork/charts/home-timeline-service/values.yaml": "ea89e74089e5c7e80436799ba06d80e76e8c3f6d0436e79e0904c165badcf035",
+      "helm-chart/socialnetwork/charts/media-service/values.yaml": "b4d187f116debd0412b817f6c8522f1f78994f1626224302f867d8cf6d00408b",
+      "helm-chart/socialnetwork/charts/nginx-thrift/values.yaml": "825177312373385f539ea933c0388e47e14c8cd231e06e916e45fe6669b5dcbf",
+      "helm-chart/socialnetwork/charts/post-storage-service/values.yaml": "1da39c7df85b5a45aa6b38e510ab533d05e34495659c35d0775c8ac729ceb611",
+      "helm-chart/socialnetwork/charts/social-graph-service/values.yaml": "fd803a50463d51146252a7a766b3055a599e7e3940718d05752c6657dd351bb5",
+      "helm-chart/socialnetwork/charts/text-service/values.yaml": "969007aaf5bd2f9e35162409b0d952b67972f3bad9a463c31c20142d3108c240",
+      "helm-chart/socialnetwork/charts/unique-id-service/values.yaml": "7b8eef720816ddf8ea0934965fa706e80607eec01dbef46275a67f5a9dd25827",
+      "helm-chart/socialnetwork/charts/url-shorten-service/values.yaml": "bc507696e5c69eeed0ddd2fca46820ab99108d086824268219d3d71732308b08",
+      "helm-chart/socialnetwork/charts/user-mention-service/values.yaml": "d95e176e672e83bbca27afcc6ee699d3fb3c8e07de773184242ef5febefc3dae",
+      "helm-chart/socialnetwork/charts/user-service/values.yaml": "eaec5394b9667fbfe24921f673cf9b3fb3e43533d920700d32a601d683673847",
+      "helm-chart/socialnetwork/charts/user-timeline-service/values.yaml": "8206b55ee86802e7253589b2517aa0acf79f107d8da4ca6c29710f9e09eb9cc7",
+      "judgment_experience_live": "7756d8d3beb0ea6a4644a3d2ecff117b09eabe62ad3e1d2a33aee61c2c6eead6",
+      "selection_experience_live": "f7280be785e34504fdcde76f81db027c32d5db6d572a2fc648c65eb347704fc1",
+      "shared_infra/tracing.h": "ec488043c28083fce487725ba3b1765470828407198d26edf58bf54e41290f42",
+      "shared_infra/utils.h": "064b444be99f443f9041e60608f9453f8a8ccd7ce1e6e1fdb9fe05bef00f9db7",
+      "shared_infra/utils_thrift.h": "75702e79c4f42b23bf6921580aeabc57a39e1d2e51d9d0007b84745ad7b46953",
+      "social_network.thrift": "2a199791eb2c12ea8aa1ff259d0c0d98b89e67ed27868a4991a23d5cb4bdbaa2",
+      "src/ComposePostService/ComposePostService.cpp": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211",
+      "src/HomeTimelineService/HomeTimelineService.cpp": "6252e351a177eccb5ef7917e8ef4eecbe591d110c2c1919b9079104e64f28915"
+    },
+    "source_commit": "6ecb09706140f8730b5385c08f1386c654c3c526",
+    "source_files": [
+      {
+        "path": "docker-compose.yml",
+        "purpose": "contract/availability source",
+        "sha256": "b2b3dec888d099a60101b8a3d1eae9bf71ef18ef64b557942048db905ec4d529"
+      },
+      {
+        "path": "social_network.thrift",
+        "purpose": "contract/availability source",
+        "sha256": "2a199791eb2c12ea8aa1ff259d0c0d98b89e67ed27868a4991a23d5cb4bdbaa2"
+      },
+      {
+        "path": "config/service-config.json",
+        "purpose": "contract/availability source",
+        "sha256": "783c9b76cc673f8f583b6fdc02a8f2272a9b183cad24c3edc94267458f689057"
+      },
+      {
+        "path": "src/ComposePostService/ComposePostService.cpp",
+        "purpose": "contract/availability source",
+        "sha256": "ba0d2b08c0df94efcb8d53fd6f817a3259c028a75196adf9b9fa350601216211"
+      },
+      {
+        "path": "src/HomeTimelineService/HomeTimelineService.cpp",
+        "purpose": "contract/availability source",
+        "sha256": "6252e351a177eccb5ef7917e8ef4eecbe591d110c2c1919b9079104e64f28915"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/compose-post-service/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "7703c14575f6101abf11dcfac09ef70e39100907b2986045d633d6c3e45f74da"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/post-storage-service/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "1da39c7df85b5a45aa6b38e510ab533d05e34495659c35d0775c8ac729ceb611"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/user-timeline-service/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "8206b55ee86802e7253589b2517aa0acf79f107d8da4ca6c29710f9e09eb9cc7"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/text-service/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "969007aaf5bd2f9e35162409b0d952b67972f3bad9a463c31c20142d3108c240"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/user-service/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "eaec5394b9667fbfe24921f673cf9b3fb3e43533d920700d32a601d683673847"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/media-service/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "b4d187f116debd0412b817f6c8522f1f78994f1626224302f867d8cf6d00408b"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/home-timeline-service/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "ea89e74089e5c7e80436799ba06d80e76e8c3f6d0436e79e0904c165badcf035"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/social-graph-service/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "fd803a50463d51146252a7a766b3055a599e7e3940718d05752c6657dd351bb5"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/unique-id-service/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "7b8eef720816ddf8ea0934965fa706e80607eec01dbef46275a67f5a9dd25827"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/user-mention-service/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "d95e176e672e83bbca27afcc6ee699d3fb3c8e07de773184242ef5febefc3dae"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/url-shorten-service/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "bc507696e5c69eeed0ddd2fca46820ab99108d086824268219d3d71732308b08"
+      },
+      {
+        "path": "helm-chart/socialnetwork/charts/nginx-thrift/values.yaml",
+        "purpose": "contract/availability source",
+        "sha256": "825177312373385f539ea933c0388e47e14c8cd231e06e916e45fe6669b5dcbf"
+      },
+      {
+        "path": "shared_infra/tracing.h",
+        "purpose": "contract/availability source",
+        "sha256": "ec488043c28083fce487725ba3b1765470828407198d26edf58bf54e41290f42"
+      },
+      {
+        "path": "shared_infra/utils_thrift.h",
+        "purpose": "contract/availability source",
+        "sha256": "75702e79c4f42b23bf6921580aeabc57a39e1d2e51d9d0007b84745ad7b46953"
+      },
+      {
+        "path": "shared_infra/utils.h",
+        "purpose": "contract/availability source",
+        "sha256": "064b444be99f443f9041e60608f9453f8a8ccd7ce1e6e1fdb9fe05bef00f9db7"
+      }
+    ]
+  },
+  "source_provenance": {
+    "availability": "static_reconstructed_pre_experiment",
+    "contract": "static_reconstructed_pre_experiment",
+    "defense_pattern_library": "pre_experiment_commit",
+    "judgment_experience": "pre_experiment_commit",
+    "selection_experience": "pre_experiment_commit"
+  }
+}
+
+TASK
+Rank exactly 10 distinct candidates from the pool, from most to least likely to expose a confirmed weakness, and return them as a single JSON object following the output schema in the system message.

@@ -1,0 +1,44 @@
+{
+  "selected": [
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-delay",
+      "rank": 1,
+      "rationale": "Delay on the critical compose-post->post-storage edge stalls every post creation; with no client timeout, latency propagates unboundedly to the API."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-delay",
+      "rank": 2,
+      "rationale": "unique-id is a required global dependency for post IDs; delaying it blocks all write requests before any downstream work."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-delay",
+      "rank": 3,
+      "rationale": "home-timeline fan-out from compose-post is synchronous; a delay here adds directly to compose latency and can block publishing."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-loss",
+      "rank": 4,
+      "rationale": "Loss on the post-storage edge causes write failures; absence of retry defense leaves the post unpersisted and user-facing errors."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-delay",
+      "rank": 5,
+      "rationale": "Reading timelines depends on home-timeline->post-storage; delay makes timeline retrieval hang, exposing read-path latency propagation."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-timeline-delay",
+      "rank": 6,
+      "rationale": "user-timeline update is another compose fan-out edge; delay slows every post and may cause partial inconsistency."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-post-storage-service",
+      "rank": 7,
+      "rationale": "Killing post-storage removes the persistence layer, breaking both writes and reads and exposing availability loss."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-compose-post-service",
+      "rank": 8,
+      "rationale": "Killing compose-post eliminates the write API; the inability to recover/quickly restore service reveals missing recovery behavior."
+    }
+  ]
+}

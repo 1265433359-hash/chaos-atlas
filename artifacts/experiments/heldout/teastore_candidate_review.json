@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "stage": "B2",
+  "status": "candidate_not_fetched",
+  "project_id": "TEASTORE",
+  "canonical_source": {
+    "url": "https://github.com/DescartesResearch/TeaStore",
+    "commit": "34b37f7e7be433ce72d5f9455e66922a13116749",
+    "branch": "master",
+    "license": "Apache-2.0",
+    "source_fetched": false
+  },
+  "selection_evidence": {
+    "readme_claim": "TeaStore is a micro-service reference/test application with five distinct services plus a registry; services communicate using REST and Ribbon",
+    "service_modules": [
+      "auth",
+      "image",
+      "persistence",
+      "recommender",
+      "registry",
+      "webui"
+    ],
+    "deployment_assets": {
+      "helm": "examples/helm",
+      "kubernetes": "examples/kubernetes/teastore-ribbon.yaml and related variants; teastore-all.yaml is an all-in-one fallback",
+      "compose": "examples/docker/docker-compose_default.yaml"
+    },
+    "observability_expected": "Kieker-instrumented variants; OpenTracing/Istio path documented; verify during intake",
+    "fault_families": "delay/loss/kill potential; verify target selectors and workload reachability during intake",
+    "candidate_scale": "unknown until service graph and manifest expansion; must demonstrate pilot 24 and formal 48 before pool freeze"
+  },
+  "provenance": {
+    "git_blob_sha1_evidence": {
+      "README.md": "6e423522ce0842cd54846a0e8478d364dc1116d1",
+      "GET_STARTED.md": "07afecf0ea30768c0389f6407cef558052ac1438",
+      "examples/helm/Chart.yaml": "b1fe772440158f885ad85332ed1f208216d915ac",
+      "examples/helm/values.yaml": "c79ec2699cabffbea24c57e35554cdb887a26954",
+      "examples/kubernetes/teastore-all.yaml": "32b7a8a7d534afb63673d7f487f059d780dedd91",
+      "examples/docker/docker-compose_default.yaml": "c1f5aa7f2564ee33a56438bf1201bb016f4d96da"
+    },
+    "note": "Git blob IDs are source-location evidence, not local SHA-256; local SHA-256 must be computed after approved intake"
+  },
+  "leakage_audit": {
+    "direct_hits_in_selection_experience": 0,
+    "direct_hits_in_defense_pattern_library": 0,
+    "direct_hits_in_judgment_experience": 0,
+    "risk": "low",
+    "reason": "Independent repository and Java-based TeaStore; no TeaStore/DescartesResearch evidence in the three pinned knowledge files"
+  },
+  "recommendation": {
+    "role": "replacement_for_blocked_ESHOP",
+    "target_comparable_set": ["HOTEL", "SOCIALNET", "TEASTORE"],
+    "eligibility": "conditional_pending_static_intake",
+    "required_next_step": "human approval for restricted fetch, then static intake only; verify Helm multi-service rendering and do not use all-in-one as the primary graph"
+  },
+  "no_download_no_deploy_no_experiment": true
+}

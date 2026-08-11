@@ -24,6 +24,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+from decision_engine import snapshot_is_full_experiment_pre
+
 ROOT = Path(__file__).resolve().parents[1]
 EXPERIMENTS = ROOT / "artifacts" / "experiments"
 OUT = ROOT / "artifacts" / "experiments" / "heldout" / "hotel_knowledge_snapshot_pre.json"
@@ -36,30 +38,35 @@ CONTRACTS_STATIC = {
     "HOTEL-frontend->search": {
         "contract": "no_timeout",
         "loss_bounded": False,
+        "source_sha256": "453d3efeeb27c28896434cd1e7fa18f1810678b82835be909094bc629fe7764c",
         "evidence": "STATIC: frontend server.go initSearchClient('srv-search') gRPC; no per-request timeout on downstream call. dialer/dialer.go Timeout=120s is CONNECTION-level (dial), not per-request.",
         "note": "gRPC edge without explicit per-request deadline; unprotected (delay 1:1, loss hang until client boundary).",
     },
     "HOTEL-frontend->profile": {
         "contract": "no_timeout",
         "loss_bounded": False,
+        "source_sha256": "453d3efeeb27c28896434cd1e7fa18f1810678b82835be909094bc629fe7764c",
         "evidence": "STATIC: frontend server.go initProfileClient('srv-profile') gRPC; no per-request timeout.",
         "note": "unprotected gRPC edge.",
     },
     "HOTEL-frontend->recommendation": {
         "contract": "no_timeout",
         "loss_bounded": False,
+        "source_sha256": "453d3efeeb27c28896434cd1e7fa18f1810678b82835be909094bc629fe7764c",
         "evidence": "STATIC: frontend server.go initRecommendationClient('srv-recommendation') gRPC; no per-request timeout.",
         "note": "unprotected gRPC edge.",
     },
     "HOTEL-search->geo": {
         "contract": "no_timeout",
         "loss_bounded": False,
+        "source_sha256": "a5fcee43b546d323c9dac61c28d1d558677f82e5da3c642676c92a8dcd5e616d",
         "evidence": "STATIC: search service uses geo.GeoClient (geo proto); no per-request timeout.",
         "note": "unprotected gRPC edge (search -> geo).",
     },
     "HOTEL-search->rate": {
         "contract": "no_timeout",
         "loss_bounded": False,
+        "source_sha256": "a5fcee43b546d323c9dac61c28d1d558677f82e5da3c642676c92a8dcd5e616d",
         "evidence": "STATIC: search service uses rate.RateClient (rate proto); no per-request timeout.",
         "note": "unprotected gRPC edge (search -> rate).",
     },
@@ -81,9 +88,11 @@ AVAILABILITY_STATIC = {
     }
 }
 
-for _profile in AVAILABILITY_STATIC["HOTEL"].values():
+for _service, _profile in AVAILABILITY_STATIC["HOTEL"].items():
     _profile["deployment_scope"] = "docker-compose"
-    _profile["kubernetes_status"] = "verified"  # Stage A2: all 9 business k8s deployments replicas=1, no probe, no PDB, no HPA
+    _profile["kubernetes_status"] = (
+        "unavailable" if _service in {"REVIEW", "ATTRACTIONS"} else "verified"
+    )
 
 HOTEL_SOURCE_FILES = [
     {
@@ -104,7 +113,7 @@ HOTEL_SOURCE_FILES = [
     {
         "path": "hotelReservation/kubernetes/README.md",
         "sha256": "8c8c3a1fb1a9ad7bb41b1727545e4d4252e2b8a6c59b0be8e662a9692371ef53",
-        "scope": "Kubernetes inventory only; manifests not verified",
+        "scope": "Kubernetes inventory context; deployment manifests are listed and hashed below",
     },
     {
         "path": "hotelReservation/services/frontend/server.go",
@@ -299,9 +308,11 @@ def main() -> int:
         "status_reason": (
             "五源 source_provenance 均已验证为 experiment-pre (contract/availability = "
             "static_reconstructed_pre_experiment; SE/DP/JE = pre_experiment_commit, 无 Hotel 证据)。"
-            "Stage A 关闭闸门: 10 服务 server.go + dialer.go + docker-compose + 50 k8s manifests "
-            "逐文件 SHA-256 已补齐 (无 unavailable); k8s availability 逐文件核查 (replicas=1, "
-            "无 liveness/readiness probe, 无 PDB, 无 HPA); provenance_completeness=complete; "
+            f"Stage A 关闭闸门: {len(HOTEL_SOURCE_FILES)} 个 provenance source files (含 "
+            f"{sum(1 for item in HOTEL_SOURCE_FILES if item['path'].startswith('hotelReservation/kubernetes/') and item['path'] != 'hotelReservation/kubernetes/README.md')} 个 Kubernetes 文件) "
+            "逐文件 SHA-256 已补齐 (无 unavailable); 8 个业务 Kubernetes deployment 逐文件核查 "
+            "(replicas=1, 无 liveness/readiness probe, 无 PDB, 无 HPA); REVIEW/ATTRACTIONS 无 "
+            "Kubernetes deployment，标记为 unavailable; provenance_completeness=complete; "
             "snapshot_is_full_experiment_pre=True -> status=valid。"
         ),
         "provenance": {
@@ -317,9 +328,11 @@ def main() -> int:
             "note": (
                 "contract/availability STATIC-RECONSTRUCTED from canonical Hotel source "
                 f"@{HOTEL_COMMIT[:12]} (pre-experiment; no Hotel runtime evidence). "
-                "Compose availability AND kubernetes availability both audited (Stage A2): "
-                "compose single-replica; k8s all business deployments replicas=1, no "
-                "liveness/readiness probe, no PDB, no HPA. SE/DP/JE are generic cross-project "
+                "Compose availability AND Kubernetes availability are scoped separately (Stage A2): "
+                "compose single-replica; 8 Kubernetes business deployments replicas=1, no "
+                "liveness/readiness probe, no PDB, no HPA; REVIEW/ATTRACTIONS have no Kubernetes "
+                "deployment and are unavailable for Kubernetes-specific availability candidates. "
+                "SE/DP/JE are generic cross-project "
                 "rule libraries with NO Hotel evidence -> pre-experiment relative to Hotel. "
                 "candidate_map intentionally empty (pool frozen after this snapshot per "
                 "protocol). dialer 120s timeout is connection-level, NOT a per-request contract."
@@ -329,7 +342,7 @@ def main() -> int:
             "contracts": CONTRACTS_STATIC,
             "availability": AVAILABILITY_STATIC,
             "availability_kubernetes": {
-                # Stage A2: 9 business deployments all replicas=1, no probe, no PDB, no HPA.
+                # Stage A2: 8 business deployments all replicas=1, no probe, no PDB, no HPA.
                 # REVIEW/ATTRACTIONS run single-node images without a k8s deploy yaml.
                 "HOTEL": {
                     "FRONTEND": {"replicas": 1, "pdb": None, "hpa": None, "liveness_probe": False, "readiness_probe": False, "manifest_sha256": "6431e87a0617cc652eba261858657e03d630902bc03b39c0ad5e1710c5d7320e"},
@@ -340,8 +353,8 @@ def main() -> int:
                     "RESERVATION": {"replicas": 1, "pdb": None, "hpa": None, "liveness_probe": False, "readiness_probe": False, "manifest_sha256": "07c2c934c89ca0fe100183c60cff16b148e1678779c5952e7b045d4697b1f784"},
                     "SEARCH": {"replicas": 1, "pdb": None, "hpa": None, "liveness_probe": False, "readiness_probe": False, "manifest_sha256": "503c1e3a20a77f9bf0cd527e6c5b927d01a5c467b7194cf15598a5e29c9d0e32"},
                     "USER": {"replicas": 1, "pdb": None, "hpa": None, "liveness_probe": False, "readiness_probe": False, "manifest_sha256": "5083ed726ac8ef70801481d7230a10ae1e37fd032263ce09d084615cdad16ac9"},
-                    "REVIEW": {"replicas": 1, "pdb": None, "hpa": None, "liveness_probe": None, "readiness_probe": None, "manifest_sha256": None, "manifest_note": "single-node image (hotel_reserv_review_single_node); no k8s deploy yaml present"},
-                    "ATTRACTIONS": {"replicas": 1, "pdb": None, "hpa": None, "liveness_probe": None, "readiness_probe": None, "manifest_sha256": None, "manifest_note": "single-node image (hotel_reserv_attractions_single_node); no k8s deploy yaml present"},
+                    "REVIEW": {"availability_status": "unavailable", "manifest_sha256": None, "manifest_note": "single-node image (hotel_reserv_review_single_node); no k8s deploy yaml present"},
+                    "ATTRACTIONS": {"availability_status": "unavailable", "manifest_sha256": None, "manifest_note": "single-node image (hotel_reserv_attractions_single_node); no k8s deploy yaml present"},
                 }
             },
             "candidate_map": CANDIDATE_MAP_STATIC,
@@ -357,6 +370,7 @@ def main() -> int:
             "judgment_experience": "pre_experiment_commit",
         },
     }
+    snapshot["full_pre"] = snapshot_is_full_experiment_pre(snapshot)
     OUT.write_text(json.dumps(snapshot, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"wrote {OUT}")
     print("provenance:", snapshot["source_provenance"])

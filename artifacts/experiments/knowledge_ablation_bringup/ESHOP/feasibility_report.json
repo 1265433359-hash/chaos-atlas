@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "project_id": "ESHOP",
+  "phase": "feasibility_check",
+  "date": "2026-08-10",
+  "classification": "deployment_unavailable",
+  "summary": "ESHOP has no runnable deployment manifest at the frozen commit 9b4f9434; no bring-up, baseline, injection, observation, or recovery can be executed.",
+  "deployment": {
+    "manifest_present": false,
+    "k8s_manifest": "none",
+    "docker_compose": "none",
+    "dockerfile": "none",
+    "found_yaml_only": [
+      "es-metadata.yml (CI metadata)",
+      ".spectral.yml (lint)",
+      "ci.yml"
+    ],
+    "aspire_only": "eShop.AppHost uses Aspire development orchestration (AddProject); no k8s/compose deployment target",
+    "source_checkout": "/root/heldout_src/eshop @ 9b4f9434f46fdc5c1a6e9e936af2868340cdbc48"
+  },
+  "namespace": "heldout-eshop-lab",
+  "bringup_result": "not_attempted_no_manifest",
+  "baseline": {
+    "attempts": 0,
+    "status": "not_available",
+    "reason": "no deployment target exists"
+  },
+  "injection": {
+    "attempted": false,
+    "status": "injection_unavailable",
+    "reason": "no deployment to inject against"
+  },
+  "observation": {
+    "attempted": false,
+    "status": "observation_unavailable",
+    "reason": "no deployed service to observe"
+  },
+  "recovery_cleanup": {
+    "attempted": false,
+    "status": "recovery_not_testable",
+    "reason": "no injection performed"
+  },
+  "gate_3_eligible": false,
+  "executable": false,
+  "allowed_treatment": "selection-only OR environment_blocked; must NOT run Weakness@K or formal Chaos selection; must NOT merge statistics with SOCIALNET",
+  "frozen_artifacts_untouched": {
+    "candidate_pool_pilot_sha256": "41313aeab7bd9777",
+    "candidate_pool_formal_sha256": "9a6a1e5a2e1759fa",
+    "mutation_yaml_count": 40,
+    "note": "frozen candidate pools and mutation YAMLs were NOT modified by this feasibility check"
+  },
+  "no_llm_no_experiment": true
+}

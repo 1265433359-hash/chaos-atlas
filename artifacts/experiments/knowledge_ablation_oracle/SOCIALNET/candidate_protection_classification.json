@@ -1,0 +1,295 @@
+{
+  "classification_rules": [
+    {
+      "rule": "edge has statically-confirmed explicit_timeout AND loss_bounded=true -> protected for delay AND loss",
+      "rule_id": "CLS-001"
+    },
+    {
+      "rule": "edge has statically-confirmed explicit_timeout with loss_bounded=false -> protected for delay (bounded to the timeout); unprotected for loss (loss not statically bounded)",
+      "rule_id": "CLS-002"
+    },
+    {
+      "rule": "edge has statically-confirmed absence of a bounded-timeout/deadline defense (no_timeout or no per-call deadline) -> unprotected for delay and loss",
+      "rule_id": "CLS-003"
+    },
+    {
+      "rule": "kill candidate -> protected only if a static availability oracle confirms a defense (replicas>=2 or PDB or HPA); unprotected only if single-replica without PDB is confirmed; otherwise unknown",
+      "rule_id": "CLS-004"
+    },
+    {
+      "rule": "no static evidence sufficient to classify the family-specific defense -> unknown",
+      "rule_id": "CLS-005"
+    }
+  ],
+  "classifications": {
+    "SOCIALNET-compose-post-home-timeline-delay": {
+      "class": "protected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->hometimeline"
+      ]
+    },
+    "SOCIALNET-compose-post-home-timeline-loss": {
+      "class": "unprotected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->hometimeline"
+      ]
+    },
+    "SOCIALNET-compose-post-media-delay": {
+      "class": "protected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->media"
+      ]
+    },
+    "SOCIALNET-compose-post-media-loss": {
+      "class": "unprotected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->media"
+      ]
+    },
+    "SOCIALNET-compose-post-post-storage-delay": {
+      "class": "protected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->poststorage"
+      ]
+    },
+    "SOCIALNET-compose-post-post-storage-loss": {
+      "class": "unprotected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->poststorage"
+      ]
+    },
+    "SOCIALNET-compose-post-text-delay": {
+      "class": "protected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->text"
+      ]
+    },
+    "SOCIALNET-compose-post-text-loss": {
+      "class": "unprotected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->text"
+      ]
+    },
+    "SOCIALNET-compose-post-unique-id-delay": {
+      "class": "protected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->uniqueid"
+      ]
+    },
+    "SOCIALNET-compose-post-unique-id-loss": {
+      "class": "unprotected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->uniqueid"
+      ]
+    },
+    "SOCIALNET-compose-post-user-delay": {
+      "class": "protected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->user"
+      ]
+    },
+    "SOCIALNET-compose-post-user-loss": {
+      "class": "unprotected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->user"
+      ]
+    },
+    "SOCIALNET-compose-post-user-timeline-delay": {
+      "class": "protected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->usertimeline"
+      ]
+    },
+    "SOCIALNET-compose-post-user-timeline-loss": {
+      "class": "unprotected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-composepost->usertimeline"
+      ]
+    },
+    "SOCIALNET-home-timeline-post-storage-delay": {
+      "class": "protected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-hometimeline->poststorage"
+      ]
+    },
+    "SOCIALNET-home-timeline-post-storage-loss": {
+      "class": "unprotected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-hometimeline->poststorage"
+      ]
+    },
+    "SOCIALNET-home-timeline-social-graph-delay": {
+      "class": "protected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-hometimeline->socialgraph"
+      ]
+    },
+    "SOCIALNET-home-timeline-social-graph-loss": {
+      "class": "unprotected",
+      "classification_rule": "CLS-002",
+      "evidence_refs": [
+        "heldout/socialnet_intake_report.json#dependency_graph",
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/contracts/SOCIALNET-hometimeline->socialgraph"
+      ]
+    },
+    "SOCIALNET-kill-compose-post-service": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/compose-post-service"
+      ]
+    },
+    "SOCIALNET-kill-home-timeline-service": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/home-timeline-service"
+      ]
+    },
+    "SOCIALNET-kill-media-service": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/media-service"
+      ]
+    },
+    "SOCIALNET-kill-nginx-thrift": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/nginx-thrift"
+      ]
+    },
+    "SOCIALNET-kill-post-storage-service": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/post-storage-service"
+      ]
+    },
+    "SOCIALNET-kill-social-graph-service": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/social-graph-service"
+      ]
+    },
+    "SOCIALNET-kill-text-service": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/text-service"
+      ]
+    },
+    "SOCIALNET-kill-unique-id-service": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/unique-id-service"
+      ]
+    },
+    "SOCIALNET-kill-url-shorten-service": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/url-shorten-service"
+      ]
+    },
+    "SOCIALNET-kill-user-mention-service": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/user-mention-service"
+      ]
+    },
+    "SOCIALNET-kill-user-service": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/user-service"
+      ]
+    },
+    "SOCIALNET-kill-user-timeline-service": {
+      "class": "unprotected",
+      "classification_rule": "CLS-004",
+      "evidence_refs": [
+        "heldout/socialnet_knowledge_snapshot_pre.json#contract/availability_kubernetes/user-timeline-service"
+      ]
+    }
+  },
+  "exposure": "out_of_band - included in NO LLM bundle",
+  "kind": "static_pre_selection_classification",
+  "pool_construction_rule": "1) candidate universe = statically-documented service call edges from the frozen intake (business edges first, then event-bus/infra edges, matching the intake dependency graph order), each edge yielding one candidate per supported network family, plus one kill candidate per documented business service where the kill family is supported; 2) kill family marked unavailable when no deployment manifest exists at the frozen commit (never borrowed from another project); 3) per-family quota filled by fixed rotation: pilot 8 per supported family / formal 16 per supported family; when fewer families are supported the same rotation fills the total pool size; 4) shortfalls (family targets the project cannot satisfy) are recorded as deviations, never silently rebalanced after seeing results.",
+  "protocol_sha256": "9dc24410830ac894326a0fb9eff5915dbbd2a1283ef842809214b8df9a5a6344",
+  "quota_compliance": {
+    "formal": {
+      "actual": {
+        "protected": 9,
+        "unknown": 0,
+        "unprotected": 21
+      },
+      "deviations": {
+        "protected": -7,
+        "unknown": -16,
+        "unprotected": 5
+      },
+      "target": {
+        "protected": 16,
+        "unknown": 16,
+        "unprotected": 16
+      }
+    },
+    "pilot": {
+      "actual": {
+        "protected": 8,
+        "unknown": 0,
+        "unprotected": 16
+      },
+      "deviations": {
+        "protected": 0,
+        "unknown": -8,
+        "unprotected": 8
+      },
+      "target": {
+        "protected": 8,
+        "unknown": 8,
+        "unprotected": 8
+      }
+    }
+  },
+  "scope_note": "Static evidence classification only, built under pre-registered rules CLS-001..CLS-005. Runtime weakness oracle is deferred until after selection (ablation protocol section 7) and is not part of this file."
+}

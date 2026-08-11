@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "fb02df21bd9da7ea745728502d20a37e0fbe7f43cedaeba98081a579c7b0f515",
+  "prompt_sha256": "e7d8fcbf5276813fe90bbc5386f939c2eaf628a653ad1aad3762e23ce0936096",
+  "project": "ESHOP",
+  "arm": "LLM-partial-pre",
+  "phase": "formal",
+  "seed": 2001,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 108612,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 108612,
+    "prompt_tokens": 8830,
+    "completion_tokens": 11579,
+    "total_tokens": 20409
+  },
+  "selected": [
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-loss",
+      "rank": 1,
+      "rationale": "WebApp->Ordering.API is a confirmed no-timeout synchronous checkout path; 100% loss will hang the order flow until the default HTTP client deadline and expose missing retry/circuit defenses."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-loss",
+      "rank": 2,
+      "rationale": "Static contract confirms webapp->catalog has no per-request timeout/retry/circuit; loss on this storefront edge makes product catalog loads hang or fail, directly impacting browsing."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-delay",
+      "rank": 3,
+      "rationale": "The same confirmed no-timeout ordering edge, when delayed, propagates latency 1:1 without any bounded timeout, blocking checkout for the full delay window."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-delay",
+      "rank": 4,
+      "rationale": "WebApp->catalog has no timeout or circuit breaker, so injected delay is not absorbed and page-load latency becomes unbounded, confirming the missing defensive contract."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-loss",
+      "rank": 5,
+      "rationale": "Cart/checkout path to Basket.API is a core synchronous business call; loss will block cart retrieval and checkout if no explicit timeout/retry is present on this edge."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-loss",
+      "rank": 6,
+      "rationale": "Mobile BFF->Ordering.API is the mobile checkout path; synchronous loss on this edge hangs/breaks order placement and is likely to reveal a missing timeout."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-delay",
+      "rank": 7,
+      "rationale": "A delay injected into the webapp->basket edge slows the critical cart/checkout interaction; the expected failure is unbounded latency propagation on a synchronous call without timeout defense."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-delay",
+      "rank": 8,
+      "rationale": "Delay on the mobile BFF->ordering edge will throttle mobile checkout; without an explicit timeout the order submission can block for the injected latency."
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-redis-loss",
+      "rank": 9,
+      "rationale": "Basket.API depends on Redis for cart state; Redis loss removes cart availability and likely exposes missing degradation/fallback for a high-impact state dependency."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-catalog-api-loss",
+      "rank": 10,
+      "rationale": "Mobile BFF->catalog is a core synchronous storefront call; loss will hang product listing requests and likely reveal a missing per-request timeout on the mobile BFF."
+    }
+  ]
+}

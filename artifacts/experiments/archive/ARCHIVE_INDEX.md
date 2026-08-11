@@ -46,3 +46,14 @@
 3. 引"方法" → 用 `method_registry_archive.json`（三轴分离）
 4. 引"结论" → 用 `claim_evidence_matrix.md`（状态枚举）
 5. 引"项目" → 用 `project_registry_archive.json`（四项目）
+
+## 当前论文冻结边界（2026-08-11）
+
+- 当前论文版本使用主线运行证据、Train Ticket/Online Boutique/OTel Demo
+  语义对照、Sock Shop 分层验证和已验证知识卡。
+- 知识库 selection-only 消融和最终方法 head-to-head 对比标记为
+  `parked_future_work`。协议、快照、prompt、选择记录和中间结果全部保留，
+  但 formal runtime、独立 oracle、剩余审查门禁、共同候选池和项目聚类统计
+  尚未完成。
+- 暂不从这两个轨道写正式效果量、superiority 或跨项目统计结论；后续恢复时
+  必须重新核对 claim-evidence matrix 和冻结协议。

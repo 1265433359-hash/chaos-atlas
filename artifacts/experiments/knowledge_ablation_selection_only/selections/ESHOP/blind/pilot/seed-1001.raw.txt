@@ -1,0 +1,44 @@
+{
+  "selected": [
+    {
+      "candidate_id": "ESHOP-basket-api-rabbitmq-loss",
+      "rank": 1,
+      "rationale": "A loss on the basket checkout integration event can silently prevent downstream order creation, exposing missing publisher confirmation or outbox-based retry defenses."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-loss",
+      "rank": 2,
+      "rationale": "Dropping order-submission requests causes checkout failure or duplicate orders if clients retry, revealing a lack of idempotency or retry on the critical ordering API edge."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-delay",
+      "rank": 3,
+      "rationale": "Latency into Basket.API on the user's cart/checkout path may propagate unbounded delay to the WebApp, exposing missing timeouts or fail-fast behavior."
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-redis-loss",
+      "rank": 4,
+      "rationale": "Losing connectivity to the Redis basket store makes the customer's basket unavailable and can abort checkout, exposing a direct availability and recovery weakness."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-delay",
+      "rank": 5,
+      "rationale": "Delay on the mobile order placement path affects the mobile checkout experience and can expose missing timeout/retry protection in the BFF-to-ordering edge."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-identity-api-delay",
+      "rank": 6,
+      "rationale": "Slow identity API responses can stall authentication/authorization across the web app, revealing missing timeout and circuit-breaking defenses on the identity dependency."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-loss",
+      "rank": 7,
+      "rationale": "Loss of Basket.API requests prevents users from loading or updating their cart, exposing missing retry/fallback behavior in a synchronous user-facing dependency."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-loss",
+      "rank": 8,
+      "rationale": "Loss of catalog responses breaks product browsing and checkout item rendering, exposing the absence of fallback or retry for the catalog API."
+    }
+  ]
+}

@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "status": "valid",
-  "status_reason": "TeaStore @34b37f7 源码/部署路径逐文件核验 (helm/ribbon/compose); contract 独立从 registryclient/Ribbon 源码构造 (retry+LoadBalancerTimeoutException -> protected 候选可构造); availability 来自 ribbon.yaml 7 deployments (replicas=1 默认, 无 PDB, 无显式 probe); 五源 provenance 完整 -> valid/full_pre=True。helm autoscaling.enabled 值 unknown 已标注, 未伪造。",
+  "status_reason": "TeaStore @34b37f7 源码/部署路径逐文件核验 (helm/ribbon/compose); contract 独立从 registryclient/Ribbon 源码构造 (retry count verified; timeout bound unknown, protected status remains unknown); availability 来自 ribbon.yaml 7 deployments (replicas=1 默认, 无 PDB, 无显式 probe); 五源 provenance 完整 -> valid/full_pre=True。helm autoscaling.enabled=false 已核验; timeout bound unknown 已保留。",
   "provenance": {
     "kind": "teastore_static_reconstructed",
     "source_commit": "34b37f7e7be433ce72d5f9455e66922a13116749",
-    "created_at": "2026-08-10T07:11:27.593863+00:00",
+    "created_at": "2026-08-10T07:20:38.088162+00:00",
     "source_files": [
       {
         "path": "examples/helm/values.yaml",
@@ -23,12 +23,12 @@
         "sha256": "cf26a369810edb8714f277deb4ec75afafe7772eb8a27bcd5703055904bd577d"
       },
       {
-        "path": "utilities/.../loadbalancers/ServiceLoadBalancer.java",
+        "path": "utilities/tools.descartes.teastore.registryclient/src/main/java/tools/descartes/teastore/registryclient/loadbalancers/ServiceLoadBalancer.java",
         "purpose": "TeaStore contract/availability source",
         "sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07"
       },
       {
-        "path": "utilities/.../registryclient/RegistryClient.java",
+        "path": "utilities/tools.descartes.teastore.registryclient/src/main/java/tools/descartes/teastore/registryclient/RegistryClient.java",
         "purpose": "TeaStore contract/availability source",
         "sha256": "a2e77b0e11bb8e2a6aefd3986ab5bb9a9fb3741b81fcb71b4ebe9c44ee18f302"
       },
@@ -42,40 +42,44 @@
       "examples/helm/values.yaml": "4b5dcbfd2752b8206343fb0b2029e1a632bb626c39b7273af5ec295e73c2d36e",
       "examples/kubernetes/teastore-ribbon.yaml": "3e7b473c3086b208d7699081fe4091ca90b3fb20ae8489922ad01d57ad6934c9",
       "examples/docker/docker-compose_default.yaml": "cf26a369810edb8714f277deb4ec75afafe7772eb8a27bcd5703055904bd577d",
-      "utilities/.../loadbalancers/ServiceLoadBalancer.java": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
-      "utilities/.../registryclient/RegistryClient.java": "a2e77b0e11bb8e2a6aefd3986ab5bb9a9fb3741b81fcb71b4ebe9c44ee18f302",
+      "utilities/tools.descartes.teastore.registryclient/src/main/java/tools/descartes/teastore/registryclient/loadbalancers/ServiceLoadBalancer.java": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07",
+      "utilities/tools.descartes.teastore.registryclient/src/main/java/tools/descartes/teastore/registryclient/RegistryClient.java": "a2e77b0e11bb8e2a6aefd3986ab5bb9a9fb3741b81fcb71b4ebe9c44ee18f302",
       "pom.xml": "198cb1cbd27dc8bcda09134ae4fc24f8ebaf9fe44a83295f497493255037fe6c",
       "selection_experience_live": "f7280be785e34504fdcde76f81db027c32d5db6d572a2fc648c65eb347704fc1",
       "defense_pattern_library_live": "afffb6ada45c947a3110dec6365152af8260358a45f7eb6e415926de70f557d8",
       "judgment_experience_live": "7756d8d3beb0ea6a4644a3d2ecff117b09eabe62ad3e1d2a33aee61c2c6eead6"
     },
     "provenance_completeness": "complete",
-    "note": "TeaStore STATIC-RECONSTRUCTED from https://github.com/DescartesResearch/TeaStore @34b37f7e7be4; no runtime/CE/experiment evidence. Contract edges independent from TeaStore source (not reused from Hotel/SOCIALNET). Ribbon retry + LoadBalancerTimeout semantics noted. helm autoscaling.enabled = unknown."
+    "note": "TeaStore STATIC-RECONSTRUCTED from https://github.com/DescartesResearch/TeaStore @34b37f7e7be4; no runtime/CE/experiment evidence. Contract edges independent from TeaStore source (not reused from Hotel/SOCIALNET). Ribbon retry semantics are noted, but timeout bound remains unknown. helm autoscaling.enabled=false is verified."
   },
   "contract": {
     "contracts": {
       "TEASTORE-webui->auth": {
-        "contract": "bounded_retry",
-        "loss_bounded": true,
-        "evidence": "STATIC: webui -> auth via RegistryClient/ServiceLoadBalancer; Ribbon DefaultLoadBalancerRetryHandler(0,2,true) retries 2x across servers; LoadBalancerTimeoutException bounds latency/loss",
+        "contract": "retry_policy_timeout_unknown",
+        "loss_bounded": false,
+        "evidence": "STATIC: webui -> auth via RegistryClient/ServiceLoadBalancer; Ribbon DefaultLoadBalancerRetryHandler(0,2,true) retries 2x across servers; LoadBalancerTimeoutException exists but timeout bound is not configured/verified",
+        "timeout_ms": "unknown",
         "source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07"
       },
       "TEASTORE-webui->image": {
-        "contract": "bounded_retry",
-        "loss_bounded": true,
-        "evidence": "STATIC: webui -> image via Ribbon load balancer with retry handler",
+        "contract": "retry_policy_timeout_unknown",
+        "loss_bounded": false,
+        "evidence": "STATIC: webui -> image via Ribbon retry handler; timeout bound unknown",
+        "timeout_ms": "unknown",
         "source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07"
       },
       "TEASTORE-webui->persistence": {
-        "contract": "bounded_retry",
-        "loss_bounded": true,
-        "evidence": "STATIC: webui -> persistence via Ribbon load balancer with retry handler",
+        "contract": "retry_policy_timeout_unknown",
+        "loss_bounded": false,
+        "evidence": "STATIC: webui -> persistence via Ribbon retry handler; timeout bound unknown",
+        "timeout_ms": "unknown",
         "source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07"
       },
       "TEASTORE-webui->recommender": {
-        "contract": "bounded_retry",
-        "loss_bounded": true,
-        "evidence": "STATIC: webui -> recommender via Ribbon load balancer with retry handler",
+        "contract": "retry_policy_timeout_unknown",
+        "loss_bounded": false,
+        "evidence": "STATIC: webui -> recommender via Ribbon retry handler; timeout bound unknown",
+        "timeout_ms": "unknown",
         "source_sha256": "e5d44e7bf7726341732b489a9503b9c36911a989b27da927ef9e01077abebb07"
       }
     },

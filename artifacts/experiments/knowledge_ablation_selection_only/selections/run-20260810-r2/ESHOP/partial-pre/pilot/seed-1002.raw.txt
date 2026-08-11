@@ -1,0 +1,44 @@
+{
+  "selected": [
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-loss",
+      "rank": 1,
+      "rationale": "Loss on WebApp->Ordering.API hits a known no_timeout synchronous checkout call, so the order-placement request can hang to the client deadline and expose missing timeout/retry defenses on the most critical business path."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-delay",
+      "rank": 2,
+      "rationale": "Delay on WebApp->Ordering.API propagates unbounded latency into the confirmed no-timeout ordering call, stalling order submission and revealing the lack of a per-request timeout or circuit breaker."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-loss",
+      "rank": 3,
+      "rationale": "Loss on WebApp->Catalog.API targets another statically confirmed no_timeout edge, causing catalog browsing to hang and exposing the same missing timeout defense on a synchronous user-facing path."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-delay",
+      "rank": 4,
+      "rationale": "Delay on WebApp->Catalog.API is not absorbed by any timeout, so slow catalog responses directly stall WebApp requests and demonstrate unbounded latency propagation on a high-traffic edge."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-loss",
+      "rank": 5,
+      "rationale": "Loss on WebApp->Basket.API, a core cart/checkout dependency, will likely hang the synchronous request due to the same HttpClient timeout pattern, causing cart and checkout availability loss."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-delay",
+      "rank": 6,
+      "rationale": "Delay on WebApp->Basket.API can stall cart and checkout operations without client-side degradation, exposing a probable missing per-request timeout or fallback on a critical business edge."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-loss",
+      "rank": 7,
+      "rationale": "Loss on Mobile BFF->Ordering.API breaks mobile order placement and, without a downstream timeout or retry, can hang mobile clients; this is high-impact on the checkout flow."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-delay",
+      "rank": 8,
+      "rationale": "Delay on Mobile BFF->Ordering.API can make mobile order submission hang to the client deadline, exposing missing timeout/circuit protection on the mobile ordering edge."
+    }
+  ]
+}

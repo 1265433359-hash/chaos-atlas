@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "project": "TEASTORE",
+  "date": "2026-08-10",
+  "scope": "read_only_environment_precheck",
+  "deployment_attempted": false,
+  "llm_called": false,
+  "injection_attempted": false,
+  "checks": {
+    "kubectl_client": {"status": "available", "version": "v1.36.1"},
+    "docker_daemon": {"status": "blocked", "reason": "Docker named pipe/API unavailable"},
+    "kubernetes_contexts": {"status": "blocked", "contexts": ["kind-chaos-kind", "docker-desktop"], "reason": "both API servers refused connection"},
+    "kind_cli": {"status": "blocked", "reason": "kind command unavailable on PATH"},
+    "baseline": "not_run",
+    "injection": "not_run",
+    "observation": "not_run",
+    "recovery": "not_run",
+    "cleanup": "not_run"
+  },
+  "classification": "environment_blocked",
+  "scientific_interpretation": "Infrastructure blocker only; no application or method verdict.",
+  "next_gate": "Provide working Docker/Kubernetes access, then repeat bring-up and require two successful baselines."
+}

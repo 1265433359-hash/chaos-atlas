@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "fb02df21bd9da7ea745728502d20a37e0fbe7f43cedaeba98081a579c7b0f515",
+  "prompt_sha256": "4f4f049d9da5e2422f8268bca61568f97130448e79b3f9936e966f5d7cf23044",
+  "project": "ESHOP",
+  "arm": "LLM-partial-pre",
+  "phase": "formal",
+  "seed": 2002,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 133442,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 133442,
+    "prompt_tokens": 8830,
+    "completion_tokens": 13713,
+    "total_tokens": 22543
+  },
+  "selected": [
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-loss",
+      "rank": 1,
+      "rationale": "Loss on the synchronous webapp->ordering-api call blocks order placement; the static contract shows no per-request timeout/retry, so the core checkout path suffers unbounded latency and no fallback."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-loss",
+      "rank": 2,
+      "rationale": "This edge is statically verified to have no timeout/retry; packet loss makes storefront catalog requests hang or fail without degradation or circuit breaker."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-loss",
+      "rank": 3,
+      "rationale": "The cart/checkout flow depends on basket-api; loss on this synchronous edge is likely to hang cart operations because no gRPC deadline or HTTP timeout is configured."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-loss",
+      "rank": 4,
+      "rationale": "Mobile order placement uses mobile-bff->ordering-api synchronously; loss blocks checkout and, without a client-side timeout, propagates as an unbounded wait."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-rabbitmq-loss",
+      "rank": 5,
+      "rationale": "Loss on the webapp->rabbitmq publish edge can drop or fail checkout/order integration events; without publisher-confirm/retry this interrupts the order business flow."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-identity-api-loss",
+      "rank": 6,
+      "rationale": "Identity/authentication calls from webapp are synchronous; loss causes login to hang or fail and, without an explicit timeout, creates user-blocking latency."
+    },
+    {
+      "candidate_id": "ESHOP-paymentprocessor-rabbitmq-loss",
+      "rank": 7,
+      "rationale": "Payment processing depends on paymentprocessor->rabbitmq; loss stalls payment event delivery and can leave orders permanently unpaid if recovery/retry is missing."
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-redis-loss",
+      "rank": 8,
+      "rationale": "Basket state lives in Redis; a loss on basket-api->redis breaks cart read/write, exposing cart unavailability and missing fallback/recovery behavior."
+    },
+    {
+      "candidate_id": "ESHOP-ordering-api-order-db-loss",
+      "rank": 9,
+      "rationale": "Order DB loss on ordering-api->order-db prevents order read/persistence, making order placement return errors and the ordering API unavailable without retry/circuit protection."
+    },
+    {
+      "candidate_id": "ESHOP-catalog-api-catalog-db-loss",
+      "rank": 10,
+      "rationale": "Catalog DB loss makes catalog-api unavailable to all frontends, producing storefront failures and exposing missing resilience/fallback for the catalog state store."
+    }
+  ]
+}

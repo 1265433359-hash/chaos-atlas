@@ -1,0 +1,44 @@
+{
+  "selected": [
+    {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-loss",
+      "rank": 1,
+      "rationale": "Loss on home-timeline->post-storage breaks the primary read path for every home-timeline request; the contract is loss_bounded=false and there is no retry/fallback, so transient packet loss becomes user-visible unavailability."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-loss",
+      "rank": 2,
+      "rationale": "Loss on compose-post->post-storage prevents the new post from being persisted, failing all post-creation attempts; the explicit 10s timeout does not bound loss and no retry exists, exposing a core availability/data-loss weakness."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-loss",
+      "rank": 3,
+      "rationale": "This edge is written late in the compose fan-out; loss can leave the post stored and user timeline updated while followers' home timelines miss it, exposing missing transactionality/retry and partial-state inconsistency."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-timeline-loss",
+      "rank": 4,
+      "rationale": "Loss here makes the author's timeline inconsistent with the stored post and aborts compose without a retry; the synchronous fan-out has no rollback, so a single packet-loss event creates a confirmed consistency/availability failure."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-text-loss",
+      "rank": 5,
+      "rationale": "Text processing is required for every post; packet loss on this edge aborts composition after the post may already be stored, leaving partial state. The absence of retry/fallback turns transient loss into a confirmed weakness."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-loss",
+      "rank": 6,
+      "rationale": "Loss on compose-post->user prevents author/mention resolution and fails the entire post creation despite the 10s timeout; no fallback or retry is present, exposing a dependency-isolation weakness."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-loss",
+      "rank": 7,
+      "rationale": "Unique-id is a mandatory first dependency; if its edge loses packets, no post can be created. Because loss_bounded=false and no retry exists, even a transient failure is fatal, confirming missing resilience at the entry of compose-post."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-media-loss",
+      "rank": 8,
+      "rationale": "When media is present, loss on this edge aborts the whole compose request and can leave earlier writes without media, showing synchronous coupling to an auxiliary dependency with no fallback."
+    }
+  ]
+}

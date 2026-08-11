@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "c6224234bcb93de938e2d331dbb01b1d3a60a9cf8ae029ab0feba00cf404f4dc",
+  "prompt_sha256": "ae5338562d4eb04a1b5609bff768aa3969aac4bb2d16456c3cf2c65e355ba717",
+  "project": "ESHOP",
+  "arm": "LLM-blind",
+  "phase": "pilot",
+  "seed": 1001,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 61824,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 61824,
+    "prompt_tokens": 3124,
+    "completion_tokens": 7045,
+    "total_tokens": 10169
+  },
+  "selected": [
+    {
+      "candidate_id": "ESHOP-basket-api-rabbitmq-loss",
+      "rank": 1,
+      "rationale": "A loss on the basket checkout integration event can silently prevent downstream order creation, exposing missing publisher confirmation or outbox-based retry defenses."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-loss",
+      "rank": 2,
+      "rationale": "Dropping order-submission requests causes checkout failure or duplicate orders if clients retry, revealing a lack of idempotency or retry on the critical ordering API edge."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-delay",
+      "rank": 3,
+      "rationale": "Latency into Basket.API on the user's cart/checkout path may propagate unbounded delay to the WebApp, exposing missing timeouts or fail-fast behavior."
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-redis-loss",
+      "rank": 4,
+      "rationale": "Losing connectivity to the Redis basket store makes the customer's basket unavailable and can abort checkout, exposing a direct availability and recovery weakness."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-delay",
+      "rank": 5,
+      "rationale": "Delay on the mobile order placement path affects the mobile checkout experience and can expose missing timeout/retry protection in the BFF-to-ordering edge."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-identity-api-delay",
+      "rank": 6,
+      "rationale": "Slow identity API responses can stall authentication/authorization across the web app, revealing missing timeout and circuit-breaking defenses on the identity dependency."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-loss",
+      "rank": 7,
+      "rationale": "Loss of Basket.API requests prevents users from loading or updating their cart, exposing missing retry/fallback behavior in a synchronous user-facing dependency."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-loss",
+      "rank": 8,
+      "rationale": "Loss of catalog responses breaks product browsing and checkout item rendering, exposing the absence of fallback or retry for the catalog API."
+    }
+  ]
+}

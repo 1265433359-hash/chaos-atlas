@@ -11,8 +11,9 @@ Provenance honesty:
                status=blocked (availability cannot be reconstructed statically).
   - SOCIALNET: contract edges STATIC from socialNetwork/ source @6ecb0970;
                explicit 10s thrift timeout noted (protected candidates possible);
-               helm-chart replicas/PDB NOT per-file verified -> availability
-               unavailable -> blocked.
+               Helm availability is verified for the recorded service targets;
+               three discovered contract edges remain excluded until their source
+               files receive individual SHA-256 values.
 No runtime verdict / CE output / experiment result enters either snapshot.
 candidate_map stays empty (pool frozen later, never from results).
 """
@@ -64,7 +65,8 @@ def _load_current(rel: str) -> dict:
 
 def _build(project: str, commit: str, url: str, contracts: dict, avail_k8s,
            availability_scope: dict, sha_files: dict, status: str,
-           status_reason: str, completeness: str, out: Path) -> None:
+           status_reason: str, completeness: str, out: Path,
+           unverified_contract_edges: list[str] | None = None) -> None:
     se = _load_current("selection_experience.json")
     dp = _load_current("defense_pattern_library.json")
     je = _load_current("judgment_experience.json")
@@ -72,6 +74,14 @@ def _build(project: str, commit: str, url: str, contracts: dict, avail_k8s,
         {"path": p, "purpose": "contract/availability source", "sha256": s}
         for p, s in sha_files.items()
     ]
+    contract_block = {
+        "contracts": contracts,
+        "availability": {},
+        "availability_kubernetes": avail_k8s,
+        "candidate_map": {},
+    }
+    if unverified_contract_edges:
+        contract_block["unverified_contract_edges"] = unverified_contract_edges
     snapshot = {
         "schema_version": 1,
         "status": status,
@@ -88,12 +98,7 @@ def _build(project: str, commit: str, url: str, contracts: dict, avail_k8s,
             "provenance_completeness": completeness,
             "note": f"{project} STATIC-RECONSTRUCTED from {url} @{commit[:12]}; no runtime/CE/experiment evidence.",
         },
-        "contract": {
-            "contracts": contracts,
-            "availability": {},
-            "availability_kubernetes": avail_k8s,
-            "candidate_map": {},
-        },
+        "contract": contract_block,
         "availability_scope": availability_scope,
         "selection_experience": se,
         "defense_pattern_library": dp,
@@ -172,19 +177,12 @@ def main() -> int:
         "SOCIALNET-hometimeline->socialgraph": {"contract": "explicit_timeout", "loss_bounded": False,
             "evidence": "STATIC HomeTimelineService.cpp ClientPool<ThriftClient<SocialGraphServiceClient>>; timeout from config",
             "source_sha256": "6252e351a177eccb5ef7917e8ef4eecbe591d110c2c1919b9079104e64f28915"},
-        "SOCIALNET-usertimeline->poststorage": {"contract": "explicit_timeout", "loss_bounded": False,
-            "evidence": "STATIC UserTimelineService.cpp ClientPool<ThriftClient<PostStorageServiceClient>>",
-            "source_sha256": "unknown",  # per-file SHA for UserTimelineService.cpp not computed this pass
-            "note": "边存在(ClientPool 确认); SHA 待下一轮补齐"},
-        "SOCIALNET-user->socialgraph": {"contract": "explicit_timeout", "loss_bounded": False,
-            "evidence": "STATIC UserService.cpp ClientPool<ThriftClient<SocialGraphServiceClient>>",
-            "source_sha256": "unknown",  # per-file SHA not computed this pass
-            "note": "边存在; SHA 待补齐"},
-        "SOCIALNET-socialgraph->user": {"contract": "explicit_timeout", "loss_bounded": False,
-            "evidence": "STATIC SocialGraphService.cpp ClientPool<ThriftClient<UserServiceClient>>",
-            "source_sha256": "unknown",  # per-file SHA not computed this pass
-            "note": "边存在; SHA 待补齐"},
     }
+    socialnet_unverified_edges = [
+        "SOCIALNET-usertimeline->poststorage",
+        "SOCIALNET-user->socialgraph",
+        "SOCIALNET-socialgraph->user",
+    ]
     # SOCIALNET kubernetes availability (Stage C2 helm audit):
     # 28 sub-charts, each with deployment.yaml+service.yaml; global replicas=1,
     # hpa.enabled=false, NO PDB, business services have NO liveness/readiness
@@ -231,9 +229,10 @@ def main() -> int:
         {"compose": "verified", "kubernetes": "verified", "deployment_target": "helm_chart"},
         socialnet_sha,
         "valid",
-        "Stage C2: helm-chart 28 sub-charts 逐文件核查 - 每服务 deployment+service 模板, replicas=1(global), hpa.enabled=false, 无 PDB, 业务服务无 liveness/readiness probe (values.yaml:77-79 属 redis-cluster disabled 配置)。kill 候选可构造(PodChaos 目标完整)。契约边扩展至 12 条(ComposePost 7 + HomeTimeline 2 + UserTimeline 1 + User 1 + SocialGraph 1), 含 10s 显式 thrift timeout。availability 来源完整 -> provenance complete -> full_pre=True。共享 infra 标注 shared_infra_deathstarbench。",
+        "Stage C2: helm-chart 28 sub-charts 逐文件核查 - 每服务 deployment+service 模板, replicas=1(global), hpa.enabled=false, 无 PDB, 业务服务无 liveness/readiness probe (values.yaml:77-79 属 redis-cluster disabled 配置)。kill 候选可构造(PodChaos 目标完整)。9 条 contract 边具有完整源码 SHA (ComposePost 7 + HomeTimeline 2);另 3 条边已发现但因源码 SHA 未完成而排除出可执行 contract。availability 来源完整 -> provenance complete -> full_pre=True。共享 infra 标注 shared_infra_deathstarbench。",
         "complete",
         HELDOUT / "socialnet_knowledge_snapshot_pre.json",
+        unverified_contract_edges=socialnet_unverified_edges,
     )
     return 0
 

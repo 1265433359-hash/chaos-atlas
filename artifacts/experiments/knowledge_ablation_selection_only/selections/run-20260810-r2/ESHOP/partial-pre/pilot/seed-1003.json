@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "5b1bf106b03ccb27d7abb59332c9a5adab9947bdb24c23a24f7909ef41723939",
+  "prompt_sha256": "27b7fa6ae2e00cbca39650a623a157846e8b68ace60df1b466126f068ba83f29",
+  "project": "ESHOP",
+  "arm": "LLM-partial-pre",
+  "phase": "pilot",
+  "seed": 1003,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 118206,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 118206,
+    "prompt_tokens": 7350,
+    "completion_tokens": 12609,
+    "total_tokens": 19959
+  },
+  "selected": [
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-loss",
+      "rank": 1,
+      "rationale": "Loss on webapp->ordering-api hits a source-verified no-timeout caller, so order placement/history requests hang unbounded, exposing missing timeout and retry defenses on the core checkout path."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-loss",
+      "rank": 2,
+      "rationale": "Loss on webapp->catalog-api hits a source-verified no-timeout/no-retry client, making catalog browsing and product pages hang, confirming availability loss on a primary user-facing edge."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-delay",
+      "rank": 3,
+      "rationale": "Delay on webapp->ordering-api propagates 1:1 through the no-timeout OrderingService client, stalling checkout and order operations and exposing unbounded latency propagation."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-delay",
+      "rank": 4,
+      "rationale": "Delay on webapp->catalog-api propagates unbounded through the no-timeout CatalogService client, blocking product browsing; no circuit breaker or per-request timeout exists."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-loss",
+      "rank": 5,
+      "rationale": "Loss on webapp->basket-api leaves the cart/checkout calls without an explicit deadline, causing the WebApp to hang; this is a core cart dependency and likely lacks a timeout."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-loss",
+      "rank": 6,
+      "rationale": "Loss on mobile-bff->ordering-api is a synchronous mobile order flow with no static timeout/retry evidence; unreachable ordering-api hangs the mobile BFF request and exposes missing timeout defense."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-delay",
+      "rank": 7,
+      "rationale": "Delay on webapp->basket-api is propagated synchronously to the cart UI/checkout with no bounded timeout; a slow Basket.API stalls the entire cart operation."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-delay",
+      "rank": 8,
+      "rationale": "Delay on mobile-bff->ordering-api creates unbounded latency in mobile order placement if the BFF lacks a deadline, revealing missing timeout/fallback on the ordering path."
+    }
+  ]
+}

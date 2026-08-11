@@ -58,7 +58,7 @@
 ## 4. seed / replicate / K 语义（明确）
 
 - **一个 method-seed = 一次独立候选选择**。
-- **每次选择预算固定为 `K`**。
+- **pilot 每次选择预算为 `K=8`；formal 每次选择预算为 `K=10`**。
 - **每个选中候选最多进行 2 次确认运行**（1 首跑 + 1 确认）。
 - **Weakness@K 按候选计数，不按确认运行次数计数**。
 
@@ -66,15 +66,20 @@
 
 | 方法 | 选择 replicate | 说明 |
 |---|---|---|
-| `decision_engine`（Ours 确定性） | **1 个 selection replicate** | 确定性选择，无 LLM 随机性；执行重复（每候选 ≤2 次确认）用于验证，不增加选择样本量 |
-| LLM 方法（Ours 若含 LLM / ChaosEater-adapter） | **3 个预注册 seed** | 每个 seed 独立消耗 K（3 次独立选择） |
+| `Ours-full-pre` | **1 个 selection replicate** | `decision_engine` 确定性选择；pilot/formal 分别使用 K=8/10 |
+| `Ours-generic` | **1 个 selection replicate** | `decision_engine` 确定性消融选择；pilot/formal 分别使用 K=8/10 |
+| `ChaosEater-official` | **3 个预注册 seed** | 官方 pipeline 的随机/LLM 选择；若实现确定性，仍记录三个预注册 seed 的结果 |
+| `ChaosEater-adapter` | **3 个预注册 seed** | LLM 选择；每个 seed 独立消耗 K |
 | `Random` | **20 个 seed**（固定数） | 每个 seed 独立消耗 K |
 
 ### 4b. 聚合规则
 
 - 报告 **seed-level 分布**：每个 method-seed 的 Weakness@K / Protected-waste@K。
-- 报告 **均值、中位数** 及预注册的聚合规则（如"以 median 为主，mean 为辅"——预注册时固定）。
+- 项目内主比较固定使用：`decision_engine` 的唯一结果；LLM 方法 3 个 seed 的 **median**；Random 20 个 seed 的 **median**。
+- 同时报告全部 seed-level 值、mean 和 median；不得在观察结果后更换主聚合规则。
 - **不得把 LLM 的 3 个 seed 与 Ours 的一次确定性选择直接当作相同样本量**（样本量不同，比较须按 seed 聚类/加权说明）。
+
+同一项目内，方法项目级 score 减 `ChaosEater-official` 项目级 score，形成一个项目级配对差值；跨项目只对这些项目级差值进行聚类 bootstrap/permutation。
 
 ## 5. 主指标与辅助指标
 
@@ -109,7 +114,7 @@
 - **同一项目中的候选不能被当作独立项目样本**（候选嵌套于项目，样本单位是项目，不是候选）。
 - 正式跨项目结论的写法：
 
-> **至少 3 个 held-out 项目的项目级配对差值，clustered bootstrap/permutation 95% CI 不跨 0。**
+> **至少 3 个 comparable held-out 项目的项目级配对差值，clustered bootstrap/permutation 95% CI 不跨 0。**
 
 > v1 中"差值的 bootstrap 95% CI 不跨 0（在单个 held-out 项目上）"规则已删除/改写。
 
@@ -128,13 +133,17 @@ CE official 在某项目无法完成 bring-up 或稳态建立时：
 
 | 阶段 | 每个 held-out 项目候选数 |
 |---|---|
-| **pilot** | 24–32 |
-| **formal** | 48–64 |
+| **pilot** | **24** |
+| **formal** | **48** |
 
 候选池**必须包含**：
 
 - `protected` / `unprotected` / `unknown`（三类保护状态）
 - `delay` / `loss` / `kill`（至少三类故障族）
+
+保护状态配额固定为：pilot `8/8/8`，formal `16/16/16`（依次为 protected/unprotected/unknown）。
+
+故障族在项目支持的类型中按固定轮转规则均衡分配：pilot 每类目标 8 个，formal 每类目标 16 个；不支持的类型标记 `unavailable`，不从其他项目借用，剩余支持类型按同一轮转规则补足总池规模。
 
 若项目不支持某类注入（如某项目无 kill 能力），**明确标记 `unavailable`**，不强制补齐。
 
@@ -152,10 +161,11 @@ CE official 在某项目无法完成 bring-up 或稳态建立时：
 
 ## 11. 预注册胜出条件（修正后）
 
-> **Ours-full-pre 在至少 3 个 held-out 项目上，Weakness@K 不降低（≥ CE-official 的项目级配对差值），且项目级配对差值的 clustered bootstrap/permutation 95% CI 不跨 0；并在预注册的证据终点（RCA 锚定率 / 证据可追溯率 / 单位有效发现成本）之一优于 CE-official；同时 Protected-waste@K 不更高。**
+> **Ours-full-pre 在至少 3 个 comparable held-out 项目上，Weakness@K 不降低（≥ CE-official 的项目级配对差值），且项目级配对差值的 clustered bootstrap/permutation 95% CI 不跨 0；并在预注册的证据终点（RCA 锚定率 / 证据可追溯率 / 单位有效发现成本）之一优于 CE-official；同时 Protected-waste@K 不更高。**
 
 附加规则：
-- CE `environment_blocked` 的项目不得计入胜出（也不计失败），该项目报告 blocked/不可比较。
+- CE `environment_blocked` 的项目不得计入胜出（也不计失败），该项目报告 blocked/不可比较；它不进入 comparable 项目分母。
+- 必须至少有 **3 个 comparable held-out 项目**；comparable 项目少于 3 个时不得作跨项目 superiority 结论。
 - 若 Ours 只在 Realistic 线胜出，主张写"知识资产化流水线优势"，不写"选择算法全面优于"。
 - 单个 Hotel 或两个项目不满足胜出条件（统计层级 §6）。
 
@@ -163,7 +173,7 @@ CE official 在某项目无法完成 bring-up 或稳态建立时：
 
 - 候选嵌套在项目内；CI 按项目聚类（clustered bootstrap / permutation）。
 - 项目内 CI 不跨 0 不是必要条件。
-- ≥3 held-out 项目 + 聚类 CI 才允许跨项目结论。
+- ≥3 comparable held-out 项目 + 聚类 CI 才允许跨项目结论；blocked 项目不计入分母。
 
 ## 13. 防污染流水线（顺序固定）
 

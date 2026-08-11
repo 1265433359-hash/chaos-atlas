@@ -63,7 +63,7 @@
 
 ### 2.1 当前知识库基线（关键事实）
 
-对 `selection_experience` / `defense_pattern_library` / `judgment_experience` 三个 JSON 全文扫描:
+对 `selection_experience` / `defense_pattern_library` / `judgment_experience` 三个 JSON 的完整文本进行大小写不敏感字面扫描；扫描文件、方法和 SHA-256 已记录在结构化清单的 `leakage_audit.knowledge_library_scan` 中:
 
 | 关键词 | 出现次数 |
 |---|---|
@@ -72,7 +72,7 @@
 | `SOCIALNET` / `social` | **0** |
 | `MEDIA` / `media` | **0** |
 
-**结论**:三个知识库当前**不含** DeathStarBench/Hotel/SOCIALNET/MEDIA 的任何直接证据、服务名、调用边、镜像或部署事实。现有规则全部来自 TT/OB/OTEL/Sock(已确认的历史真值)。**基线干净**。
+**结论**:三个知识库当前未发现 DeathStarBench/Hotel/SOCIALNET/MEDIA 的直接文本证据。该结果证明的是“扫描到的文件版本没有直接命中”，不等同于证明所有抽象规则都与这些项目结构独立；同仓库候选仍须完成源码级剥离审计。
 
 ### 2.2 规则类型区分
 
@@ -114,12 +114,12 @@
 
 ### 排除理由
 
-- 无硬排除;但 **SOCIALNET 与 MEDIA 二选一**（同仓库不可重复计入 comparable 分母——它们共享同一套 infra 模式,重复计数会稀释跨项目独立性）。
+- 无硬排除；本协议当前采用 **SOCIALNET 与 MEDIA 二选一** 的保守设计（同仓库共享基础设施，避免相关项目重复计数）。这不是统计学上的绝对排除；若要同时纳入，必须先补充并冻结项目簇聚类分析规则。
 - environment-blocked 项目一律不计入 comparable 分母（协议 v1.1 §7）。
 
 ### 是否满足 ≥3 comparable
 
-**条件满足**（Hotel + ESHOP + SOCIALNET）= 3 个 comparable 项目。前提:三者的 intake/snapshot 均通过（任一 blocked 则 comparable 数不足,按协议停止 formal 资格判断）。
+**目前不能判定**。Hotel + ESHOP + SOCIALNET 只是目标组合；ESHOP/SOCIALNET 尚未获取，服务图、manifest、候选规模、可观测性和环境闸门均为 unknown。只有三者完成 intake、pre snapshot、候选池冻结且 CE 线可比较后，才可能计为 3 个 comparable 项目。
 
 ### 获取顺序
 

@@ -15,12 +15,19 @@
 | M1 盲选 LLM | 3×LOSS + 3×DELAY（含 payment-delay） |
 | M0 随机 | 混合 6 个 |
 
-## 执行结果（sock_shop_verdicts.json）
-8/8 候选均为 weakness（severity 2 或 3）：
+## 执行结果（初始直连口径，历史快照）
+早期基于直连服务级测量的结果为 8/8 候选均为 weakness（severity 2 或 3）：
 - **sev3（客户端 10s 挂死）**：carts-loss, catalogue-loss, payment-loss, **payment-delay**
 - **sev2（2s 精确延迟 / 快速失败但有服务不可用事实）**：shipping-loss, carts-delay, catalogue-delay, shipping-delay
 
-关键事实：**Sock Shop 核心下单链路的全部 8 个 HTTP 边均无超时保护**——任何故障注入都暴露弱点。
+关键事实：该结论只描述直连测量窗口，不能代表真实业务链路中的请求级防御。
+
+## 最终修正口径
+
+后续真实 `POST /orders` 链路验证发现 `orders→payment` 与
+`orders→shipping` 使用 5 秒 `Future.get(timeout, SECONDS)` 请求级超时。
+因此论文和归档的最终结果必须写成 **6/8 weakness + 2/8 defended**；详见
+`sock_orders_future_get_verified.md`。本节的 8/8 仅作为修正前历史结果保留。
 
 ## 三方法对比（诚实结果）
 | 指标 | decision_engine | M1 盲选 | M0 随机 |
@@ -29,13 +36,13 @@
 | severity 加权 | 15 | **16** | 15 |
 
 **结论（不夸大）**：
-1. **floor effect**：候选池全落在无保护的核心链路，8/8 全弱，三方法命中数无区分度。
+1. **floor effect（初始直连口径）**：候选池集中在核心链路，直连测量把 8/8 都判成弱点，三方法命中数无区分度；真实订单链路复核后最终为 6/8 weakness + 2/8 defended。
 2. **M1 盲选 severity 加权略高**：它把 payment-delay 排进 top6（实际 sev3），决策引擎因"delay<loss"先验漏掉它。**决策引擎在本池上不优于盲选**，如实记录。
 3. 随机在此池上因全弱也有 6/6 命中——再次验证候选池构造偏差的影响。
 
 ## 跨分布知识可迁移性（真正的正面证据）
 尽管三方法打平，知识库规则在本项目**成立**：
-- SE 规则"无超时同步调用 = 高风险"在全新分布（Sock Shop）8/8 验证——前 3 项目学到的知识**可迁移**。
+- SE 规则"无有效超时的同步调用 = 高风险"在全新分布（Sock Shop）的 6 个弱点边上得到运行时支持；另外 2 个边的 5 秒 `Future.get` 防御构成了必须保留的反例。
 - 决策引擎的"loss > delay"先验在 payment-delay 失准（实际 delay 也挂死）→ **这是知识闭环要修正的条目**：delay 的严重度取决于调用方是否同步等待（Sock 的 orders→payment 同步等待无超时）。
 
 ## 诚实边界

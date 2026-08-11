@@ -1,0 +1,365 @@
+{
+  "arm_id": "LLM-blind",
+  "candidate_pool_sha256": "10c06fbece09c44d9ae30da3a5e88352f9d154d0333bcb41bf8739545bd8dc97",
+  "endpoint": "https://api.deepseek.com/v1",
+  "max_output_tokens": 2048,
+  "model_identifier": "deepseek-v4-flash",
+  "phase": "pilot",
+  "project_id": "SOCIALNET",
+  "protocol_sha256": "9dc24410830ac894326a0fb9eff5915dbbd2a1283ef842809214b8df9a5a6344",
+  "sections": {
+    "candidate_descriptors": [
+      {
+        "candidate_id": "SOCIALNET-compose-post-post-storage-delay",
+        "fault_family": "delay",
+        "fault_parameters": {
+          "mode": "delay",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "post-storage",
+        "workload_id": "SOCIALNET/compose-post->post-storage"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-user-timeline-delay",
+        "fault_family": "delay",
+        "fault_parameters": {
+          "mode": "delay",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "user-timeline",
+        "workload_id": "SOCIALNET/compose-post->user-timeline"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-text-delay",
+        "fault_family": "delay",
+        "fault_parameters": {
+          "mode": "delay",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "text",
+        "workload_id": "SOCIALNET/compose-post->text"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-user-delay",
+        "fault_family": "delay",
+        "fault_parameters": {
+          "mode": "delay",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "user",
+        "workload_id": "SOCIALNET/compose-post->user"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-media-delay",
+        "fault_family": "delay",
+        "fault_parameters": {
+          "mode": "delay",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "media",
+        "workload_id": "SOCIALNET/compose-post->media"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-home-timeline-delay",
+        "fault_family": "delay",
+        "fault_parameters": {
+          "mode": "delay",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "home-timeline",
+        "workload_id": "SOCIALNET/compose-post->home-timeline"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-unique-id-delay",
+        "fault_family": "delay",
+        "fault_parameters": {
+          "mode": "delay",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "unique-id",
+        "workload_id": "SOCIALNET/compose-post->unique-id"
+      },
+      {
+        "candidate_id": "SOCIALNET-home-timeline-post-storage-delay",
+        "fault_family": "delay",
+        "fault_parameters": {
+          "mode": "delay",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "post-storage",
+        "workload_id": "SOCIALNET/home-timeline->post-storage"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-post-storage-loss",
+        "fault_family": "loss",
+        "fault_parameters": {
+          "mode": "loss",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "post-storage",
+        "workload_id": "SOCIALNET/compose-post->post-storage"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-user-timeline-loss",
+        "fault_family": "loss",
+        "fault_parameters": {
+          "mode": "loss",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "user-timeline",
+        "workload_id": "SOCIALNET/compose-post->user-timeline"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-text-loss",
+        "fault_family": "loss",
+        "fault_parameters": {
+          "mode": "loss",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "text",
+        "workload_id": "SOCIALNET/compose-post->text"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-user-loss",
+        "fault_family": "loss",
+        "fault_parameters": {
+          "mode": "loss",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "user",
+        "workload_id": "SOCIALNET/compose-post->user"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-media-loss",
+        "fault_family": "loss",
+        "fault_parameters": {
+          "mode": "loss",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "media",
+        "workload_id": "SOCIALNET/compose-post->media"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-home-timeline-loss",
+        "fault_family": "loss",
+        "fault_parameters": {
+          "mode": "loss",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "home-timeline",
+        "workload_id": "SOCIALNET/compose-post->home-timeline"
+      },
+      {
+        "candidate_id": "SOCIALNET-compose-post-unique-id-loss",
+        "fault_family": "loss",
+        "fault_parameters": {
+          "mode": "loss",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "unique-id",
+        "workload_id": "SOCIALNET/compose-post->unique-id"
+      },
+      {
+        "candidate_id": "SOCIALNET-home-timeline-post-storage-loss",
+        "fault_family": "loss",
+        "fault_parameters": {
+          "mode": "loss",
+          "scope": "service_edge"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "post-storage",
+        "workload_id": "SOCIALNET/home-timeline->post-storage"
+      },
+      {
+        "candidate_id": "SOCIALNET-kill-compose-post-service",
+        "fault_family": "kill",
+        "fault_parameters": {
+          "mode": "kill",
+          "scope": "pod"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "compose-post-service",
+        "workload_id": "SOCIALNET/compose-post-service-pod"
+      },
+      {
+        "candidate_id": "SOCIALNET-kill-post-storage-service",
+        "fault_family": "kill",
+        "fault_parameters": {
+          "mode": "kill",
+          "scope": "pod"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "post-storage-service",
+        "workload_id": "SOCIALNET/post-storage-service-pod"
+      },
+      {
+        "candidate_id": "SOCIALNET-kill-user-timeline-service",
+        "fault_family": "kill",
+        "fault_parameters": {
+          "mode": "kill",
+          "scope": "pod"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "user-timeline-service",
+        "workload_id": "SOCIALNET/user-timeline-service-pod"
+      },
+      {
+        "candidate_id": "SOCIALNET-kill-text-service",
+        "fault_family": "kill",
+        "fault_parameters": {
+          "mode": "kill",
+          "scope": "pod"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "text-service",
+        "workload_id": "SOCIALNET/text-service-pod"
+      },
+      {
+        "candidate_id": "SOCIALNET-kill-user-service",
+        "fault_family": "kill",
+        "fault_parameters": {
+          "mode": "kill",
+          "scope": "pod"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "user-service",
+        "workload_id": "SOCIALNET/user-service-pod"
+      },
+      {
+        "candidate_id": "SOCIALNET-kill-media-service",
+        "fault_family": "kill",
+        "fault_parameters": {
+          "mode": "kill",
+          "scope": "pod"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "media-service",
+        "workload_id": "SOCIALNET/media-service-pod"
+      },
+      {
+        "candidate_id": "SOCIALNET-kill-home-timeline-service",
+        "fault_family": "kill",
+        "fault_parameters": {
+          "mode": "kill",
+          "scope": "pod"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "home-timeline-service",
+        "workload_id": "SOCIALNET/home-timeline-service-pod"
+      },
+      {
+        "candidate_id": "SOCIALNET-kill-social-graph-service",
+        "fault_family": "kill",
+        "fault_parameters": {
+          "mode": "kill",
+          "scope": "pod"
+        },
+        "mutation_path": null,
+        "project_id": "SOCIALNET",
+        "target": "social-graph-service",
+        "workload_id": "SOCIALNET/social-graph-service-pod"
+      }
+    ],
+    "knowledge": null,
+    "project_intake_summary": {
+      "call_edges": [
+        "compose-post->post-storage",
+        "compose-post->user-timeline",
+        "compose-post->text",
+        "compose-post->user",
+        "compose-post->media",
+        "compose-post->home-timeline",
+        "compose-post->unique-id",
+        "home-timeline->post-storage",
+        "home-timeline->social-graph"
+      ],
+      "observability": "Jaeger distributed tracing (OpenTracing)",
+      "project_id": "SOCIALNET",
+      "services": {
+        "business": [
+          "social-graph",
+          "compose-post",
+          "post-storage",
+          "user-timeline",
+          "url-shorten",
+          "user",
+          "media",
+          "text",
+          "unique-id",
+          "user-mention",
+          "home-timeline",
+          "nginx-thrift",
+          "media-frontend"
+        ],
+        "infra": [
+          "mongodb x6",
+          "redis x3",
+          "memcached x4",
+          "jaeger-agent"
+        ]
+      },
+      "tech_stack": "C++/thrift (differs from Hotel Go/gRPC and ESHOP .NET)",
+      "workload": "documented call graph from the frozen intake (thrift services behind nginx-thrift entry)"
+    },
+    "task_definition": {
+      "constraints": [
+        "select exactly K distinct candidates",
+        "select only candidate IDs present in the pool; never invent candidates",
+        "rank selected candidates from most to least impactful",
+        "one short rationale (<=2 sentences) per selected candidate",
+        "reply with a single JSON object matching the output schema"
+      ],
+      "forbidden_inputs_for_llm": [
+        "oracle labels",
+        "post-hoc runtime outcomes",
+        "other arms' outputs",
+        "previous method rankings",
+        "truth labels"
+      ],
+      "study": "LLM knowledge-base ablation (protocol v1): quantify the causal contribution of a frozen knowledge base to LLM test-node (fault-injection candidate) selection.",
+      "task": "Rank the most impactful fault-injection candidates from the frozen pool, where impactful means most likely to expose a confirmed weakness of the system under test (e.g., unbounded latency propagation, missing timeout/retry defenses, availability loss, or missing recovery).",
+      "unit_of_analysis": "project x candidate_pool x arm x seed"
+    }
+  },
+  "selection_budget_k": 8,
+  "temperature": 0.2,
+  "timeout_seconds": 180
+}

@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "5ece21aabc1c587d5523ed16e6d0f54e4c0abe63df4cceacb31dedcc9e6315e8",
+  "prompt_sha256": "57376306ef7f660140a5ac5118bf55bc7b5c77e10d5bc8eba1c5bcac07ac74ec",
+  "project": "SOCIALNET",
+  "arm": "LLM-generic",
+  "phase": "pilot",
+  "seed": 1002,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 93947,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 93947,
+    "prompt_tokens": 5679,
+    "completion_tokens": 9484,
+    "total_tokens": 15163
+  },
+  "selected": [
+    {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-loss",
+      "rank": 1,
+      "rationale": "Loss on the compose-post->unique-id edge hangs the first mandatory dependency of the write path if no timeout exists, exposing unbounded latency to the client. Unique-id is the post identifier source; the whole composition cannot proceed without it."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-loss",
+      "rank": 2,
+      "rationale": "A dropped call to post-storage during compose-post makes the primary persistence unavailable; with no retry/timeout the request fails or hangs. This reveals missing defense on the core storage edge."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-loss",
+      "rank": 3,
+      "rationale": "Home-timeline reads depend on post-storage; loss on this edge removes all feed content or hangs the read path. It exposes lack of timeout/fallback/caching in the read pipeline."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-social-graph-service",
+      "rank": 4,
+      "rationale": "Killing social-graph removes the follower data needed by home-timeline, causing feed availability loss. This reveals the read path has no fallback or automatic recovery when an upstream dependency dies."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-loss",
+      "rank": 5,
+      "rationale": "Loss on the compose-post->home-timeline edge tests whether a timeline-push side-effect is synchronously coupled to post creation and lacks a timeout. If the call is waited on, one dropped packet stalls the entire write; if not, the feed is silently inconsistent."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-timeline-loss",
+      "rank": 6,
+      "rationale": "The user-timeline write is a synchronous part of compose-post; a loss here exposes missing timeout/retry on timeline updates. Failure to complete this edge either hangs the request or loses the user's own timeline entry."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-loss",
+      "rank": 7,
+      "rationale": "User validation/context is required before composing a post; loss on this edge hangs/fails the write path. It verifies whether the system has any timeout or degradation for a core user-service dependency."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-text-loss",
+      "rank": 8,
+      "rationale": "Text processing is part of the post content pipeline; a dropped call on this edge fails or hangs post creation. It exposes lack of retry/timeout for an auxiliary but required processing service."
+    }
+  ]
+}

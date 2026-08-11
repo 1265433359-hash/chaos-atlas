@@ -6,11 +6,22 @@
   "status": "selection_recommended_not_fetched",
   "leakage_audit": {
     "knowledge_library_scan": {
-      "selection_experience": {"DeathStarBench": 0, "Hotel": 0, "SOCIALNET": 0, "MEDIA": 0, "social": 0, "media": 0},
-      "defense_pattern_library": {"DeathStarBench": 0, "Hotel": 0, "SOCIALNET": 0, "MEDIA": 0, "social": 0, "media": 0},
-      "judgment_experience": {"DeathStarBench": 0, "Hotel": 0, "SOCIALNET": 0, "MEDIA": 0, "social": 0, "media": 0},
+      "scope": [
+        "artifacts/experiments/selection_experience.json",
+        "artifacts/experiments/defense_pattern_library.json",
+        "artifacts/experiments/judgment_experience.json"
+      ],
+      "scan_method": "case-insensitive literal search over complete UTF-8 JSON files; zero matches means absence of direct text evidence only",
+      "file_sha256": {
+        "selection_experience.json": "f7280be785e34504fdcde76f81db027c32d5db6d572a2fc648c65eb347704fc1",
+        "defense_pattern_library.json": "afffb6ada45c947a3110dec6365152af8260358a45f7eb6e415926de70f557d8",
+        "judgment_experience.json": "7756d8d3beb0ea6a4644a3d2ecff117b09eabe62ad3e1d2a33aee61c2c6eead6"
+      },
+      "selection_experience": {"DeathStarBench": 0, "Hotel": 0, "SOCIALNET": 0, "MEDIA": 0, "social_lower": 0, "media_lower": 0},
+      "defense_pattern_library": {"DeathStarBench": 0, "Hotel": 0, "SOCIALNET": 0, "MEDIA": 0, "social_lower": 0, "media_lower": 0},
+      "judgment_experience": {"DeathStarBench": 0, "Hotel": 0, "SOCIALNET": 0, "MEDIA": 0, "social_lower": 0, "media_lower": 0},
       "baseline_clean": true,
-      "note": "SE/DP/JE 均不含 DeathStarBench/Hotel/SOCIALNET/MEDIA 直接证据; 现有规则全部来自 TT/OB/OTEL/Sock"
+      "note": "在记录的三个文件版本中未发现 DeathStarBench/Hotel/SOCIALNET/MEDIA 直接文本证据; 该扫描不证明抽象规则与候选实现完全独立"
     },
     "rule_classification": {
       "transferable_generic": ["SE-NETWORK-FAMILY", "SE-LOSS-STRONGEST", "JE-COUPLING", "DP timeout/redundancy mechanisms"],
@@ -78,8 +89,9 @@
   "recommendation": {
     "primary_two": ["ESHOP", "SOCIALNET"],
     "backup": ["MEDIA"],
-    "exclusion_reason": "SOCIALNET 与 MEDIA 二选一 (同仓库共享 infra 模式, 不可重复计入 comparable 分母)",
-    "meets_3_comparable": true,
+    "exclusion_reason": "当前协议对 SOCIALNET 与 MEDIA 采用同仓库簇内二选一的保守设计；若同时纳入，必须预注册项目簇聚类分析规则",
+    "meets_3_comparable": null,
+    "eligibility_status": "conditional_pending_intake",
     "note": "前提: Hotel/ESHOP/SOCIALNET 三者的 intake 与 snapshot 均通过; 任一 blocked 则 comparable 数不足, 按协议 v1.1 §7 停止 formal 资格判断",
     "fetch_order": ["ESHOP", "SOCIALNET"],
     "urls_needing_human_approval": [

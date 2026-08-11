@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "b860dd9e25e5e44186e6a8c410daea16118f3b795cceca9724772d82b10e466f",
+  "prompt_sha256": "127b71289d7fdde8b2fb09cb908bf59e17b1c4ef719faf44b88a10ba2cd90373",
+  "project": "ESHOP",
+  "arm": "LLM-generic",
+  "phase": "formal",
+  "seed": 2002,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 141163,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 141162,
+    "prompt_tokens": 7257,
+    "completion_tokens": 15263,
+    "total_tokens": 22520
+  },
+  "selected": [
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-loss",
+      "rank": 1,
+      "rationale": "100% packet loss on webapp->ordering-api breaks the synchronous checkout call; no bounded timeout/retry leaves order placement hanging or failing with availability loss."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-delay",
+      "rank": 2,
+      "rationale": "Injecting delay on webapp->ordering-api tests unbounded latency propagation on the critical order path; without a per-request timeout the user request is held until the client deadline."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-loss",
+      "rank": 3,
+      "rationale": "Loss on webapp->basket-api makes the cart unavailable during checkout; no fallback or retry turns a cart read/update into a user-visible failure."
+    },
+    {
+      "candidate_id": "ESHOP-ordering-api-order-db-delay",
+      "rank": 4,
+      "rationale": "Delayed order-db access propagates latency into every Ordering.API call and can exhaust the connection pool; missing DB timeout/retry is a likely confirmed weakness."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-loss",
+      "rank": 5,
+      "rationale": "Loss on the mobile order-submission edge causes the mobile checkout to fail or hang; the BFF lacks a retry/degradation path for the ordering dependency."
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-redis-loss",
+      "rank": 6,
+      "rationale": "Redis is the basket state store; losing this edge breaks cart persistence, and the absence of a fallback makes checkout unable to proceed."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-rabbitmq-delay",
+      "rank": 7,
+      "rationale": "A delayed RabbitMQ publish from webapp couples a non-critical event bus to the primary user flow; without async decoupling or timeout, requests hang (dependency isolation defect)."
+    },
+    {
+      "candidate_id": "ESHOP-ordering-api-rabbitmq-loss",
+      "rank": 8,
+      "rationale": "Losing the order-started event on ordering-api->rabbitmq means OrderProcessor never starts fulfillment; without outbox/retry, orders stay stuck."
+    },
+    {
+      "candidate_id": "ESHOP-paymentprocessor-rabbitmq-loss",
+      "rank": 9,
+      "rationale": "Dropping payment-result events leaves order/payment state inconsistent; the system has no reliable delivery/retry for a critical payment message."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-identity-api-loss",
+      "rank": 10,
+      "rationale": "Identity is a shared authentication dependency; loss on webapp->identity-api breaks login/session checks with no degradation, exposing missing retry/circuit breaking."
+    }
+  ]
+}

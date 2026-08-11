@@ -37,7 +37,7 @@
   },
   "resilience": {
     "retry": "DefaultLoadBalancerRetryHandler(0, 2, true) -> 0 same-server, 2 cross-server retries (ServiceLoadBalancer.java)",
-    "timeout": "LoadBalancerTimeoutException on 408 + repeated socket timeouts",
+    "timeout": "LoadBalancerTimeoutException on 408 + repeated socket timeouts; timeout bound in milliseconds is unknown",
     "fallback": "unknown",
     "circuit_breaker": "unknown"
   },
@@ -49,7 +49,7 @@
   "availability": {
     "ribbon_replicas": "no explicit replicas (default 1)",
     "pdb": "none (grep 0 hits)",
-    "hpa": "helm values.yaml has autoscaling config, enabled value UNKNOWN",
+    "hpa": "helm values.yaml autoscaling.enabled=false for recorded services",
     "probes": "no explicit probe in ribbon.yaml (unknown if defaults)",
     "ports": "8080 (image/recommender/persistence etc)"
   },
@@ -61,7 +61,7 @@
   "candidate_potential": {
     "pilot_24": "feasible (6 business services + discovery edges + Ribbon retry states)",
     "formal_48": "feasible",
-    "protected_states": "constructible (Ribbon retry absorbs transient loss/delay)"
+    "protected_states": "unknown (retry count is verified, but retry timeout bound is not statically quantified)"
   },
   "leakage": {
     "kb_scan_zero_hits": true,

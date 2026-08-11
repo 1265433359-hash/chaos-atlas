@@ -39,28 +39,28 @@
 ## 4. 服务清单与调用边
 
 - **6 业务服务**:registry、persistence、auth、image、recommender、webui（+ db 基础设施）
-- **调用机制**:`RegistryClient`（服务发现,`utilities/.../registryclient/`）→ `ServiceLoadBalancer`（Ribbon 负载均衡）
+- **调用机制**:`RegistryClient`（服务发现,`utilities/tools.descartes.teastore.registryclient/src/main/java/tools/descartes/teastore/registryclient/`）→ `ServiceLoadBalancer`（Ribbon 负载均衡）
 - **REST/Ribbon 边**（经 RegistryClient 服务发现 + Ribbon 选择）:
   - webui → auth / image / persistence / recommender（经 load balancer）
   - 各服务经 `RegistryClient.getServersForService(Service)` 发现下游
 - **超时/重试/fallback/circuit**:
   - ✅ **有重试**:`ServiceLoadBalancer` 用 `DefaultLoadBalancerRetryHandler(0, 2, true)`（同服务器 0 次、跨服务器 2 次重试）
-  - ✅ **有超时语义**:`LoadBalancerTimeoutException`（408 响应 + 重复 socket 超时抛异常）
+  - ✅ **有超时语义**:`LoadBalancerTimeoutException`（408 响应 + 重复 socket 超时抛异常），但具体 timeout 毫秒数未知
   - fallback/circuit breaker:未逐类确认 → `unknown`
 - **可观测**:Kieker（`examples/kubernetes/teastore-ribbon-kieker.yaml`）+ OpenTracing（webui `GlobalTracer.register(Tracing.init(...))`）;rabbitmq 变体（teastore-rabbitmq.yaml）
 
 ## 5. Manifest / replicas / probe / PDB / HPA
 
 - `teastore-ribbon.yaml`:7 个 Deployment 无显式 `replicas`（默认 1）;无 PDB;无显式 probe
-- `helm/values.yaml`:含 `autoscaling` 配置（enabled 值未在本轮确认 → `unknown`）
-- **PDB/HPA**:grep ribbon.yaml + helm values.yaml 均 0 命中 PDB;HPA 依赖 autoscaling.enabled（未确认）
+- `helm/values.yaml`:记录的服务 `autoscaling.enabled=false`
+- **PDB/HPA**:grep ribbon.yaml + helm values.yaml 均 0 命中 PDB；HPA disabled 已核验
 - **端口**:helm 各服务 port 8080（image/recommender/persistence 等均 8080）
 
 ## 6. fault family 可支持
 
-- delay/loss:REST/Ribbon 边可注入（NetworkChaos 服务级）;Ribbon 重试语义使 **protected 候选可构造**（重试吸收瞬时 loss/delay）
+- delay/loss:REST/Ribbon 边可注入（NetworkChaos 服务级）；重试次数已核验，但 timeout bound 未知，protected 状态暂标 `unknown`
 - kill:PodChaos（ribbon 7 Deployment 完整目标）
-- **候选池潜力**:6 业务服务 + registry 发现边 + Ribbon 重试 → pilot 24 / formal 48 可行（边×故障族×保护状态组合）
+- **候选池潜力**:6 业务服务 + registry 发现边，pilot 24/formal 48 静态上可尝试；冻结前必须完成精确计数，不能把 unknown protected 状态当作已保护
 
 ## 7. 知识隔离
 
@@ -71,5 +71,5 @@
 ## 8. go_no_go
 
 **`ready_for_snapshot`**（源码可追溯、commit 固定、部署路径完整、契约/超时/重试/可观测静态确认、无 PDB 但 Deployment 目标完整）
-- 注意:helm autoscaling.enabled 值、Ribbon 重试的实际超时 ms 未确认 → 标注 unknown,不伪造
+- 注意:Ribbon 重试的实际超时 ms 未确认 → 标注 unknown,不伪造
 - bring-up/稳定/2-baseline 闸门 `not_run`

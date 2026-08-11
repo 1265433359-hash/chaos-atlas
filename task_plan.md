@@ -1,5 +1,36 @@
 # 真实 YAML 测试节点知识库与项目影响子图计划
 
+## 本轮项目归档任务（2026-08-10）
+- 目标：为论文写作、对比实验复核和知识库复用补齐项目级文档、目录说明、证据索引、复现实验入口和代码注释。
+- 项目名称确定为：**ChaosAtlas**（TestNode-Centered Chaos Analysis and Knowledge Base）。名称用于文档与本地 Git 元数据，不执行远程上传。
+- 范围：保留用户现有未提交实验产物；只新增/修改归档说明、README、实验/知识库索引和必要的高风险工具注释。
+- 上传门槛：完成本地清单、敏感信息扫描、测试和 Git diff 审核后，等待用户明确同意再执行 `git remote add`、`git push` 或 GitHub CLI 操作。
+- 状态：complete（本地归档文档与验证完成；GitHub 上传仍需用户明确授权）。
+
+## 归档清理补充（2026-08-11）
+- 保留所有原始 YAML、运行证据、JSON/CSV 台账、知识卡、正式消融 prompt、报告和历史规划摘要。
+- 删除 9 个 `.planning/**/DEEPSEEK_*_PROMPT.md` 临时工作指令和 `.pytest-tmp-final-all/` 测试缓存；清单见 `docs/ARCHIVE_CLEANUP.md`。
+- 未删除 `.pytest_cache/`，原因是当前 Windows 权限无法读取；未配置 remote、未上传 GitHub。
+- 状态：complete。
+
+## 论文准备复盘（2026-08-11）
+- 重新核对四个案例、TestNode 证据链、知识卡、跨项目报告和主实验归档索引。
+- 形成 `analysis_outputs/SUMMARY.md`、`analysis_outputs/RISKS.md`、`analysis_outputs/status.json`。
+- 明确知识库消融与最终方法 head-to-head 对比尚未完成，状态统一为 `parked_future_work`，不纳入当前论文正式结论。
+- 状态：complete；后续恢复实验前需要人工确认协议、候选池、oracle 和统计方案。
+
+## 本轮错误记录
+| 错误 | 处理 |
+|---|---|
+| 全量 pytest 首次运行时 2 个使用 `tmp_path` 的测试因 Windows `AppData\\Local\\Temp\\pytest-of-*` 权限拒绝而在 setup 阶段失败 | 使用仓库内隔离 `--basetemp .pytest-tmp-archive-run` 重跑，2/2 通过；其余 247 个测试通过 |
+| 知识库校验对 Online Boutique 8 张卡、OpenTelemetry Demo 2 张卡给出 `source_yaml` 不存在 warning | 这些卡明确使用 generated candidate；保留 warning，不把它升级为错误 |
+
+## 项目总览阶段（2026-08-10）
+- 目标：逐目录核对项目资产、案例、工具、实验状态和论文证据，生成一份不依赖会话上下文的总览。
+- 产出：`docs/PROJECT_SUMMARY.md`，并在 `findings.md` / `progress.md` 记录数量与发现。
+- 约束：只读核对现有资产；不重新运行注入、不重写用户实验结果、不上传 GitHub。
+- 状态：complete。
+
 ## Latest execution status
 - 2026-08-05 收尾：第一项目（train-ticket）运行时循环已全部关闭；阶段 4/7/8/9 标记 complete，阶段 10 进入 in_progress（P0 回归集已定义）。统计重复实验（Station 延迟、Basic CPU 各 2-3 次）已补跑并输出置信区间。薄弱点报告（Order refresh 禁用下游调用 + Station 无超时/熔断防御）已整理。
 - Paper-preparation checkpoint completed: `artifacts/train-ticket/paper_prep_stage_summary.md` records the current method, evidence, claims, limitations, and next-stage acceptance criteria.

@@ -88,23 +88,28 @@
       "docker-compose-swarm.yml",
       "docker-compose-tls.yml"
     ],
-    "helm": "helm-chart/socialnetwork (replicas/PDB/HPA NOT per-file verified -> unknown)",
+    "helm": "helm-chart/socialnetwork (28 sub-charts audited; replicas/probes/PDB/HPA verified)",
     "openshift": "present",
     "images": "built from Dockerfile (per service); nginx-thrift, media-frontend"
   },
   "availability": {
-    "k8s_replicas_pdb_hpa": "unknown (helm-chart present, not per-file verified)",
+    "k8s_replicas_pdb_hpa": "verified (28 sub-charts; replicas=1, no business probes/PDB, HPA disabled)",
     "shared_infra": "tracing.h/utils.h/utils_thrift.h shared with Hotel (DeathStarBench) -> marked shared_infra_deathstarbench, re-verify per project"
   },
   "fault_families": {
-    "delay": "potential_only (thrift edge identified; Helm availability unverified)",
-    "loss": "potential_only (thrift edge identified; Helm availability unverified)",
-    "kill": "potential_only (helm-chart exists but replicas/probes/PDB/HPA are not verified)"
+    "delay": "potential_only (thrift edge identified; runtime gate not run)",
+    "loss": "potential_only (thrift edge identified; runtime gate not run)",
+    "kill": "constructible_static_target (Helm availability verified; runtime gate not run)"
   },
   "candidate_potential": {
-    "pilot_24": "unknown (7 ComposePost edges are verified; HomeTimeline and remaining edges require contract expansion)",
+    "pilot_24": "unknown (9 contract edges are verified; 3 discovered edges remain excluded pending source SHA; pool construction must use verified edges only)",
     "formal_48": "unknown (candidate capacity cannot be claimed before full edge and Helm availability verification)",
-    "note": "protected/unprotected/unknown states are possible in principle; only source-verified edges may enter the frozen pool"
+    "note": "protected/unprotected/unknown states are possible in principle; only source-verified edges may enter the frozen pool",
+    "unverified_contract_edges": [
+      "SOCIALNET-usertimeline->poststorage",
+      "SOCIALNET-user->socialgraph",
+      "SOCIALNET-socialgraph->user"
+    ]
   },
   "leakage": {
     "risk": "medium",
@@ -132,8 +137,8 @@
     "note": "Stage C2 逐文件核查: 每服务 chart 有 deployment+service 模板; 业务服务无 probe (values.yaml:77-79 属 redis-cluster disabled 配置); kill 候选可构造"
   },
   "contract_edges": {
-    "count": 12,
-    "explicit_timeout_count": 12,
-    "note": "ComposePost 7 + HomeTimeline 2 + UserTimeline 1 + User 1 + SocialGraph 1; 全部 10s thrift timeout"
+    "count": 9,
+    "explicit_timeout_count": 9,
+    "note": "verified contract: ComposePost 7 + HomeTimeline 2; 3 discovered edges (UserTimeline/User/SocialGraph) remain excluded because per-file source SHA is unavailable"
   }
 }

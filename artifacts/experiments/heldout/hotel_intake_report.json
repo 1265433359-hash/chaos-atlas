@@ -25,9 +25,9 @@
     "hotelReservation/README.md": "6696c99eb4f698efb76c4360cc74bcb2ed6db8cdab5959cd7166433030463346",
     "hotelReservation/go.mod": "a5a886b6b67cea384f09f4497cc273b1d710dbe719d9904bd9258446fa38ce90",
     "hotelReservation/kubernetes/README.md": "8c8c3a1fb1a9ad7bb41b1727545e4d4252e2b8a6c59b0be8e662a9692371ef53",
-    "hotelReservation/services/frontend/**": "unavailable",
-    "hotelReservation/services/search/**": "unavailable",
-    "hotelReservation/kubernetes/**": "unavailable"
+    "hotelReservation/services/frontend/server.go": "453d3efeeb27c28896434cd1e7fa18f1810678b82835be909094bc629fe7764c",
+    "hotelReservation/services/search/server.go": "a5fcee43b546d323c9dac61c28d1d558677f82e5da3c642676c92a8dcd5e616d",
+    "hotelReservation/dialer/dialer.go": "fbf886d052dc4a5f3c66b548c866a2e21c76b00234ccbe6f13eb11f16d8b42ab"
   },
   "services": {
     "business": [
@@ -78,7 +78,7 @@
   },
   "manifests_and_images": {
     "docker_compose": "hotelReservation/docker-compose.yml",
-    "kubernetes_dir": "hotelReservation/kubernetes/ (frontend/geo/profile/rate/reccomend/reserve/search/user + consul + jaeger)",
+    "kubernetes_dir": "hotelReservation/kubernetes/ (26 tracked deployment/service/infra files hashed in hotel_knowledge_snapshot_pre.json; frontend/geo/profile/rate/reccomend/reserve/search/user + consul + jaeger)",
     "helm": "hotelReservation/helm-chart/",
     "other": [
       "openshift/",
@@ -110,11 +110,11 @@
   },
   "static_availability_facts": {
     "compose_single_replica": "docker-compose 每业务服务 1 容器 (单副本, 无 PDB at compose level)",
-    "kubernetes_replicas_pdb": "待扩展静态检查 (kubernetes/ 子目录存在, 本阶段未逐文件确认 replicas/PDB)",
-    "availability_scope": "docker-compose only; Kubernetes availability is unverified and must not inherit compose replica facts"
+    "kubernetes_replicas_pdb": "Stage A2 已逐文件核查 8 个业务 deployment: replicas=1, 无 probe/PDB/HPA; REVIEW/ATTRACTIONS 无 Kubernetes deployment",
+    "availability_scope": "Compose 与 Kubernetes 分开记录; REVIEW/ATTRACTIONS 的 Kubernetes availability 标记 unavailable"
   },
   "unconfirmed_fields": {
-    "kubernetes_replicas_pdb_detail": "resolved: Stage A2 逐文件核查完成",
+    "kubernetes_replicas_pdb_detail": "resolved: Stage A2 逐文件核查完成; REVIEW/ATTRACTIONS 无 deployment yaml",
     "per_service_ports": "仅确认 frontend 5000; 其余端口待 docker-compose 逐条确认"
   },
   "gates": {
@@ -132,13 +132,14 @@
   ],
   "no_runtime_experiment_run": true,
   "kubernetes_audit": {
-    "status": "verified",
-    "business_deployments": 9,
+    "status": "verified_with_unavailable",
+    "business_deployments": 8,
     "replicas_all": 1,
     "liveness_probe": false,
     "readiness_probe": false,
     "pdb_count": 0,
     "hpa_count": 0,
-    "note": "Stage A2 逐文件核查: frontend/geo/profile/rate/recommendation/reservation/search/user 8 个业务 deployment 全 replicas=1 无 probe 无 PDB 无 HPA; REVIEW/ATTRACTIONS 用 single-node 镜像无 k8s deploy yaml"
+    "unavailable_business_services": ["REVIEW", "ATTRACTIONS"],
+    "note": "Stage A2 逐文件核查: frontend/geo/profile/rate/recommendation/reservation/search/user 8 个业务 deployment 全 replicas=1 无 probe 无 PDB 无 HPA; REVIEW/ATTRACTIONS 用 single-node 镜像且无 k8s deploy yaml, Kubernetes-specific candidates 标记 unavailable"
   }
 }

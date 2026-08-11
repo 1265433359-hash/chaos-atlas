@@ -1,0 +1,796 @@
+{
+  "entries": {
+    "ESHOP-basket-api-rabbitmq-delay": {
+      "candidate_id": "ESHOP-basket-api-rabbitmq-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-basket-api-rabbitmq-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "125f31edd90a09579af207531fcca8c45875b5fc87fd91508e5b608f01069217"
+    },
+    "ESHOP-basket-api-rabbitmq-loss": {
+      "candidate_id": "ESHOP-basket-api-rabbitmq-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-basket-api-rabbitmq-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "8e3c29eec9e8f5b9adfb6e764cd301ed56bd7453cd23b71d6a3c49f18385a48f"
+    },
+    "ESHOP-basket-api-redis-delay": {
+      "candidate_id": "ESHOP-basket-api-redis-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-basket-api-redis-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Redis",
+      "yaml_sha256": "d0e18c298a80c036abe3435bcd48d4aae77b6177d733a6c60a7c084e0dcd0c70"
+    },
+    "ESHOP-basket-api-redis-loss": {
+      "candidate_id": "ESHOP-basket-api-redis-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-basket-api-redis-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Redis",
+      "yaml_sha256": "43bd59241d32adec59d44cf5088aac5e5031b8902933a1d1d55a165d37af91cb"
+    },
+    "ESHOP-catalog-api-catalog-db-delay": {
+      "candidate_id": "ESHOP-catalog-api-catalog-db-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-catalog-api-catalog-db-delay.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "catalog-db",
+      "yaml_sha256": "6a3a3122b77249173a1f67f9af295e73b48f0ae9d6a53a9aec67322b82fdf9b0"
+    },
+    "ESHOP-catalog-api-catalog-db-loss": {
+      "candidate_id": "ESHOP-catalog-api-catalog-db-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-catalog-api-catalog-db-loss.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "catalog-db",
+      "yaml_sha256": "18ca04efd4fa6c4e713bf569bbfd6b567a287741f43030c11e04efe31e8a2a8d"
+    },
+    "ESHOP-catalog-api-rabbitmq-delay": {
+      "candidate_id": "ESHOP-catalog-api-rabbitmq-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-catalog-api-rabbitmq-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "058c1e601f9dacee5dca99f28a4cf57b1bc54ed563e4530cb75547f645b61a89"
+    },
+    "ESHOP-catalog-api-rabbitmq-loss": {
+      "candidate_id": "ESHOP-catalog-api-rabbitmq-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-catalog-api-rabbitmq-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "e7969dcf4836dd06ad3b599d87f642b5015f6197ee67f0f7bab39ef73c48b20d"
+    },
+    "ESHOP-mobile-bff-catalog-api-delay": {
+      "candidate_id": "ESHOP-mobile-bff-catalog-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-mobile-bff-catalog-api-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Catalog.API",
+      "yaml_sha256": "a22973d7165e4b294c456c1938827b1d3a3234373b64da823f15e94212db164d"
+    },
+    "ESHOP-mobile-bff-catalog-api-loss": {
+      "candidate_id": "ESHOP-mobile-bff-catalog-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-mobile-bff-catalog-api-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Catalog.API",
+      "yaml_sha256": "5b06d4dfb1fcbb43269b828a267456524f397b1d8f1b279685c1300bfd96ae48"
+    },
+    "ESHOP-mobile-bff-identity-api-delay": {
+      "candidate_id": "ESHOP-mobile-bff-identity-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-mobile-bff-identity-api-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Identity.API",
+      "yaml_sha256": "981da9f6220935fcb9c58710a0d3bfcfdf08e55e116cb6c2da46f5374ecfb8df"
+    },
+    "ESHOP-mobile-bff-identity-api-loss": {
+      "candidate_id": "ESHOP-mobile-bff-identity-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-mobile-bff-identity-api-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Identity.API",
+      "yaml_sha256": "37ef68d0da4198e739160bd8086e3da2dddb3afa6250691cc52e5f45872f6bed"
+    },
+    "ESHOP-mobile-bff-ordering-api-delay": {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-mobile-bff-ordering-api-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Ordering.API",
+      "yaml_sha256": "6c890cefd8a538d53bd835c5a7450a2c2a9cfd563b98f3716e76ae1bee2c6946"
+    },
+    "ESHOP-mobile-bff-ordering-api-loss": {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-mobile-bff-ordering-api-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Ordering.API",
+      "yaml_sha256": "4728f405c4f53a7728a4220e712fe3ec91366993df5981235729c55152c3f904"
+    },
+    "ESHOP-ordering-api-order-db-delay": {
+      "candidate_id": "ESHOP-ordering-api-order-db-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-ordering-api-order-db-delay.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "order-db",
+      "yaml_sha256": "233c895e214d73cf1ca95dcdd08e5fb78abfa06689b5200d85038c0d7752aaba"
+    },
+    "ESHOP-ordering-api-order-db-loss": {
+      "candidate_id": "ESHOP-ordering-api-order-db-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-ordering-api-order-db-loss.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "order-db",
+      "yaml_sha256": "2bc235323e245c573d680626675c5329a66a30041013d088bbd3e41fa5512777"
+    },
+    "ESHOP-ordering-api-rabbitmq-delay": {
+      "candidate_id": "ESHOP-ordering-api-rabbitmq-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-ordering-api-rabbitmq-delay.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "abf46aee504a4838b29addd25c026f46d2d8a466293d0fd740dc1bd8dabe9fbf"
+    },
+    "ESHOP-ordering-api-rabbitmq-loss": {
+      "candidate_id": "ESHOP-ordering-api-rabbitmq-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-ordering-api-rabbitmq-loss.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "9b29a2788f2ddb16a5150849d54e1c658d6469f0ec097aa1f0a4ef9063233a4a"
+    },
+    "ESHOP-orderprocessor-order-db-delay": {
+      "candidate_id": "ESHOP-orderprocessor-order-db-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-orderprocessor-order-db-delay.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "order-db",
+      "yaml_sha256": "6abd740388ec0a2a0f2b988bdddce542259402896f0ab0501bf123b286dc310b"
+    },
+    "ESHOP-orderprocessor-order-db-loss": {
+      "candidate_id": "ESHOP-orderprocessor-order-db-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-orderprocessor-order-db-loss.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "order-db",
+      "yaml_sha256": "0ea59c1a6f263b840c82e26dd1d50a02bd73baf074d864327dbed58f329be4c3"
+    },
+    "ESHOP-orderprocessor-rabbitmq-delay": {
+      "candidate_id": "ESHOP-orderprocessor-rabbitmq-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-orderprocessor-rabbitmq-delay.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "16ea2317937870cb2fb9ba418d94e953516d6fda2d0b0442b27b0c189f5b487a"
+    },
+    "ESHOP-orderprocessor-rabbitmq-loss": {
+      "candidate_id": "ESHOP-orderprocessor-rabbitmq-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-orderprocessor-rabbitmq-loss.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "310652b35d1b529543603a4f9295930911ebd84eba6575c9c11abd9d59a3ba47"
+    },
+    "ESHOP-paymentprocessor-rabbitmq-delay": {
+      "candidate_id": "ESHOP-paymentprocessor-rabbitmq-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-paymentprocessor-rabbitmq-delay.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "5b0850b917cfa1c0f6e5fdb0a462840e288666efab75e74beca8681737f3f3b6"
+    },
+    "ESHOP-paymentprocessor-rabbitmq-loss": {
+      "candidate_id": "ESHOP-paymentprocessor-rabbitmq-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-paymentprocessor-rabbitmq-loss.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "758ab930ffda93ddc9625da4a86745d6f66261571d47b7e6d28862bfd7621d43"
+    },
+    "ESHOP-webapp-basket-api-delay": {
+      "candidate_id": "ESHOP-webapp-basket-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webapp-basket-api-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Basket.API",
+      "yaml_sha256": "c902d6e7e0cb43874d71f04b3508c70b19d257cf48cef1d22a028336eca84008"
+    },
+    "ESHOP-webapp-basket-api-loss": {
+      "candidate_id": "ESHOP-webapp-basket-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webapp-basket-api-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Basket.API",
+      "yaml_sha256": "0682b5eb3fa283d4600d379176a5dc01050fa081e3c30ea56d7537310fb87da6"
+    },
+    "ESHOP-webapp-catalog-api-delay": {
+      "candidate_id": "ESHOP-webapp-catalog-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webapp-catalog-api-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Catalog.API",
+      "yaml_sha256": "f9a6ba06f60678d7c84e8d6a2e847caf2ef54bf7a172e44346e39863e61b378e"
+    },
+    "ESHOP-webapp-catalog-api-loss": {
+      "candidate_id": "ESHOP-webapp-catalog-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webapp-catalog-api-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Catalog.API",
+      "yaml_sha256": "18301cc62cdd62bd8a04b29bd991497d1d75cafcafe086da7600363b7ca26f25"
+    },
+    "ESHOP-webapp-identity-api-delay": {
+      "candidate_id": "ESHOP-webapp-identity-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webapp-identity-api-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Identity.API",
+      "yaml_sha256": "b276f540fa4abeb3ca01e75b4886128ed592713eb3966d14302cca178d141e13"
+    },
+    "ESHOP-webapp-identity-api-loss": {
+      "candidate_id": "ESHOP-webapp-identity-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webapp-identity-api-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Identity.API",
+      "yaml_sha256": "aa8547697857940a457e86b7a5178f4596048df81dbdeb7a0746cbfd016e8e2d"
+    },
+    "ESHOP-webapp-ordering-api-delay": {
+      "candidate_id": "ESHOP-webapp-ordering-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webapp-ordering-api-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Ordering.API",
+      "yaml_sha256": "25ffcb41db07e1da83829895b8178547412b03ffca721e41c0e4853548ccf27f"
+    },
+    "ESHOP-webapp-ordering-api-loss": {
+      "candidate_id": "ESHOP-webapp-ordering-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webapp-ordering-api-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Ordering.API",
+      "yaml_sha256": "46430bc0a0d9b01d6360cf749825ffe80bcb2ae1f295c9c66b781895640fde77"
+    },
+    "ESHOP-webapp-rabbitmq-delay": {
+      "candidate_id": "ESHOP-webapp-rabbitmq-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webapp-rabbitmq-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "68a53541dffaa3919f8b4d5402c4b860e056e9da922993fa900a83edf64dc304"
+    },
+    "ESHOP-webapp-rabbitmq-loss": {
+      "candidate_id": "ESHOP-webapp-rabbitmq-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webapp-rabbitmq-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "48fc5499a15c85aed73e5bacf630b04f0bf2e8c2c41ad22e1413b2724dcd7cb3"
+    },
+    "ESHOP-webhookclient-webhooks-api-delay": {
+      "candidate_id": "ESHOP-webhookclient-webhooks-api-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webhookclient-webhooks-api-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Webhooks.API",
+      "yaml_sha256": "3c070d42c539863c280b173486da31327affbcf6b107b3fcd8b092d729cdd927"
+    },
+    "ESHOP-webhookclient-webhooks-api-loss": {
+      "candidate_id": "ESHOP-webhookclient-webhooks-api-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webhookclient-webhooks-api-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "Webhooks.API",
+      "yaml_sha256": "5b0997e34800141ea40cd7d501935918a9e7dd0573bc84fff314cb011703acad"
+    },
+    "ESHOP-webhooks-api-rabbitmq-delay": {
+      "candidate_id": "ESHOP-webhooks-api-rabbitmq-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webhooks-api-rabbitmq-delay.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "1333cdc3a75df58c585aa7f474e6bb4989994baf7a2219f8c6d6582b730de0d1"
+    },
+    "ESHOP-webhooks-api-rabbitmq-loss": {
+      "candidate_id": "ESHOP-webhooks-api-rabbitmq-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webhooks-api-rabbitmq-loss.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "RabbitMQ",
+      "yaml_sha256": "c075784a0bd9c389a26cb2d79e921b650288e66bdd08addbf2a224e9039ab2ce"
+    },
+    "ESHOP-webhooks-api-webhooks-db-delay": {
+      "candidate_id": "ESHOP-webhooks-api-webhooks-db-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webhooks-api-webhooks-db-delay.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "webhooks-db",
+      "yaml_sha256": "f720c4b73e109dda28f9930fed192906484f7eb5e9d4431cca0ee7e00639a3fb"
+    },
+    "ESHOP-webhooks-api-webhooks-db-loss": {
+      "candidate_id": "ESHOP-webhooks-api-webhooks-db-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/ESHOP-webhooks-api-webhooks-db-loss.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "webhooks-db",
+      "yaml_sha256": "8f9c7a18f299d539b9ea3fae8af2e7ed5d6992d7ae65c3d61c705563308e6f61"
+    }
+  },
+  "mutation_directory": "artifacts/experiments/knowledge_ablation_mutations/ESHOP/",
+  "namespace": "heldout-eshop-lab (pre-registered placeholder; confirm at deployment gate)",
+  "parameter_tiers": {
+    "delay": {
+      "action": "delay",
+      "correlation": "100",
+      "direction": "to",
+      "duration": "30s",
+      "jitter": "0ms",
+      "latency": "2000ms"
+    },
+    "kill": {
+      "action": "pod-kill",
+      "duration": "30s"
+    },
+    "loss": {
+      "action": "loss",
+      "correlation": "100",
+      "direction": "to",
+      "duration": "30s",
+      "loss": "100"
+    }
+  },
+  "project_id": "ESHOP",
+  "protocol_sha256": "9dc24410830ac894326a0fb9eff5915dbbd2a1283ef842809214b8df9a5a6344",
+  "purpose": "ablation protocol v1 fix 7: independent candidate_id -> mutation_path mapping (frozen candidate pools are NOT modified; their mutation_path stays null)",
+  "schema_version": 1,
+  "status": "frozen_pre_registered_not_yet_executed"
+}

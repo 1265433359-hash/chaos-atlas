@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "78debd3f2bc0a59768debf6cbcd9c837bd3dffbe84f3a5eac5167a4d8f7b8ba9",
+  "prompt_sha256": "2dc96c71d117b63c9cfb7da09f59b6b752425ad84d2c19e7e1b262162b62fe0b",
+  "project": "SOCIALNET",
+  "arm": "LLM-generic",
+  "phase": "formal",
+  "seed": 2002,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 100258,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 100257,
+    "prompt_tokens": 6239,
+    "completion_tokens": 10282,
+    "total_tokens": 16521
+  },
+  "selected": [
+    {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-loss",
+      "rank": 1,
+      "rationale": "100% loss on compose-post->unique-id removes the ID-generation prerequisite; with no timeout/retry the synchronous compose-post call hangs until the client deadline, confirming missing timeout/retry on a critical first-step dependency."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-loss",
+      "rank": 2,
+      "rationale": "Loss on compose-post->post-storage prevents the post from being persisted; lacking retry/fallback on this core write makes the entire compose operation fail or hang, exposing availability/persistence weakness."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-social-graph-loss",
+      "rank": 3,
+      "rationale": "Loss on home-timeline->social-graph breaks the read-path prerequisite for fetching the follow graph; without a timeout the home-timeline request can hang, exposing missing read-side timeout/fallback."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-loss",
+      "rank": 4,
+      "rationale": "Loss on home-timeline->post-storage cuts off post content retrieval, so timeline rendering fails or hangs; no retry/fallback on this core read edge is a confirmed weakness."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-delay",
+      "rank": 5,
+      "rationale": "Delay injected on compose-post->unique-id propagates 1:1 through the synchronous write chain and, without a timeout, turns into unbounded latency at the entry point; confirms no defensive timeout on a critical dependency."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-delay",
+      "rank": 6,
+      "rationale": "Delay on compose-post->post-storage stalls the core persistence step; because the caller waits without a timeout, the entire compose operation can hang to the client deadline, exposing latency propagation."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-loss",
+      "rank": 7,
+      "rationale": "Loss on compose-post->home-timeline loses the fan-out update for follower feeds; the synchronous no-timeout call can hang composition or silently miss timeline updates, revealing write-path coupling and missing retry."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-timeline-loss",
+      "rank": 8,
+      "rationale": "Loss on compose-post->user-timeline breaks the user's own feed update; with no retry/timeout this write-path edge either hangs the compose request or creates data inconsistency."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-loss",
+      "rank": 9,
+      "rationale": "Loss on compose-post->user removes the user validation/detail lookup needed to build the post; a missing timeout/retry makes this synchronous core call hang or fail the whole compose request."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-text-loss",
+      "rank": 10,
+      "rationale": "Loss on compose-post->text prevents text processing in the write path; the synchronous dependency without timeout/fallback can hang post creation, confirming fragile coupling in the compose fan-out."
+    }
+  ]
+}

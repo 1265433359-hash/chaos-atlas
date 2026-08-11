@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "project_id": "SOCIALNET",
+  "check_type": "selector_check",
+  "date": "2026-08-10",
+  "namespace": "heldout-socialnet-lab",
+  "deployment": "helm-chart/socialnetwork (commit 6ecb0970), subset post-storage-service deployed",
+  "pod_label_pattern": "app=<name>-service (e.g. app=post-storage-service); nginx-thrift has app=nginx-thrift",
+  "frozen_mutation_yaml_total": 30,
+  "kill_yaml": {
+    "count": 12,
+    "selector_match": 12,
+    "note": "kill YAMLs use app=<service>-service and match chart pod labels"
+  },
+  "delay_loss_yaml": {
+    "count": 18,
+    "selector_match": 0,
+    "selector_mismatch": 18,
+    "mismatch_examples": [
+      {"frozen_selector": "app: post-storage", "actual_pod_label": "app=post-storage-service"},
+      {"frozen_selector": "app: home-timeline", "actual_pod_label": "app=home-timeline-service"},
+      {"frozen_selector": "app: media", "actual_pod_label": "app=media-service"},
+      {"frozen_selector": "app: text", "actual_pod_label": "app=text-service"},
+      {"frozen_selector": "app: unique-id", "actual_pod_label": "app=unique-id-service"},
+      {"frozen_selector": "app: user", "actual_pod_label": "app=user-service"},
+      {"frozen_selector": "app: user-timeline", "actual_pod_label": "app=user-timeline-service"},
+      {"frozen_selector": "app: social-graph", "actual_pod_label": "app=social-graph-service"}
+    ]
+  },
+  "classification": "selector_mismatch",
+  "frozen_artifacts_untouched": {
+    "note": "frozen candidate pools and mutation YAMLs were NOT modified; this is a recorded defect of the frozen mutation mapping requiring an amendment/fix before any injection",
+    "candidate_pool_pilot_sha256": "10c06fbece09c44d",
+    "candidate_pool_formal_sha256": "614eab5fbc7a5a05",
+    "mutation_yaml_count": 30
+  },
+  "impact": "18 of 30 frozen SOCIALNET delay/loss mutation YAMLs would select zero pods under Chaos Mesh (method_invalid / non-injecting). 12 kill YAMLs are unaffected."
+}

@@ -1,0 +1,287 @@
+{
+  "arm_id": "LLM-partial-pre",
+  "availability_scope": {
+    "compose": "unavailable",
+    "deployment_target": "unknown",
+    "kubernetes": "unavailable"
+  },
+  "claim_reason": "ESHOP snapshot status=blocked, full_pre=False (no k8s/compose manifest at the frozen commit; availability unavailable) -> a full-pre arm cannot be claimed; only partial static-contract knowledge is available.",
+  "contract": {
+    "contracts": {
+      "ESHOP-webapp->catalog": {
+        "contract": "no_timeout",
+        "evidence": "STATIC WebApp/Extensions/Extensions.cs AddHttpClient<CatalogService>(BaseAddress catalog-api); no per-request timeout; no retry/circuit (grep 无命中)",
+        "loss_bounded": false,
+        "source_sha256": "d0009c09da7eb439964985e332e50d64d88f9ed317f6e254a279983655bac66a"
+      },
+      "ESHOP-webapp->ordering": {
+        "contract": "no_timeout",
+        "evidence": "STATIC WebApp/Extensions/Extensions.cs AddHttpClient<OrderingService>(BaseAddress ordering-api); no per-request timeout",
+        "loss_bounded": false,
+        "source_sha256": "d0009c09da7eb439964985e332e50d64d88f9ed317f6e254a279983655bac66a"
+      }
+    }
+  },
+  "full_pre_claimable": false,
+  "generic_rules": {
+    "defense_pattern_library": [
+      {
+        "defense_mechanism": "absorbed_by_design",
+        "pattern_id": "DP-DEFENSE-ABSORBED-001",
+        "rule": "A single downstream call with no fan-out propagates latency 1:1 with no amplification or compounding (bounded path tolerated the injected delay).",
+        "source_verified": false
+      },
+      {
+        "defense_mechanism": "absorbed_by_design",
+        "pattern_id": "DP-DEFENSE-ABSORBED-002",
+        "rule": "A weak latency injection on a single-call path produces no amplification.",
+        "source_verified": false
+      },
+      {
+        "defense_mechanism": "absorbed_by_design",
+        "note": "renamed from an original pattern ID that embedded a candidate identifier (excluded from the LLM view)",
+        "pattern_id": "DP-DEFENSE-ABSORBED-003",
+        "rule": "Downstream latency propagated 1:1 with no retries or compounding; a bounded path tolerated the injected delay (absorbed by design).",
+        "source_verified": false
+      },
+      {
+        "defense_mechanism": "bounded_timeout",
+        "pattern_id": "DP-BOUNDED-TIMEOUT-FUTUREGET-001",
+        "rule": "An async bounded timeout (e.g., Future.get with a timeout) bounds BOTH delay and loss: never an infinite hang. It is invisible to direct port measurement - only a business-chain entry reveals it.",
+        "source_verified": true
+      }
+    ],
+    "generic_rules_file": "artifacts/experiments/knowledge_ablation_generic_rules_v1.json",
+    "generic_rules_sha256": "5b813997e5742dc9c59938171ff53cdf1ab37a18c7f01c3530058416b745f258",
+    "judgment_experience": [
+      {
+        "confidence": "high",
+        "dimensions": [
+          "contract"
+        ],
+        "en_rule": "A violation of a SOURCE-DECLARED contract (timeout/gRPC deadline/SLO) is a clear vulnerability; but a test-client's own timeout is a measurement budget, never a system contract - hanging to the client deadline reveals the system LACKS a timeout, a different finding.",
+        "id": "JE-CONTRACT-001",
+        "rule": "A violation of a source-declared contract (timeout/gRPC deadline/SLO) is a clear vulnerability; but a test client's own timeout is a measurement budget, never a system contract - hanging to the client deadline reveals the system LACKS a timeout, a different finding.",
+        "severity_adjustment": "confirm",
+        "transferable_to": "before judging, distinguish system contracts from client-side measurement budgets"
+      },
+      {
+        "confidence": "medium",
+        "dimensions": [
+          "contract"
+        ],
+        "en_rule": "Latency amplification with no system contract (no SLO/explicit deadline) is NOT automatically a vulnerability; check for degradation/fallback first - without it, classify as 'potential risk', not 'confirmed vulnerability'. The runner's request_timeout is not a contract.",
+        "id": "JE-CONTRACT-002",
+        "rule": "Latency amplification with no system contract (no SLO/explicit deadline) is NOT automatically a vulnerability; check for degradation/fallback first - without it, classify as 'potential risk', not 'confirmed vulnerability'. The runner's request_timeout is not a contract.",
+        "severity_adjustment": "downgrade",
+        "transferable_to": "internal service-to-service calls without explicit SLO"
+      },
+      {
+        "confidence": "high",
+        "dimensions": [
+          "business_path"
+        ],
+        "en_rule": "A non-critical dependency (email/notification/log) synchronously blocking the primary flow and hanging to the client deadline is an architecture-level coupling defect (highest value): it reveals missing dependency isolation, not a single missing timeout.",
+        "id": "JE-COUPLING-001",
+        "rule": "A non-critical dependency (email/notification/log) synchronously blocking the primary flow and hanging to the client deadline is an architecture-level coupling defect (highest value): it reveals missing dependency isolation, not a single missing timeout.",
+        "severity_adjustment": "upgrade",
+        "transferable_to": "any microservice system: check whether side dependencies (email/notification/log/analytics) are synchronously coupled to the primary flow"
+      },
+      {
+        "confidence": "medium",
+        "dimensions": [
+          "observability"
+        ],
+        "en_rule": "A fault fully captured by tracing (visible events) but without auto-alert is a partial weakness (diagnosable, not alertable); 'cannot be seen at fault time' is itself a weakness even if functionality is normal.",
+        "id": "JE-OBSERVABILITY-001",
+        "rule": "A fault fully captured by tracing (visible events) but without auto-alert is a partial weakness (diagnosable, not alertable); 'cannot be seen at fault time' is itself a weakness even if functionality is normal.",
+        "severity_adjustment": "confirm",
+        "transferable_to": "any system with tracing but without alerting"
+      },
+      {
+        "confidence": "high",
+        "dimensions": [
+          "recovery"
+        ],
+        "en_rule": "Failure to auto-recover after injection stops (or recovery timeout) upgrades severity regardless of symptom strength - missing recovery capability is an independent weakness.",
+        "id": "JE-RECOVERY-001",
+        "rule": "Failure to auto-recover after injection stops (or recovery timeout) upgrades severity regardless of symptom strength - missing recovery capability is an independent weakness.",
+        "severity_adjustment": "upgrade",
+        "transferable_to": "all injection experiments should explicitly check whether recovery completes automatically"
+      },
+      {
+        "confidence": "medium",
+        "dimensions": [
+          "risk"
+        ],
+        "en_rule": "Weaknesses exposed by high-probability real events (provider timeout/network partition/packet loss) rank above low-probability extreme scenarios - risk = probability x impact; probability ranks, it does not judge.",
+        "id": "JE-RISK-001",
+        "rule": "Weaknesses exposed by high-probability real events (provider timeout/network partition/packet loss) rank above low-probability extreme scenarios - risk = probability x impact; probability ranks, it does not judge.",
+        "severity_adjustment": "n_a",
+        "transferable_to": "candidate ranking/priority; does not change the verdict itself"
+      }
+    ],
+    "selection_experience": [
+      {
+        "confidence": "high",
+        "dimensions": [
+          "business_path"
+        ],
+        "id": "SE-CORE-CHAIN-001",
+        "rule": "Core synchronous business-path calls (payment/checkout/order placement) most commonly lack per-request timeouts; such edges are the highest-value test targets.",
+        "transferable_to": "e-commerce/transactional microservices: prioritize payment, cart, and checkout services"
+      },
+      {
+        "confidence": "medium",
+        "dimensions": [
+          "fault_intensity",
+          "contract"
+        ],
+        "id": "SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001",
+        "rule": "Delay severity depends on whether the caller waits synchronously without a timeout, not on the fault type itself: a delay on a synchronous no-timeout call can hang the client to its deadline, equivalent to loss. This contradicts the prior that loss is always more severe than delay.",
+        "transferable_to": "any microservice system: before judging delay severity, check whether the caller waits synchronously and has a timeout"
+      },
+      {
+        "confidence": "medium",
+        "dimensions": [
+          "transferability"
+        ],
+        "id": "SE-CROSSPROJECT-REPLICATION-001",
+        "rule": "A weakness pattern confirmed in one project should be re-tested on the same-named service/edge of another project; cross-project replication is a low-cost high-yield selection strategy.",
+        "transferable_to": "multi-project comparison/migration"
+      },
+      {
+        "confidence": "high",
+        "dimensions": [
+          "fault_intensity"
+        ],
+        "id": "SE-LOSS-STRONGEST-001",
+        "rule": "100% packet loss is the most reliable way to break a synchronous no-timeout call: loss on such calls hangs the client to its deadline.",
+        "transferable_to": "loss is the shortest path when looking for 'no-timeout' weaknesses"
+      },
+      {
+        "confidence": "high",
+        "dimensions": [
+          "fault_family"
+        ],
+        "id": "SE-NETWORK-FAMILY-001",
+        "rule": "Prioritize the network fault family when looking for weaknesses: network faults (delay/loss/partition) are the most common real-world failure class and the most likely place weaknesses hide.",
+        "transferable_to": "any microservice system: network faults (delay/loss/partition) take priority over resource faults (CPU/memory)"
+      },
+      {
+        "confidence": "high",
+        "dimensions": [
+          "business_path"
+        ],
+        "id": "SE-SIDEEFFECT-COUPLING-001",
+        "rule": "Side-channel dependencies (email/notification/log/analytics) are commonly synchronously coupled to the primary flow in real systems; check whether a side dependency blocks the main path.",
+        "transferable_to": "any microservice: email/notification/log/analytics side dependencies"
+      },
+      {
+        "confidence": "high",
+        "dimensions": [
+          "test_design"
+        ],
+        "id": "SE-TEST-HYGIENE-PROBE-001",
+        "rule": "Liveness/readiness probe timeout must exceed the injected latency, else the kubelet kills the pod mid-experiment and the injection 'escapes' - the observed failure is probe self-kill, not the system's defense behavior. Check probe timeouts BEFORE designing delay injections.",
+        "transferable_to": "any service with probes tested by delay injection; read the deployment probe configuration first"
+      },
+      {
+        "confidence": "high",
+        "dimensions": [
+          "infrastructure"
+        ],
+        "id": "SE-TEST-HYGIENE-IMAGECOMPAT-001",
+        "rule": "A 'latest' database image can break a legacy application driver (unsupported wire-protocol command). If an old application fails with such an error, pin the database to an era-appropriate major version rather than debugging the application.",
+        "transferable_to": "any 'latest' DB image with an older microservice; verify driver compatibility before debugging the application"
+      },
+      {
+        "confidence": "high",
+        "dimensions": [
+          "infrastructure"
+        ],
+        "id": "SE-TEST-HYGIENE-PORTMISMATCH-001",
+        "rule": "A container's actual listening port may differ from the Service targetPort in real manifests (silent connection refused). Verify the container's actual listen port before blaming the mesh or the app; patch the Service targetPort to the real port.",
+        "transferable_to": "any Service connection refusal: check targetPort consistency first"
+      },
+      {
+        "confidence": "medium",
+        "dimensions": [
+          "infrastructure"
+        ],
+        "id": "SE-TEST-HYGIENE-OOM-001",
+        "rule": "Services without resource limits can OOM-crashloop independently of probes or injections. Distinguish infrastructure OOM from probe/liveness issues before attributing the failure to the injected fault.",
+        "transferable_to": "any service without resources.limits; check limits before testing"
+      }
+    ]
+  },
+  "provenance": {
+    "created_at": "2026-08-10T06:45:12.549362+00:00",
+    "kind": "ESHOP_static_reconstructed",
+    "note": "ESHOP STATIC-RECONSTRUCTED from https://github.com/dotnet/eShop @9b4f9434f46f; no runtime/CE/experiment evidence.",
+    "provenance_completeness": "partial",
+    "sha256": {
+      "README.md": "3ef8cf674084750c4d5db6f9317226f8e0a6ebba932e0ee73c3f9060c2e41ae7",
+      "defense_pattern_library_live": "afffb6ada45c947a3110dec6365152af8260358a45f7eb6e415926de70f557d8",
+      "judgment_experience_live": "7756d8d3beb0ea6a4644a3d2ecff117b09eabe62ad3e1d2a33aee61c2c6eead6",
+      "selection_experience_live": "f7280be785e34504fdcde76f81db027c32d5db6d572a2fc648c65eb347704fc1",
+      "src/Basket.API/Grpc/BasketService.cs": "cb02d7b4fdf67553847490a0b5ab86614f17cb4c45e7ea53b515ab4fb193fdba",
+      "src/WebApp/Extensions/Extensions.cs": "d0009c09da7eb439964985e332e50d64d88f9ed317f6e254a279983655bac66a",
+      "src/WebApp/Services/OrderingService.cs": "2e8578d1eda8e3ab7ce7e471d6e3d5447e4c80a1a0d1407af74734ce989932c2",
+      "src/eShop.AppHost/Program.cs": "6c0e25977f2068211b776fc57fbb85898c3d6b576c99d3fb168d8dc2388fced7",
+      "src/eShop.ServiceDefaults/Extensions.cs": "61a80ad164411ba51026c5ea571ed3e5c9825186202302a1ff1464be76f8e442"
+    },
+    "source_commit": "9b4f9434f46fdc5c1a6e9e936af2868340cdbc48",
+    "source_files": [
+      {
+        "path": "src/eShop.AppHost/Program.cs",
+        "purpose": "contract/availability source",
+        "sha256": "6c0e25977f2068211b776fc57fbb85898c3d6b576c99d3fb168d8dc2388fced7"
+      },
+      {
+        "path": "src/WebApp/Extensions/Extensions.cs",
+        "purpose": "contract/availability source",
+        "sha256": "d0009c09da7eb439964985e332e50d64d88f9ed317f6e254a279983655bac66a"
+      },
+      {
+        "path": "src/WebApp/Services/OrderingService.cs",
+        "purpose": "contract/availability source",
+        "sha256": "2e8578d1eda8e3ab7ce7e471d6e3d5447e4c80a1a0d1407af74734ce989932c2"
+      },
+      {
+        "path": "src/Basket.API/Grpc/BasketService.cs",
+        "purpose": "contract/availability source",
+        "sha256": "cb02d7b4fdf67553847490a0b5ab86614f17cb4c45e7ea53b515ab4fb193fdba"
+      },
+      {
+        "path": "src/eShop.ServiceDefaults/Extensions.cs",
+        "purpose": "contract/availability source",
+        "sha256": "61a80ad164411ba51026c5ea571ed3e5c9825186202302a1ff1464be76f8e442"
+      },
+      {
+        "path": "README.md",
+        "purpose": "contract/availability source",
+        "sha256": "3ef8cf674084750c4d5db6f9317226f8e0a6ebba932e0ee73c3f9060c2e41ae7"
+      }
+    ]
+  },
+  "redacted_fields": [
+    "status",
+    "status_reason",
+    "contract.availability",
+    "contract.availability_kubernetes",
+    "contract.candidate_map",
+    "full_pre",
+    "selection_experience_raw",
+    "defense_pattern_library_raw",
+    "judgment_experience_raw"
+  ],
+  "snapshot_id": "ESHOP-partial_pre-2026-08-10",
+  "source_provenance": {
+    "availability": "unavailable",
+    "contract": "static_reconstructed_pre_experiment",
+    "defense_pattern_library": "pre_experiment_commit",
+    "judgment_experience": "pre_experiment_commit",
+    "selection_experience": "pre_experiment_commit"
+  }
+}

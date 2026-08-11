@@ -50,7 +50,11 @@
   },
   "seed_replicate_k": {
     "method_seed_definition": "一个 method-seed = 一次独立候选选择",
-    "budget_per_selection": "固定 K",
+    "budget_by_phase": {
+      "pilot": 8,
+      "formal": 10
+    },
+    "budget_per_selection": "pilot 使用 K=8; formal 使用 K=10; 每个 method-seed 在对应阶段独立消耗该 K",
     "max_confirmation_runs_per_candidate": 2,
     "weakness_at_k_counts_candidates": true,
     "weakness_at_k_note": "按候选计数, 不按确认运行次数计数",
@@ -66,7 +70,19 @@
       "seeds": 20,
       "note": "固定 20 个 seed, 每个 seed 独立消耗 K"
     },
-    "aggregation": "报告 seed-level 分布, 均值, 中位数及预注册聚合规则 (预注册时固定)",
+    "method_seed_mapping": {
+      "Ours-full-pre": "decision_engine, 1 个确定性 selection replicate",
+      "Ours-generic": "decision_engine, 1 个确定性 selection replicate",
+      "ChaosEater-official": "LLM/随机 pipeline, 3 个预注册 seed; 若实现确定性, 三个 seed 仍按相同预注册流程记录",
+      "ChaosEater-adapter": "LLM, 3 个预注册 seed",
+      "Random": "随机选择, 20 个预注册 seed"
+    },
+    "aggregation": {
+      "within_project_method_score": "先按每个 method-seed 计算 Weakness@K; decision_engine 使用唯一结果; LLM 方法使用 3 个 seed 的 median; Random 使用 20 个 seed 的 median",
+      "paired_difference": "同一项目内用方法项目级 score 减 CE-official 项目级 score, 形成一个项目级配对差值",
+      "reported_distribution": "同时报告全部 seed-level 值、mean、median; 主比较固定使用上述 within_project_method_score, 不得事后改用其他聚合",
+      "evidence_metrics": "Protected-waste@K、证据和成本指标沿用相同的 method-seed 到项目级聚合规则"
+    },
     "sample_size_note": "不得把 LLM 的 3 个 seed 与 Ours 的一次确定性选择直接当作相同样本量"
   },
   "primary_metric": {
@@ -99,7 +115,7 @@
     },
     "ci_rule": "CI 针对项目级配对差值做 clustered bootstrap 或 permutation (以项目为聚类单位); 不要求每个项目自己的 CI 不跨 0",
     "candidate_nesting": "同一项目中的候选不能被当作独立项目样本; 样本单位是项目",
-    "cross_project_formal_wording": "至少 3 个 held-out 项目的项目级配对差值, clustered bootstrap/permutation 95% CI 不跨 0",
+    "cross_project_formal_wording": "至少 3 个 comparable held-out 项目的项目级配对差值, clustered bootstrap/permutation 95% CI 不跨 0",
     "v1_rule_removed": "已删除 '差值的 bootstrap 95% CI 不跨 0 (在单个 held-out 项目上)' 旧规则"
   },
   "ce_blocked_denominator_rule": {
@@ -107,8 +123,17 @@
     "v1_fix_note": "v1 只写 'CE blocked 候选不进入主指标分母' - 已修正为整项目 CE 线不可比较, 避免选择性分母偏差"
   },
   "candidate_pool_scale": {
-    "pilot_per_project": "24-32",
-    "formal_per_project": "48-64",
+    "pilot_per_project": 24,
+    "formal_per_project": 48,
+    "protected_state_quota": {
+      "pilot": "protected=8, unprotected=8, unknown=8",
+      "formal": "protected=16, unprotected=16, unknown=16"
+    },
+    "fault_family_quota": {
+      "pilot": "supported fault families balanced at 8 each where possible",
+      "formal": "supported fault families balanced at 16 each where possible",
+      "unavailable_rule": "不支持的 fault family 标记 unavailable; 不从其他项目借用候选; 剩余支持类型按固定轮转规则补足总池规模"
+    },
     "required_protected_states": ["protected", "unprotected", "unknown"],
     "required_fault_families": ["delay", "loss", "kill"],
     "unsupported_fault_marking": "若项目不支持某类注入, 明确标记 unavailable, 不强制补齐",
@@ -121,8 +146,9 @@
   },
   "no_backfill": "实验结果/CE 输出/人工 runtime verdict 均不得回填到本轮 selection snapshot",
   "preregistered_win_condition": {
-    "text": "Ours-full-pre 在至少 3 个 held-out 项目上 Weakness@K 不降低 (>= CE-official 的项目级配对差值), 且项目级配对差值的 clustered bootstrap/permutation 95% CI 不跨 0; 并在预注册的证据终点 (RCA 锚定率/证据可追溯率/单位有效发现成本) 之一优于 CE-official; 同时 Protected-waste@K 不更高",
+    "text": "Ours-full-pre 在至少 3 个 comparable held-out 项目上 Weakness@K 不降低 (>= CE-official 的项目级配对差值), 且项目级配对差值的 clustered bootstrap/permutation 95% CI 不跨 0; 并在预注册的证据终点 (RCA 锚定率/证据可追溯率/单位有效发现成本) 之一优于 CE-official; 同时 Protected-waste@K 不更高",
     "ce_blocked_not_win": "CE environment_blocked 的项目不得计入胜出 (也不计失败), 该项目报告 blocked/不可比较",
+    "minimum_comparable_projects": "必须至少有 3 个 comparable held-out 项目; CE environment_blocked 项目不进入该分母; comparable 项目少于 3 个时不得作跨项目 superiority 结论",
     "realistic_only_win": "若 Ours 只在 Realistic 线胜出, 主张写'知识资产化流水线优势', 不写'选择算法全面优于'"
   },
   "anti_contamination_pipeline": [

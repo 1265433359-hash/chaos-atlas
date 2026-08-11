@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "87f9d1516e59f246e378422519251aa1b1e0706e82d181c4ff0548db5c1b93e3",
+  "prompt_sha256": "6a65352d176e24a1d69641fbe910c58f5a81f01dfe029878cba986716a5e39ca",
+  "project": "ESHOP",
+  "arm": "LLM-generic",
+  "phase": "pilot",
+  "seed": 1003,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 161078,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 161077,
+    "prompt_tokens": 5777,
+    "completion_tokens": 17553,
+    "total_tokens": 23330
+  },
+  "selected": [
+    {
+      "candidate_id": "ESHOP-webapp-basket-api-loss",
+      "rank": 1,
+      "rationale": "Loss on the webapp->Basket.API edge hangs the synchronous cart/checkout request when no timeout/retry exists, causing checkout availability loss and exposing missing timeout/retry defenses on the most critical user-facing path."
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-redis-loss",
+      "rank": 2,
+      "rationale": "Redis is the basket state store; losing it removes cart persistence and forces basket failure with no fallback, exposing missing recovery/fallback for a critical stateful dependency."
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-rabbitmq-loss",
+      "rank": 3,
+      "rationale": "Checkout integration events are published from Basket.API to RabbitMQ; message loss can silently prevent order creation if publisher confirms/retries are absent, exposing a reliability weakness in the checkout event path."
+    },
+    {
+      "candidate_id": "ESHOP-basket-api-rabbitmq-delay",
+      "rank": 4,
+      "rationale": "A delay on the RabbitMQ publish propagates into the Basket.API checkout response, revealing whether the event bus dependency is synchronously coupled and lacks a timeout; latency amplification breaks the checkout path."
+    },
+    {
+      "candidate_id": "ESHOP-mobile-bff-ordering-api-loss",
+      "rank": 5,
+      "rationale": "Loss on the mobile-bff->Ordering.API edge hangs order placement/history for mobile clients without a bounded timeout, exposing missing timeout/retry on a core order path."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-ordering-api-loss",
+      "rank": 6,
+      "rationale": "Loss on the webapp->Ordering.API edge causes the web order flow to fail or hang if no retry/timeout exists, exposing the same missing-defense pattern on the primary order service."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-catalog-api-loss",
+      "rank": 7,
+      "rationale": "Catalog is the storefront's main synchronous read path; loss without a timeout makes the product catalog unavailable and can hang page rendering, exposing missing timeout/fallback."
+    },
+    {
+      "candidate_id": "ESHOP-webapp-identity-api-loss",
+      "rank": 8,
+      "rationale": "Identity/authentication calls are synchronous and entry-blocking; loss to Identity.API can prevent login/session validation, exposing missing timeout/retry on an auth-critical edge."
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "selected": [
+    {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-delay",
+      "rank": 1,
+      "rationale": "Delay on unique-id is on the mandatory first call in compose-post; without client-side timeouts/circuit breakers, even a slow ID generator stalls every post request and propagates unbounded latency to nginx-thrift clients."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-delay",
+      "rank": 2,
+      "rationale": "Post-storage is the required persistence for every post; a delay here keeps compose-post blocked and reveals missing timeout/retry defenses on the write path."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-post-storage-service",
+      "rank": 3,
+      "rationale": "Killing post-storage removes the shared persistence for both compose-post writes and home-timeline reads; with no failover or recovery, it causes immediate availability loss of the core functionality."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-delay",
+      "rank": 4,
+      "rationale": "Home-timeline update is a synchronous fan-out from compose-post; delay on this edge makes the whole post creation slow and exposes unbounded latency propagation in the fan-out."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-timeline-delay",
+      "rank": 5,
+      "rationale": "User-timeline update is another synchronous fan-out dependency; a slow response blocks compose-post and demonstrates missing deadline/timeout controls on timeline writes."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-text-delay",
+      "rank": 6,
+      "rationale": "Text processing is required for every post; delay in text service delays the entire compose-post request, showing that non-storage dependencies also lack timeout protection."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-delay",
+      "rank": 7,
+      "rationale": "The home-timeline read path depends on post-storage; a delay here causes timeline reads to hang and exposes missing timeouts/retries on the read side."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-loss",
+      "rank": 8,
+      "rationale": "Loss on the compose-post->home-timeline edge means a successfully created post may never reach followers' timelines; without retry or compensation, this creates silent inconsistency."
+    }
+  ]
+}

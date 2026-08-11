@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "d7898002cf887e91310d216947c75c0486a287882b44131914a9573ef17486bf",
+  "prompt_sha256": "72c0cd0ad5a57e618bb02d2dbc380c41ac05c67a0495c6e8d13fd710c5f2f1a9",
+  "project": "SOCIALNET",
+  "arm": "LLM-blind",
+  "phase": "pilot",
+  "seed": 1002,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 89459,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 89459,
+    "prompt_tokens": 3026,
+    "completion_tokens": 9873,
+    "total_tokens": 12899
+  },
+  "selected": [
+    {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-delay",
+      "rank": 1,
+      "rationale": "Delay on unique-id is on the mandatory first call in compose-post; without client-side timeouts/circuit breakers, even a slow ID generator stalls every post request and propagates unbounded latency to nginx-thrift clients."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-delay",
+      "rank": 2,
+      "rationale": "Post-storage is the required persistence for every post; a delay here keeps compose-post blocked and reveals missing timeout/retry defenses on the write path."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-post-storage-service",
+      "rank": 3,
+      "rationale": "Killing post-storage removes the shared persistence for both compose-post writes and home-timeline reads; with no failover or recovery, it causes immediate availability loss of the core functionality."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-delay",
+      "rank": 4,
+      "rationale": "Home-timeline update is a synchronous fan-out from compose-post; delay on this edge makes the whole post creation slow and exposes unbounded latency propagation in the fan-out."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-timeline-delay",
+      "rank": 5,
+      "rationale": "User-timeline update is another synchronous fan-out dependency; a slow response blocks compose-post and demonstrates missing deadline/timeout controls on timeline writes."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-text-delay",
+      "rank": 6,
+      "rationale": "Text processing is required for every post; delay in text service delays the entire compose-post request, showing that non-storage dependencies also lack timeout protection."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-delay",
+      "rank": 7,
+      "rationale": "The home-timeline read path depends on post-storage; a delay here causes timeline reads to hang and exposes missing timeouts/retries on the read side."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-loss",
+      "rank": 8,
+      "rationale": "Loss on the compose-post->home-timeline edge means a successfully created post may never reach followers' timelines; without retry or compensation, this creates silent inconsistency."
+    }
+  ]
+}

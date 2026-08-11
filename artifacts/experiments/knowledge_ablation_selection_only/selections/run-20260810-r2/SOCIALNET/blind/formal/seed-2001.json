@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "763d384c7ec3060092491a3c50f80d60ffcc237c86759e824caaa5c9727a5033",
+  "prompt_sha256": "3539ddf5535034fa01bb377d32f1fa53bef31de58de92ca57f7b0812b6d3779f",
+  "project": "SOCIALNET",
+  "arm": "LLM-blind",
+  "phase": "formal",
+  "seed": 2001,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 52144,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 52144,
+    "prompt_tokens": 3586,
+    "completion_tokens": 5994,
+    "total_tokens": 9580
+  },
+  "selected": [
+    {
+      "candidate_id": "SOCIALNET-kill-nginx-thrift",
+      "rank": 1,
+      "rationale": "Killing the single ingress proxy makes the entire API unreachable, exposing a total availability loss and no failover for the entry point."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-compose-post-service",
+      "rank": 2,
+      "rationale": "Compose-post is the orchestrator for every write request; killing it breaks all post-creation calls and reveals no alternate path or failover."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-post-storage-service",
+      "rank": 3,
+      "rationale": "Post-storage is the core durable dependency for both compose and home-timeline; its loss makes the main write and read paths fail, showing missing replica/failover behavior."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-delay",
+      "rank": 4,
+      "rationale": "Latency on the critical write edge can be propagated without bound if compose-post lacks timeouts; all post writes are delayed, confirming missing latency defense."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-delay",
+      "rank": 5,
+      "rationale": "Unique-id is required before any post can be assembled; a delay stalls every compose request and demonstrates no timeout/cancellation on this dependency."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-delay",
+      "rank": 6,
+      "rationale": "The read path to post-storage is user-facing; added latency directly slows timeline retrieval and may expose missing timeouts or cached fallback."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-delay",
+      "rank": 7,
+      "rationale": "The synchronous fanout to home-timeline blocks compose-post completion; a delay here points to missing timeout/retry on a non-critical-ish update path."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-unique-id-service",
+      "rank": 8,
+      "rationale": "Without unique-id, no compose request can generate an ID, causing all writes to fail; this shows no fallback ID generator or recovery mechanism."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-social-graph-loss",
+      "rank": 9,
+      "rationale": "Losing social-graph data in the read path can make timelines empty or error without retry, exposing weak error handling in home-timeline."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-loss",
+      "rank": 10,
+      "rationale": "A dropped write to post-storage in the compose flow can silently lose posts or fail the request, revealing no retry/acknowledgment logic."
+    }
+  ]
+}

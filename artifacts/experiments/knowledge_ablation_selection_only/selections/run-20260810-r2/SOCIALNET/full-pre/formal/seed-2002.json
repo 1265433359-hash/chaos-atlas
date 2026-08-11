@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "protocol_sha256": "2da2c143d194cd7a205404fc72a2bfd4b156eb48886a81aeabc06dfea1b1b1c1",
+  "bundle_sha256": "e5f183f4a3225144d2a0fe69896873250a2eaba19db1922131faab0d6537a55b",
+  "prompt_sha256": "e7dc1af913949c21664595bfd9f2e39b0d0817acb1fe12ad017f308cf9058fdf",
+  "project": "SOCIALNET",
+  "arm": "LLM-full-pre",
+  "phase": "formal",
+  "seed": 2002,
+  "model": "deepseek-v4-flash",
+  "endpoint": "https://api.deepseek.com/v1",
+  "status": "valid",
+  "attempts": 1,
+  "elapsed_ms": 118428,
+  "metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 118427,
+    "prompt_tokens": 10417,
+    "completion_tokens": 11868,
+    "total_tokens": 22285
+  },
+  "selected": [
+    {
+      "candidate_id": "SOCIALNET-kill-user-mention-service",
+      "rank": 1,
+      "rationale": "Kill of the auxiliary user-mention service propagates through the text service into compose-post, turning optional mention enrichment into a hard blocker for post creation. Exposes an architecture-level coupling defect on the hidden text->user-mention dependency with no fallback/isolation."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-url-shorten-service",
+      "rank": 2,
+      "rationale": "Kill of the URL-shortening service similarly takes down compose-post through the text-processing path; optional URL enrichment becomes a hard dependency. Confirms missing dependency isolation/fallback for a side service."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-loss",
+      "rank": 3,
+      "rationale": "Loss on compose-post->home-timeline makes the home-timeline write fan-out fail; the post may already be stored, so the request errors after the 10s timeout and leaves a partial write with duplicate risk on retry. Affects the critical compose-post->home-timeline write edge."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-social-graph-loss",
+      "rank": 4,
+      "rationale": "Loss on home-timeline->social-graph prevents building home timelines because the follower graph is unavailable; the synchronous call has no degraded-mode fallback, so reads fail or time out. Exposes missing loss handling on a core read fan-out edge."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-loss",
+      "rank": 5,
+      "rationale": "Loss on compose-post->post-storage prevents the post from being persisted; with no evident retry, a transient storage failure becomes a guaranteed post-creation failure. Core persistence edge exposed."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-user-timeline-loss",
+      "rank": 6,
+      "rationale": "Loss on compose-post->user-timeline occurs after post-storage persistence, leaving a stored post that is absent from the author's timeline; no compensating transaction is present. Exposes partial-write inconsistency on the user-timeline edge."
+    },
+    {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-loss",
+      "rank": 7,
+      "rationale": "Loss on compose-post->unique-id aborts post creation at the first dependency; without retry, a transient ID-service failure is directly visible to users. Affects the compose-post->unique-id edge."
+    },
+    {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-delay",
+      "rank": 8,
+      "rationale": "Delay on home-timeline->post-storage adds direct latency to every home-timeline read and is only capped by the 10s timeout, producing multi-second user-facing delays. Demonstrates latency propagation on the read path."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-home-timeline-service",
+      "rank": 9,
+      "rationale": "Kill of the home-timeline service removes both the write fan-out used by compose-post and the read path for home timelines; recovery depends solely on pod restart with no redundant instance. Confirms availability/recovery weakness."
+    },
+    {
+      "candidate_id": "SOCIALNET-kill-compose-post-service",
+      "rank": 10,
+      "rationale": "Kill of the compose-post service takes down the single orchestrator for all post creation; no replica failover means a total write outage until restart. Availability/recovery weakness at the core writer."
+    }
+  ]
+}

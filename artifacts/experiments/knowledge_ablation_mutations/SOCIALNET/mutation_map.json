@@ -1,0 +1,569 @@
+{
+  "entries": {
+    "SOCIALNET-compose-post-home-timeline-delay": {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-home-timeline-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "home-timeline",
+      "yaml_sha256": "907e0c34e719ad9ba6f367a1b456193c9f0c90a062b7b38375133572a65a4325"
+    },
+    "SOCIALNET-compose-post-home-timeline-loss": {
+      "candidate_id": "SOCIALNET-compose-post-home-timeline-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-home-timeline-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "home-timeline",
+      "yaml_sha256": "185a8c5734757037090ed9146162beaed6f0b03752f1a25ff84bd68b73c846fa"
+    },
+    "SOCIALNET-compose-post-media-delay": {
+      "candidate_id": "SOCIALNET-compose-post-media-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-media-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "media",
+      "yaml_sha256": "3d4d1164f190e95e755f08e79bf0feaccd76e12857fe05a387e7f2aa54886605"
+    },
+    "SOCIALNET-compose-post-media-loss": {
+      "candidate_id": "SOCIALNET-compose-post-media-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-media-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "media",
+      "yaml_sha256": "b8ca78622b80bbe5c06c4553160da6e2ec474093247794dd12aa64660243baed"
+    },
+    "SOCIALNET-compose-post-post-storage-delay": {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-post-storage-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "post-storage",
+      "yaml_sha256": "7923f69bed502399b62b3b8c776c1f64847f9bc9c242ed0fd1819d54e95d1804"
+    },
+    "SOCIALNET-compose-post-post-storage-loss": {
+      "candidate_id": "SOCIALNET-compose-post-post-storage-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-post-storage-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "post-storage",
+      "yaml_sha256": "9a54722c83e5c4aa8424b23c0410fe43fb66df7c687dc72955ace42dc81c99de"
+    },
+    "SOCIALNET-compose-post-text-delay": {
+      "candidate_id": "SOCIALNET-compose-post-text-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-text-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "text",
+      "yaml_sha256": "ff34f7d2bbf33aa7b2a222e137915b30619b233c22ee6c619a0ee735592db82a"
+    },
+    "SOCIALNET-compose-post-text-loss": {
+      "candidate_id": "SOCIALNET-compose-post-text-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-text-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "text",
+      "yaml_sha256": "20d47a67cea7be1e032e8632b51e18e1d74fcc8311938e02d94cedbde0d35aa8"
+    },
+    "SOCIALNET-compose-post-unique-id-delay": {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-unique-id-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "unique-id",
+      "yaml_sha256": "d73088cf6ef09fc9ea38fea4017688083cf9befb124dc2237564733650099edc"
+    },
+    "SOCIALNET-compose-post-unique-id-loss": {
+      "candidate_id": "SOCIALNET-compose-post-unique-id-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-unique-id-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "unique-id",
+      "yaml_sha256": "8ed8c60182921d35f4195d7d001d7d50384c2cbb90f39e1069dbaee7a710c179"
+    },
+    "SOCIALNET-compose-post-user-delay": {
+      "candidate_id": "SOCIALNET-compose-post-user-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-user-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "user",
+      "yaml_sha256": "9b73bdcee6fe37b03e33f96e095562c62086f8737b97b12fdb3cdd77f3305f58"
+    },
+    "SOCIALNET-compose-post-user-loss": {
+      "candidate_id": "SOCIALNET-compose-post-user-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-user-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "user",
+      "yaml_sha256": "16b1066f69610a55af45f9aebbdf23ab539274ec49924e927bd243e97857c522"
+    },
+    "SOCIALNET-compose-post-user-timeline-delay": {
+      "candidate_id": "SOCIALNET-compose-post-user-timeline-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-user-timeline-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "user-timeline",
+      "yaml_sha256": "40f2b4be06f26cdfbdda717fcb2c876befdbba70101ca26a3cdf19ac900a1aa7"
+    },
+    "SOCIALNET-compose-post-user-timeline-loss": {
+      "candidate_id": "SOCIALNET-compose-post-user-timeline-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-compose-post-user-timeline-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "user-timeline",
+      "yaml_sha256": "3a49619727aed8901d5d155c695efda0324e834442b32e35518fbe059458df9b"
+    },
+    "SOCIALNET-home-timeline-post-storage-delay": {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-home-timeline-post-storage-delay.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "post-storage",
+      "yaml_sha256": "48404e35f161f42ff13576cd6aa682b8fd63624d0b3b8253f72d8a95f58f3ae1"
+    },
+    "SOCIALNET-home-timeline-post-storage-loss": {
+      "candidate_id": "SOCIALNET-home-timeline-post-storage-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-home-timeline-post-storage-loss.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "post-storage",
+      "yaml_sha256": "8e6a1c9214656f8753d799f944744696bcb518658e588ca2cdbd6ce090ab2ddf"
+    },
+    "SOCIALNET-home-timeline-social-graph-delay": {
+      "candidate_id": "SOCIALNET-home-timeline-social-graph-delay",
+      "fault_family": "delay",
+      "fault_parameters": {
+        "action": "delay",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "jitter": "0ms",
+        "latency": "2000ms"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-home-timeline-social-graph-delay.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "social-graph",
+      "yaml_sha256": "fcddb0e1c89782ce077e5cf947c45467921511116a9f0a0c1a34dd91f1a1412b"
+    },
+    "SOCIALNET-home-timeline-social-graph-loss": {
+      "candidate_id": "SOCIALNET-home-timeline-social-graph-loss",
+      "fault_family": "loss",
+      "fault_parameters": {
+        "action": "loss",
+        "correlation": "100",
+        "direction": "to",
+        "duration": "30s",
+        "loss": "100"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-home-timeline-social-graph-loss.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "social-graph",
+      "yaml_sha256": "730ea795911ac2e21960bdf2df1b40f50449635163d03d99f2c6ad9adc66fccf"
+    },
+    "SOCIALNET-kill-compose-post-service": {
+      "candidate_id": "SOCIALNET-kill-compose-post-service",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-compose-post-service.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "compose-post-service",
+      "yaml_sha256": "7dee8a4b1206c2e42935dc3f67e4ccdd8e747b61c1a8015ef5c7b854dcbe8f64"
+    },
+    "SOCIALNET-kill-home-timeline-service": {
+      "candidate_id": "SOCIALNET-kill-home-timeline-service",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-home-timeline-service.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "home-timeline-service",
+      "yaml_sha256": "16d3f5993e627793d798ca2e19b5a237857902171fa964e084cd47a5bec21d4e"
+    },
+    "SOCIALNET-kill-media-service": {
+      "candidate_id": "SOCIALNET-kill-media-service",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-media-service.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "media-service",
+      "yaml_sha256": "a35eb7015cf8fd14cc46afa0debf2d1ee881f4664dcb7af515b5551ed1f8d143"
+    },
+    "SOCIALNET-kill-nginx-thrift": {
+      "candidate_id": "SOCIALNET-kill-nginx-thrift",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-nginx-thrift.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "nginx-thrift",
+      "yaml_sha256": "91ddec10a30b751a14ccf05392dfa33da5fcd69cf438c2daca6f5e00a132ecc0"
+    },
+    "SOCIALNET-kill-post-storage-service": {
+      "candidate_id": "SOCIALNET-kill-post-storage-service",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-post-storage-service.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "post-storage-service",
+      "yaml_sha256": "f1c445c3678a5fe04e2e130a17d5566afa4eb3a2e0914a5b58efcd149db937cc"
+    },
+    "SOCIALNET-kill-social-graph-service": {
+      "candidate_id": "SOCIALNET-kill-social-graph-service",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-social-graph-service.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "social-graph-service",
+      "yaml_sha256": "515ce0a794d97eea7710574afbeb35dcb10a10c4777ae254abe0b985569feee4"
+    },
+    "SOCIALNET-kill-text-service": {
+      "candidate_id": "SOCIALNET-kill-text-service",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-text-service.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "text-service",
+      "yaml_sha256": "ef282d8856af55933940cd925fd2ae7453762d440a27b6e93a521b756f622fbf"
+    },
+    "SOCIALNET-kill-unique-id-service": {
+      "candidate_id": "SOCIALNET-kill-unique-id-service",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-unique-id-service.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "unique-id-service",
+      "yaml_sha256": "423051606b62aa74c9d2c58843b1cfa656385437e968b93b3c906fbc0e452a50"
+    },
+    "SOCIALNET-kill-url-shorten-service": {
+      "candidate_id": "SOCIALNET-kill-url-shorten-service",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-url-shorten-service.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "url-shorten-service",
+      "yaml_sha256": "6041557d331c67197da7ba7fef267363eb0a5d8330ba48a96e57ecd89b4c47d7"
+    },
+    "SOCIALNET-kill-user-mention-service": {
+      "candidate_id": "SOCIALNET-kill-user-mention-service",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-user-mention-service.yaml",
+      "pool_eligibility": [
+        "formal"
+      ],
+      "target": "user-mention-service",
+      "yaml_sha256": "322a2785afa289a74e1380203ef79c9254783a0f490acd06fac52f1d2a5a1009"
+    },
+    "SOCIALNET-kill-user-service": {
+      "candidate_id": "SOCIALNET-kill-user-service",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-user-service.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "user-service",
+      "yaml_sha256": "46ba768a5ef2df2785f46e481c06e7b044689e16a38ba3fb55612724e1d39559"
+    },
+    "SOCIALNET-kill-user-timeline-service": {
+      "candidate_id": "SOCIALNET-kill-user-timeline-service",
+      "fault_family": "kill",
+      "fault_parameters": {
+        "action": "pod-kill",
+        "duration": "30s"
+      },
+      "mode": "one",
+      "mutation_path": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/SOCIALNET-kill-user-timeline-service.yaml",
+      "pool_eligibility": [
+        "pilot",
+        "formal"
+      ],
+      "target": "user-timeline-service",
+      "yaml_sha256": "5a49e1afef7801843744245e2ea0c3c3105c2a98de42d612b1352f725e503b60"
+    }
+  },
+  "mutation_directory": "artifacts/experiments/knowledge_ablation_mutations/SOCIALNET/",
+  "namespace": "heldout-socialnet-lab (pre-registered placeholder; confirm at deployment gate)",
+  "parameter_tiers": {
+    "delay": {
+      "action": "delay",
+      "correlation": "100",
+      "direction": "to",
+      "duration": "30s",
+      "jitter": "0ms",
+      "latency": "2000ms"
+    },
+    "kill": {
+      "action": "pod-kill",
+      "duration": "30s"
+    },
+    "loss": {
+      "action": "loss",
+      "correlation": "100",
+      "direction": "to",
+      "duration": "30s",
+      "loss": "100"
+    }
+  },
+  "project_id": "SOCIALNET",
+  "protocol_sha256": "9dc24410830ac894326a0fb9eff5915dbbd2a1283ef842809214b8df9a5a6344",
+  "purpose": "ablation protocol v1 fix 7: independent candidate_id -> mutation_path mapping (frozen candidate pools are NOT modified; their mutation_path stays null)",
+  "schema_version": 1,
+  "status": "frozen_pre_registered_not_yet_executed"
+}

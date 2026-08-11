@@ -63,12 +63,12 @@
     "candidate_impact": "availability candidates restricted; deployment form unknown until verified"
   },
   "fault_families": {
-    "delay": "constructible (HTTP/gRPC edge, needs deployment)",
-    "loss": "constructible (same)",
-    "kill": "needs k8s deployment (no manifest present -> high environment gate)"
+    "delay": "potential_only (HTTP/gRPC edge identified; deployment target unverified)",
+    "loss": "potential_only (HTTP/gRPC edge identified; deployment target unverified)",
+    "kill": "blocked_pending_deployment_target (no k8s/compose manifest)"
   },
   "candidate_potential": {
-    "pilot_24": "unknown (8 API services + ~8 edges; deployment form determines)",
+    "pilot_24": "unknown (only 2 contract edges are currently source-verified; deployment form and expanded edge inventory required)",
     "formal_48": "unknown",
     "note": "availability candidates restricted by absence of k8s manifest"
   },

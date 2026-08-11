@@ -1,0 +1,484 @@
+{
+  "schema_version": 1,
+  "kind": "selection_only_llm_input_manifest",
+  "created_at": "2026-08-10T16:45:18.965004+00:00",
+  "protocol": "artifacts/experiments/llm_knowledge_ablation_selection_only_protocol_v1.md",
+  "projects": {
+    "ESHOP": [
+      "blind",
+      "generic",
+      "partial-pre"
+    ],
+    "SOCIALNET": [
+      "blind",
+      "generic",
+      "full-pre"
+    ]
+  },
+  "phases": [
+    "pilot",
+    "formal"
+  ],
+  "seeds": {
+    "pilot": [
+      1001,
+      1002,
+      1003
+    ],
+    "formal": [
+      2001,
+      2002,
+      2003
+    ]
+  },
+  "no_llm_called": true,
+  "no_runtime_execution": true,
+  "files": {
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/blind/pilot/bundle.json": "c6224234bcb93de938e2d331dbb01b1d3a60a9cf8ae029ab0feba00cf404f4dc",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/blind/pilot/seed-1001.prompt.txt": "ae5338562d4eb04a1b5609bff768aa3969aac4bb2d16456c3cf2c65e355ba717",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/blind/pilot/seed-1002.prompt.txt": "7719947f26abd9c8b008d9bdf9c21814f0c68628160707cef78dbcd44dac60a4",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/blind/pilot/seed-1003.prompt.txt": "6da81df756272bfb2e8d44e2445b2d22fedb69a3a6a7cb0bf98745be69ffd171",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/blind/formal/bundle.json": "b1761c818cb3c395a9f75b8a1696c0bdc258c73188f038ab8955600516b2e1e5",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/blind/formal/seed-2001.prompt.txt": "6be84d81249f3cce753dfc708b02c1ed9ed3f55a0f16ea1be6ad51e3d3dbbd3b",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/blind/formal/seed-2002.prompt.txt": "438124f1c3fa39dd9362640f6859e0cd22533c8e6039d0cdad5f1a0eaa89f1b6",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/blind/formal/seed-2003.prompt.txt": "72e5c4356fc236bd6141dc3890d7682e33308ac800666919d11c11c13593aa7d",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/generic/pilot/bundle.json": "87f9d1516e59f246e378422519251aa1b1e0706e82d181c4ff0548db5c1b93e3",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/generic/pilot/seed-1001.prompt.txt": "ce9793f23833f28c700100ad17be4e066f1df38aa4ca7a3d1216c182b680ca66",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/generic/pilot/seed-1002.prompt.txt": "3e19e14030de6e241aab2139e3bf10f41c80f54d02782447f8d05f248e49a3df",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/generic/pilot/seed-1003.prompt.txt": "6a65352d176e24a1d69641fbe910c58f5a81f01dfe029878cba986716a5e39ca",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/generic/formal/bundle.json": "b860dd9e25e5e44186e6a8c410daea16118f3b795cceca9724772d82b10e466f",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/generic/formal/seed-2001.prompt.txt": "b190573690d435d1c6d7f1816add1af1041971c7cc4a6f61490b0f42d41f9881",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/generic/formal/seed-2002.prompt.txt": "127b71289d7fdde8b2fb09cb908bf59e17b1c4ef719faf44b88a10ba2cd90373",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/generic/formal/seed-2003.prompt.txt": "18b6ef6572b6b64a2136b504ad945957fa8f03c8e176b52ff66086bfd99bfc4a",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/partial-pre/pilot/bundle.json": "5b1bf106b03ccb27d7abb59332c9a5adab9947bdb24c23a24f7909ef41723939",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/partial-pre/pilot/seed-1001.prompt.txt": "cc78b0e7dcbb91390d61c838eb95fa920fbac0949fe1895e3d0f68be05d147df",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/partial-pre/pilot/seed-1002.prompt.txt": "f52db8db6a99bde01f5ac14bc938f245ac2192d1102a6a92620d7429378b7e04",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/partial-pre/pilot/seed-1003.prompt.txt": "27b7fa6ae2e00cbca39650a623a157846e8b68ace60df1b466126f068ba83f29",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/partial-pre/formal/bundle.json": "fb02df21bd9da7ea745728502d20a37e0fbe7f43cedaeba98081a579c7b0f515",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/partial-pre/formal/seed-2001.prompt.txt": "e7d8fcbf5276813fe90bbc5386f939c2eaf628a653ad1aad3762e23ce0936096",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/partial-pre/formal/seed-2002.prompt.txt": "4f4f049d9da5e2422f8268bca61568f97130448e79b3f9936e966f5d7cf23044",
+    "artifacts/experiments/knowledge_ablation_selection_only/ESHOP/partial-pre/formal/seed-2003.prompt.txt": "dd03470096f6148a01493e72e3876609a9211b84907e1fc4d8017130f66ea0e2",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/blind/pilot/bundle.json": "d7898002cf887e91310d216947c75c0486a287882b44131914a9573ef17486bf",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/blind/pilot/seed-1001.prompt.txt": "13919f47fd60954ca7e525b4aa0ada27a7a40f94e319a3f06c9c9a8eb88e11fb",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/blind/pilot/seed-1002.prompt.txt": "72c0cd0ad5a57e618bb02d2dbc380c41ac05c67a0495c6e8d13fd710c5f2f1a9",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/blind/pilot/seed-1003.prompt.txt": "bb6d0c722f2aed350ffc3a9e08b1ec46804d6b1b938dcd5385b92bdcefaa0fdb",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/blind/formal/bundle.json": "763d384c7ec3060092491a3c50f80d60ffcc237c86759e824caaa5c9727a5033",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/blind/formal/seed-2001.prompt.txt": "3539ddf5535034fa01bb377d32f1fa53bef31de58de92ca57f7b0812b6d3779f",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/blind/formal/seed-2002.prompt.txt": "1cd5275966e2f541d005537e7095471a47c446a10a892a3dabe0ce0ba60001eb",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/blind/formal/seed-2003.prompt.txt": "82bd115da457d7ce352502d2e1fa40192eb75e916eaa6dd54cc97ea399fc0b72",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/generic/pilot/bundle.json": "5ece21aabc1c587d5523ed16e6d0f54e4c0abe63df4cceacb31dedcc9e6315e8",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/generic/pilot/seed-1001.prompt.txt": "266f5245fe77c319e081b3e32f353c0e367a0ada13ede00cf63aa17613092df9",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/generic/pilot/seed-1002.prompt.txt": "57376306ef7f660140a5ac5118bf55bc7b5c77e10d5bc8eba1c5bcac07ac74ec",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/generic/pilot/seed-1003.prompt.txt": "b43e7dcffcbca5092793e5b3f7c9db6e5832b72e2e8e3157ac013ad529d735ea",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/generic/formal/bundle.json": "78debd3f2bc0a59768debf6cbcd9c837bd3dffbe84f3a5eac5167a4d8f7b8ba9",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/generic/formal/seed-2001.prompt.txt": "6645cd7e552b74135f5851f1ec90858203780920799f04502d6dfb8a6afb0188",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/generic/formal/seed-2002.prompt.txt": "2dc96c71d117b63c9cfb7da09f59b6b752425ad84d2c19e7e1b262162b62fe0b",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/generic/formal/seed-2003.prompt.txt": "99844b51e3a9194ec3d1193875929e3b702a542d4a03f4bc198bbc683e135a3e",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/full-pre/pilot/bundle.json": "40d12a64fce184b3a5c123fa16572658ad54c697fc4cf340eca36db134ceb2ff",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/full-pre/pilot/seed-1001.prompt.txt": "13879646e21ce415dbb7e9cf5dcd8708a86fc9254d5e9b790467a384edad3a60",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/full-pre/pilot/seed-1002.prompt.txt": "39ab23fbaf5c88f434a51bb2a0df3ee3c349eb9f583335cbb774886bfd1c8904",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/full-pre/pilot/seed-1003.prompt.txt": "a11c2e1fe0c4ea191fdbc8692e8a169dfaddc69d296ec8762d486b620699a1f6",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/full-pre/formal/bundle.json": "e5f183f4a3225144d2a0fe69896873250a2eaba19db1922131faab0d6537a55b",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/full-pre/formal/seed-2001.prompt.txt": "0dc29911b08b1d9b2ce2f0d5152de692ec3146508f89b3551c16da82289a7bf2",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/full-pre/formal/seed-2002.prompt.txt": "e7dc1af913949c21664595bfd9f2e39b0d0817acb1fe12ad017f308cf9058fdf",
+    "artifacts/experiments/knowledge_ablation_selection_only/SOCIALNET/full-pre/formal/seed-2003.prompt.txt": "7f0db8cf8524b30c5565c7b6f96a12a538afca50f568e18cc1b37d9841d303a3"
+  },
+  "leakage_audit": [
+    {
+      "project": "ESHOP",
+      "arm": "LLM-blind",
+      "phase": "pilot",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "c6224234bcb93de938e2d331dbb01b1d3a60a9cf8ae029ab0feba00cf404f4dc",
+      "prompt_sha256": {
+        "1001": "ae5338562d4eb04a1b5609bff768aa3969aac4bb2d16456c3cf2c65e355ba717",
+        "1002": "7719947f26abd9c8b008d9bdf9c21814f0c68628160707cef78dbcd44dac60a4",
+        "1003": "6da81df756272bfb2e8d44e2445b2d22fedb69a3a6a7cb0bf98745be69ffd171"
+      },
+      "candidate_order_sha256": {
+        "1001": "78e6e304a4eb862856e0e59e7ef290ccc919bf872abffde4b339bd4673123f56",
+        "1002": "e9f5fb9e711b7f365c643e04bc8ca3248756a833fd0cdf8090c1d4864a6c0847",
+        "1003": "a478f8bbb56d0b30bc31912b82d48040c5dbb6b84ca7db1425d5dffe2a6ea8c8"
+      }
+    },
+    {
+      "project": "ESHOP",
+      "arm": "LLM-blind",
+      "phase": "formal",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "b1761c818cb3c395a9f75b8a1696c0bdc258c73188f038ab8955600516b2e1e5",
+      "prompt_sha256": {
+        "2001": "6be84d81249f3cce753dfc708b02c1ed9ed3f55a0f16ea1be6ad51e3d3dbbd3b",
+        "2002": "438124f1c3fa39dd9362640f6859e0cd22533c8e6039d0cdad5f1a0eaa89f1b6",
+        "2003": "72e5c4356fc236bd6141dc3890d7682e33308ac800666919d11c11c13593aa7d"
+      },
+      "candidate_order_sha256": {
+        "2001": "accb9fbc5e5633a5f60fadbdf1488c8b43177425d2fc6e725fb3ad188e511d05",
+        "2002": "49a0f79c920ce89eea49de3546762c42e8b0f032f3d1380e15b43c2df500bd4e",
+        "2003": "0dd9e13436a1316ef3de216fa3f48d842c6fd3b93c407f2543319253ec6a690f"
+      }
+    },
+    {
+      "project": "ESHOP",
+      "arm": "LLM-generic",
+      "phase": "pilot",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "87f9d1516e59f246e378422519251aa1b1e0706e82d181c4ff0548db5c1b93e3",
+      "prompt_sha256": {
+        "1001": "ce9793f23833f28c700100ad17be4e066f1df38aa4ca7a3d1216c182b680ca66",
+        "1002": "3e19e14030de6e241aab2139e3bf10f41c80f54d02782447f8d05f248e49a3df",
+        "1003": "6a65352d176e24a1d69641fbe910c58f5a81f01dfe029878cba986716a5e39ca"
+      },
+      "candidate_order_sha256": {
+        "1001": "78e6e304a4eb862856e0e59e7ef290ccc919bf872abffde4b339bd4673123f56",
+        "1002": "e9f5fb9e711b7f365c643e04bc8ca3248756a833fd0cdf8090c1d4864a6c0847",
+        "1003": "a478f8bbb56d0b30bc31912b82d48040c5dbb6b84ca7db1425d5dffe2a6ea8c8"
+      }
+    },
+    {
+      "project": "ESHOP",
+      "arm": "LLM-generic",
+      "phase": "formal",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "b860dd9e25e5e44186e6a8c410daea16118f3b795cceca9724772d82b10e466f",
+      "prompt_sha256": {
+        "2001": "b190573690d435d1c6d7f1816add1af1041971c7cc4a6f61490b0f42d41f9881",
+        "2002": "127b71289d7fdde8b2fb09cb908bf59e17b1c4ef719faf44b88a10ba2cd90373",
+        "2003": "18b6ef6572b6b64a2136b504ad945957fa8f03c8e176b52ff66086bfd99bfc4a"
+      },
+      "candidate_order_sha256": {
+        "2001": "accb9fbc5e5633a5f60fadbdf1488c8b43177425d2fc6e725fb3ad188e511d05",
+        "2002": "49a0f79c920ce89eea49de3546762c42e8b0f032f3d1380e15b43c2df500bd4e",
+        "2003": "0dd9e13436a1316ef3de216fa3f48d842c6fd3b93c407f2543319253ec6a690f"
+      }
+    },
+    {
+      "project": "ESHOP",
+      "arm": "LLM-partial-pre",
+      "phase": "pilot",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "5b1bf106b03ccb27d7abb59332c9a5adab9947bdb24c23a24f7909ef41723939",
+      "prompt_sha256": {
+        "1001": "cc78b0e7dcbb91390d61c838eb95fa920fbac0949fe1895e3d0f68be05d147df",
+        "1002": "f52db8db6a99bde01f5ac14bc938f245ac2192d1102a6a92620d7429378b7e04",
+        "1003": "27b7fa6ae2e00cbca39650a623a157846e8b68ace60df1b466126f068ba83f29"
+      },
+      "candidate_order_sha256": {
+        "1001": "78e6e304a4eb862856e0e59e7ef290ccc919bf872abffde4b339bd4673123f56",
+        "1002": "e9f5fb9e711b7f365c643e04bc8ca3248756a833fd0cdf8090c1d4864a6c0847",
+        "1003": "a478f8bbb56d0b30bc31912b82d48040c5dbb6b84ca7db1425d5dffe2a6ea8c8"
+      }
+    },
+    {
+      "project": "ESHOP",
+      "arm": "LLM-partial-pre",
+      "phase": "formal",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "fb02df21bd9da7ea745728502d20a37e0fbe7f43cedaeba98081a579c7b0f515",
+      "prompt_sha256": {
+        "2001": "e7d8fcbf5276813fe90bbc5386f939c2eaf628a653ad1aad3762e23ce0936096",
+        "2002": "4f4f049d9da5e2422f8268bca61568f97130448e79b3f9936e966f5d7cf23044",
+        "2003": "dd03470096f6148a01493e72e3876609a9211b84907e1fc4d8017130f66ea0e2"
+      },
+      "candidate_order_sha256": {
+        "2001": "accb9fbc5e5633a5f60fadbdf1488c8b43177425d2fc6e725fb3ad188e511d05",
+        "2002": "49a0f79c920ce89eea49de3546762c42e8b0f032f3d1380e15b43c2df500bd4e",
+        "2003": "0dd9e13436a1316ef3de216fa3f48d842c6fd3b93c407f2543319253ec6a690f"
+      }
+    },
+    {
+      "project": "SOCIALNET",
+      "arm": "LLM-blind",
+      "phase": "pilot",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "d7898002cf887e91310d216947c75c0486a287882b44131914a9573ef17486bf",
+      "prompt_sha256": {
+        "1001": "13919f47fd60954ca7e525b4aa0ada27a7a40f94e319a3f06c9c9a8eb88e11fb",
+        "1002": "72c0cd0ad5a57e618bb02d2dbc380c41ac05c67a0495c6e8d13fd710c5f2f1a9",
+        "1003": "bb6d0c722f2aed350ffc3a9e08b1ec46804d6b1b938dcd5385b92bdcefaa0fdb"
+      },
+      "candidate_order_sha256": {
+        "1001": "8133148b7959a5245b5d7f06a0f6c6bff0baece9f7838a4fc87539217c94e3a0",
+        "1002": "0f1ae5bca0c7286a7f6c410db063c974614ebf6001a51a79ec5c82ef3cfb474b",
+        "1003": "4b774aec84cc02a3a36ac7b35ca2951d11f8f9c7f66290e076ced93c1d62c4ba"
+      }
+    },
+    {
+      "project": "SOCIALNET",
+      "arm": "LLM-blind",
+      "phase": "formal",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "763d384c7ec3060092491a3c50f80d60ffcc237c86759e824caaa5c9727a5033",
+      "prompt_sha256": {
+        "2001": "3539ddf5535034fa01bb377d32f1fa53bef31de58de92ca57f7b0812b6d3779f",
+        "2002": "1cd5275966e2f541d005537e7095471a47c446a10a892a3dabe0ce0ba60001eb",
+        "2003": "82bd115da457d7ce352502d2e1fa40192eb75e916eaa6dd54cc97ea399fc0b72"
+      },
+      "candidate_order_sha256": {
+        "2001": "bcc0990322e844a3b49e4f2be6dd9eaaf119558a0b17ac7809c2b210f5d06813",
+        "2002": "cd1bcb06e873ac71827a4f69fe451faff5e2309a1c87453e244dea8f4b70a1e1",
+        "2003": "f184a1dae547eacd4053becef70324ab4339147203722cdef33018239c6fec76"
+      }
+    },
+    {
+      "project": "SOCIALNET",
+      "arm": "LLM-generic",
+      "phase": "pilot",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "5ece21aabc1c587d5523ed16e6d0f54e4c0abe63df4cceacb31dedcc9e6315e8",
+      "prompt_sha256": {
+        "1001": "266f5245fe77c319e081b3e32f353c0e367a0ada13ede00cf63aa17613092df9",
+        "1002": "57376306ef7f660140a5ac5118bf55bc7b5c77e10d5bc8eba1c5bcac07ac74ec",
+        "1003": "b43e7dcffcbca5092793e5b3f7c9db6e5832b72e2e8e3157ac013ad529d735ea"
+      },
+      "candidate_order_sha256": {
+        "1001": "8133148b7959a5245b5d7f06a0f6c6bff0baece9f7838a4fc87539217c94e3a0",
+        "1002": "0f1ae5bca0c7286a7f6c410db063c974614ebf6001a51a79ec5c82ef3cfb474b",
+        "1003": "4b774aec84cc02a3a36ac7b35ca2951d11f8f9c7f66290e076ced93c1d62c4ba"
+      }
+    },
+    {
+      "project": "SOCIALNET",
+      "arm": "LLM-generic",
+      "phase": "formal",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "78debd3f2bc0a59768debf6cbcd9c837bd3dffbe84f3a5eac5167a4d8f7b8ba9",
+      "prompt_sha256": {
+        "2001": "6645cd7e552b74135f5851f1ec90858203780920799f04502d6dfb8a6afb0188",
+        "2002": "2dc96c71d117b63c9cfb7da09f59b6b752425ad84d2c19e7e1b262162b62fe0b",
+        "2003": "99844b51e3a9194ec3d1193875929e3b702a542d4a03f4bc198bbc683e135a3e"
+      },
+      "candidate_order_sha256": {
+        "2001": "bcc0990322e844a3b49e4f2be6dd9eaaf119558a0b17ac7809c2b210f5d06813",
+        "2002": "cd1bcb06e873ac71827a4f69fe451faff5e2309a1c87453e244dea8f4b70a1e1",
+        "2003": "f184a1dae547eacd4053becef70324ab4339147203722cdef33018239c6fec76"
+      }
+    },
+    {
+      "project": "SOCIALNET",
+      "arm": "LLM-full-pre",
+      "phase": "pilot",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "40d12a64fce184b3a5c123fa16572658ad54c697fc4cf340eca36db134ceb2ff",
+      "prompt_sha256": {
+        "1001": "13879646e21ce415dbb7e9cf5dcd8708a86fc9254d5e9b790467a384edad3a60",
+        "1002": "39ab23fbaf5c88f434a51bb2a0df3ee3c349eb9f583335cbb774886bfd1c8904",
+        "1003": "a11c2e1fe0c4ea191fdbc8692e8a169dfaddc69d296ec8762d486b620699a1f6"
+      },
+      "candidate_order_sha256": {
+        "1001": "8133148b7959a5245b5d7f06a0f6c6bff0baece9f7838a4fc87539217c94e3a0",
+        "1002": "0f1ae5bca0c7286a7f6c410db063c974614ebf6001a51a79ec5c82ef3cfb474b",
+        "1003": "4b774aec84cc02a3a36ac7b35ca2951d11f8f9c7f66290e076ced93c1d62c4ba"
+      }
+    },
+    {
+      "project": "SOCIALNET",
+      "arm": "LLM-full-pre",
+      "phase": "formal",
+      "pass": true,
+      "forbidden_term_hits": [],
+      "forbidden_field_hits": [],
+      "removed_fields": [
+        "candidate_protection_classification",
+        "classification",
+        "corpus_evidence",
+        "evidence_cases",
+        "evidence_count",
+        "evidence_files",
+        "experiment_evidence",
+        "mutation_path",
+        "oracle_label",
+        "quota_compliance",
+        "static_evidence_refs",
+        "verdict"
+      ],
+      "bundle_sha256": "e5f183f4a3225144d2a0fe69896873250a2eaba19db1922131faab0d6537a55b",
+      "prompt_sha256": {
+        "2001": "0dc29911b08b1d9b2ce2f0d5152de692ec3146508f89b3551c16da82289a7bf2",
+        "2002": "e7dc1af913949c21664595bfd9f2e39b0d0817acb1fe12ad017f308cf9058fdf",
+        "2003": "7f0db8cf8524b30c5565c7b6f96a12a538afca50f568e18cc1b37d9841d303a3"
+      },
+      "candidate_order_sha256": {
+        "2001": "bcc0990322e844a3b49e4f2be6dd9eaaf119558a0b17ac7809c2b210f5d06813",
+        "2002": "cd1bcb06e873ac71827a4f69fe451faff5e2309a1c87453e244dea8f4b70a1e1",
+        "2003": "f184a1dae547eacd4053becef70324ab4339147203722cdef33018239c6fec76"
+      }
+    }
+  ]
+}
