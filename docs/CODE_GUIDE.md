@@ -49,4 +49,3 @@ reported rather than hidden.
 When adding a new module, start with a module docstring that states the paper
 role, inputs, outputs, and side effects. Add a focused regression test under
 `tools/tests/` for each new gate or classification branch.
-
