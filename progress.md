@@ -387,3 +387,4 @@
 - Full regression passed: 297 tests and 5 subtests. Secret-pattern scan found no credential material in the changed implementation, test, or guide files.
 - No DeepSeek credential was read, no API request was sent, and this workstation did not mutate a Kubernetes cluster.
 - Formal-batch implementation was committed as `c7a434a` and pushed to `remediation/2026-08-09-review`; the pre-existing timestamp-only manifest change remained unstaged.
+- Diagnosed the teacher batch stop: injection, UID replacement, and cleanup succeeded, while the first post-recovery port-forward hit the application startup window. Updated the runner to retry tunnel creation within the existing 120-second recovery budget while still requiring the full post-recovery HTTP 200 count.

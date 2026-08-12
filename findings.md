@@ -237,3 +237,4 @@ Artifact checks found nine classification-index mismatches rather than three; al
 - The five current method outputs represent two KB mutations, two noKB mutations, and one ChaosEater-adapter mutation. Three repetitions therefore require 15 independent injections.
 - `ChaosEater-adapter-open` remains supplementary and cannot be described as official ChaosEater because P02 lacks the required native Skaffold input.
 - Earlier P02 runtime evidence uses a different environment and uneven repetitions. Teacher results must be written to `teacher-minikube-formal` and must not be merged by identical YAML identity.
+- The first teacher formal batch stopped after one completed run. The second run injected and replaced the target successfully, but its first post-recovery port-forward exited because the new Ready Pod had not started listening on port 8080. Cleanup succeeded and no Chaos resource remained. This is an invalid infrastructure observation, not a noKB method outcome.

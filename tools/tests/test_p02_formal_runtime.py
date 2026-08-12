@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import tools.run_p02_formal_batch as batch
 import tools.run_p02_podchaos as runner
@@ -72,3 +72,36 @@ def test_namespace_health_requires_every_deployment_and_pod_ready() -> None:
 
     assert health["healthy"] is False
     assert health["pods"][0]["ready"] is False
+
+
+def test_post_recovery_retries_tunnel_startup_until_http_oracle_succeeds() -> None:
+    live = Mock()
+    live.poll.return_value = None
+    sample = {"status_code": 200}
+    with (
+        patch.object(runner, "stop_forward"),
+        patch.object(runner, "reconnect_forward", side_effect=[RuntimeError("port not listening"), live]),
+        patch.object(runner, "request", return_value=sample),
+        patch.object(runner.time, "sleep"),
+    ):
+        proc, samples, successes, warnings = runner.collect_post_recovery(None, 1, timeout=5)
+
+    assert proc is live
+    assert samples == [sample]
+    assert successes == 1
+    assert warnings == ["post_recovery_port_forward_retry: port not listening"]
+
+
+def test_post_recovery_requires_full_success_count() -> None:
+    live = Mock()
+    live.poll.return_value = None
+    with (
+        patch.object(runner, "stop_forward"),
+        patch.object(runner, "reconnect_forward", return_value=live),
+        patch.object(runner, "request", side_effect=[{"status_code": 200}, {"status_code": 200}]),
+    ):
+        _, samples, successes, warnings = runner.collect_post_recovery(None, 2, timeout=5)
+
+    assert len(samples) == 2
+    assert successes == 2
+    assert warnings == []

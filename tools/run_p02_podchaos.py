@@ -174,12 +174,48 @@ def reconnect_forward(proc: subprocess.Popen[str] | None, timeout: float = 30.0)
     """Restart the tunnel and require the process to remain alive briefly."""
     stop_forward(proc)
     fresh = start_forward()
-    wait_forward(fresh, timeout=timeout)
-    time.sleep(0.5)
-    if fresh.poll() is not None:
-        out, err = fresh.communicate()
-        raise RuntimeError(f"port-forward exited after opening: {(err or out).strip()}")
-    return fresh
+    try:
+        wait_forward(fresh, timeout=timeout)
+        time.sleep(0.5)
+        if fresh.poll() is not None:
+            out, err = fresh.communicate()
+            raise RuntimeError(f"port-forward exited after opening: {(err or out).strip()}")
+        return fresh
+    except Exception:
+        stop_forward(fresh)
+        raise
+
+
+def collect_post_recovery(
+    proc: subprocess.Popen[str] | None,
+    required_successes: int,
+    timeout: float = 120.0,
+) -> tuple[subprocess.Popen[str] | None, list[dict[str, Any]], int, list[str]]:
+    """Retry tunnel startup until the recovered application serves HTTP 200."""
+    deadline = time.monotonic() + timeout
+    samples: list[dict[str, Any]] = []
+    warnings: list[str] = []
+    successes = 0
+    stop_forward(proc)
+    proc = None
+    while time.monotonic() < deadline and successes < max(1, required_successes):
+        if proc is None or proc.poll() is not None:
+            try:
+                proc = reconnect_forward(proc, timeout=min(30.0, max(1.0, deadline - time.monotonic())))
+            except Exception as exc:
+                warnings.append(f"post_recovery_port_forward_retry: {exc}")
+                proc = None
+                time.sleep(1)
+                continue
+        sample = request(LOCAL_PORT)
+        samples.append(sample)
+        if sample.get("status_code") == 200:
+            successes += 1
+        else:
+            stop_forward(proc)
+            proc = None
+            time.sleep(1)
+    return proc, samples, successes, warnings
 
 
 def stop_forward(proc: subprocess.Popen[str] | None) -> None:
@@ -335,28 +371,18 @@ def main() -> int:
         # After recovery, reconnect and collect stable business responses so
         # the report contains an independent post-fault oracle as well.
         if recovered:
-            stop_forward(proc)
-            proc = start_forward()
-            wait_forward(proc, timeout=30)
-            post_recovery_deadline = time.monotonic() + 120
-            post_recovery_successes = 0
-            while time.monotonic() < post_recovery_deadline and post_recovery_successes < max(1, args.observe_count - min(args.observe_count, 3)):
-                sample = request(LOCAL_PORT)
-                report["requests"].append(sample)
-                if sample.get("status_code") == 200:
-                    post_recovery_successes += 1
-                else:
-                    # TCP readiness is not sufficient: the service endpoint
-                    # may still point at a terminating Pod. Reconnect and
-                    # retry until the independent HTTP oracle is healthy.
-                    try:
-                        proc = reconnect_forward(proc, timeout=30)
-                    except Exception as exc:
-                        report["warnings"].append(f"post_recovery_port_forward_retry: {exc}")
-                    time.sleep(1)
+            required_successes = max(1, args.observe_count - min(args.observe_count, 3))
+            proc, samples, post_recovery_successes, warnings = collect_post_recovery(
+                proc,
+                required_successes,
+            )
+            report["requests"].extend(samples)
+            report["warnings"].extend(warnings)
             report["lifecycle"]["post_recovery_http_200_count"] = post_recovery_successes
-            if post_recovery_successes == 0:
-                report["errors"].append("post_recovery_oracle_unconfirmed: no HTTP 200 after recovered Pod became Ready")
+            if post_recovery_successes < required_successes:
+                report["errors"].append(
+                    "post_recovery_oracle_unconfirmed: insufficient HTTP 200 responses after recovered Pod became Ready"
+                )
             report["lifecycle"]["post_recovery_namespace_health"] = wait_namespace_stable()
     except Exception as exc:
         report["errors"].append(str(exc))
