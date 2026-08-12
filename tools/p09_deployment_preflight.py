@@ -12,8 +12,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = ROOT / "artifacts/experiments/chaosatlas_10_projects/sources/P09"
+RESTORED_PROJECT = ROOT / "artifacts/experiments/chaosatlas_10_projects/sources_restored/P09"
 OUT = ROOT / "artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P09"
-COMPOSE = PROJECT / "docker/docker-compose.yaml"
 
 CORE = ["init_permissions", "api", "worker", "worker_beat", "web", "db_postgres", "redis"]
 FORBIDDEN_EXTERNAL = {"agent_backend", "sandbox", "plugin_daemon", "ssrf_proxy", "nginx"}
@@ -24,9 +24,16 @@ def sha256(path: Path) -> str | None:
 
 
 def build() -> dict[str, Any]:
-    compose = yaml.safe_load(COMPOSE.read_text(encoding="utf-8-sig")) if COMPOSE.exists() else {}
+    project = PROJECT
+    compose_path = project / "docker/docker-compose.yaml"
+    if not compose_path.exists():
+        restored_compose = RESTORED_PROJECT / "docker/docker-compose.yaml"
+        if restored_compose.exists():
+            project = RESTORED_PROJECT
+            compose_path = restored_compose
+    compose = yaml.safe_load(compose_path.read_text(encoding="utf-8-sig")) if compose_path.exists() else {}
     services = compose.get("services") or {}
-    missing_env = [name for name in ("docker/.env", "docker/middleware.env") if not (PROJECT / name).exists()]
+    missing_env = [name for name in ("docker/.env", "docker/middleware.env") if not (project / name).exists()]
     mutable_images: list[dict[str, str]] = []
     for name, service in services.items():
         image = str((service or {}).get("image") or "")
@@ -35,6 +42,8 @@ def build() -> dict[str, Any]:
     reasons: list[str] = []
     if missing_env:
         reasons.append("required_env_missing:" + ",".join(missing_env))
+    if not compose_path.exists():
+        reasons.append("source_missing:docker/docker-compose.yaml")
     if mutable_images:
         reasons.append("mutable_images_require_digest_pinning")
     if not all(name in services for name in CORE):
@@ -47,8 +56,8 @@ def build() -> dict[str, Any]:
         "project_commit": "cd0e88c680dec24dcd423b880302104f13d28462",
         "status": "blocked" if reasons else "needs_runtime_gate",
         "runtime_apply_allowed": False,
-        "source_root": str(PROJECT.relative_to(ROOT)).replace("\\", "/"),
-        "compose_sha256": sha256(COMPOSE),
+        "source_root": str(project.relative_to(ROOT)).replace("\\", "/"),
+        "compose_sha256": sha256(compose_path),
         "all_service_count": len(services),
         "core_profile": CORE,
         "external_or_high_blast_radius_services": sorted(name for name in services if name in FORBIDDEN_EXTERNAL),

@@ -392,6 +392,23 @@
 - Added a formal post-cleanup washout gate: observe at least 60 seconds and require the final 10 business-oracle samples to be consecutive HTTP 200 before the next mutation.
 # 2026-08-13 P02 R3 evidence completion
 
+# 2026-08-13 P08/P09 continuation
+
+- Rechecked the teacher Minikube context: `chaosatlas-p02` remained healthy and
+  `kubectl get podchaos,networkchaos,stresschaos -A` returned no resources.
+- P08 remains blocked before runtime: its manifest is marked
+  `pending_resource_pilot`, estimates a very-high resource footprint, and the
+  workspace has no restored P08 source tree or runtime profile.
+- P09's historical restoration manifest claims a complete `sources_restored/P09`
+  tree, but that directory is absent in the current workspace. No source or
+  image provenance was guessed, and no namespace or workload was applied.
+- Fixed `tools/p09_deployment_preflight.py` to use a verified restored source
+  only when present and to emit `source_missing:docker/docker-compose.yaml`
+  fail-closed when neither source tree is available. Added regression coverage.
+- P08/P09 offline regression: 26 tests passed. No DeepSeek credential, GitHub
+  token, external model call, Docker/Minikube repair, or runtime mutation was
+  performed.
+
 - Added per-run diagnostic sidecars for five scoped service logs, namespace events, and Zipkin traces, including status, return code, path, size, SHA-256, and explicit unavailable/empty states.
 - Enabled diagnostic capture by default in the formal batch and froze all washout/diagnostic parameters in the batch manifest.
 - Extended the offline summarizer to attribute R3 delayed failures to the same run's washout, require failure-free baselines and stable washouts for a clean sequence, and keep identical-YAML method claims ineligible.

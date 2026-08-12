@@ -211,6 +211,20 @@ Artifact checks found nine classification-index mismatches rather than three; al
 
 ## P09 digest and validation finding (2026-08-12)
 
+## P08/P09 continuation finding (2026-08-13)
+
+- P08 remains pre-runtime blocked: its project manifest is `pending_resource_pilot`,
+  marks the resource class as very high, and no P08 source-restoration or
+  runtime-profile directory is present in the current workspace.
+- P09 has a historical restoration manifest, but the referenced
+  `sources_restored/P09` directory is absent from the current workspace. The
+  preflight now distinguishes this from mutable-image and core-service checks
+  with `source_missing:docker/docker-compose.yaml`; it remains fail-closed.
+- The P09 preflight regression also covers the valid case where an available
+  verified restored source is used when the frozen source is incomplete.
+- P08/P09 focused offline tests passed: 26 tests. No cluster mutation, model
+  call, credential read, or source restoration was performed in this pass.
+
 - Root cause of the earlier P09 digest block was two-layered: the WSL-native dockerd had no proxy configured, and the old extraction probe matched only `Docker-Content-Digest` with uppercase letters. WSL access through the Windows gateway proxy `172.20.96.1:7890` returned HTTP 200 for all five public manifests; HTTP/2 normalized the header to lowercase.
 - Resolved immutable manifest digests are recorded in `runtime_profiles/P09/image-digests.json` and the generated profile. No secret was read, no DeepSeek call was made, and no Docker Desktop operation occurred.
 - `validate_profile.py` previously scanned the entire YAML and falsely rejected cleared environment variable names such as `SSRF_PROXY_*`. It now checks only workload/service identity fields, while retaining fail-closed checks for emitted forbidden components.
