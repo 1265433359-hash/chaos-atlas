@@ -1,0 +1,313 @@
+{
+  "schema_version": "2.0",
+  "protocol": "protocol_v2_open_discovery.md",
+  "arm": "ChaosAtlas-noKB-open",
+  "project_id": "P03",
+  "seed": 1003,
+  "primary_track": true,
+  "common_input": {
+    "schema_version": "1.0",
+    "project_id": "P03",
+    "project_commit": "15575bd85a8e0b87bfa867bb8a01cb76bca913ad",
+    "source_tree_sha": "15575bd85a8e0b87bfa867bb8a01cb76bca913ad",
+    "deployment_summary": {
+      "kind": "requires_normalization",
+      "command": "TBD; validate official local stack and database/cache dependencies",
+      "reason": "No root production Compose file in the frozen tree."
+    },
+    "workload_summary": {
+      "type": "GraphQL/HTTP",
+      "entrypoint": "GraphQL health and catalog query",
+      "health": "HTTP health endpoint plus deterministic GraphQL query"
+    },
+    "runner_version": "runner_protocol_v1",
+    "oracle_version": "oracle_schema_v1"
+  },
+  "topology_evidence": {
+    "status": "available",
+    "graph_hash": "bdb7cf38c377fb224d995174e14edcc8122049605fec5b6a8c181b92a2e739ff",
+    "nodes": [
+      {
+        "id": "compose/service/cache",
+        "kind": "ComposeService",
+        "name": "cache",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/cache",
+        "kind": "ComposeService",
+        "name": "cache",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/dashboard",
+        "kind": "ComposeService",
+        "name": "dashboard",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/dashboard",
+        "kind": "ComposeService",
+        "name": "dashboard",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/db",
+        "kind": "ComposeService",
+        "name": "db",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/db",
+        "kind": "ComposeService",
+        "name": "db",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/mailpit",
+        "kind": "ComposeService",
+        "name": "mailpit",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/mailpit",
+        "kind": "ComposeService",
+        "name": "mailpit",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/saleor",
+        "kind": "ComposeService",
+        "name": "saleor",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/saleor",
+        "kind": "ComposeService",
+        "name": "saleor",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      }
+    ],
+    "edges": [
+      {
+        "source": "compose/service/saleor",
+        "target": "compose/service/cache",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/saleor",
+        "target": "compose/service/cache",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/saleor",
+        "target": "compose/service/db",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/saleor",
+        "target": "compose/service/db",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      }
+    ],
+    "defenses": [
+      {
+        "target": "compose/service/cache",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "unless-stopped"
+        }
+      },
+      {
+        "target": "compose/service/cache",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "unless-stopped"
+        }
+      },
+      {
+        "target": "compose/service/dashboard",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "unless-stopped"
+        }
+      },
+      {
+        "target": "compose/service/dashboard",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "unless-stopped"
+        }
+      },
+      {
+        "target": "compose/service/db",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "unless-stopped"
+        }
+      },
+      {
+        "target": "compose/service/db",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "unless-stopped"
+        }
+      },
+      {
+        "target": "compose/service/mailpit",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "unless-stopped"
+        }
+      },
+      {
+        "target": "compose/service/mailpit",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "unless-stopped"
+        }
+      },
+      {
+        "target": "compose/service/saleor",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/saleor",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      }
+    ],
+    "supported_document_count": 2,
+    "source_sha256": "3b53cf2133b288af44b4db8a8225e1cb0f0e5c23c24939d7a94a070dbadc083b"
+  },
+  "runtime_contract": {
+    "namespace": "chaosatlas-p03",
+    "workload_id": "P03-primary-workload",
+    "max_hypotheses": 8,
+    "fault_families": [
+      "pod_kill",
+      "network_delay",
+      "network_loss",
+      "container_cpu_stress"
+    ],
+    "parameter_bounds": {
+      "network_delay": {
+        "latency_ms": [
+          1,
+          500
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "network_loss": {
+        "loss_percent": [
+          1,
+          100
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "container_cpu_stress": {
+        "workers": [
+          1,
+          2
+        ],
+        "load_percent": [
+          1,
+          80
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "pod_kill": {
+        "mode": [
+          "one"
+        ]
+      }
+    },
+    "namespace_scope": "all mutations must resolve inside the project namespace",
+    "target_resolution": "target must be a node or edge in topology_evidence; unresolved targets are rejected",
+    "lifecycle": [
+      "clean",
+      "health_gate",
+      "baseline",
+      "apply_one_fault",
+      "verify_injection",
+      "observe",
+      "remove_fault",
+      "recovery_health",
+      "cleanup"
+    ],
+    "required_result_classes": [
+      "confirmed_weakness",
+      "protected",
+      "latent_risk",
+      "unsupported",
+      "environment_blocked",
+      "method_invalid"
+    ],
+    "execution_policy": "compiler and runtime resolver fail closed; no shell or kubectl commands in model output"
+  },
+  "knowledge_view": null,
+  "candidate_pool_visible": false,
+  "candidate_order_visible": false,
+  "output_schema": "open_discovery_schema.json",
+  "prompt_module_sha256": "247cf99df6a90612d6bc2a8b32b990980a63c652245d7e556c88f8dcd45f93b3",
+  "source_evidence_sha256": "ce7ce7369e410557b0e15d1465bff52936bfaefc88f8e83aab3befc74ad1ae86",
+  "topology_evidence_sha256": "3b53cf2133b288af44b4db8a8225e1cb0f0e5c23c24939d7a94a070dbadc083b"
+}

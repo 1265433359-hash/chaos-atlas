@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "kind": "chaosatlas_weakness_surface",
+  "required": ["surface_id", "target", "call_chain", "weakness_hypothesis", "defense_attributes"],
+  "call_chain_item_fields": ["source", "target", "relation", "evidence_ref"],
+  "defense_attributes": ["timeout", "retry", "circuit_breaker", "replicas", "pdb", "probe", "resource_limit", "network_policy"],
+  "status_enum": ["hypothesis", "static_supported", "runtime_confirmed", "protected", "unsupported"]
+}

@@ -231,3 +231,41 @@ status: candidate|reviewed|validated|deprecated
 ## Audit remediation checkpoint (2026-08-05)
 
 The first implementation audit is closed for the current Train Ticket scope. Runtime injection is namespace- and mode-scoped, HTTP prerequisites fail closed, runner and parent cleanup are bounded and verified, classification/exit codes are shared, candidate selection is deterministic, slices carry blast-radius flags, and the evidence validator reports per-card detail. Regression tests cover these boundaries; future changes must update the root Git history and rerun the test and knowledge-base validation commands.
+# Open-discovery mutation compiler implementation (2026-08-11)
+
+Status: complete
+
+Goal: convert accepted ChaosAtlas open-discovery hypotheses into deterministic,
+namespace-local Chaos Mesh YAML without allowing model output to execute shell
+commands or bypass the existing runtime applicability gate.
+
+Steps:
+
+1. Inspect the topology IR, compiler contract, applicability gate, runner, and existing tests. (complete)
+2. Add deterministic target resolution and YAML generation for PodChaos, NetworkChaos, and StressChaos. (complete)
+3. Add fail-closed tests for valid mutations, configuration targets, empty selectors, namespace mismatch, unresolved targets, edge handling, and signature provenance. (complete)
+4. Run focused tests and the full repository test suite; record residual runtime gates. (complete: 278 passed, 5 subtests passed)
+
+Constraints:
+
+- Do not read or use the DeepSeek key.
+- Do not apply mutations to the kind cluster in this implementation turn.
+- Do not touch Docker Desktop.
+- The compiler emits files and provenance only; the existing gate and runner remain responsible for execution.
+
+## Main experiment priority (2026-08-12)
+
+- `in_progress`: 10-project open-discovery main experiment.
+- `parked`: fixed candidate-pool three-arm control; do not invoke its runner.
+- `complete`: offline main ledger, P02 dry-run compiler/mutation path, selector map, Kubernetes server-side dry-run, and deployment remediation queue.
+- `blocked_pending_consent`: DeepSeek calls and real fault injection. The key has not been read and no request has been sent.
+- GitHub source restoration (2026-08-12): complete for P09; P03/P06 commit/tree verified but full restoration blocked by partial-clone missing blobs and archive download timeout. Manifest: `artifacts/experiments/chaosatlas_10_projects/sources_restored/RESTORATION_MANIFEST.md`. No deployment or DeepSeek calls.
+
+## Repository handoff (2026-08-12)
+
+- `complete`: classify the current ChaosAtlas implementation, protocols, tests, and experiment evidence for commit.
+- `complete`: exclude local Docker state, kubeconfig, proxy bridge files, planning sessions, environment files, and full upstream source snapshots.
+- `complete`: scan the exact candidate set for credential values and sensitive filenames; no candidate secret was found.
+- `complete`: run the complete tool test suite with an isolated basetemp (`290 passed`, `5 subtests passed`) and the offline ablation/profile validators.
+- `complete`: stage and inspect the curated repository snapshot.
+- `in_progress`: commit and push `remediation/2026-08-09-review`.

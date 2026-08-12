@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "project_id": "P06",
+  "project_commit": "9dca3724a6d65126ea937ef949f986e5aab47a81",
+  "status": "blocked",
+  "runtime_apply_allowed": false,
+  "source_root": "artifacts/experiments/chaosatlas_10_projects/sources/P06",
+  "files": {
+    "Dockerfile": {
+      "exists": true,
+      "sha256": "f7fee4eb6927adf657e714359a1a8af233b709a3c9a3e07da337b320d2b67498"
+    },
+    "docker-compose.yml": {
+      "exists": true,
+      "sha256": "9189a8c45f5aac2170f4f7ee2aedaee2cb61d12542c3dfd44c7ff220029a620b"
+    },
+    "directus/readme.md": {
+      "exists": true,
+      "sha256": "3d21dbc55ff7d88dc8b009e751a07900267b976f37df49e91dfb7e831b63e3b1"
+    }
+  },
+  "required_build_inputs": {
+    "package.json": false,
+    "pnpm-lock.yaml": false
+  },
+  "compose_services": [
+    "azure",
+    "cockroachdb",
+    "keycloak",
+    "maildev",
+    "maria",
+    "minio",
+    "mssql",
+    "mysql",
+    "mysql5",
+    "oracle",
+    "postgres",
+    "postgres10",
+    "redis"
+  ],
+  "application_service_present": false,
+  "license": {
+    "source": "directus/readme.md",
+    "evidence": "MSCL 1.0 / free core tier noted; commercial thresholds require separate review"
+  },
+  "reasons": [
+    "dockerfile_build_inputs_missing:package.json,pnpm-lock.yaml",
+    "compose_is_dependency_matrix_only:no_directus_application_service"
+  ],
+  "next_action": "Do not construct an application image from this sparse snapshot. Restore the exact source-tree checkout or mark P06 environment_blocked for this round."
+}

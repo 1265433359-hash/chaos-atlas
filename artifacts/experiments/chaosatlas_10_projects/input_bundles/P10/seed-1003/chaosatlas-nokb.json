@@ -1,0 +1,55 @@
+﻿{
+    "arm":  "ChaosAtlas-noKB",
+    "common_input":  {
+                         "schema_version":  "1.0",
+                         "project_id":  "P10",
+                         "project_commit":  "3f33a5c47fa360b9c080963e566d93c3e6360394",
+                         "source_tree_sha":  "3f33a5c47fa360b9c080963e566d93c3e6360394",
+                         "deployment_summary":  {
+                                                    "kind":  "requires_build_or_exact_image",
+                                                    "command":  "TBD after Keycloak image/build gate",
+                                                    "reason":  "Frozen source tree has operator assets but no simple application Compose file; published image tag must not silently substitute the commit."
+                                                },
+                         "workload_summary":  {
+                                                  "type":  "HTTP/OIDC",
+                                                  "entrypoint":  "local realm token issuance and health",
+                                                  "health":  "health/ready plus deterministic local client flow"
+                                              },
+                         "candidate_pool_sha256":  "1e8abbf426e60f7e01bf17b402089a48329ac6b3fd21f011d3be9fb8d93571af",
+                         "candidate_order":  [
+                                                 "P10-postgres-container_cpu_stress-12",
+                                                 "P10-keycloak-server-container_cpu_stress-04",
+                                                 "P10-operator-network_delay-06",
+                                                 "P10-keycloak-server-network_loss-03",
+                                                 "P10-cache-network_loss-15",
+                                                 "P10-postgres-network_loss-11",
+                                                 "P10-keycloak-server-pod_kill-01",
+                                                 "P10-operator-network_loss-07",
+                                                 "P10-keycloak-server-network_delay-02",
+                                                 "P10-cache-pod_kill-13",
+                                                 "P10-postgres-network_delay-10",
+                                                 "P10-cache-container_cpu_stress-16",
+                                                 "P10-operator-container_cpu_stress-08",
+                                                 "P10-postgres-pod_kill-09",
+                                                 "P10-cache-network_delay-14",
+                                                 "P10-operator-pod_kill-05"
+                                             ],
+                         "seed":  1003,
+                         "candidate_budget_k":  8,
+                         "runner_version":  "runner_protocol_v1",
+                         "oracle_version":  "oracle_schema_v1",
+                         "knowledge_view":  "excluded_from_common_input"
+                     },
+    "knowledge_card_ref":  null,
+    "knowledge_card_sha256":  null,
+    "implementation_files":  [
+                                 {
+                                     "path":  "tools/build_knowledge_ablation_gates0to2.py",
+                                     "sha256":  "178714b7d0c064cb5ec8b2925aaf4f2ff153ac05397dff50f50aab9ac9f9ed84"
+                                 },
+                                 {
+                                     "path":  "tools/run_selection_only_ablation.py",
+                                     "sha256":  "be7d61c6d68da5e6744f097db0b6d7e62be854cbb534550ac157464db770daf5"
+                                 }
+                             ]
+}

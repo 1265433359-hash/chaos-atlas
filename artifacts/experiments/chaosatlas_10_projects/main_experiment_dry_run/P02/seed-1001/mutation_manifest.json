@@ -1,0 +1,61 @@
+{
+  "status": "valid",
+  "compiler": "open_discovery_mutation_compiler_v1",
+  "generated_count": 1,
+  "rejected_count": 0,
+  "generated": [
+    {
+      "index": 0,
+      "hypothesis_id": "dry-run-001",
+      "canonical_signature": "8132e98021ce0e77af7c461bf38d1e6982623edf1262c66dcad54270820342d9",
+      "kind": "NetworkChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: NetworkChaos\nmetadata:\n  name: atlas-p02-8132e98021ce\n  namespace: chaosatlas-p02\n  labels:\n    chaosatlas.dev/project: p02\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-p02\n    labelSelectors:\n      app.kubernetes.io/name: api-gateway\n      app.kubernetes.io/part-of: chaosatlas-p02\n  action: delay\n  delay:\n    latency: 100ms\n    correlation: '100'\n    jitter: 0ms\n  duration: 10s\n  direction: to\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "P02",
+        "project_commit": null,
+        "topology_graph_hash": "b4a1783e5d586311d0b109b842dc7aaaf146f95690417801a74ec2192f29339e",
+        "canonical_signature": "8132e98021ce0e77af7c461bf38d1e6982623edf1262c66dcad54270820342d9",
+        "hypothesis_id": "dry-run-001",
+        "target": "compose/service/api-gateway->compose/service/config-server",
+        "target_kind": "dependency_edge",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 100,
+          "duration_s": 10
+        },
+        "namespace": "chaosatlas-p02",
+        "resolved_source": {
+          "target": "compose/service/api-gateway",
+          "kind": "Deployment",
+          "name": "api-gateway",
+          "selector": {
+            "app.kubernetes.io/name": "api-gateway",
+            "app.kubernetes.io/part-of": "chaosatlas-p02"
+          },
+          "selector_source": "runtime_mapping"
+        },
+        "resolved_destination": {
+          "target": "compose/service/config-server",
+          "kind": "Deployment",
+          "name": "config-server",
+          "selector": {
+            "app.kubernetes.io/name": "config-server",
+            "app.kubernetes.io/part-of": "chaosatlas-p02"
+          },
+          "selector_source": "runtime_mapping"
+        },
+        "runtime_gate_required": true,
+        "execution_ready": false
+      },
+      "yaml_path": "artifacts/experiments/chaosatlas_10_projects/main_experiment_dry_run/P02/seed-1001/8132e98021ce.yaml",
+      "provenance_path": "artifacts/experiments/chaosatlas_10_projects/main_experiment_dry_run/P02/seed-1001/8132e98021ce.provenance.json"
+    }
+  ],
+  "rejected": [],
+  "dry_run_fixture": true,
+  "llm_called": false,
+  "mutation_applied": false,
+  "created_at": "2026-08-12T02:46:58.551603+00:00"
+}

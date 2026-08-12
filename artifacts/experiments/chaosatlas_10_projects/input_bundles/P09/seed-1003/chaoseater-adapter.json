@@ -1,0 +1,68 @@
+﻿{
+    "arm":  "ChaosEater-adapter",
+    "common_input":  {
+                         "schema_version":  "1.0",
+                         "project_id":  "P09",
+                         "project_commit":  "cd0e88c680dec24dcd423b880302104f13d28462",
+                         "source_tree_sha":  "cd0e88c680dec24dcd423b880302104f13d28462",
+                         "deployment_summary":  {
+                                                    "kind":  "compose_to_kind_adapter",
+                                                    "command":  "docker compose -f docker/docker-compose.yaml up -d",
+                                                    "note":  "External model/API calls are forbidden; use a local mock model service and deterministic workflow."
+                                                },
+                         "workload_summary":  {
+                                                  "type":  "HTTP",
+                                                  "entrypoint":  "console/API health and local mock workflow",
+                                                  "health":  "API readiness plus mock workflow response"
+                                              },
+                         "candidate_pool_sha256":  "d3953593a5f294f2144d4800b8af02d29873dfca43a98122f31b7718152b5d9d",
+                         "candidate_order":  [
+                                                 "P09-worker-container_cpu_stress-12",
+                                                 "P09-postgres-container_cpu_stress-16",
+                                                 "P09-web-network_delay-06",
+                                                 "P09-postgres-network_loss-15",
+                                                 "P09-api-network_loss-03",
+                                                 "P09-worker-network_loss-11",
+                                                 "P09-postgres-pod_kill-13",
+                                                 "P09-web-network_loss-07",
+                                                 "P09-postgres-network_delay-14",
+                                                 "P09-api-pod_kill-01",
+                                                 "P09-worker-network_delay-10",
+                                                 "P09-api-container_cpu_stress-04",
+                                                 "P09-web-container_cpu_stress-08",
+                                                 "P09-worker-pod_kill-09",
+                                                 "P09-api-network_delay-02",
+                                                 "P09-web-pod_kill-05"
+                                             ],
+                         "seed":  1003,
+                         "candidate_budget_k":  8,
+                         "runner_version":  "runner_protocol_v1",
+                         "oracle_version":  "oracle_schema_v1",
+                         "knowledge_view":  "excluded_from_common_input"
+                     },
+    "knowledge_card_ref":  null,
+    "knowledge_card_sha256":  null,
+    "adapter_files":  [
+                          {
+                              "path":  "tools/chaos_eater_adapter/prompts.py",
+                              "sha256":  "2a6dca90e3392142c08b8307c3fdee849499b08e7eea1fe549c024580a5dd342"
+                          },
+                          {
+                              "path":  "tools/chaos_eater_adapter/adapter.py",
+                              "sha256":  "a14cc530d8e1d61f3b97fcab11af18d47b204df6e4de2522e700372bd7b05a1c"
+                          },
+                          {
+                              "path":  "tools/chaos_eater_adapter/mapping.py",
+                              "sha256":  "3a7a77350992500f1805f906d2971ab52c6bbe6f846a7eaa61a2051b3eedfc46"
+                          },
+                          {
+                              "path":  "tools/chaos_eater_adapter/schemas.py",
+                              "sha256":  "8176bcef4849cbc696395191a9a7bacedc275498c5873b75416e9906d2255c90"
+                          },
+                          {
+                              "path":  "tools/chaos_eater_adapter/llm_backend.py",
+                              "sha256":  "3eee5d7427f0bc8e2a467c48da4d2602e628a30df55aea3c3b1d7760722f724a"
+                          }
+                      ],
+    "mapping_policy":  "candidate_id mapping only; no ChaosAtlas knowledge"
+}

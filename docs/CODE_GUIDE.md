@@ -49,3 +49,25 @@ reported rather than hidden.
 When adding a new module, start with a module docstring that states the paper
 role, inputs, outputs, and side effects. Add a focused regression test under
 `tools/tests/` for each new gate or classification branch.
+
+## Open-discovery execution path
+
+| Tool | Purpose | Side effect |
+|---|---|---|
+| `open_discovery_compiler.py` | Validate model hypotheses and produce canonical fault intents | JSON only; never executes kubectl |
+| `open_discovery_mutation_compiler.py` | Resolve an accepted intent to a bounded PodChaos, NetworkChaos, or StressChaos manifest | Writes YAML and provenance; never calls kubectl |
+| `runtime_applicability_gate.py` | Verify that the generated selector and Chaos Mesh environment are safe and applicable | Read-only kubectl checks |
+| `run_chaos_experiment.py` | Apply, observe, recover, and remove one approved mutation | Calls kubectl only after the gate returns `ready_for_injection` |
+
+The open path is therefore:
+
+```text
+model JSON -> open_discovery_compiler -> canonical intent
+           -> open_discovery_mutation_compiler -> YAML + provenance
+           -> runtime_applicability_gate -> run_chaos_experiment
+```
+
+The mutation compiler fails closed for configuration nodes, empty selectors,
+missing workload mappings, namespace mismatches, unsupported edge/fault pairs,
+and signature mismatches. Compose targets require an explicit runtime mapping
+to a Kubernetes workload before they can produce YAML.

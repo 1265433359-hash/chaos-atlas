@@ -1,0 +1,47 @@
+{
+  "project_id": "P09",
+  "namespace": "chaosatlas-p09",
+  "apply_allowed": false,
+  "server_side_dry_run": "requires_cluster_execution",
+  "checks": [
+    {
+      "name": "namespace-local",
+      "ok": true
+    },
+    {
+      "name": "forbidden-services",
+      "ok": true
+    },
+    {
+      "name": "immutable-images",
+      "ok": true,
+      "images": [
+        "busybox@sha256:73aaf090f3d85aa34ee199857f03fa3a95c8ede2ffd4cc2cdb5b94e566b11662",
+        "langgenius/dify-api@sha256:dcefa5f7c47c77e621f5b864bc1d64a2ba18cd215b001f15b3882bb7911c6c64",
+        "langgenius/dify-api@sha256:dcefa5f7c47c77e621f5b864bc1d64a2ba18cd215b001f15b3882bb7911c6c64",
+        "langgenius/dify-api@sha256:dcefa5f7c47c77e621f5b864bc1d64a2ba18cd215b001f15b3882bb7911c6c64",
+        "langgenius/dify-web@sha256:87dd47e4e28f86834f6a7aefd9a02b9f4097056867031e4d99ebd46908a0e390",
+        "postgres@sha256:3d0f7584ed7d04e27fa050d6683a74746608faf21f202be78460d679cc56461f",
+        "redis@sha256:ec5e187c913d422cdf60f4216a5fdfb95246792c6de6fe21ff5bed75cbfc8c23"
+      ]
+    },
+    {
+      "name": "required-resources",
+      "ok": true,
+      "names": [
+        "api",
+        "chaosatlas-p09",
+        "init-permissions",
+        "p09-app-storage",
+        "p09-env",
+        "p09-secrets",
+        "postgres",
+        "redis",
+        "web",
+        "worker",
+        "worker-beat"
+      ]
+    }
+  ],
+  "ok": true
+}

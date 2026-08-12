@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "required_fields": [
+    "issue_id", "project_id", "project_commit", "method_arm", "seed", "candidate_id", "fault_family", "fault_spec",
+    "baseline_evidence", "injection_evidence", "observation_evidence", "recovery_evidence", "cleanup_evidence",
+    "oracle_verdict", "classification", "symptom", "affected_service", "source_level_rca", "reproduction_count",
+    "evidence_status", "invalid_reason", "environment_blocked_reason", "timestamps", "artifact_refs"
+  ],
+  "classification_enum": ["confirmed_weakness", "protected", "unknown", "method_invalid", "environment_blocked", "out_of_domain"],
+  "method_arm_enum": ["ChaosAtlas-KB", "ChaosAtlas-noKB", "ChaosEater", "ChaosEater-adapter"],
+  "rules": {
+    "confirmed_weakness": "Requires two valid reproductions and complete baseline/injection/observation/recovery/cleanup evidence.",
+    "environment_blocked": "Must identify infrastructure, image, permission, kernel, or cluster cause; never count as method failure.",
+    "method_invalid": "Reserved for malformed/unreachable candidate or invalid workload injection attributable to method output.",
+    "issue_deduplication": "Deduplicate by project family, affected service, fault mechanism, and source-level root cause; candidate count is not issue count."
+  }
+}

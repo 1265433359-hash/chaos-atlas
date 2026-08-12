@@ -1,0 +1,12 @@
+{
+  "schema_version": "1.0",
+  "project_id": "P02",
+  "base_compose": "../../sources/P02/docker-compose.yml",
+  "override": ["docker-compose.local.yml", "docker-compose.k8s-convert.yml"],
+  "profile": "local-no-external-model",
+  "disabled_services": ["genai-service"],
+  "external_credentials_read": false,
+  "external_model_calls_allowed": false,
+  "purpose": "Static and runtime pilot preparation only; does not alter the frozen source tree.",
+  "conversion_deviation": "Build-only observability services are represented by explicit base images for manifest generation; image digest pinning remains required before runtime."
+}

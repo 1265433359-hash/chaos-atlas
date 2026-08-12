@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "protocol": "protocol_v1.md",
+  "arms": ["ChaosAtlas-KB", "ChaosAtlas-noKB", "ChaosEater-adapter"],
+  "projects": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10"],
+  "pilot_projects": ["P02", "P07"],
+  "seeds": [1001, 1002, 1003],
+  "candidate_count_per_project": 16,
+  "candidate_budget_k": 8,
+  "confirmation_runs_required": 2,
+  "observation_window_s": 30,
+  "recovery_window_s": 60,
+  "model": "deepseek-v4-flash",
+  "temperature": 0.2,
+  "max_output_tokens": 2048,
+  "request_timeout_s": 180,
+  "transport_retries_max": 1,
+  "deepseek_api_allowed": false,
+  "change_control": "Any change requires protocol_v2 or explicit amendment and renewed consent."
+}

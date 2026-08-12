@@ -1,0 +1,193 @@
+{
+  "arms": {
+    "ChaosAtlas-KB": {
+      "backend": {
+        "backend": "openai-compatible",
+        "completion_tokens": 437,
+        "endpoint": "https://api.deepseek.com/v1",
+        "finish_reason": "stop",
+        "generation_time_ms": 3239,
+        "message_fields": [
+          "content",
+          "role"
+        ],
+        "model": "deepseek-v4-flash",
+        "prompt_tokens": 2563,
+        "reasoning_content_chars": 0,
+        "total_tokens": 3000
+      },
+      "prompt_sha256": "73ef8af60303d0b2490e210492d26c522446ce3b525c9ae3cee28c0ede452262",
+      "raw_sha256": "873b838b48e4f6809285f17f17c1768e2bcfecc118f10e76d0de410af6cb08b3",
+      "selected": [
+        {
+          "candidate_id": "P02-api-gateway-network_loss-03",
+          "rank": 1,
+          "rationale": "100% loss at the gateway directly blocks all traffic, immediately violating the HTTP response contract."
+        },
+        {
+          "candidate_id": "P02-api-gateway-pod_kill-01",
+          "rank": 2,
+          "rationale": "Killing the gateway pod makes the entire API unreachable, a high-impact single point of failure."
+        },
+        {
+          "candidate_id": "P02-visits-service-network_loss-11",
+          "rank": 3,
+          "rationale": "100% loss to visits-service breaks the core visit flow, likely causing gateway errors."
+        },
+        {
+          "candidate_id": "P02-customers-service-network_loss-07",
+          "rank": 4,
+          "rationale": "100% loss to customers-service disrupts customer data access, affecting dependent flows."
+        },
+        {
+          "candidate_id": "P02-vets-service-network_loss-15",
+          "rank": 5,
+          "rationale": "100% loss to vets-service isolates a backend dependency, potentially causing timeouts or 5xx."
+        },
+        {
+          "candidate_id": "P02-api-gateway-network_delay-02",
+          "rank": 6,
+          "rationale": "200ms delay at the gateway increases latency for all requests, risking timeout-related failures."
+        },
+        {
+          "candidate_id": "P02-visits-service-pod_kill-09",
+          "rank": 7,
+          "rationale": "Killing a visits pod may reduce capacity and cause intermittent failures if no replica is ready."
+        },
+        {
+          "candidate_id": "P02-customers-service-pod_kill-05",
+          "rank": 8,
+          "rationale": "Killing a customers pod could impact customer-related operations, though less central than visits."
+        }
+      ]
+    },
+    "ChaosAtlas-noKB": {
+      "backend": {
+        "backend": "openai-compatible",
+        "completion_tokens": 488,
+        "endpoint": "https://api.deepseek.com/v1",
+        "finish_reason": "stop",
+        "generation_time_ms": 4003,
+        "message_fields": [
+          "content",
+          "role"
+        ],
+        "model": "deepseek-v4-flash",
+        "prompt_tokens": 2273,
+        "reasoning_content_chars": 0,
+        "total_tokens": 2761
+      },
+      "prompt_sha256": "75a7f22e6813dbb8e0d1fed80f0312fac4d7d3676ac606bc0134b0a7a2ead758",
+      "raw_sha256": "335bde5ac6fb8d255d8d1254612af4e9e9c7a48212bf6a277f603bb99f6b6aa3",
+      "selected": [
+        {
+          "candidate_id": "P02-api-gateway-network_loss-03",
+          "rank": 1,
+          "rationale": "100% packet loss at the gateway directly blocks all traffic, likely causing immediate gateway timeouts and violating the HTTP response contract."
+        },
+        {
+          "candidate_id": "P02-api-gateway-pod_kill-01",
+          "rank": 2,
+          "rationale": "Killing the gateway pod removes the single entrypoint, causing total unavailability until restart; recovery depends on orchestration and may expose contract gaps."
+        },
+        {
+          "candidate_id": "P02-visits-service-network_loss-11",
+          "rank": 3,
+          "rationale": "100% loss to visits-service isolates a core flow (visits), likely causing gateway errors or timeouts for visit-related requests."
+        },
+        {
+          "candidate_id": "P02-customers-service-network_loss-07",
+          "rank": 4,
+          "rationale": "100% loss to customers-service breaks owner/customer data access, likely causing partial failures in the gateway contract."
+        },
+        {
+          "candidate_id": "P02-vets-service-network_loss-15",
+          "rank": 5,
+          "rationale": "100% loss to vets-service disrupts vet data retrieval, potentially causing gateway errors for vet-related endpoints."
+        },
+        {
+          "candidate_id": "P02-api-gateway-container_cpu_stress-04",
+          "rank": 6,
+          "rationale": "CPU stress on the gateway can cause latency spikes and timeouts, affecting all requests and potentially violating response time expectations."
+        },
+        {
+          "candidate_id": "P02-api-gateway-network_delay-02",
+          "rank": 7,
+          "rationale": "200ms added latency on the gateway may push responses beyond timeouts, especially under load, exposing contract weaknesses."
+        },
+        {
+          "candidate_id": "P02-visits-service-pod_kill-09",
+          "rank": 8,
+          "rationale": "Killing a visits-service pod may cause temporary unavailability if only one replica exists, leading to gateway errors for visit requests."
+        }
+      ]
+    },
+    "ChaosEater-adapter": {
+      "backend": {
+        "backend": "openai-compatible",
+        "completion_tokens": 719,
+        "endpoint": "https://api.deepseek.com/v1",
+        "finish_reason": "stop",
+        "generation_time_ms": 4902,
+        "message_fields": [
+          "content",
+          "role"
+        ],
+        "model": "deepseek-v4-flash",
+        "prompt_tokens": 2061,
+        "reasoning_content_chars": 0,
+        "total_tokens": 2780
+      },
+      "raw_sha256": "51aa33d27705d5268c79f72472c634bb291ec916fb93a095ce3ff24dd906ed3a",
+      "selected": [
+        {
+          "candidate_id": "P02-api-gateway-network_loss-03",
+          "rank": 1
+        },
+        {
+          "candidate_id": "P02-api-gateway-pod_kill-01",
+          "rank": 2
+        },
+        {
+          "candidate_id": "P02-api-gateway-container_cpu_stress-04",
+          "rank": 3
+        },
+        {
+          "candidate_id": "P02-visits-service-network_delay-10",
+          "rank": 4
+        },
+        {
+          "candidate_id": "P02-visits-service-pod_kill-09",
+          "rank": 5
+        },
+        {
+          "candidate_id": "P02-customers-service-network_loss-07",
+          "rank": 6
+        },
+        {
+          "candidate_id": "P02-vets-service-container_cpu_stress-16",
+          "rank": 7
+        },
+        {
+          "candidate_id": "P02-vets-service-network_delay-14",
+          "rank": 8
+        }
+      ],
+      "warnings": []
+    }
+  },
+  "bundle_sha256": {
+    "chaosatlas-kb.json": "a708feaf07cad4a026d9062d34b330c17174e0f74676dc8e11bf18e65de5031f",
+    "chaosatlas-nokb.json": "9cc19df251e41baea83996f4b4260b81a2c2299fd256d2e2d57585517710c25c",
+    "chaoseater-adapter.json": "8028d9d5b151b0e9fcc0fcfb60b105b083612504e39cf67720d291726e1b5e18",
+    "common.json": "e5d4d389bfea50b29ea687f4938f46779456163dfec8f641057499ff837cc410"
+  },
+  "candidate_pool_sha256": "8b2bcafcb12c40df5bd7b31fc352b7ae3d5ecbfb9d78f6f5047770b29775347a",
+  "created_at": "2026-08-12T03:16:43.094505+00:00",
+  "max_output_tokens": 4096,
+  "model": "deepseek-v4-flash",
+  "project_id": "P02",
+  "schema_version": "1.0",
+  "seed": 1001,
+  "temperature": 0.2
+}

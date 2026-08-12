@@ -200,3 +200,33 @@ Artifact checks found nine classification-index mismatches rather than three; al
 - The completed paper-facing core is the TestNode method, applicability gates, bounded runtime evidence, four case studies, knowledge-card schema, and conservative cross-project interpretation.
 - Knowledge-base selection ablation and final method head-to-head comparison are incomplete; retain all artifacts but classify both tracks as `parked_future_work`.
 - Formal claims require later independent oracle, remaining review gates, common candidate pool/oracle, and project-clustered statistics.
+# Open-discovery compiler findings (2026-08-11)
+
+- The existing `open_discovery_compiler.py` validates hypotheses but intentionally sets `execution_ready` to false and does not emit Chaos Mesh YAML.
+- The fixed candidate-pool path already emits PodChaos and NetworkChaos YAML and uses the shared applicability gate and runner.
+- Topology nodes may be Kubernetes workloads, routing services, or Compose services. A runtime mutation compiler must fail closed when a node has no pod selector or when a Compose node lacks an explicit Kubernetes runtime mapping.
+- Dependency-edge faults can be represented safely as NetworkChaos on the resolved source workload with `direction: to`; the destination is retained in provenance. PodChaos and StressChaos are rejected for dependency edges.
+- YAML generation must not call kubectl. It must record project, hypothesis signature, graph hash, target resolution, parameters, and generator version for later audit.
+- GitHub source restoration finding (2026-08-12): P09 is complete in isolated `sources_restored/P09`; P03/P06 remain incomplete because existing partial clones lack blobs and official archive downloads timed out. Existing snapshots were preserved; see `sources_restored/RESTORATION_MANIFEST.md`.
+
+## P09 digest and validation finding (2026-08-12)
+
+- Root cause of the earlier P09 digest block was two-layered: the WSL-native dockerd had no proxy configured, and the old extraction probe matched only `Docker-Content-Digest` with uppercase letters. WSL access through the Windows gateway proxy `172.20.96.1:7890` returned HTTP 200 for all five public manifests; HTTP/2 normalized the header to lowercase.
+- Resolved immutable manifest digests are recorded in `runtime_profiles/P09/image-digests.json` and the generated profile. No secret was read, no DeepSeek call was made, and no Docker Desktop operation occurred.
+- `validate_profile.py` previously scanned the entire YAML and falsely rejected cleared environment variable names such as `SSRF_PROXY_*`. It now checks only workload/service identity fields, while retaining fail-closed checks for emitted forbidden components.
+- Offline profile validation passes. Kubernetes server-side dry-run accepted the Namespace document but rejected namespaced documents because a multi-document server dry-run does not persist the Namespace. A post-check confirmed no `chaosatlas-p09` namespace or resources were created. Real apply remains prohibited pending explicit authorization.
+- After explicit deployment authorization, the WSL-native Docker daemon was restarted with a systemd drop-in that preserves `--iptables=false --ip6tables=false`, configures the Windows gateway proxy, and binds the API only to `127.0.0.1:2375`. Registry access then worked and all five fixed images were pulled, including Dify API and Web. The existing kind control-plane container did not survive the daemon restart cleanly: Docker reported stale sandboxes, `layer not mounted`, and cgroup scope creation failures while restoring the control-plane container. This is an environment/runtime recovery failure, not a P09 result; no P09 namespace or workload was applied.
+
+## kind cgroup recovery finding (2026-08-12)
+
+- WSL-native Docker defaults were changed to `cgroupfs` and `default-cgroupns-mode=host`; ordinary containers report `CgroupnsMode=host` and Docker remains localhost-only on `127.0.0.1:2375`.
+- kind v0.32.0 hard-codes `--cgroupns=private` in its Docker create request. Under the WSL cgroup-v2/systemd combination this fails with `device or resource busy` while writing `/sys/fs/cgroup/docker/<id>/cgroup.procs`.
+- A repository-local temporary Docker API proxy (`tools/docker_kind_proxy.py`) was added. It preserves the original daemon and rewrites only kind's `/containers/create` payload to `CgroupnsMode=host`; direct inspection confirmed the created control-plane container uses `host`.
+- The proxy still needs a final end-to-end validation of kind's long kubeadm initialization lifecycle. No successful Kubernetes API or experiment runtime has been claimed from this recovery path.
+
+## Repository handoff findings (2026-08-12)
+
+- The two full upstream source trees under `sources/` and `sources_restored/P09/` total roughly 245 MB and are local experiment inputs, not ChaosAtlas-owned source. They are excluded while restoration provenance is retained.
+- `.tmp-chaos-kind-admin.conf`, `.tmp-bridge/`, local Docker configuration, and `CHAOS_ENV_HANDOFF.md` expose machine-specific runtime details and are excluded from publication.
+- The curated untracked submission is 631 files and about 4.95 MB, with no untracked file larger than 1 MiB. Existing tracked binaries are unchanged by this handoff.
+- No sensitive-value signature or sensitive filename was found in the exact modified/untracked candidate set or in the recorded runtime/model-result artifacts.

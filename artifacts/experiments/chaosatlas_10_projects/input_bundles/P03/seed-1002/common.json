@@ -1,0 +1,40 @@
+﻿{
+    "schema_version":  "1.0",
+    "project_id":  "P03",
+    "project_commit":  "15575bd85a8e0b87bfa867bb8a01cb76bca913ad",
+    "source_tree_sha":  "15575bd85a8e0b87bfa867bb8a01cb76bca913ad",
+    "deployment_summary":  {
+                               "kind":  "requires_normalization",
+                               "command":  "TBD; validate official local stack and database/cache dependencies",
+                               "reason":  "No root production Compose file in the frozen tree."
+                           },
+    "workload_summary":  {
+                             "type":  "GraphQL/HTTP",
+                             "entrypoint":  "GraphQL health and catalog query",
+                             "health":  "HTTP health endpoint plus deterministic GraphQL query"
+                         },
+    "candidate_pool_sha256":  "d79ced32272f9ee0b2f86fcab73a455e80cc97ce1a0d660c7f6f528fdf1ef2ad",
+    "candidate_order":  [
+                            "P03-postgres-container_cpu_stress-08",
+                            "P03-cache-container_cpu_stress-16",
+                            "P03-postgres-network_loss-07",
+                            "P03-saleor-api-network_delay-02",
+                            "P03-worker-pod_kill-09",
+                            "P03-saleor-api-network_loss-03",
+                            "P03-worker-network_loss-11",
+                            "P03-saleor-api-pod_kill-01",
+                            "P03-cache-network_delay-14",
+                            "P03-saleor-api-container_cpu_stress-04",
+                            "P03-worker-network_delay-10",
+                            "P03-postgres-pod_kill-05",
+                            "P03-postgres-network_delay-06",
+                            "P03-cache-network_loss-15",
+                            "P03-worker-container_cpu_stress-12",
+                            "P03-cache-pod_kill-13"
+                        ],
+    "seed":  1002,
+    "candidate_budget_k":  8,
+    "runner_version":  "runner_protocol_v1",
+    "oracle_version":  "oracle_schema_v1",
+    "knowledge_view":  "excluded_from_common_input"
+}

@@ -1,0 +1,55 @@
+﻿{
+    "arm":  "ChaosAtlas-KB",
+    "common_input":  {
+                         "schema_version":  "1.0",
+                         "project_id":  "P02",
+                         "project_commit":  "305a1f13e4f961001d4e6cb50a9db51dc3fc5967",
+                         "source_tree_sha":  "305a1f13e4f961001d4e6cb50a9db51dc3fc5967",
+                         "deployment_summary":  {
+                                                    "kind":  "compose_to_kind_adapter",
+                                                    "command":  "docker compose -f docker-compose.yml up -d",
+                                                    "note":  "Run one project at a time and translate services to namespace-local workloads; disable genai-service or replace it with a local mock because the frozen Compose file references external OpenAI/Azure credentials."
+                                                },
+                         "workload_summary":  {
+                                                  "type":  "HTTP",
+                                                  "entrypoint":  "API gateway pet/owner/visit flow",
+                                                  "health":  "gateway health plus one CRUD request"
+                                              },
+                         "candidate_pool_sha256":  "8b2bcafcb12c40df5bd7b31fc352b7ae3d5ecbfb9d78f6f5047770b29775347a",
+                         "candidate_order":  [
+                                                 "P02-customers-service-container_cpu_stress-08",
+                                                 "P02-api-gateway-container_cpu_stress-04",
+                                                 "P02-customers-service-network_loss-07",
+                                                 "P02-vets-service-network_delay-14",
+                                                 "P02-visits-service-pod_kill-09",
+                                                 "P02-vets-service-network_loss-15",
+                                                 "P02-visits-service-network_loss-11",
+                                                 "P02-vets-service-pod_kill-13",
+                                                 "P02-api-gateway-network_delay-02",
+                                                 "P02-vets-service-container_cpu_stress-16",
+                                                 "P02-visits-service-network_delay-10",
+                                                 "P02-customers-service-pod_kill-05",
+                                                 "P02-customers-service-network_delay-06",
+                                                 "P02-api-gateway-network_loss-03",
+                                                 "P02-visits-service-container_cpu_stress-12",
+                                                 "P02-api-gateway-pod_kill-01"
+                                             ],
+                         "seed":  1002,
+                         "candidate_budget_k":  8,
+                         "runner_version":  "runner_protocol_v1",
+                         "oracle_version":  "oracle_schema_v1",
+                         "knowledge_view":  "excluded_from_common_input"
+                     },
+    "knowledge_card_ref":  "knowledge_cards/P02/knowledge_card.json",
+    "knowledge_card_sha256":  "eb99c4438754deda646d057d01f2b7362f1d11c50160d623d2c39d920ee81722",
+    "implementation_files":  [
+                                 {
+                                     "path":  "tools/build_knowledge_ablation_gates0to2.py",
+                                     "sha256":  "178714b7d0c064cb5ec8b2925aaf4f2ff153ac05397dff50f50aab9ac9f9ed84"
+                                 },
+                                 {
+                                     "path":  "tools/run_selection_only_ablation.py",
+                                     "sha256":  "be7d61c6d68da5e6744f097db0b6d7e62be854cbb534550ac157464db770daf5"
+                                 }
+                             ]
+}

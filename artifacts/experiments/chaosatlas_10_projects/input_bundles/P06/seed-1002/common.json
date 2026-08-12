@@ -1,0 +1,40 @@
+﻿{
+    "schema_version":  "1.0",
+    "project_id":  "P06",
+    "project_commit":  "9dca3724a6d65126ea937ef949f986e5aab47a81",
+    "source_tree_sha":  "9dca3724a6d65126ea937ef949f986e5aab47a81",
+    "deployment_summary":  {
+                               "kind":  "build_app_plus_dependency_profile",
+                               "command":  "Build the frozen Dockerfile, then start only one local database profile from docker-compose.yml",
+                               "note":  "The root Compose file is a dependency matrix and does not define the Directus application service; do not treat compose up alone as an application deployment."
+                           },
+    "workload_summary":  {
+                             "type":  "REST/GraphQL",
+                             "entrypoint":  "health plus schema/items request",
+                             "health":  "HTTP health endpoint and deterministic read request"
+                         },
+    "candidate_pool_sha256":  "7b77ede4b1dacbfeb0b3fec2487f95e105eba2471aa3f7ba2e97c1ff5f16f939",
+    "candidate_order":  [
+                            "P06-postgres-container_cpu_stress-08",
+                            "P06-directus-api-container_cpu_stress-04",
+                            "P06-postgres-network_loss-07",
+                            "P06-redis-network_delay-10",
+                            "P06-storage-pod_kill-13",
+                            "P06-redis-network_loss-11",
+                            "P06-storage-network_loss-15",
+                            "P06-redis-pod_kill-09",
+                            "P06-directus-api-network_delay-02",
+                            "P06-redis-container_cpu_stress-12",
+                            "P06-storage-network_delay-14",
+                            "P06-postgres-pod_kill-05",
+                            "P06-postgres-network_delay-06",
+                            "P06-directus-api-network_loss-03",
+                            "P06-storage-container_cpu_stress-16",
+                            "P06-directus-api-pod_kill-01"
+                        ],
+    "seed":  1002,
+    "candidate_budget_k":  8,
+    "runner_version":  "runner_protocol_v1",
+    "oracle_version":  "oracle_schema_v1",
+    "knowledge_view":  "excluded_from_common_input"
+}

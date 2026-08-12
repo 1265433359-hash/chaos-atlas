@@ -1,0 +1,5 @@
+{
+  "data": {
+    "config.conf": "apiVersion: kubeproxy.config.k8s.io/v1alpha1\nkind: KubeProxyConfiguration\nbindAddress: 0.0.0.0\nbindAddressHardFail: false\nclientConnection:\n  kubeconfig: /var/lib/kube-proxy/kubeconfig.conf\nclusterCIDR: 10.244.0.0/16\nconntrack:\n  maxPerCore: 0\n  min: 0\nmode: iptables\niptables:\n  localhostNodePorts: true\n  minSyncPeriod: 1s\n  syncPeriod: 0s\n"
+  }
+}

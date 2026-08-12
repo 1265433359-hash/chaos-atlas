@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "common_input": {
+    "project_id": "string",
+    "project_commit": "40-hex",
+    "source_tree_sha": "string",
+    "deployment_manifest_sha": "string",
+    "deployment_summary": "string",
+    "workload_summary": "string",
+    "candidate_pool_sha256": "string",
+    "candidate_order": "array[candidate_id]",
+    "seed": "integer",
+    "candidate_budget_k": "integer",
+    "prompt_template_sha256": "string",
+    "runner_version": "string",
+    "oracle_version": "string"
+  },
+  "arm_views": {
+    "ChaosAtlas-KB": ["common_input", "frozen_general_knowledge", "frozen_project_knowledge_card", "method_prompt"],
+    "ChaosAtlas-noKB": ["common_input", "method_prompt"],
+    "ChaosEater-adapter": ["common_input", "frozen_chaoseater_prompt", "adapter_mapping_only"]
+  },
+  "forbidden_to_all_arms": ["oracle_labels", "prior_method_selections", "runtime_observations", "post_run_rca", "final_verdicts", "candidate_mutation_path"],
+  "kb_ablation_rule": "ChaosAtlas-KB and ChaosAtlas-noKB must receive byte-identical common_input and differ only in the explicitly hashed knowledge view.",
+  "method_comparison_rule": "ChaosEater-adapter must not receive ChaosAtlas knowledge, scores, cards, or post-run evidence; mapping to the common candidate IDs is recorded outside the prompt."
+}

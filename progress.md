@@ -1,5 +1,25 @@
 # Progress
 
+## Session 4 offline statistics (2026-08-12)
+
+- Added `tools/analyze_chaosatlas_statistics.py` and `docs/CHAOSATLAS_STATISTICS.md`.
+- The analyzer aggregates three seeds inside each project, never treats LLM calls as independent samples, computes project-level KB-minus-noKB deltas, and summarizes the delta distribution across observed projects.
+- It reads normalized JSON/JSONL or auto-discovers open-discovery/runtime/token-ledger artifacts; absent denominators remain `null`.
+- Generated `analysis_outputs/chaosatlas_statistics/statistics.json` and `.md`. Current frozen evidence contains P02 only, so the report is explicitly `incomplete_missing_projects` (1/10), not a complete 10-project claim.
+- Added `tools/tests/test_analyze_chaosatlas_statistics.py`; focused verification: 4 passed (pytest cache warning only).
+
+## Main experiment priority reset (2026-08-12)
+
+- The primary deliverable is now the 10-project open-discovery track; the fixed candidate-pool three-arm track is parked as a secondary control.
+- Added `tools/main_experiment_orchestrator.py`. It is offline-only: it reads frozen gate/topology evidence, checks native ChaosEater Skaffold eligibility, writes the 90-row main ledger, and can emit the P02 Compose-to-kind selector map. It does not read the DeepSeek key, call an LLM, apply Kubernetes resources, or inject faults.
+- Generated `artifacts/experiments/chaosatlas_10_projects/main_experiment_ledger.json`: 10 projects, 3 seeds, `ChaosAtlas-KB-open`, `ChaosAtlas-noKB-open`, and `ChaosEater-official`; 6 P02 ChaosAtlas rows are ready only after explicit LLM consent, 84 rows are blocked by project/runtime or official-input gates.
+- Generated `artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P02/runtime-map.json`, mapping frozen Compose service nodes to namespace-local Deployment selectors from the static profile.
+- Official ChaosEater is not currently runnable for these frozen projects because no native `skaffold.yaml` entrypoint was found. `ChaosEater-adapter-open` remains supplementary and cannot replace it.
+- Verification: 24 focused open-discovery/compiler/topology tests passed. No DeepSeek request or mutation was performed.
+- Added `tools/run_main_experiment_dry_run.py` and an explicit P02 fixture artifact. The fixture passed open-discovery compilation and mutation compilation, producing one namespace-local NetworkChaos YAML with provenance; it is marked `dry_run_fixture` and excluded from metrics.
+- Kubernetes read-only preflight passed (`kind-chaos-kind`, node Ready, Pod/Network/Stress/Workflow CRDs present). P02 static profile and generated NetworkChaos passed server-side dry-run after reconciling `customers-service` to the already deployed 1Gi request/limit; reconciliation is recorded in `runtime_profiles/P02/kubernetes-static/profile_reconciliation_2026-08-12.json`.
+- Added `MAIN_DEPLOYMENT_REMEDIATION.md`, an ordered queue for the remaining nine deployment gates. Static inputs are now tracked separately from runtime eligibility so blocked projects do not stall input freezing.
+
 ## 2026-08-10 project archive pass
 - Added top-level `README.md` under the confirmed project name **ChaosAtlas**.
 - Added `docs/ARCHIVE_MAP.md`, `docs/EXPERIMENT_CATALOG.md`, `docs/KNOWLEDGE_BASE.md`, `docs/CODE_GUIDE.md`, and `docs/GITHUB_PRIVATE_HANDOFF.md`.
@@ -233,3 +253,128 @@
 - Added `analysis_outputs/SUMMARY.md`, `analysis_outputs/RISKS.md`, and `analysis_outputs/status.json`.
 - Updated project docs to freeze the current paper boundary: knowledge-base ablation and final method head-to-head comparison are preserved but parked as `parked_future_work`.
 - Regression suite remains green at 249 passed; no runtime experiment or GitHub upload was started.
+# Open-discovery compiler progress (2026-08-11)
+
+- 2026-08-12 continuation: inspected the four-session handoff. P09 exact restored source is present in `sources_restored/P09` (13,455 observed files; required runtime files and Compose SHA verified). Added source-restore and profile-preflight manifests. Profile generation remains fail-closed because WSL-native Docker has no verified Dify/Postgres/Busybox core image digests; no placeholder digest, cluster apply, or DeepSeek call was used.
+- Fixed `tools/analyze_chaosatlas_statistics.py`: discovery validity is response-level, and runtime `valid_runs` no longer enters executable-hypothesis rates. Regenerated `analysis_outputs/chaosatlas_statistics/`; focused statistics tests pass and the full suite remains green at 286 tests.
+- Completed read-only official ChaosEater audit at commit `47c4e44bc897014d22fa1cb3079a0e7d28011fbc`: native path requires a zipped Skaffold project with root `skaffold.yaml` and referenced Kubernetes manifests; P02 has no native Skaffold input, so its adapter result remains supplementary only. Evidence: `artifacts/experiments/chaosatlas_10_projects/chaoseater_official_audit.json`.
+- Full regression after handoff changes: 290 passed, 5 subtests passed. No DeepSeek request, Docker Desktop action, or cluster mutation occurred.
+- Acceptance pass (2026-08-12): all four-session work packages reviewed. P09 remains blocked at immutable image provenance; P03/P06 restoration remains incomplete; official ChaosEater audit and project-clustered statistics are present. Added `artifacts/experiments/chaosatlas_10_projects/ACCEPTANCE_REPORT_2026-08-12.md`. Corrected P09 restore manifest to use the verified Git tree SHA from the restoration manifest. No experiment inputs or runtime results were changed.
+- Runtime-gate consistency pass (2026-08-12): registry manifest queries through the approved external path timed out, and the local proxy HTTPS path closed the connection; no image tags or guessed digests were accepted. Corrected the gate index and consent report to reflect the actual state: P02 `execution_ready=1` but `method_result_eligible=0`; 8 projects environment-blocked and 1 out-of-domain. No DeepSeek key read or request sent.
+
+- P02 retry on 2026-08-12 crossed the registry gate using a WSL-only relay (`172.18.0.1:7890 -> 172.20.96.1:7890`); all required images eventually pulled. Runtime remained blocked because the preserved kind cluster's kube-proxy is configured for IPVS but its service table stayed empty under the WSL kernel's incomplete iptables/filter support, while CoreDNS readiness stayed 503. The API gateway consequently could not resolve `config-server`. P02 was cleaned up, the relay stopped, and no baseline or mutation was run. Evidence: `artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P02/pilot_blocked_2026-08-12.json`. This is an environment gate, not a method result; DeepSeek was not read or called.
+
+- Retried the authorized P02 runtime smoke deployment after the user enabled a proxy. Windows inspection showed `KumiryoCore.exe` listening only on `127.0.0.1:7890`; kind's containerd was configured for `172.18.0.1:7890`, and node-side TCP plus Kubernetes events both showed `connection refused`. All ten digest-pinned workloads remained in `ImagePullBackOff`; no baseline or mutation was run. The isolated `chaosatlas-p02` namespace was deleted successfully. Evidence: `artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P02/pilot_retry_2026-08-11.json`. This is an environment block, not a ChaosAtlas result; next gate is enabling KumiryoCore Allow LAN or an equivalent host-reachable listener.
+
+- Started implementation after confirming the previous four-project runs used pre-registered or pre-generated mutation YAML rather than an open hypothesis-to-YAML path.
+- Existing runtime state remains read-only for this turn; no DeepSeek request and no cluster mutation will be performed.
+- Added `tools/open_discovery_mutation_compiler.py`: deterministic target resolution, PodChaos/NetworkChaos/StressChaos YAML generation, provenance, and fail-closed upstream/signature/namespace/selector checks.
+- Added Pod template labels to the topology IR and 10 focused compiler tests. Focused tests and full suite passed: 10 focused; 278 total plus 5 subtests.
+- Formal ten-project execution remains blocked by the existing runtime gate (`0/10 execution_ready`); this turn did not apply any mutation.
+
+## Overnight handoff verification (2026-08-12)
+
+- Rechecked the authorized WSL-native Docker engine: Docker client `29.6.1` reached server `29.1.3`; the preserved `chaos-kind-control-plane` container is up.
+- Rechecked the Kubernetes API through the user kubeconfig with read-only commands: node `chaos-kind-control-plane` is `Ready` on Kubernetes `v1.36.1`; Chaos Mesh CRDs remain present.
+- The runtime service-network gate is still blocked. `kindnet` exits while synchronizing nftables/iptables because the WSL kernel lacks the required nfqueue and iptables extensions; `kube-proxy` remains configured for `mode: ipvs` and repeatedly fails to create NAT/filter chains and IPVS service state. CoreDNS replicas are `Running` but `0/1` Ready.
+- P02's static profile remains `runtime_apply_allowed=false`; no namespace was created in this verification, and no baseline, oracle, ChaosAtlas-KB, ChaosAtlas-noKB, or ChaosEater-adapter run was started. This is an environment block, not a project or method finding.
+- DeepSeek credentials were not read and no external request was sent. The stored consent checklist still requires explicit approval of the exact call plan, model settings, token ceiling, retry policy, and monetary ceiling after a project passes runtime gates.
+- Offline preparation was revalidated without secrets: open-discovery bundle generation/audit reports `120` files with no LLM call, selection-only preflight reports `36` records and `preflight_passed`, and the focused topology/mutation test set reports `19 passed`.
+
+## P02 runtime gate completion (2026-08-12)
+
+- Recovered the P02 namespace after the WSL proxy relay was unavailable. A temporary relay was used only for bring-up and was stopped after runtime preparation.
+- Fixed the public Spring Petclinic config repository at commit `323993ce2519c6d02df63e08bf4458d123d3b611`, mounted it as `p02-config-repo`, and switched Config Server to the native profile. This removed the remote JGit/GitHub request from the experiment runtime path.
+- The first two gateway baseline windows were correctly recorded as `baseline_invalid`: API Gateway was not yet listening because Config Server remote fetches timed out. No method or mutation result was derived from them.
+- After native config, all 10 P02 Pods became Ready. `customers-service` hit `OOMKilled` at the original 512Mi limit; a bounded 1Gi memory override was applied and the replacement Pod remained stable. This is an environment adjustment, not a project finding.
+- Valid baseline: 10 `GET /` samples through localhost port-forward, all HTTP 200 with 3597-byte body; cold sample 287.369ms and steady samples 59.181-77.601ms. Evidence: `artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P02/baseline_gateway_valid_2026-08-12.json`.
+- Correct business oracle was verified at `GET /api/gateway/owners/1`, returning HTTP 200 and owner/pets data. `/owners` and `/vets` were invalid paths for this gateway and are not treated as application failures. Evidence: `artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P02/business_oracles_valid_2026-08-12.json`.
+- Chaos Mesh controller Pods and PodChaos/NetworkChaos/StressChaos CRDs are present; no Chaos resource was applied. Formal gate record: `artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P02/runtime_gate_2026-08-12.json`.
+- DeepSeek key was not read and no DeepSeek request was sent. The next action requires explicit consent for the exact three-arm call plan, model settings, token cap, retry policy, and cost ceiling.
+
+## P02 three-arm selection pilot preparation (2026-08-12)
+
+- Added `tools/run_p02_three_method_selection.py` for the P02 seed-1001 fixed-pool pilot. It shares the frozen 16-candidate order and K=8 across `ChaosAtlas-KB`, `ChaosAtlas-noKB`, and `ChaosEater-adapter`; it records prompt/bundle hashes, redacted raw responses, structured selections, and token ledger rows.
+- Added optional `max_output_tokens` support to the shared OpenAI-compatible backend, sent as the API `max_tokens` request field.
+- Fixed BOM-safe JSON loading and filtered audit-only knowledge-card fields before prompt construction.
+- Offline dry-run passed: KB/noKB prompt hashes differ, candidate pool hash is `8b2bcafc...`, and no forbidden evidence fields are present. Related adapter and selection tests: 20 passed.
+- User authorized the P02 three-call pilot with model `deepseek-v4-flash`; no real request has been sent in this entry yet.
+- Attempted the authorized runner through the managed external-execution gate; the gate rejected it because the request would transmit project-derived candidate/configuration content to `https://api.deepseek.com/v1` without explicit payload-and-budget approval. The key was not read and zero requests were sent. No workaround will be attempted; await explicit approval of the external data transfer.
+
+## Main experiment priority reset (2026-08-12)
+
+- User clarified that the primary deliverable is the 10-project open-discovery experiment, not the fixed-candidate three-arm selection pilot.
+- Frozen priority document: `artifacts/experiments/chaosatlas_10_projects/MAIN_EXPERIMENT_PRIORITY.md`.
+- Main arms are `ChaosAtlas-KB-open`, `ChaosAtlas-noKB-open`, and `ChaosEater-official`; `ChaosEater-adapter-open` is supplementary only.
+- The P02 fixed-pool selection runner and its three calls are parked until the main track produces project-level results. No DeepSeek key was read and no request was sent.
+
+## Formal knowledge-ablation gate hardening (2026-08-12)
+
+- Added `tools/validate_chaosatlas_experiment.py`, an offline fail-closed gate
+  for the 30 open-discovery KB/noKB bundle pairs. It checks shared evidence,
+  topology, runtime contract, seed, and schema identity while requiring the KB
+  view to be absent from noKB.
+- Extended `tools/feedback_protocol.py` with `knowledge_projection()`,
+  `validate_ablation_pair()`, and `validate_knowledge_card_boundary()`. Audit
+  cards retain runtime evidence, but later-project KB snapshots receive only
+  source provenance and a reviewed abstraction; same-project/future-project
+  feedback remains rejected.
+- Added five focused regression tests covering projection isolation, prompt
+  pair identity, review/order gates, and runtime-field rejection. Result:
+  `7 passed`; offline input gate: `valid=true`, `checked_ablation_pairs=30`.
+- Updated `artifacts/experiments/chaosatlas_10_projects/protocol_v2_open_discovery.md`
+  to distinguish the P02 source-context pilot from the formal cross-project
+  feedback ablation and to require project-clustered paired statistics.
+
+## Deployment preflight continuation (2026-08-12)
+
+- Audited the next deployment candidates without reading credentials or
+  changing the cluster. P01 eShop remains blocked because the frozen commit
+  has no Compose/Kubernetes/Dockerfile application deployment and an empty
+  topology profile.
+- Added `tools/p06_deployment_preflight.py`: P06 Directus has a Dockerfile and
+  dependency matrix, but the frozen sparse snapshot lacks `package.json` and
+  `pnpm-lock.yaml`; its Compose file contains databases/infra only, not the
+  Directus application service. Runtime apply remains false.
+- Added `tools/p03_deployment_preflight.py`: P03 Saleor Compose references
+  missing `.devcontainer` env files and build inputs (`pyproject.toml`,
+  `uv.lock`, `manage.py`) in the frozen snapshot. Runtime apply remains false.
+- Added `tools/p09_deployment_preflight.py`: P09 Dify has a full multi-service
+  Compose, but requires missing `.env`/`middleware.env`, digest pinning, and a
+  reduced profile excluding external/high-blast-radius services and external
+  model calls. Runtime apply remains false.
+- Added `tools/build_deployment_preflight_index.py` and committed evidence at
+  `artifacts/experiments/chaosatlas_10_projects/deployment_preflight_index.json`.
+  It records four environment blocks separately from method outcomes; no model
+  calls or cluster mutations occurred. Focused preflight tests: `4 passed`.
+
+## Parallel handoff plan (2026-08-12)
+
+- Added `artifacts/experiments/chaosatlas_10_projects/PARALLEL_WORK_PACKAGES.md`.
+- The critical path is exact source restoration, then a reduced digest-pinned
+  P09 or P03 runtime profile and deterministic oracle. Separate packages cover
+  official ChaosEater audit, project-clustered statistics, and user review.
+- Parallel sessions must not overwrite frozen evidence, read the DeepSeek key,
+  call the model, touch Docker Desktop, or apply runtime mutations before the
+  corresponding gate and explicit approval.
+- GitHub source restoration (2026-08-12): P09 restored completely in isolated `sources_restored/P09` with commit/tree/file count and required-file checks. P03/P06 commit/tree verified, but full blobs could not be safely restored due partial-clone promisor errors and GitHub archive timeout; marked `blocked_incomplete`. Manifest written at `sources_restored/RESTORATION_MANIFEST.md`. No deployment, cluster mutation, or DeepSeek call.
+
+## P09 digest remediation (2026-08-12)
+
+- Reproduced the registry path through WSL and Windows gateway proxy `172.20.96.1:7890`; Docker Hub manifest access is available from WSL. The dockerd process still has empty proxy fields, so no daemon restart or Docker Desktop action was taken.
+- Corrected the digest probe to use a simple WSL script and case-insensitive `Docker-Content-Digest` extraction. Resolved five immutable digests for BusyBox, Postgres, Redis, Dify API, and Dify Web; evidence is in `runtime_profiles/P09/image-digests.json`.
+- Generated `minimal-profile.yaml` and `profile_manifest.json`. Offline validation passes namespace-local, forbidden-services, immutable-images, and required-resources checks. The forbidden-service validator now checks identity fields only, avoiding false positives from cleared optional endpoint variable names.
+- Kubernetes `kubectl apply --dry-run=server` against `kind-chaos-kind` accepted the Namespace but rejected namespaced documents because the Namespace is not persisted during a multi-document dry-run. Read-only post-check found no namespace or resources. `server-side-dry-run.json` records this limitation; `apply_allowed` remains false.
+- Focused regression suite: `10 passed, 1 warning, 5 subtests passed`. The attempted root `tests` path was invalid because this repository has no root `tests` directory.
+- Deployment authorization was received, but apply was deliberately not started. The WSL dockerd systemd drop-in is active with the proxy and `127.0.0.1:2375`; all five P09 digest-pinned images were pulled successfully. Restart recovery left the existing kind control-plane container unstable (`layer not mounted`, stale sandbox, and cgroup scope errors), and kubeconfig/API readiness could not be restored reliably. No P09 namespace, Secret, Pod, or Chaos resource was created.
+- Non-destructive recovery attempt: disabled the control-plane container restart loop, started the existing `chaos-kind-control-plane`, and waited for kubelet/containerd. The container exited with code 255 again; Docker logs show repeated stale sandbox/layer and cgroup-scope failures during runtime restoration. The cluster is therefore not safe to use for P09 apply. Rebuilding `chaos-kind` is now the recommended next step, pending separate explicit authorization because it removes current cluster runtime objects.
+
+- 2026-08-12 kind rebuild completed: WSL-native Docker remains `29.1.3`, `cgroupfs`, localhost-only. kind v0.32.0's hard-coded `--cgroupns=private` was overridden only during cluster creation by a trap-protected `/usr/bin/docker` wrapper, then the original Docker CLI was restored automatically. `chaos-kind` reached kind's full Ready phase; the control-plane container was confirmed `cgroupns=host`, `running=true`, and stable across a 30-second poll with no restart growth. A fresh kubeconfig was exported to `C:\Users\xiao junyang\.kube\chaos-kind-config` because the existing `config` file was locked. This is runtime recovery evidence only; Chaos Mesh and P09 have not been applied.
+
+## Repository handoff audit (2026-08-12)
+
+- Added repository ignores for machine-local Docker/Kubernetes/proxy state, planning sessions, environment files, and full third-party source snapshots. Restoration manifests remain versioned.
+- Replaced the P05 runtime `.env` dependency with a sanitized `.env.example`; the local environment file remains ignored. Removed an accidental 24-byte proxy-mirror scratch file.
+- Exact candidate scans found no GitHub PAT, API key, bearer credential, private key, or inline kubeconfig material. Candidate filenames also contain no kubeconfig, private-key, credential, or live environment file.
+- The first full pytest run had two setup errors because the global pytest temporary directory was inaccessible. Re-running with a repository-local isolated basetemp passed: `290 passed, 5 subtests passed`.
+- Offline experiment validation passed with `valid=true` and `checked_ablation_pairs=30`. P09 profile validation passed all static checks and correctly retained `apply_allowed=false`.

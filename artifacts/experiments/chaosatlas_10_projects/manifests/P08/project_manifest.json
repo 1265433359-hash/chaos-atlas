@@ -1,0 +1,33 @@
+﻿{
+    "id":  "P08",
+    "repo":  "appsmithorg/appsmith",
+    "commit":  "107634b7e3229bb69d53674cb9ebc67bc1ed02a8",
+    "checkout_status":  "exact_shallow",
+    "deployment_profile":  "docker_compose_or_helm",
+    "deployment_assets":  [
+                              "Dockerfile",
+                              "deploy/docker/docker-compose.yml",
+                              "deploy/helm/Chart.yaml",
+                              "deploy/helm/README.md"
+                          ],
+    "startup":  {
+                    "kind":  "compose_to_kind_adapter",
+                    "command":  "docker compose -f deploy/docker/docker-compose.yml up -d",
+                    "note":  "Prefer the documented single-node profile and disable optional plugins."
+                },
+    "workload":  {
+                     "type":  "HTTP/UI",
+                     "entrypoint":  "server health and deterministic API request",
+                     "health":  "server readiness plus API response"
+                 },
+    "resources":  {
+                      "class":  "very_high",
+                      "estimate":  "Large Java/Node stack; pilot required before inclusion"
+                  },
+    "fault_families":  [
+                           "pod_kill",
+                           "network_delay",
+                           "network_loss"
+                       ],
+    "gate":  "pending_resource_pilot"
+}

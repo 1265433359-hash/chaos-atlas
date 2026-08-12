@@ -1,0 +1,68 @@
+﻿{
+    "arm":  "ChaosEater-adapter",
+    "common_input":  {
+                         "schema_version":  "1.0",
+                         "project_id":  "P01",
+                         "project_commit":  "9b4f9434f46fdc5c1a6e9e936af2868340cdbc48",
+                         "source_tree_sha":  "9b4f9434f46fdc5c1a6e9e936af2868340cdbc48",
+                         "deployment_summary":  {
+                                                    "kind":  "requires_normalization",
+                                                    "command":  "TBD after Aspire-to-kind adapter review",
+                                                    "reason":  "No committed Compose or Kubernetes application manifest in the frozen tree."
+                                                },
+                         "workload_summary":  {
+                                                  "type":  "HTTP",
+                                                  "entrypoint":  "WebApp plus catalog/basket/order APIs",
+                                                  "health":  "HTTP readiness and one documented e-commerce transaction"
+                                              },
+                         "candidate_pool_sha256":  "f9d97b78511484fb9282f72bf1e0169a9c5388fbf197ec8bbcf3626091e39c2a",
+                         "candidate_order":  [
+                                                 "P01-catalog-api-container_cpu_stress-08",
+                                                 "P01-basket-api-container_cpu_stress-12",
+                                                 "P01-catalog-api-network_loss-07",
+                                                 "P01-ordering-api-network_delay-14",
+                                                 "P01-web-pod_kill-01",
+                                                 "P01-ordering-api-network_loss-15",
+                                                 "P01-web-network_loss-03",
+                                                 "P01-ordering-api-pod_kill-13",
+                                                 "P01-basket-api-network_delay-10",
+                                                 "P01-ordering-api-container_cpu_stress-16",
+                                                 "P01-web-network_delay-02",
+                                                 "P01-catalog-api-pod_kill-05",
+                                                 "P01-catalog-api-network_delay-06",
+                                                 "P01-basket-api-network_loss-11",
+                                                 "P01-web-container_cpu_stress-04",
+                                                 "P01-basket-api-pod_kill-09"
+                                             ],
+                         "seed":  1002,
+                         "candidate_budget_k":  8,
+                         "runner_version":  "runner_protocol_v1",
+                         "oracle_version":  "oracle_schema_v1",
+                         "knowledge_view":  "excluded_from_common_input"
+                     },
+    "knowledge_card_ref":  null,
+    "knowledge_card_sha256":  null,
+    "adapter_files":  [
+                          {
+                              "path":  "tools/chaos_eater_adapter/prompts.py",
+                              "sha256":  "2a6dca90e3392142c08b8307c3fdee849499b08e7eea1fe549c024580a5dd342"
+                          },
+                          {
+                              "path":  "tools/chaos_eater_adapter/adapter.py",
+                              "sha256":  "a14cc530d8e1d61f3b97fcab11af18d47b204df6e4de2522e700372bd7b05a1c"
+                          },
+                          {
+                              "path":  "tools/chaos_eater_adapter/mapping.py",
+                              "sha256":  "3a7a77350992500f1805f906d2971ab52c6bbe6f846a7eaa61a2051b3eedfc46"
+                          },
+                          {
+                              "path":  "tools/chaos_eater_adapter/schemas.py",
+                              "sha256":  "8176bcef4849cbc696395191a9a7bacedc275498c5873b75416e9906d2255c90"
+                          },
+                          {
+                              "path":  "tools/chaos_eater_adapter/llm_backend.py",
+                              "sha256":  "3eee5d7427f0bc8e2a467c48da4d2602e628a30df55aea3c3b1d7760722f724a"
+                          }
+                      ],
+    "mapping_policy":  "candidate_id mapping only; no ChaosAtlas knowledge"
+}

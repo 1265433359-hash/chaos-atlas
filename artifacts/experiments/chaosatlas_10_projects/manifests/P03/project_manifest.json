@@ -1,0 +1,33 @@
+﻿{
+    "id":  "P03",
+    "repo":  "saleor/saleor",
+    "commit":  "15575bd85a8e0b87bfa867bb8a01cb76bca913ad",
+    "checkout_status":  "exact_shallow",
+    "deployment_profile":  "saleor_dev_compose",
+    "deployment_assets":  [
+                              "Dockerfile",
+                              ".worktree-container/docker-compose.yml",
+                              ".devcontainer/docker-compose.yml",
+                              "socket.yml"
+                          ],
+    "startup":  {
+                    "kind":  "compose_to_kind_adapter",
+                    "command":  "docker compose -f .worktree-container/docker-compose.yml up -d",
+                    "note":  "The frozen dev/worktree Compose includes Saleor build, Postgres, Valkey, dashboard, and Mailpit; use local env files only and pin dashboard/image provenance."
+                },
+    "workload":  {
+                     "type":  "GraphQL/HTTP",
+                     "entrypoint":  "GraphQL health and catalog query",
+                     "health":  "HTTP health endpoint plus deterministic GraphQL query"
+                 },
+    "resources":  {
+                      "class":  "medium_high",
+                      "estimate":  "Django plus database/cache; image and migration cost must be measured"
+                  },
+    "fault_families":  [
+                           "pod_kill",
+                           "network_delay",
+                           "network_loss"
+                       ],
+    "gate":  "pending_compose_env_and_image_provenance"
+}

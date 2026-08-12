@@ -1,0 +1,34 @@
+﻿{
+    "id":  "P10",
+    "repo":  "keycloak/keycloak",
+    "commit":  "3f33a5c47fa360b9c080963e566d93c3e6360394",
+    "checkout_status":  "exact_shallow",
+    "deployment_profile":  "built_quarkus_server_or_pinned_official_image",
+    "deployment_assets":  [
+                              "README.md",
+                              "operator/Dockerfile",
+                              "operator/src/main/kubernetes/kubernetes.yml",
+                              "operator/src/main/kubernetes/kustomization.yml",
+                              "quarkus/container/Dockerfile"
+                          ],
+    "startup":  {
+                    "kind":  "requires_build_or_exact_image",
+                    "command":  "Build the frozen Keycloak source image with the documented Maven/Quarkus path, or use a registry image pinned by digest",
+                    "reason":  "The frozen repository documents docker run and source build, but a mutable official image tag cannot stand in for the selected commit."
+                },
+    "workload":  {
+                     "type":  "HTTP/OIDC",
+                     "entrypoint":  "Keycloak server local realm token issuance and health",
+                     "health":  "health/ready plus deterministic local client flow"
+                 },
+    "resources":  {
+                      "class":  "high",
+                      "estimate":  "Quarkus build or exact image required"
+                  },
+    "fault_families":  [
+                           "pod_kill",
+                           "network_delay",
+                           "network_loss"
+                       ],
+    "gate":  "pending_build_or_image_provenance"
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "project_id": "P02",
+  "namespace": "chaosatlas-p02",
+  "status": "static_profile_generated_dry_run_only",
+  "source": ".tmp-bridge/p02-config.json",
+  "resource_count": 21,
+  "image_overrides": {
+    "grafana-server": "grafana/grafana:5.2.4",
+    "prometheus-server": "prom/prometheus:v2.53.0"
+  },
+  "runtime_apply_allowed": false,
+  "remaining_gates": [
+    "immutable image digest provenance",
+    "kubectl server dry-run review",
+    "namespace health",
+    "baseline/recovery/cleanup"
+  ]
+}

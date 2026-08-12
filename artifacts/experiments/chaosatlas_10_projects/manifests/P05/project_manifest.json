@@ -1,0 +1,35 @@
+﻿{
+    "id":  "P05",
+    "repo":  "immich-app/immich",
+    "commit":  "235daff56125c5d7d5727f9b01f7a838dab0124e",
+    "checkout_status":  "exact_shallow",
+    "deployment_profile":  "official_docker_compose",
+    "deployment_assets":  [
+                              "docker/docker-compose.yml",
+                              "docker/docker-compose.prod.yml",
+                              "docker/docker-compose.rootless.yml",
+                              "docs/docs/install/docker-compose.mdx",
+                              "docs/docs/install/kubernetes.md"
+                          ],
+    "startup":  {
+                    "kind":  "compose_to_kind_adapter",
+                    "command":  "docker compose -f docker/docker-compose.yml up -d",
+                    "note":  "Disable or replace machine-learning service unless a local CPU profile is stable."
+                },
+    "workload":  {
+                     "type":  "HTTP",
+                     "entrypoint":  "server readiness plus asset/library API",
+                     "health":  "server health and deterministic read API"
+                 },
+    "resources":  {
+                      "class":  "very_high",
+                      "estimate":  "Postgres/Redis plus server/web and optional ML; one-at-a-time pilot required"
+                  },
+    "fault_families":  [
+                           "pod_kill",
+                           "network_delay",
+                           "network_loss",
+                           "container_cpu_stress"
+                       ],
+    "gate":  "pending_resource_pilot"
+}

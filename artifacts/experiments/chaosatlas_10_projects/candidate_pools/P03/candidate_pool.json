@@ -1,0 +1,275 @@
+﻿{
+    "schema_version":  "1.0",
+    "project_id":  "P03",
+    "candidate_pool_status":  "frozen_method_neutral_pre_smoke",
+    "candidate_count":  16,
+    "candidate_budget_k":  8,
+    "fault_families":  [
+                           "pod_kill",
+                           "network_delay",
+                           "network_loss",
+                           "container_cpu_stress"
+                       ],
+    "candidates":  [
+                       {
+                           "candidate_id":  "P03-saleor-api-pod_kill-01",
+                           "project_id":  "P03",
+                           "target":  "saleor-api",
+                           "fault_family":  "pod_kill",
+                           "fault_parameters":  {
+                                                    "duration_s":  0,
+                                                    "mode":  "one"
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-saleor-api-network_delay-02",
+                           "project_id":  "P03",
+                           "target":  "saleor-api",
+                           "fault_family":  "network_delay",
+                           "fault_parameters":  {
+                                                    "duration_s":  20,
+                                                    "latency_ms":  200
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-saleor-api-network_loss-03",
+                           "project_id":  "P03",
+                           "target":  "saleor-api",
+                           "fault_family":  "network_loss",
+                           "fault_parameters":  {
+                                                    "loss_percent":  100,
+                                                    "duration_s":  20
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-saleor-api-container_cpu_stress-04",
+                           "project_id":  "P03",
+                           "target":  "saleor-api",
+                           "fault_family":  "container_cpu_stress",
+                           "fault_parameters":  {
+                                                    "workers":  1,
+                                                    "load_percent":  50,
+                                                    "duration_s":  20
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-postgres-pod_kill-05",
+                           "project_id":  "P03",
+                           "target":  "postgres",
+                           "fault_family":  "pod_kill",
+                           "fault_parameters":  {
+                                                    "duration_s":  0,
+                                                    "mode":  "one"
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-postgres-network_delay-06",
+                           "project_id":  "P03",
+                           "target":  "postgres",
+                           "fault_family":  "network_delay",
+                           "fault_parameters":  {
+                                                    "duration_s":  20,
+                                                    "latency_ms":  200
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-postgres-network_loss-07",
+                           "project_id":  "P03",
+                           "target":  "postgres",
+                           "fault_family":  "network_loss",
+                           "fault_parameters":  {
+                                                    "loss_percent":  100,
+                                                    "duration_s":  20
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-postgres-container_cpu_stress-08",
+                           "project_id":  "P03",
+                           "target":  "postgres",
+                           "fault_family":  "container_cpu_stress",
+                           "fault_parameters":  {
+                                                    "workers":  1,
+                                                    "load_percent":  50,
+                                                    "duration_s":  20
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-worker-pod_kill-09",
+                           "project_id":  "P03",
+                           "target":  "worker",
+                           "fault_family":  "pod_kill",
+                           "fault_parameters":  {
+                                                    "duration_s":  0,
+                                                    "mode":  "one"
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-worker-network_delay-10",
+                           "project_id":  "P03",
+                           "target":  "worker",
+                           "fault_family":  "network_delay",
+                           "fault_parameters":  {
+                                                    "duration_s":  20,
+                                                    "latency_ms":  200
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-worker-network_loss-11",
+                           "project_id":  "P03",
+                           "target":  "worker",
+                           "fault_family":  "network_loss",
+                           "fault_parameters":  {
+                                                    "loss_percent":  100,
+                                                    "duration_s":  20
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-worker-container_cpu_stress-12",
+                           "project_id":  "P03",
+                           "target":  "worker",
+                           "fault_family":  "container_cpu_stress",
+                           "fault_parameters":  {
+                                                    "workers":  1,
+                                                    "load_percent":  50,
+                                                    "duration_s":  20
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-cache-pod_kill-13",
+                           "project_id":  "P03",
+                           "target":  "cache",
+                           "fault_family":  "pod_kill",
+                           "fault_parameters":  {
+                                                    "duration_s":  0,
+                                                    "mode":  "one"
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-cache-network_delay-14",
+                           "project_id":  "P03",
+                           "target":  "cache",
+                           "fault_family":  "network_delay",
+                           "fault_parameters":  {
+                                                    "duration_s":  20,
+                                                    "latency_ms":  200
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-cache-network_loss-15",
+                           "project_id":  "P03",
+                           "target":  "cache",
+                           "fault_family":  "network_loss",
+                           "fault_parameters":  {
+                                                    "loss_percent":  100,
+                                                    "duration_s":  20
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       },
+                       {
+                           "candidate_id":  "P03-cache-container_cpu_stress-16",
+                           "project_id":  "P03",
+                           "target":  "cache",
+                           "fault_family":  "container_cpu_stress",
+                           "fault_parameters":  {
+                                                    "workers":  1,
+                                                    "load_percent":  50,
+                                                    "duration_s":  20
+                                                },
+                           "workload_id":  "P03-primary-workload",
+                           "static_refs":  [
+                                               "project_manifest.json",
+                                               "source_tree_inventory.json"
+                                           ],
+                           "support_status":  "unknown"
+                       }
+                   ]
+}

@@ -1,0 +1,55 @@
+﻿{
+    "arm":  "ChaosAtlas-KB",
+    "common_input":  {
+                         "schema_version":  "1.0",
+                         "project_id":  "P07",
+                         "project_commit":  "374f5ad4035e39903db1d968d3be9c7ed8adca2c",
+                         "source_tree_sha":  "374f5ad4035e39903db1d968d3be9c7ed8adca2c",
+                         "deployment_summary":  {
+                                                    "kind":  "compose_to_kind_adapter",
+                                                    "command":  "docker compose -f docker-compose.yml up -d",
+                                                    "note":  "Use local Postgres, Redis, and object-storage substitute; disable external auth."
+                                                },
+                         "workload_summary":  {
+                                                  "type":  "HTTP",
+                                                  "entrypoint":  "health and document read workflow",
+                                                  "health":  "HTTP health plus deterministic document API"
+                                              },
+                         "candidate_pool_sha256":  "b7273534ee3ea25f0d51d355a88f92be8559590a41e888786eb0d8afb8a7afde",
+                         "candidate_order":  [
+                                                 "P07-redis-container_cpu_stress-12",
+                                                 "P07-outline-server-container_cpu_stress-04",
+                                                 "P07-postgres-network_delay-06",
+                                                 "P07-outline-server-network_loss-03",
+                                                 "P07-object-storage-network_loss-15",
+                                                 "P07-redis-network_loss-11",
+                                                 "P07-outline-server-pod_kill-01",
+                                                 "P07-postgres-network_loss-07",
+                                                 "P07-outline-server-network_delay-02",
+                                                 "P07-object-storage-pod_kill-13",
+                                                 "P07-redis-network_delay-10",
+                                                 "P07-object-storage-container_cpu_stress-16",
+                                                 "P07-postgres-container_cpu_stress-08",
+                                                 "P07-redis-pod_kill-09",
+                                                 "P07-object-storage-network_delay-14",
+                                                 "P07-postgres-pod_kill-05"
+                                             ],
+                         "seed":  1003,
+                         "candidate_budget_k":  8,
+                         "runner_version":  "runner_protocol_v1",
+                         "oracle_version":  "oracle_schema_v1",
+                         "knowledge_view":  "excluded_from_common_input"
+                     },
+    "knowledge_card_ref":  "knowledge_cards/P07/knowledge_card.json",
+    "knowledge_card_sha256":  "9ef9f9f2b3eb9456dbe08e08b96bd39b24f9d55f88abfc7fe502a26a0b0398af",
+    "implementation_files":  [
+                                 {
+                                     "path":  "tools/build_knowledge_ablation_gates0to2.py",
+                                     "sha256":  "178714b7d0c064cb5ec8b2925aaf4f2ff153ac05397dff50f50aab9ac9f9ed84"
+                                 },
+                                 {
+                                     "path":  "tools/run_selection_only_ablation.py",
+                                     "sha256":  "be7d61c6d68da5e6744f097db0b6d7e62be854cbb534550ac157464db770daf5"
+                                 }
+                             ]
+}

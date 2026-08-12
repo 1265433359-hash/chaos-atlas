@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: customers-service
+  namespace: chaosatlas-p02
+spec:
+  template:
+    spec:
+      containers:
+        - name: customers-service
+          resources:
+            requests:
+              memory: 1Gi
+            limits:
+              memory: 1Gi

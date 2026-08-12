@@ -20,3 +20,23 @@ chaos-mesh-*.tgz
 
 # Temporary pytest basetemp directories created for local verification.
 .pytest-tmp-*/
+
+# Machine-local Docker, Kubernetes, proxy, and session state.
+/.docker-config-empty/
+/.docker-empty/
+/.local/
+/.planning/
+/.tmp-bridge/
+/.tmp-chaos-kind-admin.conf
+/CHAOS_ENV_HANDOFF.md
+
+# Environment files may contain credentials. Commit only sanitized examples.
+.env
+.env.*
+*.env
+!*.env.example
+
+# Full upstream repositories are local experiment inputs, not ChaosAtlas source.
+/artifacts/experiments/chaosatlas_10_projects/sources/
+/artifacts/experiments/chaosatlas_10_projects/sources_restored/*
+!/artifacts/experiments/chaosatlas_10_projects/sources_restored/RESTORATION_MANIFEST.md

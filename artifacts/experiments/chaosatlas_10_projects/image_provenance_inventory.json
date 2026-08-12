@@ -1,0 +1,255 @@
+﻿{
+    "schema_version":  "1.0",
+    "snapshot_date":  "2026-08-11",
+    "registry_queries_performed":  false,
+    "summary":  [
+                    {
+                        "project_id":  "P02",
+                        "observed_images":  9,
+                        "digest_pinned":  0,
+                        "mutable_or_unpinned":  9
+                    },
+                    {
+                        "project_id":  "P05",
+                        "observed_images":  4,
+                        "digest_pinned":  2,
+                        "mutable_or_unpinned":  2
+                    },
+                    {
+                        "project_id":  "P06",
+                        "observed_images":  13,
+                        "digest_pinned":  0,
+                        "mutable_or_unpinned":  13
+                    },
+                    {
+                        "project_id":  "P07",
+                        "observed_images":  2,
+                        "digest_pinned":  0,
+                        "mutable_or_unpinned":  2
+                    },
+                    {
+                        "project_id":  "P08",
+                        "observed_images":  1,
+                        "digest_pinned":  0,
+                        "mutable_or_unpinned":  1
+                    },
+                    {
+                        "project_id":  "P09",
+                        "observed_images":  0,
+                        "digest_pinned":  0,
+                        "mutable_or_unpinned":  0
+                    }
+                ],
+    "rows":  [
+                 {
+                     "project_id":  "P02",
+                     "source":  "sources/P02/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "springcommunity/spring-petclinic-config-server",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P02",
+                     "source":  "sources/P02/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "springcommunity/spring-petclinic-discovery-server",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P02",
+                     "source":  "sources/P02/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "springcommunity/spring-petclinic-customers-service",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P02",
+                     "source":  "sources/P02/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "springcommunity/spring-petclinic-visits-service",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P02",
+                     "source":  "sources/P02/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "springcommunity/spring-petclinic-vets-service",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P02",
+                     "source":  "sources/P02/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "springcommunity/spring-petclinic-genai-service",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P02",
+                     "source":  "sources/P02/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "springcommunity/spring-petclinic-api-gateway",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P02",
+                     "source":  "sources/P02/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "openzipkin/zipkin",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P02",
+                     "source":  "sources/P02/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "springcommunity/spring-petclinic-admin-server",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P05",
+                     "source":  "sources/P05/docker/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P05",
+                     "source":  "sources/P05/docker/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P05",
+                     "source":  "sources/P05/docker/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "docker.io/valkey/valkey:9@sha256:3acc0687f2a2e1091fae6450d7842dd658c941338cf0a873ddd9e14b9e4ea4dd",
+                     "digest_pinned":  true
+                 },
+                 {
+                     "project_id":  "P05",
+                     "source":  "sources/P05/docker/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23",
+                     "digest_pinned":  true
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "postgis/postgis:13-3.4-alpine",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "postgis/postgis:10-3.2-alpine",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "mysql:8",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "mysql:5",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "mariadb:11.4",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "mcr.microsoft.com/mssql/server:2019-latest",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "quillbuilduser/oracle-18-xe-micro-sq",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "cockroachdb/cockroach:latest-v24.3",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "${REDIS_IMAGE:-redis:6-alpine}",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "minio/minio",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "mcr.microsoft.com/azure-storage/azurite",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "quay.io/keycloak/keycloak",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P06",
+                     "source":  "sources/P06/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "maildev/maildev",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P07",
+                     "source":  "sources/P07/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "redis",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P07",
+                     "source":  "sources/P07/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "postgres",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P08",
+                     "source":  "sources/P08/deploy/docker/docker-compose.yml",
+                     "status":  "observed",
+                     "image":  "index.docker.io/appsmith/appsmith-ce:release",
+                     "digest_pinned":  false
+                 },
+                 {
+                     "project_id":  "P09",
+                     "source":  "sources/P09/docker/docker-compose.yaml",
+                     "status":  "not_available_in_exact_checkout",
+                     "image":  null,
+                     "digest_pinned":  false
+                 }
+             ]
+}

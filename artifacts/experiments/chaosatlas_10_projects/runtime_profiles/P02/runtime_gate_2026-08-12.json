@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "project_id": "P02",
+  "namespace": "chaosatlas-p02",
+  "status": "runtime_gate_passed_no_mutation",
+  "cluster": "chaos-kind",
+  "deployment": {
+    "pod_count": 10,
+    "ready_count": 10,
+    "health_evidence": "kubectl get pods -n chaosatlas-p02 after native config and bounded customers memory override",
+    "environment_adjustments": [
+      "fixed public config repository at commit 323993ce2519c6d02df63e08bf4458d123d3b611",
+      "mounted config repository as p02-config-repo and switched Config Server to native profile",
+      "customers-service memory request/limit raised from 512Mi to 1Gi after OOMKilled during startup"
+    ]
+  },
+  "baseline": {
+    "status": "pass",
+    "evidence": "baseline_gateway_valid_2026-08-12.json",
+    "request": "GET /",
+    "samples": 10,
+    "status_codes": [200],
+    "body_bytes": 3597,
+    "latency_ms": {"cold": 287.369, "steady_range": [59.181, 77.601]}
+  },
+  "recovery_oracle": {
+    "status": "pass",
+    "evidence": "business_oracles_valid_2026-08-12.json",
+    "request": "GET /api/gateway/owners/1",
+    "status_code": 200,
+    "body_contract": "owner id=1 with pets returned"
+  },
+  "controller": {
+    "status": "pass_read_only",
+    "chaos_mesh_pods_ready": true,
+    "podchaos_crd": true,
+    "networkchaos_crd": true,
+    "stresschaos_crd": true,
+    "mutation_performed": false
+  },
+  "cleanup": {"status": "pass", "active_chaos_resources": "none observed"},
+  "deepseek": {"key_read": false, "requests_sent": 0},
+  "next_step": "present exact three-arm DeepSeek selection and execution call budget for explicit consent"
+}

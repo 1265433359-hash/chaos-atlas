@@ -1,0 +1,45 @@
+﻿{
+    "schema_version":  "1.0",
+    "project_id":  "P08",
+    "project_commit":  "107634b7e3229bb69d53674cb9ebc67bc1ed02a8",
+    "source_tree_sha":  "107634b7e3229bb69d53674cb9ebc67bc1ed02a8",
+    "knowledge_status":  "source_only_pre_runtime",
+    "provenance":  [
+                       "frozen source tree",
+                       "project manifest",
+                       "deployment asset index"
+                   ],
+    "facts":  {
+                  "deployment_profile":  "docker_compose_or_helm",
+                  "deployment_assets":  [
+                                            "Dockerfile",
+                                            "deploy/docker/docker-compose.yml",
+                                            "deploy/helm/Chart.yaml",
+                                            "deploy/helm/README.md"
+                                        ],
+                  "workload":  {
+                                   "type":  "HTTP/UI",
+                                   "entrypoint":  "server health and deterministic API request",
+                                   "health":  "server readiness plus API response"
+                               },
+                  "fault_families":  [
+                                         "pod_kill",
+                                         "network_delay",
+                                         "network_loss"
+                                     ],
+                  "resource_class":  "very_high"
+              },
+    "unverified":  [
+                       "deployment readiness",
+                       "fault-family support",
+                       "runtime recovery behavior",
+                       "source-level weakness labels"
+                   ],
+    "forbidden_not_present":  [
+                                  "oracle_label",
+                                  "prior_method_result",
+                                  "runtime_observation",
+                                  "post_run_rca",
+                                  "mutation_path"
+                              ]
+}

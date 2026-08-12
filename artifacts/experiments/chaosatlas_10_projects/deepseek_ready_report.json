@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "snapshot_date": "2026-08-11",
+  "ready_to_request_user_authorization": false,
+  "deepseek_key_read": false,
+  "deepseek_requests_sent": 0,
+  "structural_gates": {
+    "frozen_commits_and_trees": true,
+    "candidate_pool_and_order_frozen": true,
+    "three_arm_bundle_count": 90,
+    "open_discovery_bundle_count": 120,
+    "topology_profiles_generated": true,
+    "topology_graph_parser_tests": "2 parser tests passed",
+    "open_track_unit_tests": "12 targeted tests passed",
+    "independent_evaluator_present": true,
+    "common_input_groups": 30,
+    "leakage_forbidden_hits": 0,
+    "control_json_valid": true,
+    "adapter_ablation_runner_tests": "34 passed",
+    "full_regression_tests": "262 passed, 5 subtests"
+  },
+  "runtime_gates": {
+    "cluster_read_only_preflight": true,
+    "projects_execution_ready": 1,
+    "projects_environment_blocked": 8,
+    "projects_out_of_domain": 1,
+    "baseline_recovery_cleanup_evidence_complete": false,
+    "independent_oracle_evidence_complete": false
+  },
+  "request_plan_pending_approval": {
+    "registered_calls": 108,
+    "max_transport_attempts": 216,
+    "model": "deepseek-v4-flash",
+    "temperature": 0.2,
+    "max_output_tokens": 2048,
+    "hard_token_ceiling": 1200000,
+    "monetary_ceiling": null
+  },
+  "blocking_reasons": [
+    "P02 has namespace-local deployment, health, baseline, recovery, and cleanup evidence, but is not yet method_result_eligible.",
+    "Independent oracle records are templates only and contain no runtime labels.",
+    "The monetary ceiling still requires explicit user confirmation.",
+    "P02 runtime gate passed without mutation; the other projects retain their recorded build/profile gates."
+  ],
+  "next_authorization_condition": "Do not read C:/APP/project/deepseek_api_key.txt until the user explicitly approves call count, model settings, token ceiling, retry policy, and monetary ceiling; P02 remains method_result_eligible=false pending independent oracle evidence."
+}

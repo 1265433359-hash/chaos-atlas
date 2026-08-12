@@ -1,0 +1,46 @@
+﻿{
+    "schema_version":  "1.0",
+    "project_id":  "P02",
+    "project_commit":  "305a1f13e4f961001d4e6cb50a9db51dc3fc5967",
+    "source_tree_sha":  "305a1f13e4f961001d4e6cb50a9db51dc3fc5967",
+    "knowledge_status":  "source_only_pre_runtime",
+    "provenance":  [
+                       "frozen source tree",
+                       "project manifest",
+                       "deployment asset index"
+                   ],
+    "facts":  {
+                  "deployment_profile":  "docker_compose_microservices",
+                  "deployment_assets":  [
+                                            "docker-compose.yml",
+                                            "docker/Dockerfile",
+                                            "docker/prometheus/prometheus.yml",
+                                            "docker/grafana/provisioning"
+                                        ],
+                  "workload":  {
+                                   "type":  "HTTP",
+                                   "entrypoint":  "API gateway pet/owner/visit flow",
+                                   "health":  "gateway health plus one CRUD request"
+                               },
+                  "fault_families":  [
+                                         "pod_kill",
+                                         "network_delay",
+                                         "network_loss",
+                                         "container_cpu_stress"
+                                     ],
+                  "resource_class":  "medium"
+              },
+    "unverified":  [
+                       "deployment readiness",
+                       "fault-family support",
+                       "runtime recovery behavior",
+                       "source-level weakness labels"
+                   ],
+    "forbidden_not_present":  [
+                                  "oracle_label",
+                                  "prior_method_result",
+                                  "runtime_observation",
+                                  "post_run_rca",
+                                  "mutation_path"
+                              ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "kind": "open_discovery_hypotheses",
+  "root_fields": ["method_id", "project_id", "project_commit", "hypotheses", "no_safe_hypothesis_reason"],
+  "hypothesis_fields": [
+    "hypothesis_id",
+    "target",
+    "target_kind",
+    "fault_family",
+    "parameters",
+    "hypothesis",
+    "weakness_surface",
+    "call_chain",
+    "expected_invariant",
+    "validation_plan",
+    "recovery_expectation"
+  ],
+  "required_hypothesis_fields": ["hypothesis_id", "target", "target_kind", "fault_family", "parameters", "hypothesis", "weakness_surface", "call_chain", "expected_invariant", "validation_plan", "recovery_expectation"],
+  "target_kind_enum": ["service", "dependency_edge"],
+  "fault_family_enum": ["pod_kill", "network_delay", "network_loss", "container_cpu_stress"],
+  "max_hypotheses": 8,
+  "empty_output_rule": "An empty hypotheses array is valid only with a non-empty no_safe_hypothesis_reason.",
+  "parameter_bounds": {
+    "network_delay": {"latency_ms": [1, 500], "duration_s": [1, 60]},
+    "network_loss": {"loss_percent": [1, 100], "duration_s": [1, 60]},
+    "container_cpu_stress": {"workers": [1, 2], "load_percent": [1, 80], "duration_s": [1, 60]},
+    "pod_kill": {"mode": ["one"]}
+  },
+  "forbidden_fields": ["candidate_id", "candidate_pool", "oracle_label", "prior_selection", "runtime_observation", "post_run_rca", "mutation_path", "shell_command", "kubectl_command"],
+  "call_chain_item_fields": ["source", "target", "relation", "evidence_ref"],
+  "compiler_status_enum": ["accepted_known_candidate", "accepted_novel_candidate", "rejected", "environment_blocked", "out_of_domain"]
+}

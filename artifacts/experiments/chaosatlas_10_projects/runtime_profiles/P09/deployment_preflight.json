@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "project_id": "P09",
+  "project_commit": "cd0e88c680dec24dcd423b880302104f13d28462",
+  "status": "blocked",
+  "runtime_apply_allowed": false,
+  "source_root": "artifacts/experiments/chaosatlas_10_projects/sources/P09",
+  "compose_sha256": "5798ebc9360787284bce9883696c2212cfe39b9a6a08d967153e8f1520f0888f",
+  "all_service_count": 39,
+  "core_profile": [
+    "init_permissions",
+    "api",
+    "worker",
+    "worker_beat",
+    "web",
+    "db_postgres",
+    "redis"
+  ],
+  "external_or_high_blast_radius_services": [
+    "agent_backend",
+    "nginx",
+    "plugin_daemon",
+    "sandbox",
+    "ssrf_proxy"
+  ],
+  "mutable_images": [
+    {
+      "service": "init_permissions",
+      "image": "busybox:latest"
+    },
+    {
+      "service": "agent_ssrf_proxy",
+      "image": "ubuntu/squid:latest"
+    },
+    {
+      "service": "ssrf_proxy",
+      "image": "ubuntu/squid:latest"
+    },
+    {
+      "service": "nginx",
+      "image": "nginx:latest"
+    },
+    {
+      "service": "seekdb",
+      "image": "oceanbase/seekdb:latest"
+    },
+    {
+      "service": "oracle",
+      "image": "container-registry.oracle.com/database/free:latest"
+    },
+    {
+      "service": "opensearch",
+      "image": "opensearchproject/opensearch:latest"
+    },
+    {
+      "service": "opensearch-dashboards",
+      "image": "opensearchproject/opensearch-dashboards:latest"
+    },
+    {
+      "service": "unstructured",
+      "image": "downloads.unstructured.io/unstructured-io/unstructured-api:latest"
+    }
+  ],
+  "required_env": {
+    "docker/.env": false,
+    "docker/middleware.env": false
+  },
+  "model_policy": "No external LLM/model endpoint. Use deterministic local mock or exclude model workflow from oracle.",
+  "reasons": [
+    "required_env_missing:docker/.env,docker/middleware.env",
+    "mutable_images_require_digest_pinning",
+    "external_or_high_blast_radius_services_present_and_must_be_disabled"
+  ],
+  "next_action": "Create a reviewed, digest-pinned namespace-local reduced profile from CORE only; do not apply the full generated Compose."
+}

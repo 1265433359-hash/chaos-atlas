@@ -1,0 +1,2207 @@
+{
+  "schema_version": "2.0",
+  "protocol": "protocol_v2_open_discovery.md",
+  "arm": "ChaosAtlas-noKB-open",
+  "project_id": "P09",
+  "seed": 1003,
+  "primary_track": true,
+  "common_input": {
+    "schema_version": "1.0",
+    "project_id": "P09",
+    "project_commit": "cd0e88c680dec24dcd423b880302104f13d28462",
+    "source_tree_sha": "cd0e88c680dec24dcd423b880302104f13d28462",
+    "deployment_summary": {
+      "kind": "compose_to_kind_adapter",
+      "command": "docker compose -f docker/docker-compose.yaml up -d",
+      "note": "External model/API calls are forbidden; use a local mock model service and deterministic workflow."
+    },
+    "workload_summary": {
+      "type": "HTTP",
+      "entrypoint": "console/API health and local mock workflow",
+      "health": "API readiness plus mock workflow response"
+    },
+    "runner_version": "runner_protocol_v1",
+    "oracle_version": "oracle_schema_v1"
+  },
+  "topology_evidence": {
+    "status": "available",
+    "graph_hash": "1f0b4dc5cad38818396c8a410651f19d3ff8708fd29bfe8ebaf1169ba07a06b7",
+    "nodes": [
+      {
+        "id": "compose/service/agent_backend",
+        "kind": "ComposeService",
+        "name": "agent_backend",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/agent_backend",
+        "kind": "ComposeService",
+        "name": "agent_backend",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/agent_ssrf_proxy",
+        "kind": "ComposeService",
+        "name": "agent_ssrf_proxy",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/agent_ssrf_proxy",
+        "kind": "ComposeService",
+        "name": "agent_ssrf_proxy",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/api",
+        "kind": "ComposeService",
+        "name": "api",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/api",
+        "kind": "ComposeService",
+        "name": "api",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/api_websocket",
+        "kind": "ComposeService",
+        "name": "api_websocket",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/api_websocket",
+        "kind": "ComposeService",
+        "name": "api_websocket",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/certbot",
+        "kind": "ComposeService",
+        "name": "certbot",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/certbot",
+        "kind": "ComposeService",
+        "name": "certbot",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/chroma",
+        "kind": "ComposeService",
+        "name": "chroma",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/chroma",
+        "kind": "ComposeService",
+        "name": "chroma",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/chroma",
+        "kind": "ComposeService",
+        "name": "chroma",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/couchbase-server",
+        "kind": "ComposeService",
+        "name": "couchbase-server",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/couchbase-server",
+        "kind": "ComposeService",
+        "name": "couchbase-server",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/couchbase-server",
+        "kind": "ComposeService",
+        "name": "couchbase-server",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/db_mysql",
+        "kind": "ComposeService",
+        "name": "db_mysql",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/db_mysql",
+        "kind": "ComposeService",
+        "name": "db_mysql",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/db_mysql",
+        "kind": "ComposeService",
+        "name": "db_mysql",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/db_postgres",
+        "kind": "ComposeService",
+        "name": "db_postgres",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/db_postgres",
+        "kind": "ComposeService",
+        "name": "db_postgres",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/db_postgres",
+        "kind": "ComposeService",
+        "name": "db_postgres",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/elasticsearch",
+        "kind": "ComposeService",
+        "name": "elasticsearch",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/elasticsearch",
+        "kind": "ComposeService",
+        "name": "elasticsearch",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/etcd",
+        "kind": "ComposeService",
+        "name": "etcd",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/etcd",
+        "kind": "ComposeService",
+        "name": "etcd",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/init_permissions",
+        "kind": "ComposeService",
+        "name": "init_permissions",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/init_permissions",
+        "kind": "ComposeService",
+        "name": "init_permissions",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/iris",
+        "kind": "ComposeService",
+        "name": "iris",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/iris",
+        "kind": "ComposeService",
+        "name": "iris",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/kibana",
+        "kind": "ComposeService",
+        "name": "kibana",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/kibana",
+        "kind": "ComposeService",
+        "name": "kibana",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/local_sandbox",
+        "kind": "ComposeService",
+        "name": "local_sandbox",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/local_sandbox",
+        "kind": "ComposeService",
+        "name": "local_sandbox",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/matrixone",
+        "kind": "ComposeService",
+        "name": "matrixone",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/matrixone",
+        "kind": "ComposeService",
+        "name": "matrixone",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/milvus-standalone",
+        "kind": "ComposeService",
+        "name": "milvus-standalone",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/milvus-standalone",
+        "kind": "ComposeService",
+        "name": "milvus-standalone",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/minio",
+        "kind": "ComposeService",
+        "name": "minio",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/minio",
+        "kind": "ComposeService",
+        "name": "minio",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/myscale",
+        "kind": "ComposeService",
+        "name": "myscale",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/myscale",
+        "kind": "ComposeService",
+        "name": "myscale",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/nginx",
+        "kind": "ComposeService",
+        "name": "nginx",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/nginx",
+        "kind": "ComposeService",
+        "name": "nginx",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/oceanbase",
+        "kind": "ComposeService",
+        "name": "oceanbase",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/oceanbase",
+        "kind": "ComposeService",
+        "name": "oceanbase",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/opengauss",
+        "kind": "ComposeService",
+        "name": "opengauss",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/opengauss",
+        "kind": "ComposeService",
+        "name": "opengauss",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/opensearch",
+        "kind": "ComposeService",
+        "name": "opensearch",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/opensearch",
+        "kind": "ComposeService",
+        "name": "opensearch",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/opensearch",
+        "kind": "ComposeService",
+        "name": "opensearch",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/opensearch-dashboards",
+        "kind": "ComposeService",
+        "name": "opensearch-dashboards",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/opensearch-dashboards",
+        "kind": "ComposeService",
+        "name": "opensearch-dashboards",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/oracle",
+        "kind": "ComposeService",
+        "name": "oracle",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/oracle",
+        "kind": "ComposeService",
+        "name": "oracle",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/pd0",
+        "kind": "ComposeService",
+        "name": "pd0",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/pgvecto-rs",
+        "kind": "ComposeService",
+        "name": "pgvecto-rs",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/pgvecto-rs",
+        "kind": "ComposeService",
+        "name": "pgvecto-rs",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/pgvecto-rs",
+        "kind": "ComposeService",
+        "name": "pgvecto-rs",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/pgvector",
+        "kind": "ComposeService",
+        "name": "pgvector",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/pgvector",
+        "kind": "ComposeService",
+        "name": "pgvector",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/pgvector",
+        "kind": "ComposeService",
+        "name": "pgvector",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/plugin_daemon",
+        "kind": "ComposeService",
+        "name": "plugin_daemon",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/plugin_daemon",
+        "kind": "ComposeService",
+        "name": "plugin_daemon",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/plugin_daemon",
+        "kind": "ComposeService",
+        "name": "plugin_daemon",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/qdrant",
+        "kind": "ComposeService",
+        "name": "qdrant",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/qdrant",
+        "kind": "ComposeService",
+        "name": "qdrant",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/qdrant",
+        "kind": "ComposeService",
+        "name": "qdrant",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/redis",
+        "kind": "ComposeService",
+        "name": "redis",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/redis",
+        "kind": "ComposeService",
+        "name": "redis",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/redis",
+        "kind": "ComposeService",
+        "name": "redis",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/sandbox",
+        "kind": "ComposeService",
+        "name": "sandbox",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/sandbox",
+        "kind": "ComposeService",
+        "name": "sandbox",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/sandbox",
+        "kind": "ComposeService",
+        "name": "sandbox",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/seekdb",
+        "kind": "ComposeService",
+        "name": "seekdb",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/seekdb",
+        "kind": "ComposeService",
+        "name": "seekdb",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/ssrf_proxy",
+        "kind": "ComposeService",
+        "name": "ssrf_proxy",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/ssrf_proxy",
+        "kind": "ComposeService",
+        "name": "ssrf_proxy",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/ssrf_proxy",
+        "kind": "ComposeService",
+        "name": "ssrf_proxy",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/tidb",
+        "kind": "ComposeService",
+        "name": "tidb",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/tiflash",
+        "kind": "ComposeService",
+        "name": "tiflash",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/tikv",
+        "kind": "ComposeService",
+        "name": "tikv",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/unstructured",
+        "kind": "ComposeService",
+        "name": "unstructured",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/unstructured",
+        "kind": "ComposeService",
+        "name": "unstructured",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/vastbase",
+        "kind": "ComposeService",
+        "name": "vastbase",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/vastbase",
+        "kind": "ComposeService",
+        "name": "vastbase",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/weaviate",
+        "kind": "ComposeService",
+        "name": "weaviate",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/weaviate",
+        "kind": "ComposeService",
+        "name": "weaviate",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/weaviate",
+        "kind": "ComposeService",
+        "name": "weaviate",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/weaviate",
+        "kind": "ComposeService",
+        "name": "weaviate",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/web",
+        "kind": "ComposeService",
+        "name": "web",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/web",
+        "kind": "ComposeService",
+        "name": "web",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/worker",
+        "kind": "ComposeService",
+        "name": "worker",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/worker",
+        "kind": "ComposeService",
+        "name": "worker",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/worker_beat",
+        "kind": "ComposeService",
+        "name": "worker_beat",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/worker_beat",
+        "kind": "ComposeService",
+        "name": "worker_beat",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      }
+    ],
+    "edges": [
+      {
+        "source": "compose/service/agent_backend",
+        "target": "compose/service/plugin_daemon",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/agent_backend",
+        "target": "compose/service/plugin_daemon",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/agent_backend",
+        "target": "compose/service/redis",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/agent_backend",
+        "target": "compose/service/redis",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/agent_backend",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/agent_backend",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/db_mysql",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/db_mysql",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/db_postgres",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/db_postgres",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/init_permissions",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/init_permissions",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/oceanbase",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/oceanbase",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/redis",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/redis",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/seekdb",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api",
+        "target": "compose/service/seekdb",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api_websocket",
+        "target": "compose/service/db_mysql",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api_websocket",
+        "target": "compose/service/db_mysql",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api_websocket",
+        "target": "compose/service/db_postgres",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api_websocket",
+        "target": "compose/service/db_postgres",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api_websocket",
+        "target": "compose/service/init_permissions",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api_websocket",
+        "target": "compose/service/init_permissions",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api_websocket",
+        "target": "compose/service/redis",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api_websocket",
+        "target": "compose/service/redis",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/kibana",
+        "target": "compose/service/elasticsearch",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/kibana",
+        "target": "compose/service/elasticsearch",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/milvus-standalone",
+        "target": "compose/service/etcd",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/milvus-standalone",
+        "target": "compose/service/etcd",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/milvus-standalone",
+        "target": "compose/service/minio",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/milvus-standalone",
+        "target": "compose/service/minio",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/nginx",
+        "target": "compose/service/api",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/nginx",
+        "target": "compose/service/api",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/nginx",
+        "target": "compose/service/web",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/nginx",
+        "target": "compose/service/web",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/opensearch-dashboards",
+        "target": "compose/service/opensearch",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/opensearch-dashboards",
+        "target": "compose/service/opensearch",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/plugin_daemon",
+        "target": "compose/service/db_mysql",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/plugin_daemon",
+        "target": "compose/service/db_mysql",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/plugin_daemon",
+        "target": "compose/service/db_postgres",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/plugin_daemon",
+        "target": "compose/service/db_postgres",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/plugin_daemon",
+        "target": "compose/service/oceanbase",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/plugin_daemon",
+        "target": "compose/service/oceanbase",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/plugin_daemon",
+        "target": "compose/service/seekdb",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/plugin_daemon",
+        "target": "compose/service/seekdb",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/tidb",
+        "target": "compose/service/tikv",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/tiflash",
+        "target": "compose/service/tidb",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/tiflash",
+        "target": "compose/service/tikv",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/tikv",
+        "target": "compose/service/pd0",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/agent_backend",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/agent_backend",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/db_mysql",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/db_mysql",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/db_postgres",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/db_postgres",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/init_permissions",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/init_permissions",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/oceanbase",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/oceanbase",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/redis",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/redis",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/seekdb",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker",
+        "target": "compose/service/seekdb",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/db_mysql",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/db_mysql",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/db_postgres",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/db_postgres",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/init_permissions",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/init_permissions",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/oceanbase",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/oceanbase",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/redis",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/redis",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/seekdb",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/worker_beat",
+        "target": "compose/service/seekdb",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      }
+    ],
+    "defenses": [
+      {
+        "target": "compose/service/agent_backend",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/agent_backend",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/agent_ssrf_proxy",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/agent_ssrf_proxy",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/api",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/api",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/api_websocket",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/api_websocket",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/certbot",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/certbot",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/chroma",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/chroma",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/chroma",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/couchbase-server",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/couchbase-server",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/couchbase-server",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/db_mysql",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/db_mysql",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/db_mysql",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/db_postgres",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/db_postgres",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/db_postgres",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/elasticsearch",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/elasticsearch",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/etcd",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/etcd",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/init_permissions",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "no"
+        }
+      },
+      {
+        "target": "compose/service/init_permissions",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "no"
+        }
+      },
+      {
+        "target": "compose/service/iris",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/iris",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/kibana",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/kibana",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/local_sandbox",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/local_sandbox",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/matrixone",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/matrixone",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/milvus-standalone",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/milvus-standalone",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/minio",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/minio",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/myscale",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/myscale",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/nginx",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/nginx",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/oceanbase",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/oceanbase",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/opengauss",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/opengauss",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/opensearch",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/opensearch",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/opensearch",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/opensearch-dashboards",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/opensearch-dashboards",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/oracle",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/oracle",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/pd0",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "on-failure"
+        }
+      },
+      {
+        "target": "compose/service/pgvecto-rs",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/pgvecto-rs",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/pgvecto-rs",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/pgvector",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/pgvector",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/pgvector",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/plugin_daemon",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/plugin_daemon",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/plugin_daemon",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/qdrant",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/qdrant",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/qdrant",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/redis",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/redis",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/redis",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/sandbox",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/sandbox",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/sandbox",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/seekdb",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/seekdb",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/ssrf_proxy",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/ssrf_proxy",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/ssrf_proxy",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/tidb",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "on-failure"
+        }
+      },
+      {
+        "target": "compose/service/tiflash",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "on-failure"
+        }
+      },
+      {
+        "target": "compose/service/tikv",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "on-failure"
+        }
+      },
+      {
+        "target": "compose/service/unstructured",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/unstructured",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/vastbase",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/vastbase",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/weaviate",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/weaviate",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/weaviate",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/weaviate",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/web",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/web",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/worker",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/worker",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/worker_beat",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      },
+      {
+        "target": "compose/service/worker_beat",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": "always"
+        }
+      }
+    ],
+    "supported_document_count": 5,
+    "source_sha256": "9164c833feb5c31db25621050abe762fd5ca323b515c4ff0db65d6f308d083eb"
+  },
+  "runtime_contract": {
+    "namespace": "chaosatlas-p09",
+    "workload_id": "P09-primary-workload",
+    "max_hypotheses": 8,
+    "fault_families": [
+      "pod_kill",
+      "network_delay",
+      "network_loss",
+      "container_cpu_stress"
+    ],
+    "parameter_bounds": {
+      "network_delay": {
+        "latency_ms": [
+          1,
+          500
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "network_loss": {
+        "loss_percent": [
+          1,
+          100
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "container_cpu_stress": {
+        "workers": [
+          1,
+          2
+        ],
+        "load_percent": [
+          1,
+          80
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "pod_kill": {
+        "mode": [
+          "one"
+        ]
+      }
+    },
+    "namespace_scope": "all mutations must resolve inside the project namespace",
+    "target_resolution": "target must be a node or edge in topology_evidence; unresolved targets are rejected",
+    "lifecycle": [
+      "clean",
+      "health_gate",
+      "baseline",
+      "apply_one_fault",
+      "verify_injection",
+      "observe",
+      "remove_fault",
+      "recovery_health",
+      "cleanup"
+    ],
+    "required_result_classes": [
+      "confirmed_weakness",
+      "protected",
+      "latent_risk",
+      "unsupported",
+      "environment_blocked",
+      "method_invalid"
+    ],
+    "execution_policy": "compiler and runtime resolver fail closed; no shell or kubectl commands in model output"
+  },
+  "knowledge_view": null,
+  "candidate_pool_visible": false,
+  "candidate_order_visible": false,
+  "output_schema": "open_discovery_schema.json",
+  "prompt_module_sha256": "247cf99df6a90612d6bc2a8b32b990980a63c652245d7e556c88f8dcd45f93b3",
+  "source_evidence_sha256": "d1e4259362d6db99f8418fdd4a2f594df38892ecdfa9592f6e09a89e3d9042f2",
+  "topology_evidence_sha256": "9164c833feb5c31db25621050abe762fd5ca323b515c4ff0db65d6f308d083eb"
+}

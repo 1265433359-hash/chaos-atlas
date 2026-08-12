@@ -1,0 +1,18 @@
+{
+  "spec": {
+    "template": {
+      "spec": {
+        "containers": [
+          {
+            "name": "kube-proxy",
+            "command": [
+              "/bin/sh",
+              "-c",
+              "ln -sf /usr/sbin/iptables-legacy /usr/sbin/iptables; ln -sf /usr/sbin/ip6tables-legacy /usr/sbin/ip6tables; exec /usr/local/bin/kube-proxy --config=/var/lib/kube-proxy/config.conf --hostname-override=$(NODE_NAME)"
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "selected": [
+    {
+      "candidate_id": "P02-api-gateway-network_loss-03",
+      "rank": 1,
+      "rationale": "100% loss at the gateway directly blocks all traffic, immediately violating the HTTP response contract."
+    },
+    {
+      "candidate_id": "P02-api-gateway-pod_kill-01",
+      "rank": 2,
+      "rationale": "Killing the gateway pod makes the entire API unreachable, a high-impact single point of failure."
+    },
+    {
+      "candidate_id": "P02-visits-service-network_loss-11",
+      "rank": 3,
+      "rationale": "100% loss to visits-service breaks the core visit flow, likely causing gateway errors."
+    },
+    {
+      "candidate_id": "P02-customers-service-network_loss-07",
+      "rank": 4,
+      "rationale": "100% loss to customers-service disrupts customer data access, affecting dependent flows."
+    },
+    {
+      "candidate_id": "P02-vets-service-network_loss-15",
+      "rank": 5,
+      "rationale": "100% loss to vets-service isolates a backend dependency, potentially causing timeouts or 5xx."
+    },
+    {
+      "candidate_id": "P02-api-gateway-network_delay-02",
+      "rank": 6,
+      "rationale": "200ms delay at the gateway increases latency for all requests, risking timeout-related failures."
+    },
+    {
+      "candidate_id": "P02-visits-service-pod_kill-09",
+      "rank": 7,
+      "rationale": "Killing a visits pod may reduce capacity and cause intermittent failures if no replica is ready."
+    },
+    {
+      "candidate_id": "P02-customers-service-pod_kill-05",
+      "rank": 8,
+      "rationale": "Killing a customers pod could impact customer-related operations, though less central than visits."
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+﻿{
+    "schema_version":  "1.0",
+    "project_id":  "P05",
+    "project_commit":  "235daff56125c5d7d5727f9b01f7a838dab0124e",
+    "source_tree_sha":  "235daff56125c5d7d5727f9b01f7a838dab0124e",
+    "deployment_summary":  {
+                               "kind":  "compose_to_kind_adapter",
+                               "command":  "docker compose -f docker/docker-compose.yml up -d",
+                               "note":  "Disable or replace machine-learning service unless a local CPU profile is stable."
+                           },
+    "workload_summary":  {
+                             "type":  "HTTP",
+                             "entrypoint":  "server readiness plus asset/library API",
+                             "health":  "server health and deterministic read API"
+                         },
+    "candidate_pool_sha256":  "298a651c6270aeed62a56936d1288e8ea8011448b132631ff635ad3b34004d13",
+    "candidate_order":  [
+                            "P05-redis-container_cpu_stress-16",
+                            "P05-immich-web-container_cpu_stress-08",
+                            "P05-postgres-network_delay-10",
+                            "P05-immich-web-network_loss-07",
+                            "P05-immich-server-network_loss-03",
+                            "P05-redis-network_loss-15",
+                            "P05-immich-web-pod_kill-05",
+                            "P05-postgres-network_loss-11",
+                            "P05-immich-web-network_delay-06",
+                            "P05-immich-server-pod_kill-01",
+                            "P05-redis-network_delay-14",
+                            "P05-immich-server-container_cpu_stress-04",
+                            "P05-postgres-container_cpu_stress-12",
+                            "P05-redis-pod_kill-13",
+                            "P05-immich-server-network_delay-02",
+                            "P05-postgres-pod_kill-09"
+                        ],
+    "seed":  1003,
+    "candidate_budget_k":  8,
+    "runner_version":  "runner_protocol_v1",
+    "oracle_version":  "oracle_schema_v1",
+    "knowledge_view":  "excluded_from_common_input"
+}

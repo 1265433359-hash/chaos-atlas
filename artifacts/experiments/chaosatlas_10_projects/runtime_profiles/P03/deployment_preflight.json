@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "project_id": "P03",
+  "project_commit": "15575bd85a8e0b87bfa867bb8a01cb76bca913ad",
+  "status": "blocked",
+  "runtime_apply_allowed": false,
+  "source_root": "artifacts/experiments/chaosatlas_10_projects/sources/P03",
+  "compose_file_sha256": "0e0131bd40ab8ddb41338de92e65b10e373010726a719d2edcc7e3cd2e20fc9e",
+  "compose_services": [
+    "cache",
+    "dashboard",
+    "db",
+    "mailpit",
+    "saleor"
+  ],
+  "required_inputs": {
+    ".devcontainer/common.env": false,
+    ".devcontainer/backend.env": false,
+    "pyproject.toml": false,
+    "uv.lock": false,
+    "manage.py": false
+  },
+  "reasons": [
+    "frozen_build_inputs_missing:.devcontainer/common.env,.devcontainer/backend.env,pyproject.toml,uv.lock,manage.py"
+  ],
+  "next_action": "Restore the exact Saleor source checkout including env and lock/build files before image construction; do not synthesize missing files for the formal experiment."
+}

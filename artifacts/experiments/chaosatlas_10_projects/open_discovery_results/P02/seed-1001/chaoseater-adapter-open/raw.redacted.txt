@@ -1,0 +1,70 @@
+{
+  "method_id": "chaosatlas-p02",
+  "project_id": "P02",
+  "project_commit": "305a1f13e4f961001d4e6cb50a9db51dc3fc5967",
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "target": "compose/service/api-gateway",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the api-gateway pod will cause the entire pet/owner/visit flow to fail, as it is the entrypoint for all HTTP requests.",
+      "weakness_surface": "The api-gateway is a single point of entry; without it, no requests can reach the backend services.",
+      "call_chain": [
+        {
+          "source": "compose/service/api-gateway",
+          "target": "compose/service/config-server",
+          "relation": "depends_on",
+          "evidence_ref": "topology.edges"
+        },
+        {
+          "source": "compose/service/api-gateway",
+          "target": "compose/service/discovery-server",
+          "relation": "depends_on",
+          "evidence_ref": "topology.edges"
+        }
+      ],
+      "expected_invariant": "The API gateway should remain available and respond to health checks and CRUD requests.",
+      "validation_plan": "Send health check and a sample CRUD request to the gateway; expect successful responses before and after the fault.",
+      "recovery_expectation": "The pod will be restarted automatically by Kubernetes, and the gateway should recover within a few seconds."
+    },
+    {
+      "hypothesis_id": "H2",
+      "target": "compose/service/config-server",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "delay_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Introducing a 500ms network delay to the config-server will cause timeouts in all services that depend on it, leading to degraded performance or failures in the pet/owner/visit flow.",
+      "weakness_surface": "All services depend on the config-server for configuration; increased latency can cause cascading timeouts.",
+      "call_chain": [
+        {
+          "source": "compose/service/api-gateway",
+          "target": "compose/service/config-server",
+          "relation": "depends_on",
+          "evidence_ref": "topology.edges"
+        },
+        {
+          "source": "compose/service/customers-service",
+          "target": "compose/service/config-server",
+          "relation": "depends_on",
+          "evidence_ref": "topology.edges"
+        },
+        {
+          "source": "compose/service/visits-service",
+          "target": "compose/service/config-server",
+          "relation": "depends_on",
+          "evidence_ref": "topology.edges"
+        }
+      ],
+      "expected_invariant": "All services should be able to fetch configuration without exceeding normal response time thresholds.",
+      "validation_plan": "Monitor response times of the API gateway and dependent services; check for timeouts or errors during the delay period.",
+      "recovery_expectation": "Once the delay is removed, services should return to normal operation."
+    }
+  ]
+}

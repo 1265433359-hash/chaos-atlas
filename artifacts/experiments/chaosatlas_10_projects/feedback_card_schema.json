@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "kind": "chaosatlas_feedback_card",
+  "required": ["card_id", "project_id", "project_commit", "source_round_id", "canonical_signature", "classification", "evidence", "abstraction", "review"],
+  "classification_enum": ["confirmed_weakness", "protected", "latent_risk", "unsupported", "environment_blocked", "method_invalid"],
+  "evidence_required_for_confirmed_weakness": ["baseline", "injection", "observation", "recovery", "cleanup", "independent_oracle"],
+  "feedback_rule": "Only human-reviewed cards from a completed earlier project in the registered project order may enter a later project's KB; round id and project order are mandatory, and cards never feed back into their target project."
+}

@@ -1,0 +1,568 @@
+{
+  "schema_version": "2.0",
+  "protocol": "protocol_v2_open_discovery.md",
+  "arm": "ChaosEater-open",
+  "project_id": "P06",
+  "seed": 1001,
+  "primary_track": true,
+  "common_input": {
+    "schema_version": "1.0",
+    "project_id": "P06",
+    "project_commit": "9dca3724a6d65126ea937ef949f986e5aab47a81",
+    "source_tree_sha": "9dca3724a6d65126ea937ef949f986e5aab47a81",
+    "deployment_summary": {
+      "kind": "build_app_plus_dependency_profile",
+      "command": "Build the frozen Dockerfile, then start only one local database profile from docker-compose.yml",
+      "note": "The root Compose file is a dependency matrix and does not define the Directus application service; do not treat compose up alone as an application deployment."
+    },
+    "workload_summary": {
+      "type": "REST/GraphQL",
+      "entrypoint": "health plus schema/items request",
+      "health": "HTTP health endpoint and deterministic read request"
+    },
+    "runner_version": "runner_protocol_v1",
+    "oracle_version": "oracle_schema_v1"
+  },
+  "topology_evidence": {
+    "status": "available",
+    "graph_hash": "946a35e588df8b710e5f8f2f02227b509cb99f692e69095202ec8009c911282c",
+    "nodes": [
+      {
+        "id": "compose/service/auth-saml",
+        "kind": "ComposeService",
+        "name": "auth-saml",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/azure",
+        "kind": "ComposeService",
+        "name": "azure",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/cockroachdb",
+        "kind": "ComposeService",
+        "name": "cockroachdb",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/cockroachdb",
+        "kind": "ComposeService",
+        "name": "cockroachdb",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/keycloak",
+        "kind": "ComposeService",
+        "name": "keycloak",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/maildev",
+        "kind": "ComposeService",
+        "name": "maildev",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/maria",
+        "kind": "ComposeService",
+        "name": "maria",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/maria",
+        "kind": "ComposeService",
+        "name": "maria",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/minio",
+        "kind": "ComposeService",
+        "name": "minio",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/minio",
+        "kind": "ComposeService",
+        "name": "minio",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/minio-mc",
+        "kind": "ComposeService",
+        "name": "minio-mc",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/mssql",
+        "kind": "ComposeService",
+        "name": "mssql",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/mssql",
+        "kind": "ComposeService",
+        "name": "mssql",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/mysql",
+        "kind": "ComposeService",
+        "name": "mysql",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/mysql",
+        "kind": "ComposeService",
+        "name": "mysql",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/mysql5",
+        "kind": "ComposeService",
+        "name": "mysql5",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/mysql5",
+        "kind": "ComposeService",
+        "name": "mysql5",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/openldap",
+        "kind": "ComposeService",
+        "name": "openldap",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/oracle",
+        "kind": "ComposeService",
+        "name": "oracle",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/oracle",
+        "kind": "ComposeService",
+        "name": "oracle",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/postgres",
+        "kind": "ComposeService",
+        "name": "postgres",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/postgres",
+        "kind": "ComposeService",
+        "name": "postgres",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/postgres10",
+        "kind": "ComposeService",
+        "name": "postgres10",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/postgres10",
+        "kind": "ComposeService",
+        "name": "postgres10",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/redis",
+        "kind": "ComposeService",
+        "name": "redis",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/redis",
+        "kind": "ComposeService",
+        "name": "redis",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      }
+    ],
+    "edges": [
+      {
+        "source": "compose/service/minio-mc",
+        "target": "compose/service/minio",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      }
+    ],
+    "defenses": [
+      {
+        "target": "compose/service/auth-saml",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/azure",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/cockroachdb",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/cockroachdb",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/keycloak",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/maildev",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/maria",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/maria",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/minio",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/minio",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/minio-mc",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/mssql",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/mssql",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/mysql",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/mysql",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/mysql5",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/mysql5",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/openldap",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/oracle",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/oracle",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/postgres",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/postgres",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/postgres10",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/postgres10",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/redis",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/redis",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      }
+    ],
+    "supported_document_count": 2,
+    "source_sha256": "70242507c865c19d2748bc1bad2b64485c200863b08160e60eb1625783ab5d4a"
+  },
+  "runtime_contract": {
+    "namespace": "chaosatlas-p06",
+    "workload_id": "P06-primary-workload",
+    "max_hypotheses": 8,
+    "fault_families": [
+      "pod_kill",
+      "network_delay",
+      "network_loss",
+      "container_cpu_stress"
+    ],
+    "parameter_bounds": {
+      "network_delay": {
+        "latency_ms": [
+          1,
+          500
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "network_loss": {
+        "loss_percent": [
+          1,
+          100
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "container_cpu_stress": {
+        "workers": [
+          1,
+          2
+        ],
+        "load_percent": [
+          1,
+          80
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "pod_kill": {
+        "mode": [
+          "one"
+        ]
+      }
+    },
+    "namespace_scope": "all mutations must resolve inside the project namespace",
+    "target_resolution": "target must be a node or edge in topology_evidence; unresolved targets are rejected",
+    "lifecycle": [
+      "clean",
+      "health_gate",
+      "baseline",
+      "apply_one_fault",
+      "verify_injection",
+      "observe",
+      "remove_fault",
+      "recovery_health",
+      "cleanup"
+    ],
+    "required_result_classes": [
+      "confirmed_weakness",
+      "protected",
+      "latent_risk",
+      "unsupported",
+      "environment_blocked",
+      "method_invalid"
+    ],
+    "execution_policy": "compiler and runtime resolver fail closed; no shell or kubectl commands in model output"
+  },
+  "knowledge_view": null,
+  "candidate_pool_visible": false,
+  "candidate_order_visible": false,
+  "output_schema": "open_discovery_schema.json",
+  "prompt_module_sha256": "247cf99df6a90612d6bc2a8b32b990980a63c652245d7e556c88f8dcd45f93b3",
+  "source_evidence_sha256": "79b8e3de46b19e79743c0b9bff4931c0ccef5c26a69fffdcddd56976448c10b3",
+  "topology_evidence_sha256": "70242507c865c19d2748bc1bad2b64485c200863b08160e60eb1625783ab5d4a",
+  "method_contract": "ChaosEater FaultScenarioAgent open mode; no ChaosAtlas knowledge"
+}

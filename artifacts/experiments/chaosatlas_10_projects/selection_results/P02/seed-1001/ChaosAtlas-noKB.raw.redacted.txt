@@ -1,0 +1,44 @@
+{
+  "selected": [
+    {
+      "candidate_id": "P02-api-gateway-network_loss-03",
+      "rank": 1,
+      "rationale": "100% packet loss at the gateway directly blocks all traffic, likely causing immediate gateway timeouts and violating the HTTP response contract."
+    },
+    {
+      "candidate_id": "P02-api-gateway-pod_kill-01",
+      "rank": 2,
+      "rationale": "Killing the gateway pod removes the single entrypoint, causing total unavailability until restart; recovery depends on orchestration and may expose contract gaps."
+    },
+    {
+      "candidate_id": "P02-visits-service-network_loss-11",
+      "rank": 3,
+      "rationale": "100% loss to visits-service isolates a core flow (visits), likely causing gateway errors or timeouts for visit-related requests."
+    },
+    {
+      "candidate_id": "P02-customers-service-network_loss-07",
+      "rank": 4,
+      "rationale": "100% loss to customers-service breaks owner/customer data access, likely causing partial failures in the gateway contract."
+    },
+    {
+      "candidate_id": "P02-vets-service-network_loss-15",
+      "rank": 5,
+      "rationale": "100% loss to vets-service disrupts vet data retrieval, potentially causing gateway errors for vet-related endpoints."
+    },
+    {
+      "candidate_id": "P02-api-gateway-container_cpu_stress-04",
+      "rank": 6,
+      "rationale": "CPU stress on the gateway can cause latency spikes and timeouts, affecting all requests and potentially violating response time expectations."
+    },
+    {
+      "candidate_id": "P02-api-gateway-network_delay-02",
+      "rank": 7,
+      "rationale": "200ms added latency on the gateway may push responses beyond timeouts, especially under load, exposing contract weaknesses."
+    },
+    {
+      "candidate_id": "P02-visits-service-pod_kill-09",
+      "rank": 8,
+      "rationale": "Killing a visits-service pod may cause temporary unavailability if only one replica exists, leading to gateway errors for visit requests."
+    }
+  ]
+}

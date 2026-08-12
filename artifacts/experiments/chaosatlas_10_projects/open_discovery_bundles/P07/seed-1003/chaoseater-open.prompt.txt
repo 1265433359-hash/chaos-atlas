@@ -1,0 +1,170 @@
+You are the ChaosEater FaultScenarioAgent operating in an open-discovery comparison. Read the frozen manifests, steady states, and user instructions, then propose fault scenarios directly. Do not restrict yourself to a pre-generated candidate pool and do not use ChaosAtlas knowledge. Keep each fault bounded, namespace-local, and tied to a stated steady-state risk. Return only JSON in the open-discovery hypothesis schema; do not emit shell commands or mutation paths.
+
+===== USER =====
+SYSTEM MANIFEST AND STEADY-STATE EVIDENCE
+{
+  "common_input": {
+    "schema_version": "1.0",
+    "project_id": "P07",
+    "project_commit": "374f5ad4035e39903db1d968d3be9c7ed8adca2c",
+    "source_tree_sha": "374f5ad4035e39903db1d968d3be9c7ed8adca2c",
+    "deployment_summary": {
+      "kind": "compose_to_kind_adapter",
+      "command": "docker compose -f docker-compose.yml up -d",
+      "note": "Use local Postgres, Redis, and object-storage substitute; disable external auth."
+    },
+    "workload_summary": {
+      "type": "HTTP",
+      "entrypoint": "health and document read workflow",
+      "health": "HTTP health plus deterministic document API"
+    },
+    "runner_version": "runner_protocol_v1",
+    "oracle_version": "oracle_schema_v1"
+  },
+  "topology_evidence": {
+    "status": "available",
+    "graph_hash": "cdb72bf35a8457ef11548709ddb442e99c76c47ca0f06eafd46ee68258b2b34c",
+    "nodes": [
+      {
+        "id": "compose/service/postgres",
+        "kind": "ComposeService",
+        "name": "postgres",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/redis",
+        "kind": "ComposeService",
+        "name": "redis",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      }
+    ],
+    "edges": [],
+    "defenses": [
+      {
+        "target": "compose/service/postgres",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/redis",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      }
+    ],
+    "supported_document_count": 1,
+    "source_sha256": "c696f2024de8ac4acf5e33bf4f30d254092bf8bbde0b328ac0b0cd8aa93774e4"
+  }
+}
+
+USER CHAOS-ENGINEERING INSTRUCTIONS
+{
+  "namespace": "chaosatlas-p07",
+  "workload_id": "P07-primary-workload",
+  "max_hypotheses": 8,
+  "fault_families": [
+    "pod_kill",
+    "network_delay",
+    "network_loss",
+    "container_cpu_stress"
+  ],
+  "parameter_bounds": {
+    "network_delay": {
+      "latency_ms": [
+        1,
+        500
+      ],
+      "duration_s": [
+        1,
+        60
+      ]
+    },
+    "network_loss": {
+      "loss_percent": [
+        1,
+        100
+      ],
+      "duration_s": [
+        1,
+        60
+      ]
+    },
+    "container_cpu_stress": {
+      "workers": [
+        1,
+        2
+      ],
+      "load_percent": [
+        1,
+        80
+      ],
+      "duration_s": [
+        1,
+        60
+      ]
+    },
+    "pod_kill": {
+      "mode": [
+        "one"
+      ]
+    }
+  },
+  "namespace_scope": "all mutations must resolve inside the project namespace",
+  "target_resolution": "target must be a node or edge in topology_evidence; unresolved targets are rejected",
+  "lifecycle": [
+    "clean",
+    "health_gate",
+    "baseline",
+    "apply_one_fault",
+    "verify_injection",
+    "observe",
+    "remove_fault",
+    "recovery_health",
+    "cleanup"
+  ],
+  "required_result_classes": [
+    "confirmed_weakness",
+    "protected",
+    "latent_risk",
+    "unsupported",
+    "environment_blocked",
+    "method_invalid"
+  ],
+  "execution_policy": "compiler and runtime resolver fail closed; no shell or kubectl commands in model output"
+}
+
+OUTPUT SCHEMA
+{
+  "method_id": "...",
+  "project_id": "...",
+  "project_commit": "40-hex",
+  "hypotheses": [
+    {
+      "hypothesis_id": "local-id",
+      "target": "service or dependency edge from the project evidence",
+      "target_kind": "service|dependency_edge",
+      "fault_family": "pod_kill|network_delay|network_loss|container_cpu_stress",
+      "parameters": {},
+      "hypothesis": "why this bounded fault may expose a weakness",
+      "weakness_surface": "the weak node or edge and the mechanism at risk",
+      "call_chain": [{"source": "topology node", "target": "topology node", "relation": "deployment relation", "evidence_ref": "graph edge or source span"}],
+      "expected_invariant": "business or availability invariant",
+      "validation_plan": "baseline, injection, observation, and oracle check",
+      "recovery_expectation": "expected recovery and cleanup behavior"
+    }
+  ],
+  "no_safe_hypothesis_reason": "required only when hypotheses is empty"
+}
+
+Return at most 8 distinct fault hypotheses. If no safe hypothesis is justified, return an empty list with a reason.

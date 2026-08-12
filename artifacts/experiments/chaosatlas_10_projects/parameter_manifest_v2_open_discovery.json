@@ -1,0 +1,33 @@
+{
+  "schema_version": "2.0",
+  "protocol": "protocol_v2_open_discovery.md",
+  "primary_track": "open_discovery",
+  "secondary_track": "candidate_ranking_control_v1",
+  "primary_arms": ["ChaosAtlas-KB-open", "ChaosAtlas-noKB-open", "ChaosEater-official"],
+  "supplementary_arms": ["ChaosEater-adapter-open", "ChaosEater-open"],
+  "projects": ["P01", "P02", "P03", "P04", "P05", "P06", "P07", "P08", "P09", "P10"],
+  "pilot_projects": ["P02", "P07"],
+  "seeds": [1001, 1002, 1003],
+  "max_hypotheses_per_call": 8,
+  "primary_formal_calls": 90,
+  "secondary_formal_calls": 90,
+  "primary_pilot_calls": 18,
+  "secondary_pilot_calls": 18,
+  "candidate_pool_visible_in_primary": false,
+  "topology_ir": {
+    "source": "frozen YAML/Compose files",
+    "parser": "tools/yaml_topology.py",
+    "graph_hash_required": true,
+    "application_call_graph_inferred": false
+  },
+  "hypothesis_fields": ["weakness_surface", "call_chain", "expected_invariant", "validation_plan", "recovery_expectation"],
+  "result_classes": ["confirmed_weakness", "protected", "latent_risk", "unsupported", "environment_blocked", "method_invalid"],
+  "feedback": {"human_review_required": true, "same_project_same_round": "forbidden", "target": "later projects only"},
+  "model": "deepseek-v4-flash",
+  "temperature": 0.2,
+  "max_output_tokens": 3072,
+  "request_timeout_s": 180,
+  "transport_retries_max": 1,
+  "deepseek_api_allowed": false,
+  "change_control": "Any change requires protocol_v2.x or explicit amendment and renewed consent."
+}

@@ -1,0 +1,55 @@
+﻿{
+    "arm":  "ChaosAtlas-noKB",
+    "common_input":  {
+                         "schema_version":  "1.0",
+                         "project_id":  "P09",
+                         "project_commit":  "cd0e88c680dec24dcd423b880302104f13d28462",
+                         "source_tree_sha":  "cd0e88c680dec24dcd423b880302104f13d28462",
+                         "deployment_summary":  {
+                                                    "kind":  "compose_to_kind_adapter",
+                                                    "command":  "docker compose -f docker/docker-compose.yaml up -d",
+                                                    "note":  "External model/API calls are forbidden; use a local mock model service and deterministic workflow."
+                                                },
+                         "workload_summary":  {
+                                                  "type":  "HTTP",
+                                                  "entrypoint":  "console/API health and local mock workflow",
+                                                  "health":  "API readiness plus mock workflow response"
+                                              },
+                         "candidate_pool_sha256":  "d3953593a5f294f2144d4800b8af02d29873dfca43a98122f31b7718152b5d9d",
+                         "candidate_order":  [
+                                                 "P09-worker-container_cpu_stress-12",
+                                                 "P09-postgres-container_cpu_stress-16",
+                                                 "P09-web-network_delay-06",
+                                                 "P09-postgres-network_loss-15",
+                                                 "P09-api-network_loss-03",
+                                                 "P09-worker-network_loss-11",
+                                                 "P09-postgres-pod_kill-13",
+                                                 "P09-web-network_loss-07",
+                                                 "P09-postgres-network_delay-14",
+                                                 "P09-api-pod_kill-01",
+                                                 "P09-worker-network_delay-10",
+                                                 "P09-api-container_cpu_stress-04",
+                                                 "P09-web-container_cpu_stress-08",
+                                                 "P09-worker-pod_kill-09",
+                                                 "P09-api-network_delay-02",
+                                                 "P09-web-pod_kill-05"
+                                             ],
+                         "seed":  1003,
+                         "candidate_budget_k":  8,
+                         "runner_version":  "runner_protocol_v1",
+                         "oracle_version":  "oracle_schema_v1",
+                         "knowledge_view":  "excluded_from_common_input"
+                     },
+    "knowledge_card_ref":  null,
+    "knowledge_card_sha256":  null,
+    "implementation_files":  [
+                                 {
+                                     "path":  "tools/build_knowledge_ablation_gates0to2.py",
+                                     "sha256":  "178714b7d0c064cb5ec8b2925aaf4f2ff153ac05397dff50f50aab9ac9f9ed84"
+                                 },
+                                 {
+                                     "path":  "tools/run_selection_only_ablation.py",
+                                     "sha256":  "be7d61c6d68da5e6744f097db0b6d7e62be854cbb534550ac157464db770daf5"
+                                 }
+                             ]
+}

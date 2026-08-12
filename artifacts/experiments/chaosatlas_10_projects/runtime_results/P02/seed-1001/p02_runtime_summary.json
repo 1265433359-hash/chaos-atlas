@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "project_id": "P02",
+  "seed": 1001,
+  "protocol": "baseline -> single PodChaos -> business observation -> Pod replacement -> business recovery -> cleanup",
+  "mutation_applied": true,
+  "cluster_cleanup_verified": true,
+  "valid_run_rule": "at least 5 baseline HTTP 200 samples, confirmed injection, replacement Pod recovery, post-recovery HTTP 200, and confirmed Chaos resource absence",
+  "arms": {
+    "ChaosAtlas-KB-open": {
+      "valid_runs": 3,
+      "invalid_runs": 7,
+      "targets": {
+        "api-gateway": {"valid_reproductions": 2, "classification": "confirmed_weakness", "symptom": "business connection interruption during sole gateway Pod kill; recovered after replacement Pod"},
+        "discovery-server": {"valid_reproductions": 1, "classification": "protected", "symptom": "business oracle remained HTTP 200 in the valid run"}
+      }
+    },
+    "ChaosAtlas-noKB-open": {
+      "valid_runs": 4,
+      "invalid_runs": 0,
+      "targets": {
+        "api-gateway": {"valid_reproductions": 2, "classification": "confirmed_weakness", "symptom": "business connection interruption during sole gateway Pod kill; recovered after replacement Pod"},
+        "discovery-server": {"valid_reproductions": 2, "classification": "protected", "symptom": "business oracle remained HTTP 200 in both valid runs"}
+      }
+    },
+    "ChaosEater-adapter-open": {
+      "valid_runs": 2,
+      "invalid_runs": 0,
+      "targets": {
+        "api-gateway": {"valid_reproductions": 2, "classification": "confirmed_weakness", "symptom": "connection interruption and transient 500 responses during sole gateway Pod kill; recovered after replacement Pod"}
+      }
+    }
+  },
+  "confirmed_issues": [
+    {
+      "issue_id": "P02-ISSUE-001",
+      "method_arms": ["ChaosAtlas-KB-open", "ChaosAtlas-noKB-open", "ChaosEater-adapter-open"],
+      "affected_service": "api-gateway",
+      "fault_family": "pod_kill",
+      "classification": "confirmed_weakness",
+      "reproduction_count_by_arm": {"ChaosAtlas-KB-open": 2, "ChaosAtlas-noKB-open": 2, "ChaosEater-adapter-open": 2},
+      "symptom": "The sole api-gateway replica is unavailable during replacement; port-forwarded business requests observe connection interruption, and one ChaosEater run observed transient HTTP 500 responses.",
+      "root_cause_evidence": "P02 Deployment has replicas=1 and no redundant gateway endpoint; PodChaos removes the only Ready endpoint before the replacement Pod becomes Ready.",
+      "recovery": "Deployment creates a new Pod UID and the business oracle returns HTTP 200 after warm-up.",
+      "artifact_refs": [
+        "runtime_results/P02/seed-1001/ChaosAtlas-KB-open/mutation-1/rep-5.json",
+        "runtime_results/P02/seed-1001/ChaosAtlas-KB-open/mutation-1/rep-6.json",
+        "runtime_results/P02/seed-1001/ChaosAtlas-noKB-open/mutation-1/rep-1.json",
+        "runtime_results/P02/seed-1001/ChaosAtlas-noKB-open/mutation-1/rep-2.json",
+        "runtime_results/P02/seed-1001/ChaosEater-adapter-open/mutation-1/rep-1.json",
+        "runtime_results/P02/seed-1001/ChaosEater-adapter-open/mutation-1/rep-2.json"
+      ]
+    }
+  ],
+  "protected_targets": [
+    {
+      "target": "discovery-server",
+      "method_arm": "ChaosAtlas-noKB-open",
+      "valid_reproduction_count": 2,
+      "classification": "protected",
+      "evidence": "All business oracle samples remained HTTP 200 while PodChaos injected and the replacement Pod recovered.",
+      "artifact_refs": [
+        "runtime_results/P02/seed-1001/ChaosAtlas-noKB-open/mutation-2/rep-1.json",
+        "runtime_results/P02/seed-1001/ChaosAtlas-noKB-open/mutation-2/rep-2.json"
+      ]
+    },
+    {
+      "target": "discovery-server",
+      "method_arm": "ChaosAtlas-KB-open",
+      "valid_reproduction_count": 1,
+      "classification": "protected",
+      "evidence": "The one valid run preserved HTTP 200; a second run was excluded because the pre-injection baseline was unstable.",
+      "artifact_refs": ["runtime_results/P02/seed-1001/ChaosAtlas-KB-open/mutation-2/rep-1.json"]
+    }
+  ],
+  "excluded_runs": [
+    {"arm": "ChaosAtlas-KB-open", "target": "api-gateway", "reason": "invalid baseline or incomplete observation/recovery oracle; retained as evidence, excluded from method statistics"},
+    {"arm": "ChaosAtlas-KB-open", "target": "discovery-server", "reason": "pre-injection business baseline became unstable before apply; no mutation was applied"}
+  ],
+  "environment_notes": [
+    "P02 namespace has no residual PodChaos, NetworkChaos, or StressChaos resources after the batch.",
+    "The visits-service had an independent container BackOff during the batch; it was not attributed to the tested PodChaos results.",
+    "No official ChaosEater result is included because P02 has no native Skaffold input."
+  ]
+}

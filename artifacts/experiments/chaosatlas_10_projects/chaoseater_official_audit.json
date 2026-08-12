@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "tool_root": "C:/APP/tools/chaos-eater",
+  "tool_commit": "47c4e44bc897014d22fa1cb3079a0e7d28011fbc",
+  "input_contract": {
+    "required": ["zipped Skaffold project folder", "root skaffold.yaml", "referenced Kubernetes manifests"],
+    "deployment_path": "skaffold run --kube-context ...",
+    "cleanup_supported": true,
+    "llm_in_hypothesis_and_analysis": true
+  },
+  "project_compatibility": {
+    "P02": "official_incompatible_no_native_skaffold",
+    "P09": "official_incompatible_no_native_skaffold",
+    "P03": "not_yet_verified",
+    "P06": "not_yet_verified"
+  },
+  "official_vs_adapter_rule": "adapter outputs must not be labeled official ChaosEater results",
+  "evidence": ["README.md:186-188", "chaos_eater/chaos_eater.py:497-503"],
+  "read_only": true,
+  "model_calls": false,
+  "cluster_mutations": false,
+  "status": "audit_complete"
+}

@@ -1,0 +1,45 @@
+﻿{
+    "schema_version":  "1.0",
+    "project_id":  "P03",
+    "project_commit":  "15575bd85a8e0b87bfa867bb8a01cb76bca913ad",
+    "source_tree_sha":  "15575bd85a8e0b87bfa867bb8a01cb76bca913ad",
+    "knowledge_status":  "source_only_pre_runtime",
+    "provenance":  [
+                       "frozen source tree",
+                       "project manifest",
+                       "deployment asset index"
+                   ],
+    "facts":  {
+                  "deployment_profile":  "dockerfile_plus_dev_compose",
+                  "deployment_assets":  [
+                                            "Dockerfile",
+                                            ".worktree-container/docker-compose.yml",
+                                            ".devcontainer/docker-compose.yml",
+                                            "socket.yml"
+                                        ],
+                  "workload":  {
+                                   "type":  "GraphQL/HTTP",
+                                   "entrypoint":  "GraphQL health and catalog query",
+                                   "health":  "HTTP health endpoint plus deterministic GraphQL query"
+                               },
+                  "fault_families":  [
+                                         "pod_kill",
+                                         "network_delay",
+                                         "network_loss"
+                                     ],
+                  "resource_class":  "medium_high"
+              },
+    "unverified":  [
+                       "deployment readiness",
+                       "fault-family support",
+                       "runtime recovery behavior",
+                       "source-level weakness labels"
+                   ],
+    "forbidden_not_present":  [
+                                  "oracle_label",
+                                  "prior_method_result",
+                                  "runtime_observation",
+                                  "post_run_rca",
+                                  "mutation_path"
+                              ]
+}

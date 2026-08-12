@@ -1,0 +1,30 @@
+{
+  "method_id": "dry-run-fixture",
+  "project_id": "P02",
+  "project_commit": "305a1f13e4f961001d4e6cb50a9db51dc3fc5967",
+  "hypotheses": [
+    {
+      "hypothesis_id": "dry-run-001",
+      "target": "compose/service/api-gateway->compose/service/config-server",
+      "target_kind": "dependency_edge",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 100,
+        "duration_s": 10
+      },
+      "hypothesis": "A bounded dependency delay may expose an unavailable timeout or fallback boundary.",
+      "weakness_surface": "compose/service/api-gateway to compose/service/config-server",
+      "call_chain": [
+        {
+          "source": "compose/service/api-gateway",
+          "target": "compose/service/config-server",
+          "relation": "depends_on",
+          "evidence_ref": "topology.edges"
+        }
+      ],
+      "expected_invariant": "The deterministic business request either preserves its response contract or records a bounded failure.",
+      "validation_plan": "Capture baseline, apply one fault, observe the business oracle, remove the fault, verify recovery and cleanup.",
+      "recovery_expectation": "The namespace returns healthy and no Chaos Mesh resource remains after removal."
+    }
+  ]
+}

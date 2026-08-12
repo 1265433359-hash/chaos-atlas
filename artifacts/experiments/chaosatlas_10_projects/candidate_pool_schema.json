@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "candidate_id_format": "Pxx-<target>-<fault-family>-nn",
+  "required_fields": ["candidate_id", "project_id", "target", "fault_family", "fault_parameters", "workload_id", "static_refs", "support_status"],
+  "fault_family_enum": ["pod_kill", "network_delay", "network_loss", "container_cpu_stress"],
+  "support_status_enum": ["supported", "unavailable", "unknown"],
+  "forbidden_fields": ["oracle_label", "mutation_path", "prior_method_result", "post_run_rca"],
+  "policy": "One method-neutral candidate universe is frozen before any arm selection; unsupported fault families are recorded as unavailable rather than fabricated."
+}

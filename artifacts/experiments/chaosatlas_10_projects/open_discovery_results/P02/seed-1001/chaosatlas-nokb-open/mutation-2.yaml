@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: atlas-p02-15ccc87d8b14
+  namespace: chaosatlas-p02
+  labels:
+    chaosatlas.dev/project: p02
+    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-p02
+    labelSelectors:
+      app.kubernetes.io/name: discovery-server
+      app.kubernetes.io/part-of: chaosatlas-p02
+  action: pod-kill
+  duration: 30s

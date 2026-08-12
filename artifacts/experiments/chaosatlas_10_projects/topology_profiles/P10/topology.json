@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "kind": "chaosatlas_topology",
+  "source_files": [
+    "artifacts/experiments/chaosatlas_10_projects/sources/P10/operator/src/main/kubernetes/kubernetes.yml",
+    "artifacts/experiments/chaosatlas_10_projects/sources/P10/operator/src/main/kubernetes/kustomization.yml"
+  ],
+  "document_count": 3,
+  "supported_document_count": 3,
+  "nodes": [
+    {
+      "id": "default/clusterrole/keycloak-operator-clusterrole",
+      "kind": "ClusterRole",
+      "name": "keycloak-operator-clusterrole",
+      "namespace": "default",
+      "labels": {
+        "app.kubernetes.io/name": "keycloak-operator"
+      },
+      "role": "configuration"
+    },
+    {
+      "id": "default/clusterrolebinding/keycloak-operator-clusterrole-binding",
+      "kind": "ClusterRoleBinding",
+      "name": "keycloak-operator-clusterrole-binding",
+      "namespace": "default",
+      "labels": {
+        "app.kubernetes.io/name": "keycloak-operator"
+      },
+      "role": "configuration"
+    }
+  ],
+  "edges": [],
+  "defenses": [],
+  "graph_hash": "dc8c1843aeae4dca2a5ca16d03a358deb9284239d9295ee529e48d7a2f5c4a49",
+  "project_id": "P10",
+  "source_tree_root": "artifacts/experiments/chaosatlas_10_projects/sources/P10",
+  "runtime_use": "evidence_only"
+}

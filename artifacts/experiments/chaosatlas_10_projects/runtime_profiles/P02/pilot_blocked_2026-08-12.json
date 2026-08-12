@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.0",
+  "project_id": "P02",
+  "namespace": "chaosatlas-p02",
+  "cluster": "chaos-kind",
+  "image_pull_gate": "passed_via_wsl_relay",
+  "proxy_path": {
+    "windows_listener": ":::7890",
+    "windows_ipv4": "172.20.96.1:7890",
+    "wsl_relay": "172.18.0.1:7890 -> 172.20.96.1:7890",
+    "containerd_proxy": "http://172.18.0.1:7890"
+  },
+  "image_evidence": [
+    "config-server pulled and started",
+    "customers-service pulled",
+    "discovery-server pulled",
+    "grafana-server pulled",
+    "prometheus-server pulled",
+    "tracing-server pulled",
+    "admin-server, vets-service, visits-service pulled after Pod recreation"
+  ],
+  "runtime_gate": "blocked",
+  "blocker": "kind service networking was not operational: kube-proxy IPVS table remained empty and CoreDNS readiness stayed 503",
+  "kube_proxy_evidence": [
+    "mode=ipvs",
+    "ipset and IPVS modules loaded",
+    "kube-proxy process Running but reports missing iptables filter/nat chains",
+    "no virtual services in /proc/net/ip_vs"
+  ],
+  "application_symptom": "service DNS/endpoints were unavailable; api-gateway could not resolve config-server",
+  "baseline": "not_run",
+  "chaos_injection": "not_run",
+  "oracle": "not_run",
+  "cleanup": "passed",
+  "cleanup_evidence": "namespace chaosatlas-p02 deleted; relay process stopped",
+  "deepseek_key_read": false,
+  "deepseek_requests_sent": 0,
+  "interpretation": "environment_blocked, not a ChaosAtlas or project finding",
+  "next_gate": "use a kind/WSL kernel with working kube-proxy service networking, or an approved offline image/import environment"
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "P02",
+  "project_commit": null,
+  "topology_graph_hash": "b4a1783e5d586311d0b109b842dc7aaaf146f95690417801a74ec2192f29339e",
+  "canonical_signature": "15ccc87d8b142bf25418027b64f8eed4db260f0e2499173cdbb2901cdb8c4bef",
+  "hypothesis_id": "H2",
+  "target": "compose/service/discovery-server",
+  "target_kind": "service",
+  "fault_family": "pod_kill",
+  "parameters": {
+    "mode": "one"
+  },
+  "namespace": "chaosatlas-p02",
+  "resolved_source": {
+    "target": "compose/service/discovery-server",
+    "kind": "Deployment",
+    "name": "discovery-server",
+    "selector": {
+      "app.kubernetes.io/name": "discovery-server",
+      "app.kubernetes.io/part-of": "chaosatlas-p02"
+    },
+    "selector_source": "runtime_mapping"
+  },
+  "resolved_destination": null,
+  "runtime_gate_required": true,
+  "execution_ready": false,
+  "yaml_path": "artifacts/experiments/chaosatlas_10_projects/open_discovery_results/P02/seed-1001/chaosatlas-kb-open/mutation-2.yaml",
+  "yaml_sha256": "0f91993e0c81c737763199707e8411a0428be38218e249b126ad49feafa6a46f",
+  "llm_call_id": "P02-1001-ChaosAtlas-KB-open"
+}

@@ -1,0 +1,385 @@
+{
+  "schema_version": "2.0",
+  "protocol": "protocol_v2_open_discovery.md",
+  "arm": "ChaosEater-open",
+  "project_id": "P02",
+  "seed": 1001,
+  "primary_track": true,
+  "common_input": {
+    "schema_version": "1.0",
+    "project_id": "P02",
+    "project_commit": "305a1f13e4f961001d4e6cb50a9db51dc3fc5967",
+    "source_tree_sha": "305a1f13e4f961001d4e6cb50a9db51dc3fc5967",
+    "deployment_summary": {
+      "kind": "compose_to_kind_adapter",
+      "command": "docker compose -f docker-compose.yml up -d",
+      "note": "Run one project at a time and translate services to namespace-local workloads; disable genai-service or replace it with a local mock because the frozen Compose file references external OpenAI/Azure credentials."
+    },
+    "workload_summary": {
+      "type": "HTTP",
+      "entrypoint": "API gateway pet/owner/visit flow",
+      "health": "gateway health plus one CRUD request"
+    },
+    "runner_version": "runner_protocol_v1",
+    "oracle_version": "oracle_schema_v1"
+  },
+  "topology_evidence": {
+    "status": "available",
+    "graph_hash": "b4a1783e5d586311d0b109b842dc7aaaf146f95690417801a74ec2192f29339e",
+    "nodes": [
+      {
+        "id": "compose/service/admin-server",
+        "kind": "ComposeService",
+        "name": "admin-server",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/api-gateway",
+        "kind": "ComposeService",
+        "name": "api-gateway",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/config-server",
+        "kind": "ComposeService",
+        "name": "config-server",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/customers-service",
+        "kind": "ComposeService",
+        "name": "customers-service",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/discovery-server",
+        "kind": "ComposeService",
+        "name": "discovery-server",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/genai-service",
+        "kind": "ComposeService",
+        "name": "genai-service",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/grafana-server",
+        "kind": "ComposeService",
+        "name": "grafana-server",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/prometheus-server",
+        "kind": "ComposeService",
+        "name": "prometheus-server",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/tracing-server",
+        "kind": "ComposeService",
+        "name": "tracing-server",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/vets-service",
+        "kind": "ComposeService",
+        "name": "vets-service",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/visits-service",
+        "kind": "ComposeService",
+        "name": "visits-service",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      }
+    ],
+    "edges": [
+      {
+        "source": "compose/service/admin-server",
+        "target": "compose/service/config-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/admin-server",
+        "target": "compose/service/discovery-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api-gateway",
+        "target": "compose/service/config-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/api-gateway",
+        "target": "compose/service/discovery-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/customers-service",
+        "target": "compose/service/config-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/customers-service",
+        "target": "compose/service/discovery-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/discovery-server",
+        "target": "compose/service/config-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/genai-service",
+        "target": "compose/service/config-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/genai-service",
+        "target": "compose/service/discovery-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/vets-service",
+        "target": "compose/service/config-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/vets-service",
+        "target": "compose/service/discovery-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/visits-service",
+        "target": "compose/service/config-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      },
+      {
+        "source": "compose/service/visits-service",
+        "target": "compose/service/discovery-server",
+        "kind": "depends_on",
+        "evidence": "services.depends_on"
+      }
+    ],
+    "defenses": [
+      {
+        "target": "compose/service/admin-server",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/api-gateway",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/config-server",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/customers-service",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/discovery-server",
+        "attributes": {
+          "healthcheck": true,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/genai-service",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/grafana-server",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/prometheus-server",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/tracing-server",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/vets-service",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/visits-service",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": true,
+          "restart": null
+        }
+      }
+    ],
+    "supported_document_count": 1,
+    "source_sha256": "764eecf955b04e2e865c98145b2bdbfb43dfe95f3a95788df9c254ea1caf7240"
+  },
+  "runtime_contract": {
+    "namespace": "chaosatlas-p02",
+    "workload_id": "P02-primary-workload",
+    "max_hypotheses": 8,
+    "fault_families": [
+      "pod_kill",
+      "network_delay",
+      "network_loss",
+      "container_cpu_stress"
+    ],
+    "parameter_bounds": {
+      "network_delay": {
+        "latency_ms": [
+          1,
+          500
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "network_loss": {
+        "loss_percent": [
+          1,
+          100
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "container_cpu_stress": {
+        "workers": [
+          1,
+          2
+        ],
+        "load_percent": [
+          1,
+          80
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "pod_kill": {
+        "mode": [
+          "one"
+        ]
+      }
+    },
+    "namespace_scope": "all mutations must resolve inside the project namespace",
+    "target_resolution": "target must be a node or edge in topology_evidence; unresolved targets are rejected",
+    "lifecycle": [
+      "clean",
+      "health_gate",
+      "baseline",
+      "apply_one_fault",
+      "verify_injection",
+      "observe",
+      "remove_fault",
+      "recovery_health",
+      "cleanup"
+    ],
+    "required_result_classes": [
+      "confirmed_weakness",
+      "protected",
+      "latent_risk",
+      "unsupported",
+      "environment_blocked",
+      "method_invalid"
+    ],
+    "execution_policy": "compiler and runtime resolver fail closed; no shell or kubectl commands in model output"
+  },
+  "knowledge_view": null,
+  "candidate_pool_visible": false,
+  "candidate_order_visible": false,
+  "output_schema": "open_discovery_schema.json",
+  "prompt_module_sha256": "247cf99df6a90612d6bc2a8b32b990980a63c652245d7e556c88f8dcd45f93b3",
+  "source_evidence_sha256": "e5d4d389bfea50b29ea687f4938f46779456163dfec8f641057499ff837cc410",
+  "topology_evidence_sha256": "764eecf955b04e2e865c98145b2bdbfb43dfe95f3a95788df9c254ea1caf7240",
+  "method_contract": "ChaosEater FaultScenarioAgent open mode; no ChaosAtlas knowledge"
+}

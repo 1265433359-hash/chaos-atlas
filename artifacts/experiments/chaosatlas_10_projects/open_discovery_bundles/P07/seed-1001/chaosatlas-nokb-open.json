@@ -1,0 +1,152 @@
+{
+  "schema_version": "2.0",
+  "protocol": "protocol_v2_open_discovery.md",
+  "arm": "ChaosAtlas-noKB-open",
+  "project_id": "P07",
+  "seed": 1001,
+  "primary_track": true,
+  "common_input": {
+    "schema_version": "1.0",
+    "project_id": "P07",
+    "project_commit": "374f5ad4035e39903db1d968d3be9c7ed8adca2c",
+    "source_tree_sha": "374f5ad4035e39903db1d968d3be9c7ed8adca2c",
+    "deployment_summary": {
+      "kind": "compose_to_kind_adapter",
+      "command": "docker compose -f docker-compose.yml up -d",
+      "note": "Use local Postgres, Redis, and object-storage substitute; disable external auth."
+    },
+    "workload_summary": {
+      "type": "HTTP",
+      "entrypoint": "health and document read workflow",
+      "health": "HTTP health plus deterministic document API"
+    },
+    "runner_version": "runner_protocol_v1",
+    "oracle_version": "oracle_schema_v1"
+  },
+  "topology_evidence": {
+    "status": "available",
+    "graph_hash": "cdb72bf35a8457ef11548709ddb442e99c76c47ca0f06eafd46ee68258b2b34c",
+    "nodes": [
+      {
+        "id": "compose/service/postgres",
+        "kind": "ComposeService",
+        "name": "postgres",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      },
+      {
+        "id": "compose/service/redis",
+        "kind": "ComposeService",
+        "name": "redis",
+        "namespace": "compose",
+        "role": "workload",
+        "labels": {}
+      }
+    ],
+    "edges": [],
+    "defenses": [
+      {
+        "target": "compose/service/postgres",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      },
+      {
+        "target": "compose/service/redis",
+        "attributes": {
+          "healthcheck": false,
+          "replicas": null,
+          "resource_limits": false,
+          "restart": null
+        }
+      }
+    ],
+    "supported_document_count": 1,
+    "source_sha256": "c696f2024de8ac4acf5e33bf4f30d254092bf8bbde0b328ac0b0cd8aa93774e4"
+  },
+  "runtime_contract": {
+    "namespace": "chaosatlas-p07",
+    "workload_id": "P07-primary-workload",
+    "max_hypotheses": 8,
+    "fault_families": [
+      "pod_kill",
+      "network_delay",
+      "network_loss",
+      "container_cpu_stress"
+    ],
+    "parameter_bounds": {
+      "network_delay": {
+        "latency_ms": [
+          1,
+          500
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "network_loss": {
+        "loss_percent": [
+          1,
+          100
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "container_cpu_stress": {
+        "workers": [
+          1,
+          2
+        ],
+        "load_percent": [
+          1,
+          80
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "pod_kill": {
+        "mode": [
+          "one"
+        ]
+      }
+    },
+    "namespace_scope": "all mutations must resolve inside the project namespace",
+    "target_resolution": "target must be a node or edge in topology_evidence; unresolved targets are rejected",
+    "lifecycle": [
+      "clean",
+      "health_gate",
+      "baseline",
+      "apply_one_fault",
+      "verify_injection",
+      "observe",
+      "remove_fault",
+      "recovery_health",
+      "cleanup"
+    ],
+    "required_result_classes": [
+      "confirmed_weakness",
+      "protected",
+      "latent_risk",
+      "unsupported",
+      "environment_blocked",
+      "method_invalid"
+    ],
+    "execution_policy": "compiler and runtime resolver fail closed; no shell or kubectl commands in model output"
+  },
+  "knowledge_view": null,
+  "candidate_pool_visible": false,
+  "candidate_order_visible": false,
+  "output_schema": "open_discovery_schema.json",
+  "prompt_module_sha256": "247cf99df6a90612d6bc2a8b32b990980a63c652245d7e556c88f8dcd45f93b3",
+  "source_evidence_sha256": "7cff63d758861ccd5bec6f9daaf5a6ad74184168089e1c945d67312d3f079d20",
+  "topology_evidence_sha256": "c696f2024de8ac4acf5e33bf4f30d254092bf8bbde0b328ac0b0cd8aa93774e4"
+}

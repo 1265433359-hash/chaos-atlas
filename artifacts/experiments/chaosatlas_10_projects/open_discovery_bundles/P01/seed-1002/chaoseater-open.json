@@ -1,0 +1,117 @@
+{
+  "schema_version": "2.0",
+  "protocol": "protocol_v2_open_discovery.md",
+  "arm": "ChaosEater-open",
+  "project_id": "P01",
+  "seed": 1002,
+  "primary_track": true,
+  "common_input": {
+    "schema_version": "1.0",
+    "project_id": "P01",
+    "project_commit": "9b4f9434f46fdc5c1a6e9e936af2868340cdbc48",
+    "source_tree_sha": "9b4f9434f46fdc5c1a6e9e936af2868340cdbc48",
+    "deployment_summary": {
+      "kind": "requires_normalization",
+      "command": "TBD after Aspire-to-kind adapter review",
+      "reason": "No committed Compose or Kubernetes application manifest in the frozen tree."
+    },
+    "workload_summary": {
+      "type": "HTTP",
+      "entrypoint": "WebApp plus catalog/basket/order APIs",
+      "health": "HTTP readiness and one documented e-commerce transaction"
+    },
+    "runner_version": "runner_protocol_v1",
+    "oracle_version": "oracle_schema_v1"
+  },
+  "topology_evidence": {
+    "status": "topology_unavailable",
+    "graph_hash": "fcd5d8490bff728bc7a7aafb8e663bdeb51d9c499bee5c8c72f6d1712241cfd0",
+    "nodes": [],
+    "edges": [],
+    "defenses": [],
+    "supported_document_count": 0,
+    "source_sha256": "415ec1cd0e60bb49f2335083822339def1b7210bb8e6cb53a9827e404b6d0687"
+  },
+  "runtime_contract": {
+    "namespace": "chaosatlas-p01",
+    "workload_id": "P01-primary-workload",
+    "max_hypotheses": 8,
+    "fault_families": [
+      "pod_kill",
+      "network_delay",
+      "network_loss",
+      "container_cpu_stress"
+    ],
+    "parameter_bounds": {
+      "network_delay": {
+        "latency_ms": [
+          1,
+          500
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "network_loss": {
+        "loss_percent": [
+          1,
+          100
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "container_cpu_stress": {
+        "workers": [
+          1,
+          2
+        ],
+        "load_percent": [
+          1,
+          80
+        ],
+        "duration_s": [
+          1,
+          60
+        ]
+      },
+      "pod_kill": {
+        "mode": [
+          "one"
+        ]
+      }
+    },
+    "namespace_scope": "all mutations must resolve inside the project namespace",
+    "target_resolution": "target must be a node or edge in topology_evidence; unresolved targets are rejected",
+    "lifecycle": [
+      "clean",
+      "health_gate",
+      "baseline",
+      "apply_one_fault",
+      "verify_injection",
+      "observe",
+      "remove_fault",
+      "recovery_health",
+      "cleanup"
+    ],
+    "required_result_classes": [
+      "confirmed_weakness",
+      "protected",
+      "latent_risk",
+      "unsupported",
+      "environment_blocked",
+      "method_invalid"
+    ],
+    "execution_policy": "compiler and runtime resolver fail closed; no shell or kubectl commands in model output"
+  },
+  "knowledge_view": null,
+  "candidate_pool_visible": false,
+  "candidate_order_visible": false,
+  "output_schema": "open_discovery_schema.json",
+  "prompt_module_sha256": "247cf99df6a90612d6bc2a8b32b990980a63c652245d7e556c88f8dcd45f93b3",
+  "source_evidence_sha256": "a181ae1c4904ee6ba7b53cdab3017b2efafe70595e8ad848bdb56f0b32ca6349",
+  "topology_evidence_sha256": "415ec1cd0e60bb49f2335083822339def1b7210bb8e6cb53a9827e404b6d0687",
+  "method_contract": "ChaosEater FaultScenarioAgent open mode; no ChaosAtlas knowledge"
+}
