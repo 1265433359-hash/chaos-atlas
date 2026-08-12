@@ -1,0 +1,40 @@
+{
+  "checked_at": "2026-08-12T17:11:55.537719+00:00",
+  "mutation": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_10_projects/open_discovery_results/P02/seed-1001/chaosatlas-nokb-open/mutation-2.yaml",
+  "kind": "PodChaos",
+  "namespace": "chaosatlas-p02",
+  "name": "atlas-p02-15ccc87d8b14",
+  "checks": {
+    "namespace": true,
+    "mode": true,
+    "labels_nonempty": true,
+    "kind": true,
+    "crd": true,
+    "target_pods": [
+      {
+        "name": "discovery-server-5fbbbd7678-6hvqh",
+        "uid": "aca45b16-b819-43e8-a8e5-4c30541cbfca",
+        "ready": true
+      }
+    ],
+    "target_pods_ready": true,
+    "chaos_mesh_namespace": "chaos-testing",
+    "chaos_mesh_pods": [
+      {
+        "name": "chaos-controller-manager-65c4547b54-pd5jm",
+        "ready": true
+      },
+      {
+        "name": "chaos-daemon-zcvnl",
+        "ready": true
+      }
+    ],
+    "chaos_mesh_ready": true,
+    "name_available": true,
+    "baseline_evidence": true,
+    "recovery_evidence": true
+  },
+  "decision": "ready_for_injection",
+  "errors": [],
+  "mutation_applied": false
+}

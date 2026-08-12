@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0",
+  "tool": "summarize_p02_teacher_results",
+  "status": "pending_human_review",
+  "project_id": "P02",
+  "project_commit": "305a1f13e4f961001d4e6cb50a9db51dc3fc5967",
+  "source_round_id": "teacher-minikube-formal-r3",
+  "knowledge_update_applied": false,
+  "decisions": [
+    {
+      "issue_id": "P02-ISSUE-001",
+      "proposed_classification": "confirmed_weakness",
+      "proposed_abstraction": {
+        "weakness_family": "single_replica_entrypoint_availability",
+        "target_role": "request_gateway",
+        "selection_guidance": "Prioritize singleton request-entry workloads for bounded Pod-loss testing when no redundant ready replica is declared."
+      },
+      "evidence_summary": "Every sole api-gateway Pod kill produced at least one non-200 business observation before replacement recovery.",
+      "evidence_artifacts": [
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-KB-open/mutation-1/rep-1.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-noKB-open/mutation-1/rep-1.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosEater-adapter-open/mutation-1/rep-1.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-noKB-open/mutation-1/rep-2.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosEater-adapter-open/mutation-1/rep-2.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-KB-open/mutation-1/rep-2.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosEater-adapter-open/mutation-1/rep-3.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-KB-open/mutation-1/rep-3.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-noKB-open/mutation-1/rep-3.json"
+      ],
+      "valid_reproductions": 9,
+      "human_decision": "pending",
+      "human_note": ""
+    },
+    {
+      "issue_id": "P02-ISSUE-002",
+      "proposed_classification": "confirmed_weakness",
+      "root_cause_status": "pending_evidence_review",
+      "proposed_abstraction": {
+        "weakness_family": "control_plane_dependency_delayed_business_outage",
+        "target_role": "service_discovery",
+        "selection_guidance": "Observe the business path through a sustained washout after recovery of discovery or coordination workloads; readiness alone may precede business recovery."
+      },
+      "evidence_summary": "Discovery-server kills produced delayed non-200 responses inside the same run's post-cleanup washout. Logs, events, and traces must be reviewed before assigning a causal mechanism.",
+      "evidence_artifacts": [
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-KB-open/mutation-2/rep-1.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-noKB-open/mutation-2/rep-1.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-KB-open/mutation-2/rep-2.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-noKB-open/mutation-2/rep-2.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-KB-open/mutation-2/rep-3.json",
+        "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/ChaosAtlas-noKB-open/mutation-2/rep-3.json"
+      ],
+      "valid_reproductions": 6,
+      "human_decision": "pending",
+      "human_note": "Do not name a cache, registration, or Eureka mechanism unless scoped logs or traces support it."
+    }
+  ],
+  "review_instructions": "Set each human_decision only after inspecting the cited run reports and diagnostic sidecars. A separate guarded feedback step is required after review; this pack is not KB input."
+}

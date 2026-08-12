@@ -1,0 +1,913 @@
+{
+  "schema_version": 3,
+  "tool": "run_p02_podchaos",
+  "experiment": {
+    "project": "P02",
+    "arm": "ChaosEater-adapter-open",
+    "mutation_id": "mutation-1",
+    "replicate": 2
+  },
+  "mutation": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_10_projects/open_discovery_results/P02/seed-1001/chaoseater-adapter-open/mutation-1.yaml",
+  "started_at": "2026-08-12T17:02:46.241235+00:00",
+  "mutation_applied": true,
+  "baseline": [
+    {
+      "observed_at": "2026-08-12T17:02:49.582393+00:00",
+      "status_code": 200,
+      "latency_ms": 46.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:02:50.114663+00:00",
+      "status_code": 200,
+      "latency_ms": 32.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:02:50.650333+00:00",
+      "status_code": 200,
+      "latency_ms": 31.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:02:51.169225+00:00",
+      "status_code": 200,
+      "latency_ms": 16.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:02:51.702660+00:00",
+      "status_code": 200,
+      "latency_ms": 31.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    }
+  ],
+  "requests": [
+    {
+      "observed_at": "2026-08-12T17:02:53.007084+00:00",
+      "status_code": null,
+      "latency_ms": 15.0,
+      "body": null,
+      "error": "Remote end closed connection without response"
+    },
+    {
+      "observed_at": "2026-08-12T17:02:55.537108+00:00",
+      "status_code": null,
+      "latency_ms": 2032.0,
+      "body": null,
+      "error": "<urlopen error [WinError 10061] \u7531\u4e8e\u76ee\u6807\u8ba1\u7b97\u673a\u79ef\u6781\u62d2\u7edd\uff0c\u65e0\u6cd5\u8fde\u63a5\u3002>"
+    },
+    {
+      "observed_at": "2026-08-12T17:02:58.080155+00:00",
+      "status_code": 200,
+      "latency_ms": 187.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:02:58.114985+00:00",
+      "status_code": 200,
+      "latency_ms": 32.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:02:58.141507+00:00",
+      "status_code": 200,
+      "latency_ms": 31.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:02:58.171050+00:00",
+      "status_code": 200,
+      "latency_ms": 16.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:02:58.200111+00:00",
+      "status_code": 200,
+      "latency_ms": 31.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:02:58.230144+00:00",
+      "status_code": 200,
+      "latency_ms": 31.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:02:58.245195+00:00",
+      "status_code": 200,
+      "latency_ms": 16.0,
+      "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    }
+  ],
+  "lifecycle": {
+    "preflight_residual_chaos": [],
+    "pre_injection_namespace_health": {
+      "healthy": true,
+      "deployments": [
+        {
+          "name": "admin-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "api-gateway",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "config-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "customers-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "discovery-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "grafana-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "prometheus-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "tracing-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "vets-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "visits-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        }
+      ],
+      "pods": [
+        {
+          "name": "admin-server-857dcb68d-bckvt",
+          "uid": "4e8437d4-2f83-4c6b-9cdf-1e1453dbd535",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "api-gateway-5c58fdb6dc-gxdfj",
+          "uid": "bd327532-628a-4b52-b525-a3eaf4ac804e",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "config-server-5cdff775b9-2gnnj",
+          "uid": "0a29b463-bd18-4763-b9e9-b65145dbc0b3",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "customers-service-6979fc9974-8znm7",
+          "uid": "1e15597c-0913-4af4-9981-b4ad251de7d8",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "discovery-server-5fbbbd7678-7w45w",
+          "uid": "78b9d4fc-399a-47df-acfe-3b367dcb6ab9",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "grafana-server-5cbd7959cc-kjprw",
+          "uid": "95584d41-a5c1-4c6f-bbeb-2c93d188b1f8",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "prometheus-server-5d6d96c579-m56jk",
+          "uid": "ef51c60b-8088-4072-ad64-bedfaf6666a6",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "tracing-server-7884cffc88-6j9kl",
+          "uid": "02bd0937-5dea-47a1-a6b5-c85b48b21839",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "vets-service-7ccb8c6b9f-x7sbm",
+          "uid": "63f66728-f5f2-4480-9884-73b05551cb8c",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "visits-service-f9bbb799-r2mq2",
+          "uid": "572963fd-039f-4785-8aa2-5dbec3b57d10",
+          "ready": true,
+          "terminating": false
+        }
+      ],
+      "stable_checks": 3
+    },
+    "pre_injection_pods": [
+      {
+        "name": "api-gateway-5c58fdb6dc-gxdfj",
+        "uid": "bd327532-628a-4b52-b525-a3eaf4ac804e",
+        "ready": true,
+        "terminating": false
+      }
+    ],
+    "injected_status": {
+      "injected_count": 1,
+      "recovered_count": 0,
+      "desired_phase": "Run",
+      "conditions": [
+        {
+          "status": "True",
+          "type": "Selected"
+        },
+        {
+          "status": "True",
+          "type": "AllInjected"
+        },
+        {
+          "status": "False",
+          "type": "AllRecovered"
+        },
+        {
+          "status": "False",
+          "type": "Paused"
+        }
+      ]
+    },
+    "injected": true,
+    "port_forward_interrupted": true,
+    "recovered": true,
+    "recovery_status": {
+      "pods": [
+        {
+          "name": "api-gateway-5c58fdb6dc-vfvm4",
+          "uid": "7a3c4cf6-174f-4709-be62-a1c5073806e1",
+          "ready": true,
+          "terminating": false
+        }
+      ],
+      "active_count": 1,
+      "ready_count": 1,
+      "before_uids": [
+        "bd327532-628a-4b52-b525-a3eaf4ac804e"
+      ],
+      "new_ready_uids": [
+        "7a3c4cf6-174f-4709-be62-a1c5073806e1"
+      ]
+    },
+    "post_recovery_http_200_count": 7,
+    "post_recovery_namespace_health": {
+      "healthy": true,
+      "deployments": [
+        {
+          "name": "admin-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "api-gateway",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "config-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "customers-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "discovery-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "grafana-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "prometheus-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "tracing-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "vets-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "visits-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        }
+      ],
+      "pods": [
+        {
+          "name": "admin-server-857dcb68d-bckvt",
+          "uid": "4e8437d4-2f83-4c6b-9cdf-1e1453dbd535",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "api-gateway-5c58fdb6dc-vfvm4",
+          "uid": "7a3c4cf6-174f-4709-be62-a1c5073806e1",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "config-server-5cdff775b9-2gnnj",
+          "uid": "0a29b463-bd18-4763-b9e9-b65145dbc0b3",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "customers-service-6979fc9974-8znm7",
+          "uid": "1e15597c-0913-4af4-9981-b4ad251de7d8",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "discovery-server-5fbbbd7678-7w45w",
+          "uid": "78b9d4fc-399a-47df-acfe-3b367dcb6ab9",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "grafana-server-5cbd7959cc-kjprw",
+          "uid": "95584d41-a5c1-4c6f-bbeb-2c93d188b1f8",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "prometheus-server-5d6d96c579-m56jk",
+          "uid": "ef51c60b-8088-4072-ad64-bedfaf6666a6",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "tracing-server-7884cffc88-6j9kl",
+          "uid": "02bd0937-5dea-47a1-a6b5-c85b48b21839",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "vets-service-7ccb8c6b9f-x7sbm",
+          "uid": "63f66728-f5f2-4480-9884-73b05551cb8c",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "visits-service-f9bbb799-r2mq2",
+          "uid": "572963fd-039f-4785-8aa2-5dbec3b57d10",
+          "ready": true,
+          "terminating": false
+        }
+      ],
+      "stable_checks": 3
+    },
+    "cleanup": {
+      "delete_code": 0,
+      "delete_output": "podchaos.chaos-mesh.org \"atlas-p02-a1c7ab95a02d\" deleted from chaosatlas-p02 namespace",
+      "verify_code": 1,
+      "verify_output": "Error from server (NotFound): podchaos.chaos-mesh.org \"atlas-p02-a1c7ab95a02d\" not found",
+      "absent_confirmed": true
+    },
+    "post_cleanup_residual_chaos": [],
+    "post_cleanup_washout": {
+      "minimum_duration_s": 60.0,
+      "stable_successes_required": 10,
+      "samples": [
+        {
+          "observed_at": "2026-08-12T17:03:02.146914+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:03.182261+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:04.214035+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:05.251740+00:00",
+          "status_code": 200,
+          "latency_ms": 47.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:06.277579+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:07.302568+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:08.324328+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:09.360714+00:00",
+          "status_code": 200,
+          "latency_ms": 47.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:10.400169+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:11.420958+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:12.457270+00:00",
+          "status_code": 200,
+          "latency_ms": 46.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:13.484059+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:14.506010+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:15.540931+00:00",
+          "status_code": 200,
+          "latency_ms": 32.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:16.576625+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:17.602002+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:18.622471+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:19.648873+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:20.676593+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:21.706452+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:22.730763+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:23.750995+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:24.793933+00:00",
+          "status_code": 200,
+          "latency_ms": 32.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:25.826426+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:26.864330+00:00",
+          "status_code": 200,
+          "latency_ms": 47.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:27.883795+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:28.908481+00:00",
+          "status_code": 200,
+          "latency_ms": 32.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:29.946484+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:30.981735+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:32.016940+00:00",
+          "status_code": 200,
+          "latency_ms": 47.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:33.038439+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:34.057804+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:35.077851+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:36.097549+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:37.133698+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:38.160851+00:00",
+          "status_code": 200,
+          "latency_ms": 32.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:39.197399+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:40.220897+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:41.249633+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:42.275930+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:43.295259+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:44.324014+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:45.344273+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:46.371688+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:47.409841+00:00",
+          "status_code": 200,
+          "latency_ms": 47.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:48.429835+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:49.455955+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:50.491302+00:00",
+          "status_code": 200,
+          "latency_ms": 32.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:51.510618+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:52.540275+00:00",
+          "status_code": 200,
+          "latency_ms": 32.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:53.568496+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:54.587936+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:55.625804+00:00",
+          "status_code": 200,
+          "latency_ms": 47.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:56.652565+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:57.673481+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:58.697436+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:03:59.718238+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:04:00.754416+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:04:01.789503+00:00",
+          "status_code": 200,
+          "latency_ms": 32.0,
+          "body": "{\"id\":1,\"firstName\":\"George\",\"lastName\":\"Franklin\",\"address\":\"110 W. Liberty St.\",\"city\":\"Madison\",\"telephone\":\"6085551023\",\"pets\":[{\"id\":1,\"name\":\"Leo\",\"birthDate\":\"2010-09-07\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        }
+      ],
+      "http_200": 59,
+      "http_500": 0,
+      "non_200": 0,
+      "final_consecutive_http_200": 59,
+      "stable": true
+    }
+  },
+  "errors": [],
+  "warnings": [
+    "diagnostics_unavailable: 'NoneType' object has no attribute 'strip'"
+  ],
+  "cluster": {
+    "context": "minikube",
+    "nodes": [
+      {
+        "name": "minikube",
+        "uid": "00ef5ca4-506a-453c-beb7-3f7a8d4d5f04",
+        "kubernetes_version": "v1.35.1"
+      }
+    ]
+  },
+  "target": {
+    "name": "atlas-p02-a1c7ab95a02d",
+    "labels": {
+      "app.kubernetes.io/name": "api-gateway",
+      "app.kubernetes.io/part-of": "chaosatlas-p02"
+    },
+    "namespace": "chaosatlas-p02"
+  },
+  "apply": {
+    "return_code": 0,
+    "stdout": "podchaos.chaos-mesh.org/atlas-p02-a1c7ab95a02d created",
+    "stderr": ""
+  },
+  "diagnostics": {
+    "status": "unavailable",
+    "error": "'NoneType' object has no attribute 'strip'",
+    "captured_at": "2026-08-12T17:04:01.879102+00:00"
+  },
+  "finished_at": "2026-08-12T17:04:01.879102+00:00",
+  "status": "completed"
+}
