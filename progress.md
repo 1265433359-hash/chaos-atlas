@@ -400,3 +400,4 @@
 - The first final-suite run found one incorrect test expectation for repository-relative paths; the implementation correctly emitted a relative path, so the assertion was corrected before rerunning.
 - Final regression passed: 309 tests and 5 subtests. R2 compatibility and the pending-review/no-KB-write boundary were checked separately and passed.
 - Sensitive-pattern scan found no credential material in the intended P02 R3 change set.
+- Committed the P02 R3 evidence chain as `727c9a5` and pushed it to `remediation/2026-08-09-review`; the pre-existing selection-only manifest timestamp change remained unstaged.
