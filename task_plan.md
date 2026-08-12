@@ -275,6 +275,6 @@ Constraints:
 - [complete] Add cluster identity, arm/mutation/replicate metadata, global residual-Chaos preflight, and stable recovery checks.
 - [complete] Add a 15-run formal batch plan (5 method outputs x 3 replicates), per-run read-only gate, no-overwrite output handling, and stop-on-failure behavior.
 - [complete] Add focused unit tests and run the full regression suite.
-- [in_progress] Commit and push only the intended code/tests/docs; preserve the existing timestamp-only manifest change.
+- [complete] Commit and push only the intended code/tests/docs; preserve the existing timestamp-only manifest change.
 - Runtime boundary: this workstation will not mutate the teacher cluster; teacher-generated reports use a new `teacher-minikube-formal` path.
 - LLM boundary: no DeepSeek credential access or API call is needed for this work.

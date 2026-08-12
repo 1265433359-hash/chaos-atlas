@@ -386,3 +386,4 @@
 - Added the teacher execution guide and four focused tests; focused P02 test run passed 7 tests.
 - Full regression passed: 297 tests and 5 subtests. Secret-pattern scan found no credential material in the changed implementation, test, or guide files.
 - No DeepSeek credential was read, no API request was sent, and this workstation did not mutate a Kubernetes cluster.
+- Formal-batch implementation was committed as `c7a434a` and pushed to `remediation/2026-08-09-review`; the pre-existing timestamp-only manifest change remained unstaged.
