@@ -76,6 +76,9 @@ def main() -> int:
     parser.add_argument("--baseline-count", type=int, default=5)
     parser.add_argument("--observe-count", type=int, default=10)
     parser.add_argument("--settle-seconds", type=float, default=15.0)
+    parser.add_argument("--washout-seconds", type=float, default=60.0)
+    parser.add_argument("--washout-stable-successes", type=int, default=10)
+    parser.add_argument("--washout-timeout", type=float, default=180.0)
     parser.add_argument("--chaos-namespace", default="chaos-testing")
     parser.add_argument("--execute", action="store_true", help="apply mutations; without this flag only print the plan")
     args = parser.parse_args()
@@ -141,6 +144,9 @@ def main() -> int:
             "--mutation-id", row["mutation_id"],
             "--replicate", str(row["replicate"]),
             "--expected-context", identity["context"],
+            "--washout-seconds", str(args.washout_seconds),
+            "--washout-stable-successes", str(args.washout_stable_successes),
+            "--washout-timeout", str(args.washout_timeout),
         ]
         process = subprocess.run(command, capture_output=True, text=True)
         destination.with_suffix(".stdout.txt").write_text(process.stdout, encoding="utf-8")

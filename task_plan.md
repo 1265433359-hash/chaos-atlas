@@ -278,3 +278,12 @@ Constraints:
 - [complete] Commit and push only the intended code/tests/docs; preserve the existing timestamp-only manifest change.
 - Runtime boundary: this workstation will not mutate the teacher cluster; teacher-generated reports use a new `teacher-minikube-formal` path.
 - LLM boundary: no DeepSeek credential access or API call is needed for this work.
+
+# P02 teacher result analysis (2026-08-13)
+
+- Goal: validate the 15 teacher-Minukube reports and produce reproducible arm/mutation statistics plus a bounded issue ledger.
+- [complete] Audit report completeness, identities, gates, cleanup, warnings, request outcomes, and target equivalence.
+- [complete] Add a deterministic offline summarizer and focused tests.
+- [complete] Generate JSON/Markdown summaries and distinguish project findings from method-comparison claims.
+- [complete] Run regression tests, commit, and push without including the pre-existing manifest timestamp change.
+- Interpretation boundary: identical faults across arms are execution replications, not independent discovery advantages; `ChaosEater-adapter-open` is supplementary, not official ChaosEater.

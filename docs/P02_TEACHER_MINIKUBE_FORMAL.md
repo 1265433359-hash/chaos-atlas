@@ -28,9 +28,15 @@ Every run fails closed unless all of the following hold:
 - the killed target is replaced by a new Ready Pod UID;
 - the business oracle returns HTTP 200 after recovery;
 - the injected resource is deleted and global cleanup is confirmed.
+- after cleanup, the oracle is observed for at least 60 seconds and the final
+  10 samples must be consecutive HTTP 200 responses before another run starts.
 
 The batch stops after the first failed run and never overwrites an existing
 report.
+
+The sustained post-cleanup window attributes delayed service-registration or
+cache effects to the mutation that caused them. It also prevents those effects
+from contaminating the next arm's baseline.
 
 ## Commands
 

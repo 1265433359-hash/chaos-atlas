@@ -388,3 +388,5 @@
 - No DeepSeek credential was read, no API request was sent, and this workstation did not mutate a Kubernetes cluster.
 - Formal-batch implementation was committed as `c7a434a` and pushed to `remediation/2026-08-09-review`; the pre-existing timestamp-only manifest change remained unstaged.
 - Diagnosed the teacher batch stop: injection, UID replacement, and cleanup succeeded, while the first post-recovery port-forward hit the application startup window. Updated the runner to retry tunnel creation within the existing 120-second recovery budget while still requiring the full post-recovery HTTP 200 count.
+- Pulled teacher commit `78d0751` with 15/15 R2 reports. Added an offline P02 summarizer and detected three reproducible delayed HTTP-500 carryover events after discovery-server kills.
+- Added a formal post-cleanup washout gate: observe at least 60 seconds and require the final 10 business-oracle samples to be consecutive HTTP 200 before the next mutation.

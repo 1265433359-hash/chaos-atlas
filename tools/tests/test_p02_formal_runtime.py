@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 from unittest.mock import Mock, patch
 
 import tools.run_p02_formal_batch as batch
@@ -104,4 +105,34 @@ def test_post_recovery_requires_full_success_count() -> None:
 
     assert len(samples) == 2
     assert successes == 2
+    assert warnings == []
+
+
+def test_washout_records_delayed_failure_then_requires_sustained_recovery() -> None:
+    live = Mock()
+    live.poll.return_value = None
+    clock = itertools.count(step=1.0)
+    samples = [
+        {"status_code": 200},
+        {"status_code": 500},
+        {"status_code": 200},
+        {"status_code": 200},
+    ]
+    with (
+        patch.object(runner, "reconnect_forward", return_value=live),
+        patch.object(runner, "stop_forward"),
+        patch.object(runner, "request", side_effect=samples),
+        patch.object(runner.time, "monotonic", side_effect=lambda: next(clock)),
+        patch.object(runner.time, "sleep"),
+    ):
+        observed, consecutive, stable, warnings = runner.collect_post_cleanup_washout(
+            duration=3,
+            stable_successes=2,
+            timeout=10,
+            interval=0,
+        )
+
+    assert observed == samples
+    assert consecutive == 2
+    assert stable is True
     assert warnings == []

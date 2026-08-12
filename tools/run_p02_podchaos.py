@@ -218,6 +218,48 @@ def collect_post_recovery(
     return proc, samples, successes, warnings
 
 
+def collect_post_cleanup_washout(
+    duration: float,
+    stable_successes: int,
+    timeout: float,
+    interval: float = 1.0,
+) -> tuple[list[dict[str, Any]], int, bool, list[str]]:
+    """Observe delayed effects and require a stable oracle before the next run."""
+    started = time.monotonic()
+    deadline = started + timeout
+    minimum_end = started + max(0.0, duration)
+    consecutive = 0
+    samples: list[dict[str, Any]] = []
+    warnings: list[str] = []
+    proc: subprocess.Popen[str] | None = None
+    try:
+        while time.monotonic() < deadline:
+            if proc is None or proc.poll() is not None:
+                try:
+                    proc = reconnect_forward(proc, timeout=min(30.0, max(1.0, deadline - time.monotonic())))
+                except Exception as exc:
+                    warnings.append(f"post_cleanup_port_forward_retry: {exc}")
+                    proc = None
+                    consecutive = 0
+                    time.sleep(interval)
+                    continue
+            sample = request(LOCAL_PORT)
+            samples.append(sample)
+            if sample.get("status_code") == 200:
+                consecutive += 1
+            else:
+                consecutive = 0
+            if time.monotonic() >= minimum_end and consecutive >= max(1, stable_successes):
+                return samples, consecutive, True, warnings
+            if sample.get("status_code") != 200:
+                stop_forward(proc)
+                proc = None
+            time.sleep(interval)
+    finally:
+        stop_forward(proc)
+    return samples, consecutive, False, warnings
+
+
 def stop_forward(proc: subprocess.Popen[str] | None) -> None:
     if proc is None:
         return
@@ -297,6 +339,9 @@ def main() -> int:
     parser.add_argument("--mutation-id", required=True)
     parser.add_argument("--replicate", type=int, required=True)
     parser.add_argument("--expected-context")
+    parser.add_argument("--washout-seconds", type=float, default=0.0)
+    parser.add_argument("--washout-stable-successes", type=int, default=10)
+    parser.add_argument("--washout-timeout", type=float, default=180.0)
     args = parser.parse_args()
     report: dict[str, Any] = {
         "schema_version": 2,
@@ -398,6 +443,25 @@ def main() -> int:
                 report["errors"].append("post_cleanup_residual_chaos: one or more Chaos Mesh resources remain")
         except Exception as exc:
             report["errors"].append(str(exc))
+        if applied and args.washout_seconds > 0 and not report["lifecycle"].get("post_cleanup_residual_chaos"):
+            samples, consecutive, stable, warnings = collect_post_cleanup_washout(
+                args.washout_seconds,
+                args.washout_stable_successes,
+                args.washout_timeout,
+            )
+            report["warnings"].extend(warnings)
+            report["lifecycle"]["post_cleanup_washout"] = {
+                "minimum_duration_s": args.washout_seconds,
+                "stable_successes_required": args.washout_stable_successes,
+                "samples": samples,
+                "http_200": sum(sample.get("status_code") == 200 for sample in samples),
+                "http_500": sum(sample.get("status_code") == 500 for sample in samples),
+                "non_200": sum(sample.get("status_code") != 200 for sample in samples),
+                "final_consecutive_http_200": consecutive,
+                "stable": stable,
+            }
+            if not stable:
+                report["errors"].append("post_cleanup_washout_unstable: business oracle did not regain sustained health")
     report["finished_at"] = now()
     report["status"] = "completed" if not report["errors"] else "failed"
     args.report.parent.mkdir(parents=True, exist_ok=True)
