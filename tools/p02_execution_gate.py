@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -21,12 +22,34 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = "chaosatlas-p02"
-CHAOS_NAMESPACE = "chaos-mesh"
 RESOURCE_BY_KIND = {
     "PodChaos": "podchaos",
     "NetworkChaos": "networkchaos",
     "StressChaos": "stresschaos",
 }
+
+
+def chaos_components(items: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Return only the controller and daemon Pods required for injection."""
+    required = ("chaos-controller-manager", "chaos-daemon")
+    return [
+        item
+        for item in items
+        if any(str(item.get("metadata", {}).get("name", "")).startswith(prefix) for prefix in required)
+    ]
+
+
+def component_namespace(items: list[dict[str, Any]]) -> str | None:
+    """Find one namespace containing both required Chaos Mesh components."""
+    roles: dict[str, set[str]] = {}
+    for item in chaos_components(items):
+        metadata = item.get("metadata", {})
+        namespace = str(metadata.get("namespace", ""))
+        name = str(metadata.get("name", ""))
+        if namespace:
+            roles.setdefault(namespace, set()).add("controller" if name.startswith("chaos-controller-manager") else "daemon")
+    matches = sorted(namespace for namespace, found in roles.items() if found == {"controller", "daemon"})
+    return matches[0] if len(matches) == 1 else None
 
 
 def kubectl(args: list[str], timeout: int = 20) -> tuple[int, str, str]:
@@ -55,7 +78,7 @@ def ready(pod: dict[str, Any]) -> bool:
     )
 
 
-def check(path: Path) -> dict[str, Any]:
+def check(path: Path, chaos_namespace: str | None = None) -> dict[str, Any]:
     errors: list[str] = []
     try:
         document = yaml.safe_load(path.read_text(encoding="utf-8"))
@@ -94,10 +117,27 @@ def check(path: Path) -> dict[str, Any]:
     elif not live_pods: errors.append("selector matched no live Pods")
     elif not checks["target_pods_ready"]: errors.append("one or more target Pods are not Ready")
 
-    components, component_error = json_get(["get", "pods", "-n", CHAOS_NAMESPACE])
-    chaos_pods = (components or {}).get("items", []) if isinstance(components, dict) else []
+    if chaos_namespace:
+        components, component_error = json_get(["get", "pods", "-n", chaos_namespace])
+        all_component_pods = (components or {}).get("items", []) if isinstance(components, dict) else []
+    else:
+        components, component_error = json_get(["get", "pods", "-A"])
+        all_component_pods = (components or {}).get("items", []) if isinstance(components, dict) else []
+        chaos_namespace = component_namespace(all_component_pods)
+        if not chaos_namespace and not component_error:
+            component_error = "could not uniquely identify a namespace with Chaos Mesh controller and daemon Pods"
+    chaos_pods = [
+        pod for pod in chaos_components(all_component_pods)
+        if pod.get("metadata", {}).get("namespace", chaos_namespace) == chaos_namespace
+    ]
+    component_names = {str(pod.get("metadata", {}).get("name", "")) for pod in chaos_pods}
+    required_components_present = (
+        any(name.startswith("chaos-controller-manager") for name in component_names)
+        and any(name.startswith("chaos-daemon") for name in component_names)
+    )
+    checks["chaos_mesh_namespace"] = chaos_namespace
     checks["chaos_mesh_pods"] = [{"name": p.get("metadata", {}).get("name"), "ready": ready(p)} for p in chaos_pods]
-    checks["chaos_mesh_ready"] = bool(chaos_pods) and all(ready(p) for p in chaos_pods)
+    checks["chaos_mesh_ready"] = required_components_present and all(ready(p) for p in chaos_pods)
     if component_error: errors.append(f"Chaos Mesh lookup failed: {component_error}")
     elif not checks["chaos_mesh_ready"]: errors.append("Chaos Mesh Pods are not all Ready")
 
@@ -120,8 +160,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("mutations", nargs="+", type=Path)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--chaos-namespace", default=os.environ.get("CHAOS_MESH_NAMESPACE"))
     args = parser.parse_args()
-    results = [check(path) for path in args.mutations]
+    results = [check(path, args.chaos_namespace) for path in args.mutations]
     report = {"schema_version": "1.0", "tool": "p02_execution_gate", "mutation_applied": False, "results": results, "summary": {"ready_for_injection": sum(x["decision"] == "ready_for_injection" for x in results), "blocked": sum(x["decision"] == "blocked" for x in results)}}
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
