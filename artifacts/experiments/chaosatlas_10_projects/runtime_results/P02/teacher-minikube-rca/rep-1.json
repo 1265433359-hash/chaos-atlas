@@ -1,0 +1,975 @@
+{
+  "schema_version": 3,
+  "tool": "run_p02_podchaos",
+  "experiment": {
+    "project": "P02",
+    "arm": "P02-root-cause-replay",
+    "mutation_id": "discovery-server-pod-kill",
+    "replicate": 1
+  },
+  "mutation": "artifacts/experiments/chaosatlas_10_projects/open_discovery_results/P02/seed-1001/chaosatlas-kb-open/mutation-2.yaml",
+  "started_at": "2026-08-12T17:44:26.274219+00:00",
+  "mutation_applied": true,
+  "baseline": [
+    {
+      "observed_at": "2026-08-12T17:44:29.563743+00:00",
+      "status_code": 200,
+      "latency_ms": 47.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:30.084836+00:00",
+      "status_code": 200,
+      "latency_ms": 15.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:30.602945+00:00",
+      "status_code": 200,
+      "latency_ms": 16.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:31.138757+00:00",
+      "status_code": 200,
+      "latency_ms": 31.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:31.655882+00:00",
+      "status_code": 200,
+      "latency_ms": 16.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    }
+  ],
+  "requests": [
+    {
+      "observed_at": "2026-08-12T17:44:32.968093+00:00",
+      "status_code": 200,
+      "latency_ms": 15.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:33.494264+00:00",
+      "status_code": 200,
+      "latency_ms": 16.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:34.012644+00:00",
+      "status_code": 200,
+      "latency_ms": 15.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:36.925716+00:00",
+      "status_code": 200,
+      "latency_ms": 31.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:36.953599+00:00",
+      "status_code": 200,
+      "latency_ms": 31.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:36.983575+00:00",
+      "status_code": 200,
+      "latency_ms": 16.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:37.015005+00:00",
+      "status_code": 200,
+      "latency_ms": 31.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:37.047060+00:00",
+      "status_code": 200,
+      "latency_ms": 47.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:37.078966+00:00",
+      "status_code": 200,
+      "latency_ms": 31.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    },
+    {
+      "observed_at": "2026-08-12T17:44:37.090863+00:00",
+      "status_code": 200,
+      "latency_ms": 0.0,
+      "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+      "error": null
+    }
+  ],
+  "lifecycle": {
+    "preflight_residual_chaos": [],
+    "pre_injection_namespace_health": {
+      "healthy": true,
+      "deployments": [
+        {
+          "name": "admin-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "api-gateway",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "config-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "customers-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "discovery-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "grafana-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "prometheus-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "tracing-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "vets-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "visits-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        }
+      ],
+      "pods": [
+        {
+          "name": "admin-server-857dcb68d-bckvt",
+          "uid": "4e8437d4-2f83-4c6b-9cdf-1e1453dbd535",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "api-gateway-5c58fdb6dc-prggh",
+          "uid": "a9ecce50-c1d5-46c3-9b5d-fe23b792e87f",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "config-server-5cdff775b9-2gnnj",
+          "uid": "0a29b463-bd18-4763-b9e9-b65145dbc0b3",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "customers-service-6979fc9974-8znm7",
+          "uid": "1e15597c-0913-4af4-9981-b4ad251de7d8",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "discovery-server-5fbbbd7678-6m6wk",
+          "uid": "688002cf-6fc3-46bf-a278-e83d5f1b815d",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "grafana-server-5cbd7959cc-kjprw",
+          "uid": "95584d41-a5c1-4c6f-bbeb-2c93d188b1f8",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "prometheus-server-5d6d96c579-m56jk",
+          "uid": "ef51c60b-8088-4072-ad64-bedfaf6666a6",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "tracing-server-7884cffc88-6j9kl",
+          "uid": "02bd0937-5dea-47a1-a6b5-c85b48b21839",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "vets-service-7ccb8c6b9f-x7sbm",
+          "uid": "63f66728-f5f2-4480-9884-73b05551cb8c",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "visits-service-f9bbb799-r2mq2",
+          "uid": "572963fd-039f-4785-8aa2-5dbec3b57d10",
+          "ready": true,
+          "terminating": false
+        }
+      ],
+      "stable_checks": 3
+    },
+    "pre_injection_pods": [
+      {
+        "name": "discovery-server-5fbbbd7678-6m6wk",
+        "uid": "688002cf-6fc3-46bf-a278-e83d5f1b815d",
+        "ready": true,
+        "terminating": false
+      }
+    ],
+    "injected_status": {
+      "injected_count": 1,
+      "recovered_count": 0,
+      "desired_phase": "Run",
+      "conditions": [
+        {
+          "status": "True",
+          "type": "Selected"
+        },
+        {
+          "status": "True",
+          "type": "AllInjected"
+        },
+        {
+          "status": "False",
+          "type": "AllRecovered"
+        },
+        {
+          "status": "False",
+          "type": "Paused"
+        }
+      ]
+    },
+    "injected": true,
+    "recovered": true,
+    "recovery_status": {
+      "pods": [
+        {
+          "name": "discovery-server-5fbbbd7678-nlgh9",
+          "uid": "4ee6bdd2-2e49-4afe-bd08-d9fcc2709f96",
+          "ready": true,
+          "terminating": false
+        }
+      ],
+      "active_count": 1,
+      "ready_count": 1,
+      "before_uids": [
+        "688002cf-6fc3-46bf-a278-e83d5f1b815d"
+      ],
+      "new_ready_uids": [
+        "4ee6bdd2-2e49-4afe-bd08-d9fcc2709f96"
+      ]
+    },
+    "post_recovery_http_200_count": 7,
+    "post_recovery_namespace_health": {
+      "healthy": true,
+      "deployments": [
+        {
+          "name": "admin-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "api-gateway",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "config-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "customers-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "discovery-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "grafana-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "prometheus-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "tracing-server",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "vets-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "visits-service",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        }
+      ],
+      "pods": [
+        {
+          "name": "admin-server-857dcb68d-bckvt",
+          "uid": "4e8437d4-2f83-4c6b-9cdf-1e1453dbd535",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "api-gateway-5c58fdb6dc-prggh",
+          "uid": "a9ecce50-c1d5-46c3-9b5d-fe23b792e87f",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "config-server-5cdff775b9-2gnnj",
+          "uid": "0a29b463-bd18-4763-b9e9-b65145dbc0b3",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "customers-service-6979fc9974-8znm7",
+          "uid": "1e15597c-0913-4af4-9981-b4ad251de7d8",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "discovery-server-5fbbbd7678-nlgh9",
+          "uid": "4ee6bdd2-2e49-4afe-bd08-d9fcc2709f96",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "grafana-server-5cbd7959cc-kjprw",
+          "uid": "95584d41-a5c1-4c6f-bbeb-2c93d188b1f8",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "prometheus-server-5d6d96c579-m56jk",
+          "uid": "ef51c60b-8088-4072-ad64-bedfaf6666a6",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "tracing-server-7884cffc88-6j9kl",
+          "uid": "02bd0937-5dea-47a1-a6b5-c85b48b21839",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "vets-service-7ccb8c6b9f-x7sbm",
+          "uid": "63f66728-f5f2-4480-9884-73b05551cb8c",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "visits-service-f9bbb799-r2mq2",
+          "uid": "572963fd-039f-4785-8aa2-5dbec3b57d10",
+          "ready": true,
+          "terminating": false
+        }
+      ],
+      "stable_checks": 3
+    },
+    "cleanup": {
+      "delete_code": 0,
+      "delete_output": "podchaos.chaos-mesh.org \"atlas-p02-15ccc87d8b14\" deleted from chaosatlas-p02 namespace",
+      "verify_code": 1,
+      "verify_output": "Error from server (NotFound): podchaos.chaos-mesh.org \"atlas-p02-15ccc87d8b14\" not found",
+      "absent_confirmed": true
+    },
+    "post_cleanup_residual_chaos": [],
+    "post_cleanup_washout": {
+      "minimum_duration_s": 60.0,
+      "stable_successes_required": 10,
+      "samples": [
+        {
+          "observed_at": "2026-08-12T17:44:40.991032+00:00",
+          "status_code": 200,
+          "latency_ms": 32.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:42.007816+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:43.025243+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:44.063047+00:00",
+          "status_code": 200,
+          "latency_ms": 47.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:45.089962+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:46.126994+00:00",
+          "status_code": 200,
+          "latency_ms": 47.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:47.144590+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:48.161399+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:49.186146+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:50.204284+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:51.221683+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:52.255814+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:53.277245+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:54.294428+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:55.311940+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:56.329161+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:57.352957+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:58.381220+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:44:59.408313+00:00",
+          "status_code": 200,
+          "latency_ms": 32.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:00.432045+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:01.449379+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:02.473724+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:03.490639+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:04.507530+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:05.538197+00:00",
+          "status_code": 500,
+          "latency_ms": 32.0,
+          "body": "{\"timestamp\":\"2026-08-12T17:45:05.531+00:00\",\"path\":\"/api/gateway/owners/1\",\"status\":500,\"error\":\"Internal Server Error\",\"requestId\":\"814fed62-211\"}",
+          "error": "HTTP Error 500: Internal Server Error"
+        },
+        {
+          "observed_at": "2026-08-12T17:45:07.779144+00:00",
+          "status_code": 500,
+          "latency_ms": 16.0,
+          "body": "{\"timestamp\":\"2026-08-12T17:45:07.776+00:00\",\"path\":\"/api/gateway/owners/1\",\"status\":500,\"error\":\"Internal Server Error\",\"requestId\":\"56afef3b-212\"}",
+          "error": "HTTP Error 500: Internal Server Error"
+        },
+        {
+          "observed_at": "2026-08-12T17:45:10.041322+00:00",
+          "status_code": 200,
+          "latency_ms": 32.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:11.062073+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:12.083394+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:13.105897+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:14.122261+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:15.138038+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:16.154337+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:17.189224+00:00",
+          "status_code": 200,
+          "latency_ms": 47.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:18.205153+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:19.229655+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:20.246481+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:21.271952+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:22.307559+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:23.324974+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:24.343393+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:25.379758+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:26.403937+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:27.420600+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:28.437519+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:29.454149+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:30.483570+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:31.517846+00:00",
+          "status_code": 200,
+          "latency_ms": 47.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:32.554053+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:33.570267+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:34.595930+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:35.612781+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:36.649621+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:37.673433+00:00",
+          "status_code": 200,
+          "latency_ms": 31.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:38.689575+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:39.706187+00:00",
+          "status_code": 200,
+          "latency_ms": 15.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        },
+        {
+          "observed_at": "2026-08-12T17:45:40.726863+00:00",
+          "status_code": 200,
+          "latency_ms": 16.0,
+          "body": "{\"id\":1,\"firstName\":\"REDACTED\",\"lastName\":\"REDACTED\",\"address\":\"REDACTED\",\"city\":\"REDACTED\",\"telephone\":\"REDACTED\",\"pets\":[{\"id\":1,\"name\":\"REDACTED\",\"birthDate\":\"REDACTED\",\"type\":{\"name\":\"cat\"},\"visits\":[]}]}",
+          "error": null
+        }
+      ],
+      "http_200": 55,
+      "http_500": 2,
+      "non_200": 2,
+      "final_consecutive_http_200": 31,
+      "stable": true
+    }
+  },
+  "errors": [],
+  "warnings": [],
+  "cluster": {
+    "context": "minikube",
+    "nodes": [
+      {
+        "name": "minikube",
+        "uid": "00ef5ca4-506a-453c-beb7-3f7a8d4d5f04",
+        "kubernetes_version": "v1.35.1"
+      }
+    ]
+  },
+  "target": {
+    "name": "atlas-p02-15ccc87d8b14",
+    "labels": {
+      "app.kubernetes.io/name": "discovery-server",
+      "app.kubernetes.io/part-of": "chaosatlas-p02"
+    },
+    "namespace": "chaosatlas-p02"
+  },
+  "apply": {
+    "return_code": 0,
+    "stdout": "podchaos.chaos-mesh.org/atlas-p02-15ccc87d8b14 created",
+    "stderr": ""
+  },
+  "diagnostics": {
+    "captured_at": "2026-08-12T17:45:40.734376+00:00",
+    "capture_since": "2026-08-12T17:44:26.274219+00:00",
+    "logs": {
+      "api-gateway": {
+        "status": "captured",
+        "return_code": 0,
+        "path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-rca/rep-1.api-gateway.log",
+        "size_bytes": 57376,
+        "sha256": "a070cd6d55491f6f9a7a0ed6f3ef697c7a4b2dbe8f2acd8143591105a040140c",
+        "error": null
+      },
+      "discovery-server": {
+        "status": "captured",
+        "return_code": 0,
+        "path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-rca/rep-1.discovery-server.log",
+        "size_bytes": 18321,
+        "sha256": "332731a7c5c95d5e8e0d2ab30adfd65afde2848104735ad47b4061b89d9c58ea",
+        "error": null
+      },
+      "customers-service": {
+        "status": "captured",
+        "return_code": 0,
+        "path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-rca/rep-1.customers-service.log",
+        "size_bytes": 970,
+        "sha256": "016062d88b5a85ec3ed5eb599fd0ab33d2baa2b4c286c61c3945f97cc2006f75",
+        "error": null
+      },
+      "visits-service": {
+        "status": "captured",
+        "return_code": 0,
+        "path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-rca/rep-1.visits-service.log",
+        "size_bytes": 925,
+        "sha256": "0f10863fd431a5146bb0349aa95a801ae79e82a363c7fbb0c2fba782998d978b",
+        "error": null
+      },
+      "vets-service": {
+        "status": "captured",
+        "return_code": 0,
+        "path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-rca/rep-1.vets-service.log",
+        "size_bytes": 905,
+        "sha256": "020b4c9c087fb02e69d4beb3d4bcbd48bc457b8906650ff44dc44371a0266089",
+        "error": null
+      }
+    },
+    "events": {
+      "status": "captured",
+      "return_code": 0,
+      "path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-rca/rep-1.events.json",
+      "size_bytes": 20027,
+      "sha256": "d7c58b3b9eb7c3b32792262b2af6274b1b00166d934feecb83be8e71e9b67887",
+      "error": null
+    },
+    "zipkin": {
+      "status": "empty",
+      "return_code": 0,
+      "path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-rca/rep-1.zipkin.json",
+      "size_bytes": 134,
+      "sha256": "7a060b00231ba17eaf954f8fb7af6f52989465e6b141c75268d590aacfcf83e0",
+      "error": null,
+      "trace_count": 0,
+      "trace_unavailable": true
+    }
+  },
+  "finished_at": "2026-08-12T17:45:42.975938+00:00",
+  "status": "completed",
+  "evidence_redaction": {
+    "status": "applied_for_repository_submission",
+    "fields": [
+      "customer.firstName",
+      "customer.lastName",
+      "customer.address",
+      "customer.city",
+      "customer.telephone",
+      "customer.pets[].name",
+      "customer.pets[].birthDate"
+    ],
+    "runtime_contract_preserved": true
+  }
+}
