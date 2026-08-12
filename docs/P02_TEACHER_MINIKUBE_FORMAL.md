@@ -30,6 +30,10 @@ Every run fails closed unless all of the following hold:
 - the injected resource is deleted and global cleanup is confirmed.
 - after cleanup, the oracle is observed for at least 60 seconds and the final
   10 samples must be consecutive HTTP 200 responses before another run starts.
+- after washout, scoped logs from the gateway, discovery, and three business
+  services are saved together with namespace events and a bounded Zipkin trace
+  query. Each sidecar has a recorded SHA-256 and size. Missing diagnostics are
+  marked unavailable and keep causal claims pending; they never skip cleanup.
 
 The batch stops after the first failed run and never overwrites an existing
 report.
@@ -46,17 +50,30 @@ After pulling the commit on the teacher computer, inspect the 15-run plan:
 python .\tools\run_p02_formal_batch.py
 ```
 
-Start the formal batch only while all P02 and Chaos Mesh Pods are healthy:
+Start the clean R3 batch only while all P02 and Chaos Mesh Pods are healthy:
 
 ```powershell
-python .\tools\run_p02_formal_batch.py --execute
+$out = ".\artifacts\experiments\chaosatlas_10_projects\runtime_results\P02\teacher-minikube-formal-r3"
+python .\tools\run_p02_formal_batch.py --output $out --execute
 ```
 
 Reports are written below:
 
 ```text
-artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal/
+artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/teacher-minikube-formal-r3/
 ```
+
+After the batch completes, build the offline audit and pending review pack:
+
+```powershell
+python .\tools\summarize_p02_teacher_results.py `
+  --input $out `
+  --output .\analysis_outputs\p02_teacher_formal_r3
+```
+
+Inspect `summary.md`, `review-pack.md`, the 15 run reports, and their log,
+event, and Zipkin sidecars. Do not update later-project knowledge until the
+review pack has explicit human decisions. The summarizer never updates the KB.
 
 Do not rerun into the same directory after a partial or completed batch. Keep
 that evidence immutable and select a new `--output` path for a new batch.

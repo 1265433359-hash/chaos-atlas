@@ -79,6 +79,12 @@ def main() -> int:
     parser.add_argument("--washout-seconds", type=float, default=60.0)
     parser.add_argument("--washout-stable-successes", type=int, default=10)
     parser.add_argument("--washout-timeout", type=float, default=180.0)
+    parser.add_argument(
+        "--capture-diagnostics",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="capture scoped logs, namespace events, and Zipkin traces for each run",
+    )
     parser.add_argument("--chaos-namespace", default="chaos-testing")
     parser.add_argument("--execute", action="store_true", help="apply mutations; without this flag only print the plan")
     args = parser.parse_args()
@@ -90,13 +96,22 @@ def main() -> int:
     if missing:
         raise SystemExit(f"missing mutation inputs: {missing}")
     plan = {
-        "schema_version": 1,
+        "schema_version": 2,
         "tool": "run_p02_formal_batch",
         "mode": "execute" if args.execute else "plan_only",
         "created_at": now(),
         "replicates": args.replicates,
         "run_count": len(rows),
         "output": str(args.output).replace("\\", "/"),
+        "protocol": {
+            "baseline_count": args.baseline_count,
+            "observe_count": args.observe_count,
+            "settle_seconds": args.settle_seconds,
+            "washout_seconds": args.washout_seconds,
+            "washout_stable_successes": args.washout_stable_successes,
+            "washout_timeout": args.washout_timeout,
+            "capture_diagnostics": args.capture_diagnostics,
+        },
         "runs": rows,
     }
     if not args.execute:
@@ -148,6 +163,8 @@ def main() -> int:
             "--washout-stable-successes", str(args.washout_stable_successes),
             "--washout-timeout", str(args.washout_timeout),
         ]
+        if args.capture_diagnostics:
+            command.append("--capture-diagnostics")
         process = subprocess.run(command, capture_output=True, text=True)
         destination.with_suffix(".stdout.txt").write_text(process.stdout, encoding="utf-8")
         destination.with_suffix(".stderr.txt").write_text(process.stderr, encoding="utf-8")

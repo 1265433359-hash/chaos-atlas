@@ -390,3 +390,13 @@
 - Diagnosed the teacher batch stop: injection, UID replacement, and cleanup succeeded, while the first post-recovery port-forward hit the application startup window. Updated the runner to retry tunnel creation within the existing 120-second recovery budget while still requiring the full post-recovery HTTP 200 count.
 - Pulled teacher commit `78d0751` with 15/15 R2 reports. Added an offline P02 summarizer and detected three reproducible delayed HTTP-500 carryover events after discovery-server kills.
 - Added a formal post-cleanup washout gate: observe at least 60 seconds and require the final 10 business-oracle samples to be consecutive HTTP 200 before the next mutation.
+# 2026-08-13 P02 R3 evidence completion
+
+- Added per-run diagnostic sidecars for five scoped service logs, namespace events, and Zipkin traces, including status, return code, path, size, SHA-256, and explicit unavailable/empty states.
+- Enabled diagnostic capture by default in the formal batch and froze all washout/diagnostic parameters in the batch manifest.
+- Extended the offline summarizer to attribute R3 delayed failures to the same run's washout, require failure-free baselines and stable washouts for a clean sequence, and keep identical-YAML method claims ineligible.
+- Added a pending human review pack that never updates the KB automatically.
+- Targeted P02 tests passed: 15 tests before the final protocol-manifest assertion was added.
+- The first final-suite run found one incorrect test expectation for repository-relative paths; the implementation correctly emitted a relative path, so the assertion was corrected before rerunning.
+- Final regression passed: 309 tests and 5 subtests. R2 compatibility and the pending-review/no-KB-write boundary were checked separately and passed.
+- Sensitive-pattern scan found no credential material in the intended P02 R3 change set.

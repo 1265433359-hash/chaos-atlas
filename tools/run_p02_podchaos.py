@@ -8,11 +8,13 @@ a time and always attempts cleanup after an apply.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import socket
 import subprocess
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -25,8 +27,17 @@ NAMESPACE = "chaosatlas-p02"
 SERVICE = "api-gateway"
 REMOTE_PORT = 8080
 LOCAL_PORT = 18080
+ZIPKIN_LOCAL_PORT = 19411
+ZIPKIN_REMOTE_PORT = 9411
 ORACLE_PATH = "/api/gateway/owners/1"
 CHAOS_RESOURCES = ("podchaos", "networkchaos", "stresschaos")
+DIAGNOSTIC_DEPLOYMENTS = (
+    "api-gateway",
+    "discovery-server",
+    "customers-service",
+    "visits-service",
+    "vets-service",
+)
 
 
 def now() -> str:
@@ -152,18 +163,27 @@ def request(local_port: int, timeout: float = 5.0) -> dict[str, Any]:
         return {"observed_at": now(), "status_code": None, "latency_ms": round((time.monotonic() - started) * 1000, 3), "body": None, "error": str(exc)}
 
 
+def start_service_forward(service: str, local_port: int, remote_port: int) -> subprocess.Popen[str]:
+    return subprocess.Popen(
+        ["kubectl", "port-forward", "-n", NAMESPACE, f"svc/{service}", f"{local_port}:{remote_port}"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+
 def start_forward() -> subprocess.Popen[str]:
-    return subprocess.Popen(["kubectl", "port-forward", "-n", NAMESPACE, f"svc/{SERVICE}", f"{LOCAL_PORT}:{REMOTE_PORT}"], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    return start_service_forward(SERVICE, LOCAL_PORT, REMOTE_PORT)
 
 
-def wait_forward(proc: subprocess.Popen[str], timeout: float = 20.0) -> None:
+def wait_forward(proc: subprocess.Popen[str], timeout: float = 20.0, local_port: int = LOCAL_PORT) -> None:
     deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         if proc.poll() is not None:
             out, err = proc.communicate()
             raise RuntimeError(f"port-forward exited: {(err or out).strip()}")
         try:
-            with socket.create_connection(("127.0.0.1", LOCAL_PORT), timeout=0.5):
+            with socket.create_connection(("127.0.0.1", local_port), timeout=0.5):
                 return
         except OSError:
             time.sleep(0.2)
@@ -329,6 +349,151 @@ def cleanup(name: str) -> dict[str, Any]:
     return {"delete_code": code, "delete_output": (out or err).strip(), "verify_code": verify_code, "verify_output": (verify_out or verify_err).strip(), "absent_confirmed": absent}
 
 
+def artifact_ref(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path.resolve()).replace("\\", "/")
+
+
+def write_sidecar(path: Path, content: str, *, status: str, return_code: int, error: str | None = None) -> dict[str, Any]:
+    data = content.encode("utf-8")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(data)
+    return {
+        "status": status,
+        "return_code": return_code,
+        "path": artifact_ref(path),
+        "size_bytes": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+        "error": error,
+    }
+
+
+def capture_logs(report_path: Path, since_time: str) -> dict[str, Any]:
+    results: dict[str, Any] = {}
+    for deployment in DIAGNOSTIC_DEPLOYMENTS:
+        path = report_path.with_name(f"{report_path.stem}.{deployment}.log")
+        code, out, err = kubectl(
+            ["logs", "-n", NAMESPACE, f"deployment/{deployment}", "--since-time", since_time, "--timestamps=true"],
+            timeout=60,
+        )
+        if code == 0:
+            results[deployment] = write_sidecar(path, out, status="captured" if out.strip() else "empty", return_code=code)
+        else:
+            message = (err or out).strip() or "kubectl logs returned no diagnostic text"
+            results[deployment] = write_sidecar(
+                path,
+                f"diagnostic_unavailable: {message}\n",
+                status="unavailable",
+                return_code=code,
+                error=message,
+            )
+    return results
+
+
+def _event_time(item: dict[str, Any]) -> datetime | None:
+    value = (
+        item.get("eventTime")
+        or item.get("lastTimestamp")
+        or (item.get("series") or {}).get("lastObservedTime")
+        or (item.get("metadata") or {}).get("creationTimestamp")
+    )
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def capture_events(report_path: Path, since_time: str) -> dict[str, Any]:
+    path = report_path.with_name(f"{report_path.stem}.events.json")
+    data, error = kubectl_json(["get", "events", "-n", NAMESPACE], timeout=60)
+    started = datetime.fromisoformat(since_time.replace("Z", "+00:00"))
+    if error or data is None:
+        payload = {"status": "unavailable", "error": error or "event payload was not a JSON object", "items": []}
+        return write_sidecar(
+            path,
+            json.dumps(payload, indent=2, ensure_ascii=True) + "\n",
+            status="unavailable",
+            return_code=1,
+            error=str(payload["error"]),
+        )
+    items = [item for item in data.get("items", []) if (_event_time(item) or started) >= started]
+    payload = {
+        "apiVersion": data.get("apiVersion", "v1"),
+        "kind": data.get("kind", "EventList"),
+        "capture_since": since_time,
+        "items": items,
+    }
+    return write_sidecar(
+        path,
+        json.dumps(payload, indent=2, ensure_ascii=True) + "\n",
+        status="captured" if items else "empty",
+        return_code=0,
+    )
+
+
+def _trace_overlaps(trace: Any, started_us: int) -> bool:
+    return isinstance(trace, list) and any(
+        isinstance(span, dict)
+        and isinstance(span.get("timestamp"), (int, float))
+        and int(span["timestamp"]) + int(span.get("duration", 0) or 0) >= started_us
+        for span in trace
+    )
+
+
+def capture_zipkin(report_path: Path, since_time: str) -> dict[str, Any]:
+    path = report_path.with_name(f"{report_path.stem}.zipkin.json")
+    proc: subprocess.Popen[str] | None = None
+    started = datetime.fromisoformat(since_time.replace("Z", "+00:00"))
+    captured = datetime.now(timezone.utc)
+    lookback_ms = max(300_000, int((captured - started).total_seconds() * 1000) + 60_000)
+    query = urllib.parse.urlencode({"endTs": int(captured.timestamp() * 1000), "lookback": lookback_ms, "limit": 100})
+    try:
+        proc = start_service_forward("tracing-server", ZIPKIN_LOCAL_PORT, ZIPKIN_REMOTE_PORT)
+        wait_forward(proc, timeout=20, local_port=ZIPKIN_LOCAL_PORT)
+        with urllib.request.urlopen(f"http://127.0.0.1:{ZIPKIN_LOCAL_PORT}/api/v2/traces?{query}", timeout=20) as response:
+            raw = response.read(8 * 1024 * 1024).decode("utf-8", errors="replace")
+        value = json.loads(raw)
+        if not isinstance(value, list):
+            raise ValueError("Zipkin trace response root is not an array")
+        traces = [trace for trace in value if _trace_overlaps(trace, int(started.timestamp() * 1_000_000))]
+        payload = {"capture_since": since_time, "query": query, "traces": traces}
+        status = "captured" if traces else "empty"
+        metadata = write_sidecar(path, json.dumps(payload, indent=2, ensure_ascii=True) + "\n", status=status, return_code=0)
+        metadata["trace_count"] = len(traces)
+        metadata["trace_unavailable"] = not traces
+        return metadata
+    except (OSError, TimeoutError, urllib.error.URLError, json.JSONDecodeError, ValueError, RuntimeError) as exc:
+        message = str(exc)
+        payload = {"capture_since": since_time, "status": "unavailable", "trace_unavailable": True, "error": message, "traces": []}
+        metadata = write_sidecar(
+            path,
+            json.dumps(payload, indent=2, ensure_ascii=True) + "\n",
+            status="unavailable",
+            return_code=1,
+            error=message,
+        )
+        metadata["trace_count"] = 0
+        metadata["trace_unavailable"] = True
+        return metadata
+    finally:
+        stop_forward(proc)
+
+
+def capture_diagnostics(report_path: Path, since_time: str) -> dict[str, Any]:
+    """Collect bounded root-cause evidence without changing cleanup outcome."""
+    return {
+        "captured_at": now(),
+        "capture_since": since_time,
+        "logs": capture_logs(report_path, since_time),
+        "events": capture_events(report_path, since_time),
+        "zipkin": capture_zipkin(report_path, since_time),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("mutation", type=Path)
@@ -342,9 +507,10 @@ def main() -> int:
     parser.add_argument("--washout-seconds", type=float, default=0.0)
     parser.add_argument("--washout-stable-successes", type=int, default=10)
     parser.add_argument("--washout-timeout", type=float, default=180.0)
+    parser.add_argument("--capture-diagnostics", action="store_true")
     args = parser.parse_args()
     report: dict[str, Any] = {
-        "schema_version": 2,
+        "schema_version": 3,
         "tool": "run_p02_podchaos",
         "experiment": {"project": "P02", "arm": args.arm, "mutation_id": args.mutation_id, "replicate": args.replicate},
         "mutation": str(args.mutation).replace("\\", "/"),
@@ -462,6 +628,14 @@ def main() -> int:
             }
             if not stable:
                 report["errors"].append("post_cleanup_washout_unstable: business oracle did not regain sustained health")
+        if args.capture_diagnostics:
+            try:
+                report["diagnostics"] = capture_diagnostics(args.report, report["started_at"])
+            except Exception as exc:
+                # Diagnostics are supporting evidence. Cleanup and the primary
+                # runtime verdict remain valid, but causal review must stay open.
+                report["diagnostics"] = {"status": "unavailable", "error": str(exc), "captured_at": now()}
+                report["warnings"].append(f"diagnostics_unavailable: {exc}")
     report["finished_at"] = now()
     report["status"] = "completed" if not report["errors"] else "failed"
     args.report.parent.mkdir(parents=True, exist_ok=True)

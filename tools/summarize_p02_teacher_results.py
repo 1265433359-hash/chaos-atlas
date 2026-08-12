@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import statistics
 from datetime import datetime
 from pathlib import Path
@@ -37,8 +38,15 @@ def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def path_ref(path: Path) -> str:
+    try:
+        return str(path.resolve().relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path.resolve()).replace("\\", "/")
+
+
 def report_files(root: Path) -> list[Path]:
-    return sorted(path for path in root.rglob("rep-*.json") if not path.name.endswith(".gate.json"))
+    return sorted(path for path in root.rglob("rep-*.json") if re.fullmatch(r"rep-\d+\.json", path.name))
 
 
 def valid_run(report: dict[str, Any]) -> bool:
@@ -88,10 +96,12 @@ def analyze(input_dir: Path) -> dict[str, Any]:
         lifecycle = report["lifecycle"]
         requests = report.get("requests", [])
         baseline = report.get("baseline", [])
+        washout = lifecycle.get("post_cleanup_washout") or {}
+        diagnostics = report.get("diagnostics") or {}
         target = (report.get("target", {}).get("labels") or {}).get("app.kubernetes.io/name")
         rows.append(
             {
-                "artifact": str(path.relative_to(ROOT)).replace("\\", "/"),
+                "artifact": path_ref(path),
                 "arm": experiment["arm"],
                 "mutation_id": experiment["mutation_id"],
                 "replicate": experiment["replicate"],
@@ -103,26 +113,48 @@ def analyze(input_dir: Path) -> dict[str, Any]:
                 "baseline_http_500": sum(sample.get("status_code") == 500 for sample in baseline),
                 "observed_non_200": sum(sample.get("status_code") != 200 for sample in requests),
                 "observed_http_500": sum(sample.get("status_code") == 500 for sample in requests),
+                "washout_present": bool(washout),
+                "washout_stable": washout.get("stable") is True,
+                "washout_non_200": int(washout.get("non_200", 0) or 0),
+                "washout_http_500": int(washout.get("http_500", 0) or 0),
+                "diagnostics_present": bool(diagnostics),
+                "zipkin_status": (diagnostics.get("zipkin") or {}).get("status"),
                 "post_recovery_http_200": lifecycle.get("post_recovery_http_200_count", 0),
                 "duration_s": round((iso(report["finished_at"]) - iso(report["started_at"])).total_seconds(), 3),
                 "warnings": len(report.get("warnings", [])),
             }
         )
 
-    carryover: list[dict[str, Any]] = []
-    for previous, current in zip(rows, rows[1:]):
-        if previous["target"] == "discovery-server" and current["baseline_http_500"]:
-            previous_report = next(report for path, report in chronological if str(path.relative_to(ROOT)).replace("\\", "/") == previous["artifact"])
-            current_report = next(report for path, report in chronological if str(path.relative_to(ROOT)).replace("\\", "/") == current["artifact"])
-            gap = (iso(current_report["started_at"]) - iso(previous_report["finished_at"])).total_seconds()
-            carryover.append(
-                {
-                    "source_run": previous["artifact"],
-                    "next_run": current["artifact"],
-                    "gap_s": round(gap, 3),
-                    "pre_injection_http_500": current["baseline_http_500"],
-                }
-            )
+    has_washout_protocol = bool(rows) and all(row["washout_present"] for row in rows)
+    delayed_events: list[dict[str, Any]] = []
+    if has_washout_protocol:
+        delayed_events = [
+            {
+                "source_run": row["artifact"],
+                "post_cleanup_non_200": row["washout_non_200"],
+                "post_cleanup_http_500": row["washout_http_500"],
+                "washout_stable": row["washout_stable"],
+            }
+            for row in rows
+            if row["target"] == "discovery-server" and row["washout_non_200"] > 0
+        ]
+    else:
+        # R2 predates the washout protocol. Preserve its historical audit by
+        # attributing only the next run's pre-injection failures, with an
+        # explicit carryover label rather than treating them as clean runs.
+        for previous, current in zip(rows, rows[1:]):
+            if previous["target"] == "discovery-server" and current["baseline_http_500"]:
+                previous_report = next(report for path, report in chronological if path_ref(path) == previous["artifact"])
+                current_report = next(report for path, report in chronological if path_ref(path) == current["artifact"])
+                gap = (iso(current_report["started_at"]) - iso(previous_report["finished_at"])).total_seconds()
+                delayed_events.append(
+                    {
+                        "source_run": previous["artifact"],
+                        "next_run": current["artifact"],
+                        "gap_s": round(gap, 3),
+                        "pre_injection_http_500": current["baseline_http_500"],
+                    }
+                )
 
     candidates = candidate_summary()
     arm_summary: dict[str, Any] = {}
@@ -133,6 +165,7 @@ def analyze(input_dir: Path) -> dict[str, Any]:
             "executions": len(arm_rows),
             "technically_valid_executions": sum(row["valid"] for row in arm_rows),
             "baseline_contaminated_executions": sum(row["baseline_failures"] > 0 for row in arm_rows),
+            "stable_washout_executions": sum(row["washout_stable"] for row in arm_rows),
             "targets_executed": sorted({str(row["target"]) for row in arm_rows}),
             "median_duration_s": round(statistics.median(row["duration_s"] for row in arm_rows), 3),
         }
@@ -149,10 +182,29 @@ def analyze(input_dir: Path) -> dict[str, Any]:
     adapter_subset = set(candidates["ChaosEater-adapter-open"]["signatures"]).issubset(
         set(candidates["ChaosAtlas-KB-open"]["signatures"])
     )
+    clean_sequence = (
+        batch.get("status") == "completed"
+        and len(reports) == int(batch.get("run_count", -1))
+        and all(row["valid"] for row in rows)
+        and all(row["baseline_failures"] == 0 for row in rows)
+        and has_washout_protocol
+        and all(row["washout_stable"] for row in rows)
+    )
+    runtime_comparison_reasons: list[str] = []
+    if not clean_sequence:
+        runtime_comparison_reasons.append("The execution sequence is not clean: every baseline must be failure-free and every run must complete a stable washout.")
+    if signatures_equal:
+        runtime_comparison_reasons.append("KB and noKB compiled byte-identical mutations, so runtime variation is not a knowledge-base effect.")
+    if adapter_subset:
+        runtime_comparison_reasons.append("The adapter mutation is identical to a ChaosAtlas mutation, so shared-mutation timing cannot establish method superiority.")
+    runtime_comparison_reasons.extend([
+        "Only one project and one model seed are present.",
+        "ChaosEater-adapter-open is supplementary and is not official ChaosEater.",
+    ])
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "tool": "summarize_p02_teacher_results",
-        "input": str(input_dir.relative_to(ROOT)).replace("\\", "/"),
+        "input": path_ref(input_dir),
         "batch": {
             "status": batch.get("status"),
             "declared_runs": batch.get("run_count"),
@@ -162,7 +214,8 @@ def analyze(input_dir: Path) -> dict[str, Any]:
         },
         "arms": arm_summary,
         "runs": rows,
-        "carryover_events": carryover,
+        "delayed_effect_attribution": "same_run_post_cleanup_washout" if has_washout_protocol else "legacy_next_run_baseline_carryover",
+        "carryover_events": delayed_events,
         "issues": [
             {
                 "issue_id": "P02-ISSUE-001",
@@ -175,33 +228,102 @@ def analyze(input_dir: Path) -> dict[str, Any]:
                 "issue_id": "P02-ISSUE-002",
                 "target": "discovery-server",
                 "classification": "confirmed_delayed_business_outage_root_cause_pending",
-                "evidence": "Each of three discovery-server kills was followed, before the next injection, by 8-37 consecutive HTTP 500 responses after the immediate recovery oracle had passed. The response body is generic, so logs or traces are still required to attribute the mechanism to service registration or discovery caches.",
-                "reproductions": len(carryover),
-                "events": carryover,
+                "evidence": (
+                    "Discovery-server kills produced delayed non-200 responses inside the same run's post-cleanup washout. Logs, events, and traces must be reviewed before assigning a causal mechanism."
+                    if has_washout_protocol
+                    else "Each of three discovery-server kills was followed, before the next injection, by 8-37 consecutive HTTP 500 responses after the immediate recovery oracle had passed. The response body is generic, so logs or traces are still required to attribute the mechanism to service registration or discovery caches."
+                ),
+                "reproductions": len(delayed_events),
+                "events": delayed_events,
             },
         ],
         "comparison": {
             "kb_vs_nokb_candidate_signatures_equal": signatures_equal,
             "adapter_executable_signatures_subset_of_chaosatlas": adapter_subset,
-            "runtime_head_to_head_eligible": False,
-            "reasons": [
-                "KB and noKB compiled byte-identical mutations, so runtime variation is not a knowledge-base effect.",
-                "Delayed discovery-server failures carried into subsequent runs, violating independence and washout assumptions.",
-                "Only one project and one model seed are present.",
-                "ChaosEater-adapter-open is supplementary and is not official ChaosEater.",
-            ],
+            "execution_sequence_eligible": clean_sequence,
+            "runtime_head_to_head_eligible": clean_sequence and not signatures_equal and not adapter_subset,
+            "reasons": runtime_comparison_reasons,
             "knowledge_ablation_conclusion": "P02 seed-1001 is a null selection result: KB and noKB produced the same two executable candidates. It neither demonstrates a KB benefit nor disproves one across projects.",
         },
     }
 
 
+def build_review_pack(summary: dict[str, Any]) -> dict[str, Any]:
+    """Create pending human decisions; this function never updates the KB."""
+    issue_1 = next(item for item in summary["issues"] if item["issue_id"] == "P02-ISSUE-001")
+    issue_2 = next(item for item in summary["issues"] if item["issue_id"] == "P02-ISSUE-002")
+    issue_1_reproductions = sum(issue_1["reproductions_by_arm"].values())
+    return {
+        "schema_version": "1.0",
+        "tool": "summarize_p02_teacher_results",
+        "status": "pending_human_review",
+        "project_id": "P02",
+        "project_commit": "305a1f13e4f961001d4e6cb50a9db51dc3fc5967",
+        "source_round_id": Path(summary["input"]).name,
+        "knowledge_update_applied": False,
+        "decisions": [
+            {
+                "issue_id": "P02-ISSUE-001",
+                "proposed_classification": "confirmed_weakness" if issue_1_reproductions >= 2 else "unsupported",
+                "proposed_abstraction": {
+                    "weakness_family": "single_replica_entrypoint_availability",
+                    "target_role": "request_gateway",
+                    "selection_guidance": "Prioritize singleton request-entry workloads for bounded Pod-loss testing when no redundant ready replica is declared.",
+                },
+                "evidence_summary": issue_1["evidence"],
+                "evidence_artifacts": [row["artifact"] for row in summary["runs"] if row["target"] == "api-gateway"],
+                "valid_reproductions": issue_1_reproductions,
+                "human_decision": "pending",
+                "human_note": "",
+            },
+            {
+                "issue_id": "P02-ISSUE-002",
+                "proposed_classification": "confirmed_weakness" if issue_2["reproductions"] >= 2 else "unsupported",
+                "root_cause_status": "pending_evidence_review",
+                "proposed_abstraction": {
+                    "weakness_family": "control_plane_dependency_delayed_business_outage",
+                    "target_role": "service_discovery",
+                    "selection_guidance": "Observe the business path through a sustained washout after recovery of discovery or coordination workloads; readiness alone may precede business recovery.",
+                },
+                "evidence_summary": issue_2["evidence"],
+                "evidence_artifacts": [row["artifact"] for row in summary["runs"] if row["target"] == "discovery-server"],
+                "valid_reproductions": issue_2["reproductions"],
+                "human_decision": "pending",
+                "human_note": "Do not name a cache, registration, or Eureka mechanism unless scoped logs or traces support it.",
+            },
+        ],
+        "review_instructions": "Set each human_decision only after inspecting the cited run reports and diagnostic sidecars. A separate guarded feedback step is required after review; this pack is not KB input.",
+    }
+
+
+def review_markdown(pack: dict[str, Any]) -> str:
+    lines = [
+        "# P02 Pending Human Review",
+        "",
+        "No knowledge update has been applied. Review the immutable R3 reports and diagnostic sidecars first.",
+        "",
+    ]
+    for item in pack["decisions"]:
+        lines.extend([
+            f"## {item['issue_id']}",
+            "",
+            f"- Proposed classification: `{item['proposed_classification']}`",
+            f"- Evidence: {item['evidence_summary']}",
+            f"- Human decision: `{item['human_decision']}`",
+            f"- Note: {item['human_note'] or 'pending'}",
+            "",
+        ])
+    return "\n".join(lines)
+
+
 def markdown(summary: dict[str, Any]) -> str:
     lines = [
-        "# P02 Teacher Minikube Formal R2 Audit",
+        f"# P02 Teacher Minikube Formal Audit: {Path(summary['input']).name}",
         "",
         f"- Batch: `{summary['batch']['status']}`, {summary['batch']['completed_runs']}/{summary['batch']['declared_runs']} completed.",
         f"- Reports: {summary['batch']['observed_reports']}; all technically valid: `{str(summary['batch']['all_technically_valid']).lower()}`.",
-        "- Statistical status: runtime head-to-head is **not eligible** because delayed effects contaminated later runs.",
+        f"- Clean execution sequence: `{str(summary['comparison']['execution_sequence_eligible']).lower()}`.",
+        f"- Runtime head-to-head eligible: `{str(summary['comparison']['runtime_head_to_head_eligible']).lower()}`.",
         "",
         "## Arm Coverage",
         "",
@@ -237,9 +359,12 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     args = parser.parse_args()
     summary = analyze(args.input.resolve())
+    review = build_review_pack(summary)
     args.output.mkdir(parents=True, exist_ok=True)
     (args.output / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
     (args.output / "summary.md").write_text(markdown(summary), encoding="utf-8")
+    (args.output / "review-pack.json").write_text(json.dumps(review, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+    (args.output / "review-pack.md").write_text(review_markdown(review), encoding="utf-8")
     print(json.dumps(summary["batch"], indent=2))
     return 0
 

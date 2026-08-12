@@ -287,3 +287,13 @@ Constraints:
 - [complete] Generate JSON/Markdown summaries and distinguish project findings from method-comparison claims.
 - [complete] Run regression tests, commit, and push without including the pre-existing manifest timestamp change.
 - Interpretation boundary: identical faults across arms are execution replications, not independent discovery advantages; `ChaosEater-adapter-open` is supplementary, not official ChaosEater.
+
+# P02 R3 evidence completion and review (2026-08-13)
+
+- Goal: run one clean P02 batch with sustained washout plus logs/traces/events, then build a human review pack before any knowledge feedback or next-project work.
+- [complete] Capture per-run api-gateway/discovery/customers logs, namespace events, and Zipkin traces with hashes and explicit unavailable states.
+- [complete] Extend the offline summary to consume washout/diagnostic evidence without cross-run attribution.
+- [complete] Add focused tests and run the full suite (`309 passed`, `5 subtests passed`).
+- [in_progress] Commit and push the teacher R3 runner.
+- [pending] Execute R3 on teacher Minikube, ingest results, produce pending human-review cards, and obtain explicit review decisions.
+- [pending] Only after review, project approved abstractions into the later-project KB and proceed to the next deployable project.

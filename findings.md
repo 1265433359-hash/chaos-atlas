@@ -240,3 +240,10 @@ Artifact checks found nine classification-index mismatches rather than three; al
 - The first teacher formal batch stopped after one completed run. The second run injected and replaced the target successfully, but its first post-recovery port-forward exited because the new Ready Pod had not started listening on port 8080. Cleanup succeeded and no Chaos resource remained. This is an invalid infrastructure observation, not a noKB method outcome.
 - R2 audit found delayed cross-run effects after all three discovery-server kills: the immediately following run observed 8, 9, and 37 consecutive HTTP 500 responses before regaining five baseline successes. This confirms a delayed business outage associated with the mutation, but the generic error body cannot establish the service-discovery mechanism without logs or traces.
 - KB and noKB mutations are byte-identical for both targets; the adapter api-gateway mutation is also byte-identical. P02 runtime timing differences therefore cannot be attributed to the knowledge base or method.
+# P02 R3 evidence-chain findings (2026-08-13)
+
+- R2 completed all 15 runs, but discovery-server delayed HTTP 500 responses appeared in the next run's baseline because R2 had no sustained post-cleanup washout. It is execution evidence, not a clean head-to-head comparison.
+- R3 must attribute delayed effects to the same mutation through `lifecycle.post_cleanup_washout`; every next-run baseline must contain zero failures and every washout must regain the required consecutive HTTP 200 window.
+- Root-cause evidence is bounded to experiment-time logs, namespace events, and Zipkin traces. Missing or empty diagnostics keep the mechanism pending and do not invalidate cleanup or fabricate causality.
+- KB and noKB mutations for P02 seed-1001 are byte-identical, and the adapter mutation is a subset. Even a clean R3 sequence cannot turn shared-mutation runtime timing into evidence of method superiority or a KB effect.
+- Review output remains pending and separate from knowledge feedback. No P02 result can enter P02 itself; only explicit human-reviewed abstractions may enter later projects.
