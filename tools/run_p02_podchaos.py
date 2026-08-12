@@ -46,8 +46,15 @@ def now() -> str:
 
 def kubectl(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
     try:
-        p = subprocess.run(["kubectl", *args], capture_output=True, text=True, timeout=timeout)
-        return p.returncode, p.stdout, p.stderr
+        p = subprocess.run(
+            ["kubectl", *args],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=timeout,
+        )
+        return p.returncode, p.stdout or "", p.stderr or ""
     except subprocess.TimeoutExpired as exc:
         return 124, "", str(exc)
 
@@ -169,6 +176,8 @@ def start_service_forward(service: str, local_port: int, remote_port: int) -> su
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
+        encoding="utf-8",
+        errors="replace",
     )
 
 
@@ -378,6 +387,8 @@ def capture_logs(report_path: Path, since_time: str) -> dict[str, Any]:
             ["logs", "-n", NAMESPACE, f"deployment/{deployment}", "--since-time", since_time, "--timestamps=true"],
             timeout=60,
         )
+        out = out or ""
+        err = err or ""
         if code == 0:
             results[deployment] = write_sidecar(path, out, status="captured" if out.strip() else "empty", return_code=code)
         else:

@@ -3,11 +3,22 @@ from __future__ import annotations
 import hashlib
 import itertools
 import json
+import subprocess
 from datetime import datetime, timezone
 from unittest.mock import MagicMock, Mock, patch
 
 import tools.run_p02_formal_batch as batch
 import tools.run_p02_podchaos as runner
+
+
+def test_kubectl_forces_utf8_and_normalizes_missing_streams() -> None:
+    completed = subprocess.CompletedProcess(["kubectl"], 0, stdout=None, stderr=None)
+    with patch.object(runner.subprocess, "run", return_value=completed) as call:
+        code, out, err = runner.kubectl(["logs", "deployment/discovery-server"])
+
+    assert (code, out, err) == (0, "", "")
+    assert call.call_args.kwargs["encoding"] == "utf-8"
+    assert call.call_args.kwargs["errors"] == "replace"
 
 
 def test_formal_schedule_has_balanced_independent_method_outputs() -> None:
