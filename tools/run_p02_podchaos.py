@@ -26,6 +26,7 @@ SERVICE = "api-gateway"
 REMOTE_PORT = 8080
 LOCAL_PORT = 18080
 ORACLE_PATH = "/api/gateway/owners/1"
+CHAOS_RESOURCES = ("podchaos", "networkchaos", "stresschaos")
 
 
 def now() -> str:
@@ -49,6 +50,93 @@ def kubectl_json(args: list[str], timeout: int = 30) -> tuple[dict[str, Any] | N
     except json.JSONDecodeError as exc:
         return None, str(exc)
     return value if isinstance(value, dict) else None, None
+
+
+def cluster_identity() -> dict[str, Any]:
+    code, context, context_error = kubectl(["config", "current-context"])
+    nodes, nodes_error = kubectl_json(["get", "nodes"])
+    if code != 0 or nodes_error:
+        raise RuntimeError(f"cluster identity unavailable: {(context_error or nodes_error or context).strip()}")
+    return {
+        "context": context.strip(),
+        "nodes": [
+            {
+                "name": item.get("metadata", {}).get("name"),
+                "uid": item.get("metadata", {}).get("uid"),
+                "kubernetes_version": item.get("status", {}).get("nodeInfo", {}).get("kubeletVersion"),
+            }
+            for item in (nodes or {}).get("items", [])
+        ],
+    }
+
+
+def residual_chaos() -> list[dict[str, Any]]:
+    data, error = kubectl_json(["get", ",".join(CHAOS_RESOURCES), "-A"])
+    if error:
+        raise RuntimeError(f"cannot verify global Chaos Mesh cleanup: {error}")
+    return [
+        {
+            "kind": item.get("kind"),
+            "namespace": item.get("metadata", {}).get("namespace"),
+            "name": item.get("metadata", {}).get("name"),
+        }
+        for item in (data or {}).get("items", [])
+    ]
+
+
+def namespace_health() -> dict[str, Any]:
+    deployments, deployment_error = kubectl_json(["get", "deployments", "-n", NAMESPACE])
+    pods, pod_error = kubectl_json(["get", "pods", "-n", NAMESPACE])
+    if deployment_error or pod_error:
+        raise RuntimeError(f"P02 health lookup failed: {deployment_error or pod_error}")
+    deployment_rows = []
+    for item in (deployments or {}).get("items", []):
+        spec = item.get("spec", {})
+        status = item.get("status", {})
+        desired = int(spec.get("replicas", 1) or 0)
+        deployment_rows.append(
+            {
+                "name": item.get("metadata", {}).get("name"),
+                "desired": desired,
+                "ready": int(status.get("readyReplicas", 0) or 0),
+                "available": int(status.get("availableReplicas", 0) or 0),
+                "updated": int(status.get("updatedReplicas", 0) or 0),
+            }
+        )
+    pod_rows = []
+    for item in (pods or {}).get("items", []):
+        pod_rows.append(
+            {
+                "name": item.get("metadata", {}).get("name"),
+                "uid": item.get("metadata", {}).get("uid"),
+                "ready": any(
+                    condition.get("type") == "Ready" and condition.get("status") == "True"
+                    for condition in item.get("status", {}).get("conditions", [])
+                    if isinstance(condition, dict)
+                ),
+                "terminating": bool(item.get("metadata", {}).get("deletionTimestamp")),
+            }
+        )
+    healthy = (
+        bool(deployment_rows)
+        and all(row["desired"] == row["ready"] == row["available"] == row["updated"] for row in deployment_rows)
+        and bool(pod_rows)
+        and all(row["ready"] and not row["terminating"] for row in pod_rows)
+    )
+    return {"healthy": healthy, "deployments": deployment_rows, "pods": pod_rows}
+
+
+def wait_namespace_stable(timeout: float = 180.0, stable_checks: int = 3) -> dict[str, Any]:
+    deadline = time.monotonic() + timeout
+    stable = 0
+    last: dict[str, Any] = {}
+    while time.monotonic() < deadline:
+        last = namespace_health()
+        stable = stable + 1 if last["healthy"] else 0
+        if stable >= stable_checks:
+            return {**last, "stable_checks": stable}
+        time.sleep(1)
+    raise RuntimeError(f"P02 namespace did not become stable: {json.dumps(last, ensure_ascii=True)}")
 
 
 def request(local_port: int, timeout: float = 5.0) -> dict[str, Any]:
@@ -79,6 +167,7 @@ def wait_forward(proc: subprocess.Popen[str], timeout: float = 20.0) -> None:
                 return
         except OSError:
             time.sleep(0.2)
+    raise TimeoutError("port-forward did not become ready")
 
 
 def reconnect_forward(proc: subprocess.Popen[str] | None, timeout: float = 30.0) -> subprocess.Popen[str]:
@@ -91,7 +180,6 @@ def reconnect_forward(proc: subprocess.Popen[str] | None, timeout: float = 30.0)
         out, err = fresh.communicate()
         raise RuntimeError(f"port-forward exited after opening: {(err or out).strip()}")
     return fresh
-    raise TimeoutError("port-forward did not become ready")
 
 
 def stop_forward(proc: subprocess.Popen[str] | None) -> None:
@@ -169,12 +257,38 @@ def main() -> int:
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--baseline-count", type=int, default=5)
     parser.add_argument("--observe-count", type=int, default=10)
+    parser.add_argument("--arm", required=True)
+    parser.add_argument("--mutation-id", required=True)
+    parser.add_argument("--replicate", type=int, required=True)
+    parser.add_argument("--expected-context")
     args = parser.parse_args()
-    report: dict[str, Any] = {"schema_version": 1, "tool": "run_p02_podchaos", "mutation": str(args.mutation).replace("\\", "/"), "started_at": now(), "mutation_applied": False, "baseline": [], "requests": [], "lifecycle": {}, "errors": [], "warnings": []}
+    report: dict[str, Any] = {
+        "schema_version": 2,
+        "tool": "run_p02_podchaos",
+        "experiment": {"project": "P02", "arm": args.arm, "mutation_id": args.mutation_id, "replicate": args.replicate},
+        "mutation": str(args.mutation).replace("\\", "/"),
+        "started_at": now(),
+        "mutation_applied": False,
+        "baseline": [],
+        "requests": [],
+        "lifecycle": {},
+        "errors": [],
+        "warnings": [],
+    }
     proc: subprocess.Popen[str] | None = None
     applied = False
     doc = yaml.safe_load(args.mutation.read_text(encoding="utf-8"))
     try:
+        report["cluster"] = cluster_identity()
+        if args.expected_context and report["cluster"]["context"] != args.expected_context:
+            raise RuntimeError(
+                f"kubectl context changed: expected {args.expected_context}, got {report['cluster']['context']}"
+            )
+        residual = residual_chaos()
+        report["lifecycle"]["preflight_residual_chaos"] = residual
+        if residual:
+            raise RuntimeError(f"residual Chaos Mesh resources exist before injection: {residual}")
+        report["lifecycle"]["pre_injection_namespace_health"] = wait_namespace_stable()
         if doc.get("kind") != "PodChaos" or doc.get("metadata", {}).get("namespace") != NAMESPACE:
             raise RuntimeError("only P02 PodChaos manifests are accepted")
         spec = doc.get("spec") or {}
@@ -202,6 +316,8 @@ def main() -> int:
         injected = wait_injected("PodChaos", name)
         report["lifecycle"]["injected_status"] = injected
         report["lifecycle"]["injected"] = injected.get("injected_count", 0) >= 1
+        if not report["lifecycle"]["injected"]:
+            raise RuntimeError("Chaos Mesh did not confirm injection")
         # Keep the pre-injection tunnel long enough to capture the immediate
         # failure. It may exit when the selected Pod is killed; that is valid
         # observation evidence, not a runner error.
@@ -214,6 +330,8 @@ def main() -> int:
         recovered, recovery = wait_recovery(labels, before_uids)
         report["lifecycle"]["recovered"] = recovered
         report["lifecycle"]["recovery_status"] = recovery
+        if not recovered:
+            raise RuntimeError("target Pod did not recover with a replacement UID")
         # After recovery, reconnect and collect stable business responses so
         # the report contains an independent post-fault oracle as well.
         if recovered:
@@ -239,12 +357,21 @@ def main() -> int:
             report["lifecycle"]["post_recovery_http_200_count"] = post_recovery_successes
             if post_recovery_successes == 0:
                 report["errors"].append("post_recovery_oracle_unconfirmed: no HTTP 200 after recovered Pod became Ready")
+            report["lifecycle"]["post_recovery_namespace_health"] = wait_namespace_stable()
     except Exception as exc:
         report["errors"].append(str(exc))
     finally:
         stop_forward(proc)
         if applied:
             report["lifecycle"]["cleanup"] = cleanup(str(doc["metadata"]["name"]))
+            if not report["lifecycle"]["cleanup"]["absent_confirmed"]:
+                report["errors"].append("cleanup_unconfirmed: Chaos Mesh resource may still exist")
+        try:
+            report["lifecycle"]["post_cleanup_residual_chaos"] = residual_chaos()
+            if report["lifecycle"]["post_cleanup_residual_chaos"]:
+                report["errors"].append("post_cleanup_residual_chaos: one or more Chaos Mesh resources remain")
+        except Exception as exc:
+            report["errors"].append(str(exc))
     report["finished_at"] = now()
     report["status"] = "completed" if not report["errors"] else "failed"
     args.report.parent.mkdir(parents=True, exist_ok=True)

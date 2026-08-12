@@ -269,3 +269,12 @@ Constraints:
 - `complete`: run the complete tool test suite with an isolated basetemp (`290 passed`, `5 subtests passed`) and the offline ablation/profile validators.
 - `complete`: stage and inspect the curated repository snapshot.
 - `in_progress`: commit and push `remediation/2026-08-09-review`.
+# P02 teacher-minikube formal runtime batch (2026-08-12)
+
+- Goal: harden the one-mutation runner and add a fail-closed orchestrator for the teacher Minikube environment.
+- [complete] Add cluster identity, arm/mutation/replicate metadata, global residual-Chaos preflight, and stable recovery checks.
+- [complete] Add a 15-run formal batch plan (5 method outputs x 3 replicates), per-run read-only gate, no-overwrite output handling, and stop-on-failure behavior.
+- [complete] Add focused unit tests and run the full regression suite.
+- [in_progress] Commit and push only the intended code/tests/docs; preserve the existing timestamp-only manifest change.
+- Runtime boundary: this workstation will not mutate the teacher cluster; teacher-generated reports use a new `teacher-minikube-formal` path.
+- LLM boundary: no DeepSeek credential access or API call is needed for this work.

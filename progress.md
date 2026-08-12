@@ -378,3 +378,11 @@
 - Exact candidate scans found no GitHub PAT, API key, bearer credential, private key, or inline kubeconfig material. Candidate filenames also contain no kubeconfig, private-key, credential, or live environment file.
 - The first full pytest run had two setup errors because the global pytest temporary directory was inaccessible. Re-running with a repository-local isolated basetemp passed: `290 passed, 5 subtests passed`.
 - Offline experiment validation passed with `valid=true` and `checked_ablation_pairs=30`. P09 profile validation passed all static checks and correctly retained `apply_allowed=false`.
+# 2026-08-12 P02 teacher-minikube formal batch
+
+- Validated the teacher smoke injection report and final cluster cleanup.
+- Hardened `run_p02_podchaos.py` with cluster identity, experiment identity, global residual-Chaos checks, full namespace stability, and fail-closed injection/recovery/cleanup outcomes.
+- Added `run_p02_formal_batch.py`, a plan-first and explicit-execute 15-run orchestrator with per-run gates, method-output separation, rotation, immutable output handling, and stop-on-first-failure behavior.
+- Added the teacher execution guide and four focused tests; focused P02 test run passed 7 tests.
+- Full regression passed: 297 tests and 5 subtests. Secret-pattern scan found no credential material in the changed implementation, test, or guide files.
+- No DeepSeek credential was read, no API request was sent, and this workstation did not mutate a Kubernetes cluster.

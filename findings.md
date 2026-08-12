@@ -230,3 +230,10 @@ Artifact checks found nine classification-index mismatches rather than three; al
 - `.tmp-chaos-kind-admin.conf`, `.tmp-bridge/`, local Docker configuration, and `CHAOS_ENV_HANDOFF.md` expose machine-specific runtime details and are excluded from publication.
 - The curated untracked submission is 631 files and about 4.95 MB, with no untracked file larger than 1 MiB. Existing tracked binaries are unchanged by this handoff.
 - No sensitive-value signature or sensitive filename was found in the exact modified/untracked candidate set or in the recorded runtime/model-result artifacts.
+# P02 teacher-minikube smoke and formal batch findings (2026-08-12)
+
+- The teacher Minikube smoke report is valid: 5/5 baseline HTTP 200, Chaos Mesh injected_count=1, api-gateway UID replacement, 7 post-recovery HTTP 200 responses, cleanup NotFound confirmation, and no residual Chaos resources.
+- The single port-forward warning occurred while the replacement Pod was Ready but port 8080 had not started listening; later oracle success proves recovery and the warning does not invalidate the run.
+- The five current method outputs represent two KB mutations, two noKB mutations, and one ChaosEater-adapter mutation. Three repetitions therefore require 15 independent injections.
+- `ChaosEater-adapter-open` remains supplementary and cannot be described as official ChaosEater because P02 lacks the required native Skaffold input.
+- Earlier P02 runtime evidence uses a different environment and uneven repetitions. Teacher results must be written to `teacher-minikube-formal` and must not be merged by identical YAML identity.
