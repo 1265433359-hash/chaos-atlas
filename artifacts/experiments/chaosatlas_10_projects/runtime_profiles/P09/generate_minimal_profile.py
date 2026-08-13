@@ -47,9 +47,9 @@ def env_config() -> dict[str, str]:
         "MODE": "api", "MIGRATION_ENABLED": "true", "DEBUG": "false", "FLASK_DEBUG": "false",
         "MARKETPLACE_ENABLED": "false", "ENABLE_COLLABORATION_MODE": "false", "ALLOW_REGISTER": "false",
         "ALLOW_CREATE_WORKSPACE": "false", "ENABLE_WEBSITE_JINAREADER": "false", "ENABLE_WEBSITE_FIRECRAWL": "false",
-        "ENABLE_WEBSITE_WATERCRAWL": "false", "CODE_EXECUTION_ENDPOINT": "", "SSRF_PROXY_HTTP_URL": "",
+        "ENABLE_WEBSITE_WATERCRAWL": "false", "CODE_EXECUTION_ENDPOINT": "http://127.0.0.1:8194", "SSRF_PROXY_HTTP_URL": "",
         "SSRF_PROXY_HTTPS_URL": "", "AGENT_BACKEND_BASE_URL": "", "PLUGIN_REMOTE_INSTALL_HOST": "",
-        "PLUGIN_REMOTE_INSTALL_PORT": "0", "PLUGIN_DIFY_INNER_API_KEY": "", "DIFY_AGENT_API_TOKEN": "",
+        "PLUGIN_REMOTE_INSTALL_PORT": "5003", "PLUGIN_DIFY_INNER_API_KEY": "", "DIFY_AGENT_API_TOKEN": "",
         "OPENAI_API_BASE": "", "OPENAI_API_KEY": "", "CONSOLE_API_URL": "http://web:3000",
         "SERVER_CONSOLE_API_URL": "http://api:5001", "APP_API_URL": "http://api:5001",
     }
@@ -90,9 +90,9 @@ def generate(digests: dict[str, str]) -> list[dict[str, Any]]:
     ns = {"apiVersion": "v1", "kind": "Namespace", "metadata": {"name": "chaosatlas-p09", "labels": {"chaosatlas.io/profile": "minimal"}}}
     pvc = {"apiVersion": "v1", "kind": "PersistentVolumeClaim", "metadata": {"name": "p09-app-storage", "namespace": "chaosatlas-p09"}, "spec": {"accessModes": ["ReadWriteOnce"], "resources": {"requests": {"storage": "1Gi"}}}}
     cm = {"apiVersion": "v1", "kind": "ConfigMap", "metadata": {"name": "p09-env", "namespace": "chaosatlas-p09"}, "data": env_config()}
-    secret = {"apiVersion": "v1", "kind": "Secret", "metadata": {"name": "p09-secrets", "namespace": "chaosatlas-p09"}, "type": "Opaque",
-              "stringData": {"DB_PASSWORD": "REPLACE_BEFORE_APPLY", "POSTGRES_PASSWORD": "REPLACE_BEFORE_APPLY", "REDIS_PASSWORD": "REPLACE_BEFORE_APPLY", "SECRET_KEY": "REPLACE_BEFORE_APPLY"}}
-    docs: list[dict[str, Any]] = [ns, pvc, cm, secret]
+    # The runtime Secret is provisioned separately and must never be emitted
+    # by this reproducible, secret-free profile.
+    docs: list[dict[str, Any]] = [ns, pvc, cm]
     init = container("init-permissions", digests["busybox"], command=["sh", "-c", "mkdir -p /app/api/storage && chown -R 1001:1001 /app/api/storage && touch /app/api/storage/.init_permissions"], volume=True)
     docs.append({"apiVersion": "batch/v1", "kind": "Job", "metadata": {"name": "init-permissions", "namespace": "chaosatlas-p09", "labels": labels("init-permissions")},
                  "spec": {"backoffLimit": 2, "template": {"metadata": {"labels": labels("init-permissions")}, "spec": {"restartPolicy": "OnFailure", "automountServiceAccountToken": False,
@@ -104,7 +104,9 @@ def generate(digests: dict[str, str]) -> list[dict[str, Any]]:
     web = container("web", digests["dify-web"], {"SERVER_CONSOLE_API_URL": "http://api:5001"}, [{"name": "http", "containerPort": 3000}], probes={"readinessProbe": {"tcpSocket": {"port": 3000}, "initialDelaySeconds": 20, "periodSeconds": 10}})
     for name, c in (("api", api), ("worker", worker), ("worker-beat", beat), ("web", web)):
         docs.append(deployment(name, c, volume=name != "web"))
-    pg = container("postgres", digests["postgres"], {"POSTGRES_USER": "postgres", "POSTGRES_DB": "dify"}, ports=[{"name": "postgres", "containerPort": 5432}], command=["postgres", "-c", "max_connections=100"], probes={"readinessProbe": {"exec": {"command": ["pg_isready", "-U", "postgres", "-d", "dify"]}, "periodSeconds": 5}})
+    # Keep the image entrypoint so it can initialize storage as root and then
+    # exec the PostgreSQL server as the image's unprivileged postgres user.
+    pg = container("postgres", digests["postgres"], {"POSTGRES_USER": "postgres", "POSTGRES_DB": "dify"}, ports=[{"name": "postgres", "containerPort": 5432}], probes={"readinessProbe": {"exec": {"command": ["pg_isready", "-U", "postgres", "-d", "dify"]}, "periodSeconds": 5}})
     redis = container("redis", digests["redis"], {}, ports=[{"name": "redis", "containerPort": 6379}], command=["redis-server", "--appendonly", "yes"], probes={"readinessProbe": {"exec": {"command": ["redis-cli", "ping"]}, "periodSeconds": 5}})
     docs.extend([deployment("postgres", pg, replicas=1), service("postgres", 5432, 5432), deployment("redis", redis, replicas=1), service("redis", 6379, 6379), service("api", 5001, 5001), service("web", 3000, 3000)])
     return docs

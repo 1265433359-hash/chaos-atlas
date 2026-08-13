@@ -1,8 +1,23 @@
 from __future__ import annotations
 
+import importlib.util
 from pathlib import Path
 
 from tools.p09_deployment_preflight import build
+
+
+GENERATOR_PATH = Path(__file__).resolve().parents[2] / (
+    "artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P09/"
+    "generate_minimal_profile.py"
+)
+
+
+def load_generator():
+    spec = importlib.util.spec_from_file_location("p09_minimal_profile_generator", GENERATOR_PATH)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def test_p09_requires_reduced_profile_env_and_digest_pinning() -> None:
@@ -98,3 +113,19 @@ metadata:
     )
     assert validator.run(profile, output) == 0
     assert output.exists()
+
+
+def test_p09_runtime_profile_uses_valid_local_config_and_postgres_entrypoint() -> None:
+    generator = load_generator()
+    config = generator.env_config()
+    assert config["CODE_EXECUTION_ENDPOINT"] == "http://127.0.0.1:8194"
+    assert config["PLUGIN_REMOTE_INSTALL_PORT"] == "5003"
+
+    digests = {
+        name: f"example/{name}@sha256:{'a' * 64}"
+        for name in ("busybox", "dify-api", "dify-web", "postgres", "redis")
+    }
+    postgres = next(doc for doc in generator.generate(digests) if doc.get("kind") == "Deployment" and doc["metadata"]["name"] == "postgres")
+    container = postgres["spec"]["template"]["spec"]["containers"][0]
+    assert "command" not in container
+    assert not any(doc.get("kind") == "Secret" for doc in generator.generate(digests))

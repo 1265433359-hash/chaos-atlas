@@ -24,6 +24,14 @@ def sha256(path: Path) -> str | None:
     return hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
 
 
+def display_path(path: Path) -> str:
+    """Prefer repository-relative provenance, but support isolated test roots."""
+    try:
+        return str(path.relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
 def select_project() -> tuple[Path, Path]:
     for project in (PROJECT, RESTORED_PROJECT, RESTORED_PROJECT_R2):
         compose = project / "docker/docker-compose.yaml"
@@ -59,7 +67,7 @@ def build() -> dict[str, Any]:
         "project_commit": "cd0e88c680dec24dcd423b880302104f13d28462",
         "status": "blocked" if reasons else "needs_runtime_gate",
         "runtime_apply_allowed": False,
-        "source_root": str(project.relative_to(ROOT)).replace("\\", "/"),
+        "source_root": display_path(project),
         "compose_sha256": sha256(compose_path),
         "all_service_count": len(services),
         "core_profile": CORE,

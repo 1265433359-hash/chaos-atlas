@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "project_id": "P09",
+  "namespace": "chaosatlas-p09",
+  "context": "minikube",
+  "profile": "artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P09-r3/minimal-profile.yaml",
+  "status": "baseline_pass_no_mutation",
+  "runtime_apply_allowed": true,
+  "checks": {
+    "server_side_dry_run": "pass",
+    "namespace_local": "pass",
+    "api_health_http_status": 200,
+    "deterministic_mock_oracle": "pass",
+    "core_pods_ready": "pass",
+    "pre_existing_chaos_resources_in_p09": "absent",
+    "global_chaos_resources_after_gate": "not_checked_scope_restricted_to_p09"
+  },
+  "mutation": {
+    "executed": false,
+    "reason": "The frozen P09 candidate pool has support_status=unknown and no bound executable mutation path was present. No unregistered mutation was synthesized or injected."
+  },
+  "scope": {
+    "allowed_namespace": "chaosatlas-p09",
+    "other_namespaces_operated": false
+  },
+  "secrets": {
+    "read_or_printed": false,
+    "repository_written": false
+  },
+  "human_review": "pending"
+}
