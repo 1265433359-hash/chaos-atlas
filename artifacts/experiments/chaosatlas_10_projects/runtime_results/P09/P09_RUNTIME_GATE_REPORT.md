@@ -1,5 +1,9 @@
 # P09 Runtime Gate Report
 
+> Historical gate snapshot. The later bounded pilot in
+> `teacher-minikube-pilot-r2/P09_PILOT_REVIEW.md` supersedes only the
+> no-mutation conclusion below; the baseline and dry-run evidence remain valid.
+
 - Context: `minikube`
 - Namespace: `chaosatlas-p09`
 - Profile: `runtime_profiles/P09-r4/minimal-profile.yaml`

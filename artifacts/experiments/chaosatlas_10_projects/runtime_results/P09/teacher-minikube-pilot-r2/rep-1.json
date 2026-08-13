@@ -1,0 +1,364 @@
+{
+  "schema_version": "1.0",
+  "tool": "run_p09_podchaos",
+  "started_at": "2026-08-13T01:46:51.313182+00:00",
+  "namespace": "chaosatlas-p09",
+  "mutation_path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P09/teacher-minikube-pilot-r2/p09-api-pod-kill.yaml",
+  "status": "completed",
+  "baseline": {
+    "samples": [
+      {
+        "observed_at": "2026-08-13T01:46:54.532681+00:00",
+        "status_code": 200,
+        "latency_ms": 47.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:46:55.541972+00:00",
+        "status_code": 200,
+        "latency_ms": 0.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:46:56.557414+00:00",
+        "status_code": 200,
+        "latency_ms": 15.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:46:57.565764+00:00",
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:46:58.579879+00:00",
+        "status_code": 200,
+        "latency_ms": 15.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      }
+    ],
+    "successes_required": 5,
+    "stable": true
+  },
+  "injection": {
+    "applied": true,
+    "injected": true,
+    "apply": {
+      "return_code": 0,
+      "output": "podchaos.chaos-mesh.org/p09-api-pod-kill-68a388ea521c created"
+    },
+    "status": {
+      "injected_count": 1,
+      "conditions": [
+        {
+          "status": "True",
+          "type": "Selected"
+        },
+        {
+          "status": "True",
+          "type": "AllInjected"
+        },
+        {
+          "status": "False",
+          "type": "AllRecovered"
+        },
+        {
+          "status": "False",
+          "type": "Paused"
+        }
+      ]
+    }
+  },
+  "cleanup": {
+    "delete_code": 0,
+    "delete_output": "podchaos.chaos-mesh.org \"p09-api-pod-kill-68a388ea521c\" deleted from chaosatlas-p09 namespace",
+    "verify_code": 1,
+    "verify_output": "Error from server (NotFound): podchaos.chaos-mesh.org \"p09-api-pod-kill-68a388ea521c\" not found",
+    "absent_confirmed": true
+  },
+  "recovery": {
+    "recovered": true,
+    "pods": [
+      {
+        "name": "api-7f99bf86cd-bmcpz",
+        "uid": "68d0dd67-e6e7-425e-ad40-f057e974207f",
+        "ready": true,
+        "terminating": false
+      }
+    ],
+    "before_uids": [
+      "cd255385-32e3-43bf-9375-49c0bb514e9e"
+    ],
+    "new_ready_uids": [
+      "68d0dd67-e6e7-425e-ad40-f057e974207f"
+    ],
+    "stable_checks": 3
+  },
+  "washout": {
+    "samples": [
+      {
+        "observed_at": "2026-08-13T01:47:35.374328+00:00",
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:47:36.382563+00:00",
+        "status_code": 200,
+        "latency_ms": 15.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:47:37.393584+00:00",
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:47:38.420320+00:00",
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:47:39.433257+00:00",
+        "status_code": 200,
+        "latency_ms": 15.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:47:40.451488+00:00",
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:47:41.459633+00:00",
+        "status_code": 200,
+        "latency_ms": 15.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:47:42.478089+00:00",
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:47:43.496187+00:00",
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      },
+      {
+        "observed_at": "2026-08-13T01:47:44.504177+00:00",
+        "status_code": 200,
+        "latency_ms": 15.0,
+        "body_sha256": "64200267780e5f394b87809463188c9514a837b1339bbe8a3b66708d75f0b474",
+        "error": null
+      }
+    ],
+    "successes_required": 10,
+    "stable": true
+  },
+  "errors": [],
+  "human_review": "pending",
+  "preflight_health": {
+    "healthy": true,
+    "deployments": [
+      {
+        "name": "api",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      },
+      {
+        "name": "postgres",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      },
+      {
+        "name": "redis",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      },
+      {
+        "name": "web",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      },
+      {
+        "name": "worker",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      },
+      {
+        "name": "worker-beat",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      }
+    ],
+    "pods": [
+      {
+        "name": "api-7f99bf86cd-phvg6",
+        "uid": "cd255385-32e3-43bf-9375-49c0bb514e9e",
+        "ready": true,
+        "terminating": false
+      },
+      {
+        "name": "postgres-7c7f555544-k2mpv",
+        "uid": "5ccb9010-1998-44ee-a68e-7c56ec389da6",
+        "ready": true,
+        "terminating": false
+      },
+      {
+        "name": "redis-b8df88cf9-4gv82",
+        "uid": "65c57dc5-03b2-44ae-904d-d323eefe1050",
+        "ready": true,
+        "terminating": false
+      },
+      {
+        "name": "web-75db4c85b9-r8hzs",
+        "uid": "94efab88-d92a-4079-a01d-20a4d5b419dc",
+        "ready": true,
+        "terminating": false
+      },
+      {
+        "name": "worker-6749965ff5-p446q",
+        "uid": "40332afd-fd66-454e-9238-d0cd34cc5cbb",
+        "ready": true,
+        "terminating": false
+      },
+      {
+        "name": "worker-beat-5657b85df9-rzh4w",
+        "uid": "f15d3236-0fbd-4516-a8e3-0f0006bf3ded",
+        "ready": true,
+        "terminating": false
+      }
+    ],
+    "stable_checks": 3
+  },
+  "target_before": [
+    {
+      "name": "api-7f99bf86cd-phvg6",
+      "uid": "cd255385-32e3-43bf-9375-49c0bb514e9e",
+      "ready": true,
+      "terminating": false
+    }
+  ],
+  "post_recovery_health": {
+    "healthy": true,
+    "deployments": [
+      {
+        "name": "api",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      },
+      {
+        "name": "postgres",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      },
+      {
+        "name": "redis",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      },
+      {
+        "name": "web",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      },
+      {
+        "name": "worker",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      },
+      {
+        "name": "worker-beat",
+        "desired": 1,
+        "ready": 1,
+        "available": 1,
+        "updated": 1
+      }
+    ],
+    "pods": [
+      {
+        "name": "api-7f99bf86cd-bmcpz",
+        "uid": "68d0dd67-e6e7-425e-ad40-f057e974207f",
+        "ready": true,
+        "terminating": false
+      },
+      {
+        "name": "postgres-7c7f555544-k2mpv",
+        "uid": "5ccb9010-1998-44ee-a68e-7c56ec389da6",
+        "ready": true,
+        "terminating": false
+      },
+      {
+        "name": "redis-b8df88cf9-4gv82",
+        "uid": "65c57dc5-03b2-44ae-904d-d323eefe1050",
+        "ready": true,
+        "terminating": false
+      },
+      {
+        "name": "web-75db4c85b9-r8hzs",
+        "uid": "94efab88-d92a-4079-a01d-20a4d5b419dc",
+        "ready": true,
+        "terminating": false
+      },
+      {
+        "name": "worker-6749965ff5-p446q",
+        "uid": "40332afd-fd66-454e-9238-d0cd34cc5cbb",
+        "ready": true,
+        "terminating": false
+      },
+      {
+        "name": "worker-beat-5657b85df9-rzh4w",
+        "uid": "f15d3236-0fbd-4516-a8e3-0f0006bf3ded",
+        "ready": true,
+        "terminating": false
+      }
+    ],
+    "stable_checks": 3
+  },
+  "post_cleanup_residual_chaos": [],
+  "mutation_sha256": "5960fc92b648307b8a0567106f00b555d51bb857b64554fc2d17a5f7482ac9c8",
+  "finished_at": "2026-08-13T01:47:47.929147+00:00"
+}
