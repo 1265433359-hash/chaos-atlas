@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "project_id": "P09",
+  "namespace": "chaosatlas-p09",
+  "status": "pending_human_review",
+  "human_review": "pending",
+  "authorized_open_discovery_calls": 12,
+  "calls": {
+    "r1": {"transport_success": 12, "valid": 0, "method_invalid": 12, "billed_tokens": 192286},
+    "r2": {"transport_success": 12, "valid": 11, "method_invalid": 1, "billed_tokens": 224334}
+  },
+  "r2_invalid_call": {
+    "arm": "ChaosAtlas-noKB-open",
+    "seed": 1003,
+    "reason": "truncated JSON response at output token limit",
+    "retried": false
+  },
+  "r2_compiler": {
+    "accepted_hypotheses": 88,
+    "unique_canonical_signatures": 34,
+    "execution_ready_true": 0,
+    "runtime_weaknesses_confirmed": 0
+  },
+  "raw_sha256_matches": {"checked": 24, "matched": 24},
+  "auto_apply": false,
+  "mutation_applied": false,
+  "knowledge_base_updated": false,
+  "interpretation": {
+    "business_weakness_confirmed": "API /health availability is supported only by the prior bounded API PodKill pilot",
+    "specific_root_cause_supported": false,
+    "unsupported_mechanisms": ["Eureka", "cache", "registration", "readiness"]
+  }
+}

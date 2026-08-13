@@ -1,0 +1,264 @@
+{
+  "hypotheses": [
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge nginx->api",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/api"
+        },
+        {
+          "evidence_ref": "graph edge api->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge api->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        }
+      ],
+      "expected_invariant": "API health endpoint remains available and returns 200 during the fault window.",
+      "fault_family": "pod_kill",
+      "hypothesis": "Killing the api container will expose the lack of replica redundancy and the absence of a load balancer, causing a full API outage until the restart policy recovers the container.",
+      "hypothesis_id": "fault-001",
+      "parameters": {
+        "mode": "one"
+      },
+      "recovery_expectation": "The restart=always policy should restart the container within a few seconds; after recovery, API health should return to 200 and the system should be clean.",
+      "target": "compose/service/api",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API health returns 200. Inject: kill the api container. Observe: monitor API health and HTTP response codes for 30 seconds. Oracle: check if health endpoint returns non-200 or connection refused during the kill window.",
+      "weakness_surface": "The api service is a single instance with restart=always but no replicas; a pod kill will interrupt all HTTP requests and the healthcheck will fail until restart completes."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->redis",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge worker->redis",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge agent_backend->redis",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/redis"
+        }
+      ],
+      "expected_invariant": "API health and mock workflow response complete within the normal latency budget (e.g., <200ms).",
+      "fault_family": "network_delay",
+      "hypothesis": "Introducing 500ms latency on the redis service will expose the lack of timeouts or retry configuration in the api and worker services, causing request timeouts and degraded workflow execution.",
+      "hypothesis_id": "fault-002",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 500
+      },
+      "recovery_expectation": "After removing the delay, latency should return to baseline and all services should recover without manual intervention.",
+      "target": "compose/service/redis",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure API response time and mock workflow latency. Inject: add 500ms latency to redis traffic. Observe: measure API response times and workflow completion for 30 seconds. Oracle: check if API response time exceeds expected threshold or workflow fails.",
+      "weakness_surface": "Redis is a critical dependency for api, worker, worker_beat, and agent_backend; high latency will increase response times and may cause cascading timeouts."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge worker->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/agent_backend"
+        }
+      ],
+      "expected_invariant": "All API requests and workflow tasks succeed without retries or errors.",
+      "fault_family": "network_loss",
+      "hypothesis": "Causing 50% packet loss on the agent_backend service will expose the lack of retry logic in the api and worker services, leading to intermittent failures in agent-related operations.",
+      "hypothesis_id": "fault-003",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 50
+      },
+      "recovery_expectation": "After removing the loss, all services should return to normal operation and no persistent errors should remain.",
+      "target": "compose/service/agent_backend",
+      "target_kind": "service",
+      "validation_plan": "Baseline: run a set of API requests and workflow tasks to confirm success. Inject: apply 50% packet loss to agent_backend. Observe: monitor API success rate and workflow task completion for 30 seconds. Oracle: check if any requests fail or tasks are not completed.",
+      "weakness_surface": "agent_backend is a critical dependency for api and worker; packet loss will cause connection resets and partial request failures."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "graph edge worker->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "graph edge plugin_daemon->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/plugin_daemon",
+          "target": "compose/service/db_mysql"
+        }
+      ],
+      "expected_invariant": "Database query latency remains within acceptable bounds and API health remains 200.",
+      "fault_family": "container_cpu_stress",
+      "hypothesis": "Stressing the MySQL container CPU to 80% will expose the lack of resource limits and connection pool tuning, causing slow queries and API timeouts.",
+      "hypothesis_id": "fault-004",
+      "parameters": {
+        "duration_s": 30,
+        "load_percent": 80,
+        "workers": 2
+      },
+      "recovery_expectation": "After stopping the CPU stress, MySQL should return to normal performance and all dependent services should recover.",
+      "target": "compose/service/db_mysql",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure query latency and API response time. Inject: stress MySQL CPU to 80% for 30 seconds. Observe: monitor query latency and API health. Oracle: check if query latency exceeds threshold or API health degrades.",
+      "weakness_surface": "db_mysql is a critical dependency for api, api_websocket, worker, worker_beat, and plugin_daemon; CPU saturation will degrade database performance and increase query latency."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge nginx->api",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/api"
+        },
+        {
+          "evidence_ref": "graph edge nginx->web",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/web"
+        }
+      ],
+      "expected_invariant": "External HTTP requests to the frontend and API remain available.",
+      "fault_family": "pod_kill",
+      "hypothesis": "Killing the nginx container will expose the lack of a load balancer and the single point of entry, causing a full frontend outage until the restart policy recovers it.",
+      "hypothesis_id": "fault-005",
+      "parameters": {
+        "mode": "one"
+      },
+      "recovery_expectation": "The restart=always policy should restart nginx quickly; after recovery, external access should be restored.",
+      "target": "compose/service/nginx",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify external HTTP access to web and API. Inject: kill the nginx container. Observe: monitor HTTP access for 30 seconds. Oracle: check if external requests fail or return errors.",
+      "weakness_surface": "nginx is the entry point for web and api traffic; a kill will interrupt all external access and the healthcheck will fail until restart."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge worker->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge worker->redis",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge worker->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/db_mysql"
+        }
+      ],
+      "expected_invariant": "Workflow tasks complete within the expected time and no tasks are left unprocessed.",
+      "fault_family": "network_delay",
+      "hypothesis": "Adding 300ms latency to the worker service will expose the lack of retry or timeout configuration in the task queue, causing delayed task processing and potential task accumulation.",
+      "hypothesis_id": "fault-006",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 300
+      },
+      "recovery_expectation": "After removing the delay, task processing should return to normal and any backlog should be cleared.",
+      "target": "compose/service/worker",
+      "target_kind": "service",
+      "validation_plan": "Baseline: submit a set of tasks and measure completion time. Inject: add 300ms latency to worker traffic. Observe: monitor task completion time and queue length for 30 seconds. Oracle: check if task completion time exceeds threshold or tasks remain pending.",
+      "weakness_surface": "worker is a critical consumer of tasks and depends on agent_backend, db_mysql, db_postgres, redis, and seekdb; increased latency will slow task processing and may cause backlogs."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge agent_backend->plugin_daemon",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/plugin_daemon"
+        }
+      ],
+      "expected_invariant": "All plugin executions succeed without errors.",
+      "fault_family": "network_loss",
+      "hypothesis": "Causing 30% packet loss on the plugin_daemon service will expose the lack of retry logic in agent_backend, leading to intermittent plugin execution failures.",
+      "hypothesis_id": "fault-007",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 30
+      },
+      "recovery_expectation": "After removing the loss, plugin executions should return to normal and no persistent failures should remain.",
+      "target": "compose/service/plugin_daemon",
+      "target_kind": "service",
+      "validation_plan": "Baseline: trigger a set of plugin executions and confirm success. Inject: apply 30% packet loss to plugin_daemon. Observe: monitor plugin execution success rate for 30 seconds. Oracle: check if any plugin executions fail.",
+      "weakness_surface": "plugin_daemon is a critical dependency for agent_backend; packet loss will cause connection errors and plugin execution failures."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->db_postgres",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_postgres"
+        },
+        {
+          "evidence_ref": "graph edge worker->db_postgres",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/db_postgres"
+        },
+        {
+          "evidence_ref": "graph edge plugin_daemon->db_postgres",
+          "relation": "depends_on",
+          "source": "compose/service/plugin_daemon",
+          "target": "compose/service/db_postgres"
+        }
+      ],
+      "expected_invariant": "Database query latency remains within acceptable bounds and API health remains 200.",
+      "fault_family": "container_cpu_stress",
+      "hypothesis": "Stressing the PostgreSQL container CPU to 60% will expose the lack of resource limits and connection pool tuning, causing slow queries and degraded API performance.",
+      "hypothesis_id": "fault-008",
+      "parameters": {
+        "duration_s": 30,
+        "load_percent": 60,
+        "workers": 1
+      },
+      "recovery_expectation": "After stopping the CPU stress, PostgreSQL should return to normal performance and all dependent services should recover.",
+      "target": "compose/service/db_postgres",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure query latency and API response time. Inject: stress PostgreSQL CPU to 60% for 30 seconds. Observe: monitor query latency and API health. Oracle: check if query latency exceeds threshold or API health degrades.",
+      "weakness_surface": "db_postgres is a critical dependency for api, api_websocket, worker, worker_beat, and plugin_daemon; CPU saturation will degrade database performance and increase query latency."
+    }
+  ],
+  "method_id": "open-discovery-fault-scenario-v1",
+  "no_safe_hypothesis_reason": null,
+  "project_commit": "cd0e88c680dec24dcd423b880302104f13d28462",
+  "project_id": "P09"
+}

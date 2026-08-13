@@ -1,0 +1,216 @@
+{
+  "hypotheses": [
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge nginx->api",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/api"
+        }
+      ],
+      "expected_invariant": "API health endpoint remains available or recovers within a short restart window without manual intervention.",
+      "fault_family": "pod_kill",
+      "hypothesis": "Killing the api container will expose whether the healthcheck and restart policy are sufficient to maintain API availability during the restart window.",
+      "hypothesis_id": "fault-001",
+      "parameters": {
+        "mode": "one"
+      },
+      "recovery_expectation": "Docker restart policy should restart the container; healthcheck should pass after startup; cleanup is automatic.",
+      "target": "compose/service/api",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API health and mock workflow response. Inject: kill the api container. Observe: monitor health endpoint and workflow response during restart. Oracle: check that health returns to ready and workflow completes successfully after recovery.",
+      "weakness_surface": "api service has a healthcheck and restart=always, but no replica redundancy; a single kill may cause a brief availability gap and potential request failures."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge worker->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/agent_backend"
+        }
+      ],
+      "expected_invariant": "API and worker operations that rely on agent_backend remain functional or fail gracefully without cascading failures.",
+      "fault_family": "pod_kill",
+      "hypothesis": "Killing the agent_backend container will expose whether the API and worker can tolerate the loss of the agent backend, given it has no healthcheck and depends on plugin_daemon and redis.",
+      "hypothesis_id": "fault-002",
+      "parameters": {
+        "mode": "one"
+      },
+      "recovery_expectation": "Restart policy should bring agent_backend back; dependent services should recover once it is available.",
+      "target": "compose/service/agent_backend",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify mock workflow that uses agent_backend. Inject: kill agent_backend container. Observe: API responses and worker task execution. Oracle: check that requests either succeed after restart or return clear errors without system-wide failure.",
+      "weakness_surface": "agent_backend has no healthcheck and restart=always; its absence may cause API requests that depend on it to fail or hang until restart completes."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->redis",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge agent_backend->redis",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge worker->redis",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/redis"
+        }
+      ],
+      "expected_invariant": "API responses remain within acceptable latency and worker tasks are not dropped or delayed beyond a bounded threshold.",
+      "fault_family": "network_delay",
+      "hypothesis": "Introducing 500ms latency on the redis service will expose whether API, worker, and agent_backend timeouts are configured to handle slow cache/queue operations.",
+      "hypothesis_id": "fault-003",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 500
+      },
+      "recovery_expectation": "After removing the delay, latency should return to baseline and any queued tasks should process normally.",
+      "target": "compose/service/redis",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure API latency and workflow completion time. Inject: add 500ms latency to redis traffic. Observe: API response times and worker task completion. Oracle: check that API latency does not exceed a defined SLO and that tasks complete within a bounded time.",
+      "weakness_surface": "redis is a critical dependency for api, agent_backend, worker, and worker_beat; added latency may cause request timeouts or queue processing delays."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "graph edge worker->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/db_mysql"
+        }
+      ],
+      "expected_invariant": "API and worker database operations complete within a bounded time and do not cause cascading failures.",
+      "fault_family": "network_delay",
+      "hypothesis": "Adding 500ms latency to db_mysql will expose whether API and worker database timeouts are configured to handle slow queries or connection delays.",
+      "hypothesis_id": "fault-004",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 500
+      },
+      "recovery_expectation": "After removing the delay, database operations should return to normal latency and any pending work should complete.",
+      "target": "compose/service/db_mysql",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify database-dependent workflow. Inject: add 500ms latency to db_mysql. Observe: API response times and worker task success. Oracle: check that requests either succeed within a defined timeout or fail gracefully without system-wide outage.",
+      "weakness_surface": "db_mysql is a primary database for api, api_websocket, plugin_daemon, worker, and worker_beat; latency may cause connection pool exhaustion or request failures."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "topology node agent_ssrf_proxy",
+          "relation": "network dependency",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/agent_ssrf_proxy"
+        }
+      ],
+      "expected_invariant": "Agent backend operations that use the proxy remain functional or fail with retryable errors, not permanent failures.",
+      "fault_family": "network_loss",
+      "hypothesis": "Introducing 50% packet loss on the agent_ssrf_proxy will expose whether the agent backend can tolerate unreliable outbound proxy connections.",
+      "hypothesis_id": "fault-005",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 50
+      },
+      "recovery_expectation": "After removing the loss, proxy traffic should return to normal and any retries should succeed.",
+      "target": "compose/service/agent_ssrf_proxy",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify a workflow that uses the ssrf proxy. Inject: add 50% packet loss to agent_ssrf_proxy. Observe: success rate and error types of agent backend calls. Oracle: check that the system retries and eventually succeeds or returns clear errors without crashing.",
+      "weakness_surface": "agent_ssrf_proxy has no healthcheck and restart=always; packet loss may cause intermittent failures in agent backend calls that rely on the proxy."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge agent_backend->plugin_daemon",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/plugin_daemon"
+        }
+      ],
+      "expected_invariant": "Plugin-dependent operations remain available or fail gracefully without crashing the agent backend.",
+      "fault_family": "network_loss",
+      "hypothesis": "Introducing 50% packet loss on plugin_daemon will expose whether agent_backend and other dependents can handle unreliable plugin communication.",
+      "hypothesis_id": "fault-006",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 50
+      },
+      "recovery_expectation": "After removing the loss, plugin communication should return to normal and pending operations should complete.",
+      "target": "compose/service/plugin_daemon",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify a plugin invocation workflow. Inject: add 50% packet loss to plugin_daemon. Observe: success rate and error handling. Oracle: check that failures are retried or reported cleanly, and no cascading failure occurs.",
+      "weakness_surface": "plugin_daemon has no healthcheck and restart=always; packet loss may cause agent_backend to fail when invoking plugins."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge nginx->api",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/api"
+        }
+      ],
+      "expected_invariant": "API health endpoint remains responsive and request latency stays within acceptable bounds under CPU stress.",
+      "fault_family": "container_cpu_stress",
+      "hypothesis": "Stressing the api container CPU to 80% will expose whether the service can maintain responsiveness under high load, given it has a healthcheck but no resource limits.",
+      "hypothesis_id": "fault-007",
+      "parameters": {
+        "duration_s": 30,
+        "load_percent": 80,
+        "workers": 2
+      },
+      "recovery_expectation": "After stopping the stress, CPU usage should return to normal and latency should recover.",
+      "target": "compose/service/api",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure API latency and health. Inject: stress api CPU to 80% for 30s. Observe: health endpoint and request latency. Oracle: check that health remains ready and latency does not exceed a defined threshold.",
+      "weakness_surface": "api has no resource limits; CPU contention may cause healthcheck timeouts and degraded request handling."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge worker->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/agent_backend"
+        }
+      ],
+      "expected_invariant": "Worker tasks continue to be processed within a bounded delay and the worker remains healthy.",
+      "fault_family": "container_cpu_stress",
+      "hypothesis": "Stressing the worker container CPU to 80% will expose whether task processing can tolerate resource contention, given it has a healthcheck and restart=always.",
+      "hypothesis_id": "fault-008",
+      "parameters": {
+        "duration_s": 30,
+        "load_percent": 80,
+        "workers": 2
+      },
+      "recovery_expectation": "After stopping the stress, task processing should return to normal speed and health should remain stable.",
+      "target": "compose/service/worker",
+      "target_kind": "service",
+      "validation_plan": "Baseline: submit a mock task and measure completion time. Inject: stress worker CPU to 80% for 30s. Observe: task completion time and worker health. Oracle: check that tasks complete within a defined timeout and worker health remains ready.",
+      "weakness_surface": "worker has no resource limits; CPU stress may delay task processing and cause heartbeat or healthcheck failures."
+    }
+  ],
+  "method_id": "open-discovery-fault-scenario-v1",
+  "no_safe_hypothesis_reason": null,
+  "project_commit": "cd0e88c680dec24dcd423b880302104f13d28462",
+  "project_id": "P09"
+}

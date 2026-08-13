@@ -1,0 +1,355 @@
+{
+  "accepted": [
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge nginx->api",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/api"
+        },
+        {
+          "evidence_ref": "graph edge api->redis",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge api->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        }
+      ],
+      "canonical_signature": "96e04f1439adf863c9d4f1a5555f637cab6fe24a59dd899101aa859beff666fa",
+      "execution_ready": false,
+      "expected_invariant": "API health endpoint returns 200 and mock workflow completes successfully after a single pod kill.",
+      "fault_family": "pod_kill",
+      "hypothesis": "Killing the api container will expose whether the API can recover from an unexpected crash without losing in-flight requests or failing the health gate. Since api has a healthcheck and restart=always, a single kill should be tolerated, but if the healthcheck is misconfigured or the service does not re-register with nginx, the entrypoint may remain unavailable.",
+      "hypothesis_id": "fault-001",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "mode": "one"
+      },
+      "project_id": "P09",
+      "recovery_expectation": "Container restarts automatically due to restart=always; API should become healthy within a few seconds and workflow should succeed after retries.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/api",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API health and mock workflow. Inject: kill the api container once. Observe: check API health, nginx routing, and workflow response for up to 60s. Oracle: health must return 200 and workflow must complete within timeout.",
+      "weakness_surface": "The api service is the main HTTP entrypoint and depends on multiple databases and redis. A crash may cause connection pool exhaustion or stale state if recovery is not clean.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge worker->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge agent_backend->redis",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/redis"
+        }
+      ],
+      "canonical_signature": "22c884e0293c84b0ec6406b28d75ee6dbc2b21b160d7b92884bdd39ccdd3a721",
+      "execution_ready": false,
+      "expected_invariant": "API health remains 200 and mock workflow completes even if agent_backend is temporarily down.",
+      "fault_family": "pod_kill",
+      "hypothesis": "Killing agent_backend will test whether the API and worker can handle the loss of the agent backend without cascading failures. agent_backend has no healthcheck and restart=always, so a kill may cause a longer outage if the service does not recover cleanly or if dependent services do not retry.",
+      "hypothesis_id": "fault-002",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "mode": "one"
+      },
+      "project_id": "P09",
+      "recovery_expectation": "agent_backend restarts automatically; dependent services should retry and recover within a short window.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/agent_backend",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API health and mock workflow. Inject: kill agent_backend once. Observe: monitor API health, worker task processing, and workflow completion. Oracle: API must stay healthy and workflow must eventually succeed.",
+      "weakness_surface": "agent_backend is a critical dependency for api and worker. Its lack of healthcheck means the orchestrator may not detect readiness, and a crash could leave stale connections in api and worker.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->redis",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge agent_backend->redis",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge worker->redis",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/redis"
+        }
+      ],
+      "canonical_signature": "83e9586ecb41fe32858fdf5ec777e4f47a3f1535ee34d5212f28e2f06d18e9a3",
+      "execution_ready": false,
+      "expected_invariant": "API health remains 200 and mock workflow completes within acceptable latency (e.g., <2s).",
+      "fault_family": "network_delay",
+      "hypothesis": "Introducing 200ms latency on the redis service will test whether the API and worker can tolerate increased response times without timing out. Redis is a shared dependency for api, agent_backend, worker, and worker_beat, so latency may cause cascading slowdowns.",
+      "hypothesis_id": "fault-003",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 200
+      },
+      "project_id": "P09",
+      "recovery_expectation": "After removing latency, redis returns to normal and all services should recover to baseline performance.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/redis",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure API response time and workflow duration. Inject: add 200ms latency to redis for 30s. Observe: API response times, workflow completion, and any timeout errors. Oracle: API must remain healthy and workflow must complete within a defined threshold.",
+      "weakness_surface": "Redis is a critical cache and message broker. Added latency may cause timeouts in API requests, worker task processing, and agent backend operations, especially if timeouts are not configured.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "graph edge plugin_daemon->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/plugin_daemon",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "graph edge worker->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/db_mysql"
+        }
+      ],
+      "canonical_signature": "aa9796a1829130cd142dff5ac603fc4f9a0aa6195e8fede4815244f2f2840218",
+      "execution_ready": false,
+      "expected_invariant": "API health remains 200 and mock workflow completes despite intermittent MySQL packet loss.",
+      "fault_family": "network_loss",
+      "hypothesis": "Introducing 20% packet loss on the MySQL service will test whether the API and worker can handle intermittent database connectivity issues. MySQL is a primary database for api, plugin_daemon, worker, and worker_beat, so packet loss may cause query failures and retries.",
+      "hypothesis_id": "fault-004",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 20
+      },
+      "project_id": "P09",
+      "recovery_expectation": "After removing packet loss, MySQL connectivity returns to normal and services should recover without manual intervention.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/db_mysql",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API health and workflow. Inject: add 20% packet loss to MySQL for 30s. Observe: API health, workflow completion, and database error logs. Oracle: API must remain healthy and workflow must eventually succeed.",
+      "weakness_surface": "MySQL is a critical data store. Packet loss may cause connection resets, transaction failures, and data inconsistency if retries are not idempotent.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge worker->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/agent_backend"
+        }
+      ],
+      "canonical_signature": "1e32af994f96f26f678705a3362b0f386fce662ebc7e0332e655cad9a0444490",
+      "execution_ready": false,
+      "expected_invariant": "API health remains 200 and mock workflow completes within a reasonable time despite CPU stress on agent_backend.",
+      "fault_family": "container_cpu_stress",
+      "hypothesis": "Stressing the agent_backend CPU to 80% for 30s will test whether the service can maintain responsiveness under load. agent_backend has no healthcheck and is a critical dependency for api and worker, so CPU saturation may cause timeouts and degraded performance.",
+      "hypothesis_id": "fault-005",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "duration_s": 30,
+        "load_percent": 80,
+        "workers": 1
+      },
+      "project_id": "P09",
+      "recovery_expectation": "After stopping CPU stress, agent_backend should return to normal performance and all services should recover.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/agent_backend",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure API response time and workflow duration. Inject: stress agent_backend CPU to 80% for 30s. Observe: API health, workflow completion, and agent_backend responsiveness. Oracle: API must remain healthy and workflow must complete within a defined threshold.",
+      "weakness_surface": "agent_backend may become unresponsive under CPU stress, causing API requests and worker tasks to fail or time out. Lack of healthcheck may delay detection.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge worker->redis",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge worker->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "graph edge worker->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/agent_backend"
+        }
+      ],
+      "canonical_signature": "603bca20c720f6011afd1ebf1981933a1680664049c774a6e9e6c7093fece5a2",
+      "execution_ready": false,
+      "expected_invariant": "All queued tasks are eventually processed successfully after a worker restart.",
+      "fault_family": "pod_kill",
+      "hypothesis": "Killing the worker container will test whether background task processing can recover from a crash without losing queued tasks. worker has a healthcheck and restart=always, so a single kill should be tolerated, but if tasks are not idempotent or the queue is not durable, tasks may be lost.",
+      "hypothesis_id": "fault-006",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "mode": "one"
+      },
+      "project_id": "P09",
+      "recovery_expectation": "worker restarts automatically and resumes processing; queued tasks should be picked up after recovery.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/worker",
+      "target_kind": "service",
+      "validation_plan": "Baseline: enqueue a known set of tasks and verify completion. Inject: kill worker once. Observe: task completion status and any errors. Oracle: all tasks must eventually complete without manual intervention.",
+      "weakness_surface": "worker processes asynchronous tasks and depends on multiple databases and redis. A crash may cause task loss or duplicate execution if the queue is not persistent.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge nginx->api",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/api"
+        },
+        {
+          "evidence_ref": "graph edge nginx->web",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/web"
+        }
+      ],
+      "canonical_signature": "c08b79764fcada7d92ccb72f370bf8653d8757a9693e324ac1d5198d80c34ef6",
+      "execution_ready": false,
+      "expected_invariant": "API health remains 200 and mock workflow completes within acceptable latency (e.g., <2s).",
+      "fault_family": "network_delay",
+      "hypothesis": "Introducing 100ms latency on the nginx service will test whether the frontend proxy can handle increased response times without breaking client connections. nginx is the entrypoint for api and web, so latency may cause timeouts for external clients.",
+      "hypothesis_id": "fault-007",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 100
+      },
+      "project_id": "P09",
+      "recovery_expectation": "After removing latency, nginx returns to normal and all services should recover to baseline performance.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/nginx",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure API response time and workflow duration. Inject: add 100ms latency to nginx for 30s. Observe: API health, workflow completion, and client-facing response times. Oracle: API must remain healthy and workflow must complete within a defined threshold.",
+      "weakness_surface": "nginx is the reverse proxy and load balancer. Added latency may cause client timeouts and degraded user experience, especially if upstream timeouts are not configured.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge api->db_postgres",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_postgres"
+        },
+        {
+          "evidence_ref": "graph edge plugin_daemon->db_postgres",
+          "relation": "depends_on",
+          "source": "compose/service/plugin_daemon",
+          "target": "compose/service/db_postgres"
+        },
+        {
+          "evidence_ref": "graph edge worker->db_postgres",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/db_postgres"
+        }
+      ],
+      "canonical_signature": "1e2b5d873cb0c413394c4b382a7d72fa12869227abe1b2fc961caab5638bb1bc",
+      "execution_ready": false,
+      "expected_invariant": "API health remains 200 and mock workflow completes despite intermittent PostgreSQL packet loss.",
+      "fault_family": "network_loss",
+      "hypothesis": "Introducing 10% packet loss on the PostgreSQL service will test whether the API and worker can handle intermittent database connectivity issues. PostgreSQL is a primary database for api, plugin_daemon, worker, and worker_beat, so packet loss may cause query failures and retries.",
+      "hypothesis_id": "fault-008",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 10
+      },
+      "project_id": "P09",
+      "recovery_expectation": "After removing packet loss, PostgreSQL connectivity returns to normal and services should recover without manual intervention.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/db_postgres",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API health and workflow. Inject: add 10% packet loss to PostgreSQL for 30s. Observe: API health, workflow completion, and database error logs. Oracle: API must remain healthy and workflow must eventually succeed.",
+      "weakness_surface": "PostgreSQL is a critical data store. Packet loss may cause connection resets, transaction failures, and data inconsistency if retries are not idempotent.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    }
+  ],
+  "accepted_count": 8,
+  "compiler": "open_discovery_compiler_v1",
+  "rejected": [],
+  "rejected_count": 0,
+  "status": "valid"
+}

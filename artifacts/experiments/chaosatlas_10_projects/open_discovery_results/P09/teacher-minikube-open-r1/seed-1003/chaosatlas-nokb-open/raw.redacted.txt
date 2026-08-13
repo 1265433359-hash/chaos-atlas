@@ -1,0 +1,96 @@
+{
+  "hypotheses": [
+    {
+      "id": "H1",
+      "target": "compose/service/api",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "expected_impact": "API service becomes unavailable, causing health check failure and potential cascading failures to dependent services.",
+      "reasoning": "The API service is a central component with healthcheck enabled and depends on multiple services. Killing it would disrupt the primary workload.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H2",
+      "target": "compose/service/redis",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "expected_impact": "Redis is a dependency for api, worker, worker_beat, and agent_backend. Its failure could cause these services to malfunction or crash.",
+      "reasoning": "Redis is a critical shared dependency; its loss would affect multiple services.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H3",
+      "target": "compose/service/db_mysql",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "expected_impact": "MySQL database is used by api, api_websocket, plugin_daemon, worker, and worker_beat. Its failure would cause data unavailability and service errors.",
+      "reasoning": "Database is a critical dependency; its loss would impact many services.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H4",
+      "target": "compose/service/nginx",
+      "fault": "network_delay",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 200
+      },
+      "expected_impact": "Increased latency on nginx would slow down all incoming traffic to api and web, degrading user experience.",
+      "reasoning": "Nginx is the entry point; adding delay would affect the entire system.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H5",
+      "target": "compose/service/elasticsearch",
+      "fault": "container_cpu_stress",
+      "parameters": {
+        "duration_s": 30,
+        "load_percent": 80,
+        "workers": 1
+      },
+      "expected_impact": "CPU stress on elasticsearch could cause it to become slow or unresponsive, affecting kibana and any services that depend on it.",
+      "reasoning": "Elasticsearch has resource limits, but CPU stress could still degrade performance.",
+      "result_class": "latent_risk"
+    },
+    {
+      "id": "H6",
+      "target": "compose/service/agent_backend",
+      "fault": "network_loss",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 50
+      },
+      "expected_impact": "Network loss on agent_backend would disrupt communication with plugin_daemon and redis, potentially causing agent functionality to fail.",
+      "reasoning": "Agent_backend depends on plugin_daemon and redis; network loss would break these connections.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H7",
+      "target": "compose/service/worker",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "expected_impact": "Worker service is critical for background tasks; killing it would stop task processing, affecting overall system functionality.",
+      "reasoning": "Worker has healthcheck and depends on multiple services; its failure would impact task execution.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H8",
+      "target": "compose/service/plugin_daemon",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "expected_impact": "Plugin daemon is a dependency for agent_backend; its failure would break agent functionality.",
+      "reasoning": "Agent_backend depends on plugin_daemon; killing it would cause agent_backend to fail.",
+      "result_class": "confirmed_weakness"
+    }
+  ]
+}

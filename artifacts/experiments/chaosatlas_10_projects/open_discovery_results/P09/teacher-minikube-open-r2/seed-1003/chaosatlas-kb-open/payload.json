@@ -1,0 +1,328 @@
+{
+  "hypotheses": [
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge: nginx -> api",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/api"
+        },
+        {
+          "evidence_ref": "graph edge: api -> agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge: api -> db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "graph edge: api -> db_postgres",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_postgres"
+        },
+        {
+          "evidence_ref": "graph edge: api -> redis",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/redis"
+        }
+      ],
+      "expected_invariant": "API remains available and recovers within a bounded time after a single pod kill.",
+      "fault_family": "pod_kill",
+      "hypothesis": "The API service has a healthcheck and restart policy, but its dependency on agent_backend and multiple databases may cause a crash loop if the API pod is killed and dependencies are not ready or if the API cannot re-establish connections.",
+      "hypothesis_id": "H1",
+      "parameters": {
+        "mode": "one"
+      },
+      "recovery_expectation": "API should restart and become healthy within 30s; if it crash loops, that indicates a weakness.",
+      "target": "compose/service/api",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API health endpoint returns 200. Inject: kill the API pod. Observe: monitor API health and container status for 60s. Oracle: check if API returns 200 within 30s and does not enter crash loop.",
+      "weakness_surface": "API service restart and dependency readiness; potential crash loop or prolonged unavailability."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge: api -> agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge: agent_backend -> plugin_daemon",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/plugin_daemon"
+        },
+        {
+          "evidence_ref": "graph edge: agent_backend -> redis",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/redis"
+        }
+      ],
+      "expected_invariant": "API requests that depend on agent_backend continue to succeed or fail gracefully without crashing the API.",
+      "fault_family": "pod_kill",
+      "hypothesis": "agent_backend has no healthcheck and depends on plugin_daemon and redis. Killing it may cause the API to fail or return errors until agent_backend restarts, but without a healthcheck, the restart may not be detected promptly.",
+      "hypothesis_id": "H2",
+      "parameters": {
+        "mode": "one"
+      },
+      "recovery_expectation": "agent_backend restarts and API recovers; if API does not recover or returns errors for extended period, weakness.",
+      "target": "compose/service/agent_backend",
+      "target_kind": "service",
+      "validation_plan": "Baseline: send a mock workflow request through API and confirm success. Inject: kill agent_backend pod. Observe: send same request repeatedly for 60s. Oracle: check if API returns 5xx or times out; if so, weakness confirmed.",
+      "weakness_surface": "agent_backend lacks healthcheck; API may not detect its unavailability and may fail requests."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge: api -> redis",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge: agent_backend -> redis",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge: worker -> redis",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "graph edge: worker_beat -> redis",
+          "relation": "depends_on",
+          "source": "compose/service/worker_beat",
+          "target": "compose/service/redis"
+        }
+      ],
+      "expected_invariant": "API and worker functionality remain available or recover quickly after Redis restart.",
+      "fault_family": "pod_kill",
+      "hypothesis": "Redis is a critical dependency for api, agent_backend, worker, and worker_beat. Killing Redis may cause cascading failures across multiple services, and without a healthcheck on agent_backend, recovery may be delayed.",
+      "hypothesis_id": "H3",
+      "parameters": {
+        "mode": "one"
+      },
+      "recovery_expectation": "Redis restarts and dependent services reconnect; if API or workers fail to recover, weakness.",
+      "target": "compose/service/redis",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API health and a mock workflow. Inject: kill Redis pod. Observe: monitor API health and worker logs for 60s. Oracle: check if API returns 200 and workflow completes within 30s of Redis restart.",
+      "weakness_surface": "Redis as a single point of failure; multiple services depend on it."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge: api -> agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge: api -> db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "graph edge: api -> db_postgres",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_postgres"
+        },
+        {
+          "evidence_ref": "graph edge: api -> redis",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/redis"
+        }
+      ],
+      "expected_invariant": "API remains responsive and completes requests within acceptable latency even when dependencies are slow.",
+      "fault_family": "network_delay",
+      "hypothesis": "Adding network delay to the API may cause timeouts in its dependencies (agent_backend, databases) and expose lack of timeout handling or circuit breakers, leading to API unavailability.",
+      "hypothesis_id": "H4",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 500
+      },
+      "recovery_expectation": "API should handle delay gracefully; if it times out or errors, weakness.",
+      "target": "compose/service/api",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure API response time for a mock workflow. Inject: add 500ms delay to API's network. Observe: send requests and measure response times and error rates for 30s. Oracle: check if API returns 5xx or response time exceeds 2s.",
+      "weakness_surface": "API's dependency calls may not have adequate timeouts; network delay could cause cascading failures."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge: api -> agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge: agent_backend -> plugin_daemon",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/plugin_daemon"
+        },
+        {
+          "evidence_ref": "graph edge: agent_backend -> redis",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/redis"
+        }
+      ],
+      "expected_invariant": "API requests that depend on agent_backend complete within a reasonable time even when agent_backend's dependencies are slow.",
+      "fault_family": "network_delay",
+      "hypothesis": "agent_backend has no healthcheck and may not handle network delays to its dependencies (plugin_daemon, redis) well, causing API requests to fail or hang.",
+      "hypothesis_id": "H5",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 500
+      },
+      "recovery_expectation": "agent_backend should handle delay; if API requests fail or hang, weakness.",
+      "target": "compose/service/agent_backend",
+      "target_kind": "service",
+      "validation_plan": "Baseline: send a mock workflow request and measure latency. Inject: add 500ms delay to agent_backend's network. Observe: send same request and measure latency and success for 30s. Oracle: check if request fails or exceeds 2s.",
+      "weakness_surface": "agent_backend's lack of healthcheck and potential lack of timeout handling."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge: api -> agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge: api -> db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "graph edge: api -> db_postgres",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_postgres"
+        },
+        {
+          "evidence_ref": "graph edge: api -> redis",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/redis"
+        }
+      ],
+      "expected_invariant": "API remains available and completes requests despite network loss.",
+      "fault_family": "network_loss",
+      "hypothesis": "Network loss on the API may cause dropped connections to dependencies, exposing lack of retry logic or connection pooling, leading to API errors.",
+      "hypothesis_id": "H6",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 50
+      },
+      "recovery_expectation": "API should recover after network loss is removed; if errors persist, weakness.",
+      "target": "compose/service/api",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API health. Inject: add 50% network loss to API. Observe: send requests and monitor error rate for 30s. Oracle: check if error rate exceeds 10% or API becomes unavailable.",
+      "weakness_surface": "API's network reliability; potential lack of retries or failover."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge: api -> agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge: agent_backend -> plugin_daemon",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/plugin_daemon"
+        },
+        {
+          "evidence_ref": "graph edge: agent_backend -> redis",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/redis"
+        }
+      ],
+      "expected_invariant": "API requests that depend on agent_backend succeed or fail gracefully without data corruption.",
+      "fault_family": "network_loss",
+      "hypothesis": "Network loss on agent_backend may cause it to lose connectivity to plugin_daemon and redis, leading to failed API requests and potential data inconsistency.",
+      "hypothesis_id": "H7",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 50
+      },
+      "recovery_expectation": "agent_backend should recover after network loss is removed; if requests fail or data is inconsistent, weakness.",
+      "target": "compose/service/agent_backend",
+      "target_kind": "service",
+      "validation_plan": "Baseline: send a mock workflow request. Inject: add 50% network loss to agent_backend. Observe: send same request and monitor for errors or hangs for 30s. Oracle: check if request fails or returns incorrect data.",
+      "weakness_surface": "agent_backend's dependency on network reliability; lack of healthcheck may delay detection."
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "graph edge: nginx -> api",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/api"
+        },
+        {
+          "evidence_ref": "graph edge: api -> agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "graph edge: api -> db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "graph edge: api -> db_postgres",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_postgres"
+        },
+        {
+          "evidence_ref": "graph edge: api -> redis",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/redis"
+        }
+      ],
+      "expected_invariant": "API remains responsive and completes requests within acceptable latency under CPU stress.",
+      "fault_family": "container_cpu_stress",
+      "hypothesis": "CPU stress on the API may cause it to become unresponsive or slow, exposing lack of resource limits and potential inability to handle load, leading to timeouts.",
+      "hypothesis_id": "H8",
+      "parameters": {
+        "duration_s": 30,
+        "load_percent": 80,
+        "workers": 2
+      },
+      "recovery_expectation": "API should recover after stress is removed; if it remains slow or errors, weakness.",
+      "target": "compose/service/api",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure API response time. Inject: stress API CPU to 80% for 30s. Observe: send requests and measure response times and error rates. Oracle: check if response time exceeds 2s or error rate increases.",
+      "weakness_surface": "API has no resource limits; CPU contention may cause performance degradation."
+    }
+  ],
+  "method_id": "P09-open-discovery-001",
+  "no_safe_hypothesis_reason": null,
+  "project_commit": "cd0e88c680dec24dcd423b880302104f13d28462",
+  "project_id": "P09"
+}

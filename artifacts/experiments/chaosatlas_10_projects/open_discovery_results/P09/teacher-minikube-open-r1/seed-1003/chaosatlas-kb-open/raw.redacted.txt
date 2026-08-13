@@ -1,0 +1,97 @@
+{
+  "hypotheses": [
+    {
+      "id": "H1",
+      "target": "compose/service/api",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "predicted_impact": "API service becomes unavailable, causing health check failure and potential cascading failures to dependent services (nginx, web).",
+      "rationale": "API is a central service with healthcheck enabled and depends on multiple databases and redis. Killing it will disrupt the primary workload.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H2",
+      "target": "compose/service/redis",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "predicted_impact": "Redis is a dependency for api, worker, worker_beat, and agent_backend. Its failure may cause these services to malfunction or crash.",
+      "rationale": "Redis is a critical cache/queue; its loss can lead to cascading failures across multiple services.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H3",
+      "target": "compose/service/db_mysql",
+      "fault": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "predicted_impact": "Increased latency to MySQL may cause timeouts in API and worker, leading to degraded performance or errors.",
+      "rationale": "MySQL is a primary database; network delay can cause slow queries and timeouts.",
+      "result_class": "latent_risk"
+    },
+    {
+      "id": "H4",
+      "target": "compose/service/nginx",
+      "fault": "network_loss",
+      "parameters": {
+        "loss_percent": 50,
+        "duration_s": 30
+      },
+      "predicted_impact": "Packet loss on nginx may cause intermittent connectivity issues for external clients, affecting the entire application.",
+      "rationale": "Nginx is the entry point; network loss can lead to request failures.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H5",
+      "target": "compose/service/elasticsearch",
+      "fault": "container_cpu_stress",
+      "parameters": {
+        "load_percent": 80,
+        "workers": 2,
+        "duration_s": 30
+      },
+      "predicted_impact": "CPU stress on Elasticsearch may slow down indexing and search operations, affecting Kibana and any services relying on it.",
+      "rationale": "Elasticsearch is resource-intensive; CPU stress can degrade performance.",
+      "result_class": "latent_risk"
+    },
+    {
+      "id": "H6",
+      "target": "compose/service/worker",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "predicted_impact": "Worker service becomes unavailable, potentially stopping background task processing, affecting overall system functionality.",
+      "rationale": "Worker handles async tasks; its failure may lead to unprocessed jobs.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H7",
+      "target": "compose/service/agent_backend",
+      "fault": "network_delay",
+      "parameters": {
+        "latency_ms": 300,
+        "duration_s": 30
+      },
+      "predicted_impact": "Increased latency to agent_backend may cause delays in API responses that depend on it, affecting user experience.",
+      "rationale": "Agent_backend is a dependency for api and worker; network delay can cause timeouts.",
+      "result_class": "latent_risk"
+    },
+    {
+      "id": "H8",
+      "target": "compose/service/couchbase-server",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "predicted_impact": "Couchbase server becomes unavailable, potentially causing data access failures for services that use it.",
+      "rationale": "Couchbase is a database; its failure can lead to data unavailability.",
+      "result_class": "confirmed_weakness"
+    }
+  ]
+}

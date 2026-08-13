@@ -1,0 +1,90 @@
+{
+  "hypotheses": [
+    {
+      "id": "H1",
+      "target": "compose/service/api",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "reasoning": "The API service is a critical entry point with healthcheck enabled. Killing its pod will cause downtime, but restart policy 'always' should recover it. However, the API depends on multiple services (agent_backend, db_mysql, db_postgres, init_permissions, oceanbase, redis, seekdb). If any of these are unavailable, the API may fail health checks even after restart, indicating a latent risk.",
+      "result_class": "latent_risk"
+    },
+    {
+      "id": "H2",
+      "target": "compose/service/agent_backend",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "reasoning": "agent_backend has no healthcheck and depends on plugin_daemon and redis. Killing it may not be detected by the orchestrator, and its absence could cause failures in dependent services (api, worker) that rely on it. Since there is no healthcheck, recovery might be delayed, leading to cascading failures.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H3",
+      "target": "compose/service/redis",
+      "fault": "network_delay",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 200
+      },
+      "reasoning": "Redis is a shared dependency for many services (agent_backend, api, api_websocket, worker, worker_beat). Introducing network delay could cause timeouts and performance degradation across the system. Since Redis has a healthcheck, the delay might not be detected as a failure, but it could still impact dependent services.",
+      "result_class": "latent_risk"
+    },
+    {
+      "id": "H4",
+      "target": "compose/service/db_mysql",
+      "fault": "network_loss",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 50
+      },
+      "reasoning": "db_mysql is a critical database with healthcheck. Network loss could cause connection failures for dependent services (api, api_websocket, plugin_daemon, worker, worker_beat). The healthcheck might fail, but the restart policy 'always' could restart the container. However, if the network loss is on the pod's network, it might not recover quickly, leading to data unavailability.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H5",
+      "target": "compose/service/nginx",
+      "fault": "container_cpu_stress",
+      "parameters": {
+        "duration_s": 30,
+        "load_percent": 80,
+        "workers": 1
+      },
+      "reasoning": "nginx is the entry point for external traffic. CPU stress could cause it to become unresponsive, affecting all incoming requests. Since nginx has no healthcheck, the issue might not be detected automatically, and the restart policy 'always' might not trigger if the container doesn't crash. This could lead to a denial of service.",
+      "result_class": "confirmed_weakness"
+    },
+    {
+      "id": "H6",
+      "target": "compose/service/worker",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "reasoning": "worker has a healthcheck and depends on multiple services. Killing it will stop background processing. The restart policy 'always' should bring it back, but if dependencies are not ready, it might fail health checks. This could cause delayed processing and potential data inconsistency.",
+      "result_class": "latent_risk"
+    },
+    {
+      "id": "H7",
+      "target": "compose/service/elasticsearch",
+      "fault": "network_delay",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 300
+      },
+      "reasoning": "elasticsearch has resource limits and a healthcheck. Network delay could cause timeouts for dependent services like kibana. Since it has resource limits, it might be more sensitive to delays. The healthcheck might fail, but the restart policy 'always' could recover it. However, the delay could cause data indexing issues.",
+      "result_class": "latent_risk"
+    },
+    {
+      "id": "H8",
+      "target": "compose/service/plugin_daemon",
+      "fault": "network_loss",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 30
+      },
+      "reasoning": "plugin_daemon is a dependency for agent_backend. Network loss could cause agent_backend to lose connectivity to plugin_daemon, affecting its functionality. Since plugin_daemon has no healthcheck, the issue might not be detected, and the restart policy 'always' might not trigger if the container doesn't crash. This could lead to silent failures.",
+      "result_class": "confirmed_weakness"
+    }
+  ]
+}

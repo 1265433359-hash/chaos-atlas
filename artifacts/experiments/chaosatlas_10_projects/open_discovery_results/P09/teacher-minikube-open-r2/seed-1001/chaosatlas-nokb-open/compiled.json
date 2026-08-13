@@ -1,0 +1,367 @@
+{
+  "accepted": [
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "edge: nginx->api",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/api"
+        },
+        {
+          "evidence_ref": "edge: api->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "edge: api->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        }
+      ],
+      "canonical_signature": "96e04f1439adf863c9d4f1a5555f637cab6fe24a59dd899101aa859beff666fa",
+      "execution_ready": false,
+      "expected_invariant": "API remains available and responds to health checks within a short recovery window after a pod kill.",
+      "fault_family": "pod_kill",
+      "hypothesis": "The API service is a single instance with no replicas and depends on multiple critical backends. A pod kill will cause a full API outage until the container restarts, and because there is no healthcheck on the API (only a restart policy), the orchestrator may not detect the failure promptly, leading to a longer downtime than necessary.",
+      "hypothesis_id": "H1",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "mode": "one"
+      },
+      "project_id": "P09",
+      "recovery_expectation": "Container restarts due to restart:always; API should recover automatically, but downtime may be longer due to lack of healthcheck.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/api",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API health endpoint returns 200. Inject pod_kill on api. Observe API availability and container restart. Oracle: check that API recovers within expected restart policy time and health endpoint returns 200.",
+      "weakness_surface": "Single point of failure at the API service; lack of healthcheck delays failure detection and recovery.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "edge: api->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "edge: worker->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "edge: agent_backend->plugin_daemon",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/plugin_daemon"
+        }
+      ],
+      "canonical_signature": "22c884e0293c84b0ec6406b28d75ee6dbc2b21b160d7b92884bdd39ccdd3a721",
+      "execution_ready": false,
+      "expected_invariant": "API and worker continue to function or fail gracefully when agent_backend is unavailable.",
+      "fault_family": "pod_kill",
+      "hypothesis": "agent_backend is a critical dependency for api and worker, but it has no healthcheck and only a restart policy. A pod kill will cause all dependent services to lose functionality until restart completes, and without healthcheck, the system may not detect the failure quickly, leading to cascading timeouts.",
+      "hypothesis_id": "H2",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "mode": "one"
+      },
+      "project_id": "P09",
+      "recovery_expectation": "agent_backend restarts due to restart:always; dependent services may recover after restart, but may experience errors during downtime.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/agent_backend",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API and worker health. Inject pod_kill on agent_backend. Observe API and worker behavior. Oracle: check if API returns errors or timeouts; check if worker tasks fail.",
+      "weakness_surface": "agent_backend is a single point of failure with no healthcheck; dependent services (api, worker) may not handle its unavailability gracefully.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "edge: api->redis",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "edge: agent_backend->redis",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/redis"
+        },
+        {
+          "evidence_ref": "edge: worker->redis",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/redis"
+        }
+      ],
+      "canonical_signature": "735445df6ec3121a4696c031907228ecc9a3ba8a52bb66ec7da39a1060b6ffcd",
+      "execution_ready": false,
+      "expected_invariant": "API and worker continue to operate normally or fail gracefully when Redis is unavailable.",
+      "fault_family": "pod_kill",
+      "hypothesis": "Redis is a shared dependency for api, agent_backend, worker, and worker_beat. A pod kill will cause cache misses, session loss, and potential queue disruption. Since Redis has a healthcheck and restart policy, recovery may be quick, but the impact on dependent services could be significant if they do not handle Redis unavailability gracefully.",
+      "hypothesis_id": "H3",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "mode": "one"
+      },
+      "project_id": "P09",
+      "recovery_expectation": "Redis restarts due to restart:always; dependent services may recover after restart, but may experience errors during downtime.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/redis",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API and worker functionality. Inject pod_kill on redis. Observe API and worker behavior. Oracle: check if API returns errors or timeouts; check if worker tasks fail.",
+      "weakness_surface": "Redis is a critical shared dependency; its failure can cause cascading failures across multiple services.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "edge: api->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "edge: plugin_daemon->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/plugin_daemon",
+          "target": "compose/service/db_mysql"
+        },
+        {
+          "evidence_ref": "edge: worker->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/db_mysql"
+        }
+      ],
+      "canonical_signature": "38a2950fec3f63c6e10aaa74b25afa39857b1c1f6d4558de123b584afd1de302",
+      "execution_ready": false,
+      "expected_invariant": "API and worker continue to function or fail gracefully when MySQL is unavailable.",
+      "fault_family": "pod_kill",
+      "hypothesis": "MySQL is a primary database for api, plugin_daemon, worker, and worker_beat. A pod kill will cause data unavailability and potential data loss if writes are in flight. MySQL has a healthcheck and restart policy, but the impact on dependent services could be severe if they do not handle database unavailability gracefully.",
+      "hypothesis_id": "H4",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "mode": "one"
+      },
+      "project_id": "P09",
+      "recovery_expectation": "MySQL restarts due to restart:always; dependent services may recover after restart, but may experience errors during downtime.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/db_mysql",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API and worker functionality. Inject pod_kill on db_mysql. Observe API and worker behavior. Oracle: check if API returns errors or timeouts; check if worker tasks fail.",
+      "weakness_surface": "MySQL is a critical data store; its failure can cause data unavailability and cascading failures.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "edge: nginx->api",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/api"
+        },
+        {
+          "evidence_ref": "edge: api->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "edge: api->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        }
+      ],
+      "canonical_signature": "787539eb9e354379cf96f5e3cbe36751837152d782e01db7b633d63d5b821a00",
+      "execution_ready": false,
+      "expected_invariant": "API responses remain within acceptable latency bounds under network delay.",
+      "fault_family": "network_delay",
+      "hypothesis": "The API service has no healthcheck and depends on multiple backends. Introducing network delay on the API's outbound connections may cause timeouts and degraded performance, but without healthcheck, the system may not detect the degradation and continue to route traffic to a slow API.",
+      "hypothesis_id": "H5",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 500
+      },
+      "project_id": "P09",
+      "recovery_expectation": "After removing delay, API should return to normal latency; no persistent impact expected.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/api",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure API response time. Inject network_delay on api. Observe API response time and health. Oracle: check if response time exceeds acceptable threshold or if health endpoint fails.",
+      "weakness_surface": "Lack of healthcheck on API; network delay can cause timeouts and degraded performance without detection.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "edge: api->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "edge: worker->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "edge: agent_backend->plugin_daemon",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/plugin_daemon"
+        }
+      ],
+      "canonical_signature": "d2d6cb7826759586fd19dd98ab6f864174702e417998f0cd6b2ed38662979b6a",
+      "execution_ready": false,
+      "expected_invariant": "API and worker continue to function within acceptable latency bounds when agent_backend experiences network delay.",
+      "fault_family": "network_delay",
+      "hypothesis": "agent_backend is a critical dependency for api and worker. Introducing network delay on agent_backend's outbound connections may cause timeouts and degraded performance in dependent services. Since agent_backend has no healthcheck, the system may not detect the degradation and continue to rely on a slow backend.",
+      "hypothesis_id": "H6",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 500
+      },
+      "project_id": "P09",
+      "recovery_expectation": "After removing delay, dependent services should return to normal latency; no persistent impact expected.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/agent_backend",
+      "target_kind": "service",
+      "validation_plan": "Baseline: measure API and worker response times. Inject network_delay on agent_backend. Observe API and worker response times. Oracle: check if response times exceed acceptable thresholds.",
+      "weakness_surface": "agent_backend has no healthcheck; network delay can cause timeouts and degraded performance without detection.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "edge: nginx->api",
+          "relation": "depends_on",
+          "source": "compose/service/nginx",
+          "target": "compose/service/api"
+        },
+        {
+          "evidence_ref": "edge: api->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "edge: api->db_mysql",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/db_mysql"
+        }
+      ],
+      "canonical_signature": "9bf7bfc9eada4acd19051080d8d815d157de41bc21ffd2ccfa1194f707b3b499",
+      "execution_ready": false,
+      "expected_invariant": "API remains responsive and healthy under CPU stress.",
+      "fault_family": "container_cpu_stress",
+      "hypothesis": "The API service has no resource limits and no healthcheck. CPU stress may cause the API to become unresponsive or slow, but without healthcheck, the system may not detect the degradation and continue to route traffic to an overloaded API.",
+      "hypothesis_id": "H7",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "duration_s": 30,
+        "load_percent": 80,
+        "workers": 2
+      },
+      "project_id": "P09",
+      "recovery_expectation": "After removing CPU stress, API should return to normal; no persistent impact expected.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/api",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API health and response time. Inject container_cpu_stress on api. Observe API health and response time. Oracle: check if API becomes unresponsive or health endpoint fails.",
+      "weakness_surface": "Lack of resource limits and healthcheck on API; CPU stress can cause unresponsiveness without detection.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    },
+    {
+      "call_chain": [
+        {
+          "evidence_ref": "edge: api->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/api",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "edge: worker->agent_backend",
+          "relation": "depends_on",
+          "source": "compose/service/worker",
+          "target": "compose/service/agent_backend"
+        },
+        {
+          "evidence_ref": "edge: agent_backend->plugin_daemon",
+          "relation": "depends_on",
+          "source": "compose/service/agent_backend",
+          "target": "compose/service/plugin_daemon"
+        }
+      ],
+      "canonical_signature": "595583c27863289052aae71f19bc1edd964b1d1c1a41f58678e1aaa7c39af701",
+      "execution_ready": false,
+      "expected_invariant": "API and worker continue to function normally when agent_backend is under CPU stress.",
+      "fault_family": "container_cpu_stress",
+      "hypothesis": "agent_backend has no resource limits and no healthcheck. CPU stress may cause it to become unresponsive, affecting api and worker. Without healthcheck, the system may not detect the degradation and continue to rely on an overloaded backend.",
+      "hypothesis_id": "H8",
+      "namespace": "chaosatlas-p09",
+      "novelty": "novel_candidate",
+      "parameters": {
+        "duration_s": 30,
+        "load_percent": 80,
+        "workers": 2
+      },
+      "project_id": "P09",
+      "recovery_expectation": "After removing CPU stress, agent_backend should return to normal; dependent services should recover.",
+      "resolved_target": null,
+      "resolver_status": "pending_runtime_resolver",
+      "status": "accepted_novel_candidate",
+      "target": "compose/service/agent_backend",
+      "target_kind": "service",
+      "validation_plan": "Baseline: verify API and worker functionality. Inject container_cpu_stress on agent_backend. Observe API and worker behavior. Oracle: check if API or worker experience timeouts or errors.",
+      "weakness_surface": "agent_backend has no resource limits and no healthcheck; CPU stress can cause unresponsiveness without detection.",
+      "workload_contract": "API readiness plus mock workflow response",
+      "workload_id": "P09-primary-workload"
+    }
+  ],
+  "accepted_count": 8,
+  "compiler": "open_discovery_compiler_v1",
+  "rejected": [],
+  "rejected_count": 0,
+  "status": "valid"
+}

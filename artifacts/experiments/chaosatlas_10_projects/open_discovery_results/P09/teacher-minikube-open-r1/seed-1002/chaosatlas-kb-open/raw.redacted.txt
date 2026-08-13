@@ -1,0 +1,89 @@
+{
+  "hypotheses": [
+    {
+      "id": "H1",
+      "target": "compose/service/api",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "predicted_result_class": "confirmed_weakness",
+      "rationale": "The API service has a healthcheck, but no replicas or resource limits. Killing the pod will cause downtime until restart, but the healthcheck may allow recovery. However, the API is a critical entry point, and without replicas, a kill will cause a brief outage, which may be considered a weakness if the healthcheck is not sufficient to prevent user-facing errors."
+    },
+    {
+      "id": "H2",
+      "target": "compose/service/agent_backend",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "predicted_result_class": "confirmed_weakness",
+      "rationale": "agent_backend has no healthcheck and depends on plugin_daemon and redis. Killing it will disrupt the API and worker, and without a healthcheck, the container may not be restarted promptly, leading to prolonged unavailability."
+    },
+    {
+      "id": "H3",
+      "target": "compose/service/redis",
+      "fault": "network_delay",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 200
+      },
+      "predicted_result_class": "confirmed_weakness",
+      "rationale": "Redis is a critical dependency for api, agent_backend, worker, and worker_beat. Introducing network delay will increase latency for all dependent services, potentially causing timeouts and degraded performance. Since Redis has a healthcheck but no resource limits, the delay may not be detected by the healthcheck, leading to user-facing slowdowns."
+    },
+    {
+      "id": "H4",
+      "target": "compose/service/db_mysql",
+      "fault": "network_loss",
+      "parameters": {
+        "duration_s": 30,
+        "loss_percent": 50
+      },
+      "predicted_result_class": "confirmed_weakness",
+      "rationale": "db_mysql is a critical database with a healthcheck. Network loss will cause intermittent failures for api, api_websocket, plugin_daemon, worker, and worker_beat. The healthcheck may fail, but without replicas, the service may become unavailable, leading to data access errors."
+    },
+    {
+      "id": "H5",
+      "target": "compose/service/nginx",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "predicted_result_class": "confirmed_weakness",
+      "rationale": "nginx is the entry point for web and api. It has no healthcheck and no replicas. Killing it will cause a complete outage of the web interface and API access, and without a healthcheck, it may not be restarted automatically, leading to prolonged downtime."
+    },
+    {
+      "id": "H6",
+      "target": "compose/service/worker",
+      "fault": "container_cpu_stress",
+      "parameters": {
+        "duration_s": 30,
+        "load_percent": 80,
+        "workers": 1
+      },
+      "predicted_result_class": "confirmed_weakness",
+      "rationale": "worker has a healthcheck but no resource limits. CPU stress will degrade its performance, potentially causing delays in processing tasks. Since it depends on multiple services, the impact may propagate, but the healthcheck may not detect CPU saturation, leading to reduced throughput."
+    },
+    {
+      "id": "H7",
+      "target": "compose/service/elasticsearch",
+      "fault": "network_delay",
+      "parameters": {
+        "duration_s": 30,
+        "latency_ms": 300
+      },
+      "predicted_result_class": "confirmed_weakness",
+      "rationale": "elasticsearch has a healthcheck and resource limits. Network delay will increase latency for kibana and any other consumers. The healthcheck may time out, but the service may still be up, causing degraded search performance. Resource limits may help, but the delay is still a weakness."
+    },
+    {
+      "id": "H8",
+      "target": "compose/service/plugin_daemon",
+      "fault": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "predicted_result_class": "confirmed_weakness",
+      "rationale": "plugin_daemon has no healthcheck and is a dependency for agent_backend. Killing it will cause agent_backend to fail, and without a healthcheck, it may not be restarted, leading to a cascading failure."
+    }
+  ]
+}
