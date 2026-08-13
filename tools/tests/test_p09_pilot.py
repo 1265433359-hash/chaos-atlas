@@ -139,6 +139,54 @@ def test_runner_refuses_to_overwrite_existing_report(tmp_path: Path) -> None:
     assert report.read_text(encoding="utf-8") == "preserve"
 
 
+def test_runner_exposes_p02_lifecycle_options(capsys) -> None:
+    with patch(
+        "sys.argv",
+        [
+            "run_p09_podchaos.py",
+            "--help",
+        ],
+    ), pytest.raises(SystemExit) as exc:
+        runner.main()
+
+    assert exc.value.code == 0
+    help_text = capsys.readouterr().out
+    assert "--washout-seconds" in help_text
+    assert "--washout-stable-successes" in help_text
+    assert "--capture-diagnostics" in help_text
+
+
+def test_runner_blocks_apply_when_execution_gate_is_blocked(tmp_path: Path) -> None:
+    mutation_path = tmp_path / "mutation.yaml"
+    report_path = tmp_path / "rep-1.json"
+    mutation_path.write_text(
+        compile_api_pod_kill(candidate(), topology(), _write(tmp_path, profile()))["yaml"],
+        encoding="utf-8",
+    )
+
+    with patch(
+        "sys.argv",
+        ["run_p09_podchaos.py", str(mutation_path), "--report", str(report_path)],
+    ), patch.object(
+        runner,
+        "execution_gate_check",
+        return_value={
+            "decision": "blocked",
+            "errors": ["P09 profile gate does not allow runtime apply"],
+            "mutation_applied": False,
+        },
+    ), patch.object(runner, "residual_chaos", return_value=[]), patch.object(
+        runner, "kubectl"
+    ) as kubectl_call:
+        assert runner.main() == 2
+
+    assert all(call.args[0][0] != "apply" for call in kubectl_call.call_args_list)
+    result = json.loads(report_path.read_text(encoding="utf-8"))
+    assert result["status"] == "failed"
+    assert result["execution_gate"]["decision"] == "blocked"
+    assert result["injection"]["applied"] is False
+
+
 @pytest.mark.parametrize("option", ["--baseline-successes", "--washout-successes"])
 def test_runner_rejects_nonpositive_oracle_success_count(tmp_path: Path, option: str) -> None:
     report = tmp_path / "rep-1.json"
@@ -162,6 +210,10 @@ def test_runner_cleans_up_after_ambiguous_apply_failure(tmp_path: Path) -> None:
     with patch(
         "sys.argv",
         ["run_p09_podchaos.py", str(mutation_path), "--report", str(report_path)],
+    ), patch.object(
+        runner,
+        "execution_gate_check",
+        return_value={"decision": "ready_for_injection", "errors": []},
     ), patch.object(
         runner,
         "kubectl",
@@ -193,6 +245,17 @@ def test_runner_cleans_up_after_ambiguous_apply_failure(tmp_path: Path) -> None:
     result = json.loads(report_path.read_text(encoding="utf-8"))
     assert result["status"] == "failed"
     assert result["cleanup"]["absent_confirmed"] is True
+    assert result["schema_version"] == "unified-lifecycle-v1"
+    assert result["project_id"] == "P09"
+    assert result["mutation"]["sha256"]
+    assert "baseline" in result
+    assert "injection" in result
+    assert "observation" in result
+    assert "recovery" in result
+    assert "washout" in result
+    assert "diagnostics" in result
+    assert result["human_review"] == "pending"
+    assert result["comparison_eligibility"]["eligible"] is False
 
 
 def test_cli_accepts_utf8_bom_candidate_pool(tmp_path: Path) -> None:

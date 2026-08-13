@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "P09",
+  "project_commit": null,
+  "topology_graph_hash": "1f0b4dc5cad38818396c8a410651f19d3ff8708fd29bfe8ebaf1169ba07a06b7",
+  "canonical_signature": "603bca20c720f6011afd1ebf1981933a1680664049c774a6e9e6c7093fece5a2",
+  "hypothesis_id": "fault-006",
+  "target": "compose/service/worker",
+  "target_kind": "service",
+  "fault_family": "pod_kill",
+  "parameters": {
+    "mode": "one"
+  },
+  "namespace": "chaosatlas-p09",
+  "resolved_source": {
+    "target": "compose/service/worker",
+    "kind": "Deployment",
+    "name": "worker",
+    "selector": {
+      "app.kubernetes.io/part-of": "chaosatlas-p09",
+      "app.kubernetes.io/name": "worker",
+      "chaosatlas.io/profile": "minimal"
+    },
+    "selector_source": "runtime_mapping"
+  },
+  "resolved_destination": null,
+  "runtime_gate_required": true,
+  "execution_ready": false,
+  "yaml_path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P09/teacher-minikube-unified-r1/mutations/mutation-018/atlas-p09-603bca20c720.yaml",
+  "yaml_sha256": "f6a7f6d15566a6050707caee62db10d4a64ba12702368db3efccec4236bb11db",
+  "human_review": "pending"
+}

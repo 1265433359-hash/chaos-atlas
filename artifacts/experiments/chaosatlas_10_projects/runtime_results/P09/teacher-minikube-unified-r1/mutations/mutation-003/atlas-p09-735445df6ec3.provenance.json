@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "P09",
+  "project_commit": null,
+  "topology_graph_hash": "1f0b4dc5cad38818396c8a410651f19d3ff8708fd29bfe8ebaf1169ba07a06b7",
+  "canonical_signature": "735445df6ec3121a4696c031907228ecc9a3ba8a52bb66ec7da39a1060b6ffcd",
+  "hypothesis_id": "H3",
+  "target": "compose/service/redis",
+  "target_kind": "service",
+  "fault_family": "pod_kill",
+  "parameters": {
+    "mode": "one"
+  },
+  "namespace": "chaosatlas-p09",
+  "resolved_source": {
+    "target": "compose/service/redis",
+    "kind": "Deployment",
+    "name": "redis",
+    "selector": {
+      "app.kubernetes.io/part-of": "chaosatlas-p09",
+      "app.kubernetes.io/name": "redis",
+      "chaosatlas.io/profile": "minimal"
+    },
+    "selector_source": "runtime_mapping"
+  },
+  "resolved_destination": null,
+  "runtime_gate_required": true,
+  "execution_ready": false,
+  "yaml_path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P09/teacher-minikube-unified-r1/mutations/mutation-003/atlas-p09-735445df6ec3.yaml",
+  "yaml_sha256": "a7b175b9512ccce130ab944d82aaab113264ebe149bfd5616bd1c0cd95781872",
+  "human_review": "pending"
+}

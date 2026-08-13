@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "P09",
+  "project_commit": null,
+  "topology_graph_hash": "1f0b4dc5cad38818396c8a410651f19d3ff8708fd29bfe8ebaf1169ba07a06b7",
+  "canonical_signature": "787539eb9e354379cf96f5e3cbe36751837152d782e01db7b633d63d5b821a00",
+  "hypothesis_id": "H4",
+  "target": "compose/service/api",
+  "target_kind": "service",
+  "fault_family": "network_delay",
+  "parameters": {
+    "duration_s": 30,
+    "latency_ms": 500
+  },
+  "namespace": "chaosatlas-p09",
+  "resolved_source": {
+    "target": "compose/service/api",
+    "kind": "Deployment",
+    "name": "api",
+    "selector": {
+      "app.kubernetes.io/part-of": "chaosatlas-p09",
+      "app.kubernetes.io/name": "api",
+      "chaosatlas.io/profile": "minimal"
+    },
+    "selector_source": "runtime_mapping"
+  },
+  "resolved_destination": null,
+  "runtime_gate_required": true,
+  "execution_ready": false,
+  "yaml_path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P09/teacher-minikube-unified-r1/mutations/mutation-004/atlas-p09-787539eb9e35.yaml",
+  "yaml_sha256": "574023c050030bc41e72a5ebeae9144d06c68c1f2eca5635a797c4058c940cdf",
+  "human_review": "pending"
+}

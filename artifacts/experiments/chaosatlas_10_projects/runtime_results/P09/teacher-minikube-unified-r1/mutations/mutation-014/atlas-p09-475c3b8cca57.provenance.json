@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "P09",
+  "project_commit": null,
+  "topology_graph_hash": "1f0b4dc5cad38818396c8a410651f19d3ff8708fd29bfe8ebaf1169ba07a06b7",
+  "canonical_signature": "475c3b8cca575286427caa85c5c6bc301bbaf3cd66f019fc3689932cd6a527b1",
+  "hypothesis_id": "p09-h8",
+  "target": "compose/service/db_postgres",
+  "target_kind": "service",
+  "fault_family": "network_loss",
+  "parameters": {
+    "duration_s": 30,
+    "loss_percent": 50
+  },
+  "namespace": "chaosatlas-p09",
+  "resolved_source": {
+    "target": "compose/service/db_postgres",
+    "kind": "Deployment",
+    "name": "postgres",
+    "selector": {
+      "app.kubernetes.io/part-of": "chaosatlas-p09",
+      "app.kubernetes.io/name": "postgres",
+      "chaosatlas.io/profile": "minimal"
+    },
+    "selector_source": "runtime_mapping"
+  },
+  "resolved_destination": null,
+  "runtime_gate_required": true,
+  "execution_ready": false,
+  "yaml_path": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P09/teacher-minikube-unified-r1/mutations/mutation-014/atlas-p09-475c3b8cca57.yaml",
+  "yaml_sha256": "d62bd2a835a71f386152a579264f3f0dfa46f6878f49b758e321c99b4f1eff8a",
+  "human_review": "pending"
+}

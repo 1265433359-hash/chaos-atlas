@@ -1,0 +1,11 @@
+{
+  "captured_at": "2026-08-13T05:04:06.233159+00:00",
+  "project_id": "P09",
+  "namespace": "chaosatlas-p09",
+  "command": "kubectl apply --dry-run=server -f runtime_profiles/P09-r4/minimal-profile.yaml",
+  "return_code": 0,
+  "ok": true,
+  "stdout": "namespace/chaosatlas-p09 unchanged (server dry run)\npersistentvolumeclaim/p09-app-storage unchanged (server dry run)\nconfigmap/p09-env unchanged (server dry run)\njob.batch/init-permissions unchanged (server dry run)\ndeployment.apps/api unchanged (server dry run)\ndeployment.apps/worker unchanged (server dry run)\ndeployment.apps/worker-beat unchanged (server dry run)\ndeployment.apps/web unchanged (server dry run)\ndeployment.apps/postgres unchanged (server dry run)\nservice/postgres unchanged (server dry run)\ndeployment.apps/redis configured (server dry run)\nservice/redis unchanged (server dry run)\nservice/api unchanged (server dry run)\nservice/web unchanged (server dry run)\n",
+  "stderr": "",
+  "mutation_performed": false
+}

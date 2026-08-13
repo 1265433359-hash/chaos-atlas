@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: atlas-p09-9bf7bfc9eada
+  namespace: chaosatlas-p09
+  labels:
+    chaosatlas.dev/project: p09
+    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-p09
+    labelSelectors:
+      app.kubernetes.io/name: api
+      app.kubernetes.io/part-of: chaosatlas-p09
+      chaosatlas.io/profile: minimal
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 30s
