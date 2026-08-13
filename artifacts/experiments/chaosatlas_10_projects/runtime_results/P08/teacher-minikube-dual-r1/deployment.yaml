@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: appsmith-server
+  namespace: chaosatlas-p08
+  labels: &id001
+    app.kubernetes.io/name: appsmith
+    app.kubernetes.io/part-of: chaosatlas-p08
+spec:
+  replicas: 1
+  selector:
+    matchLabels: *id001
+  template:
+    metadata:
+      labels: *id001
+    spec:
+      containers:
+      - name: appsmith
+        image: index.docker.io/appsmith/appsmith-ce@sha256:2d657315862dac42b43b6416aa30f70e3f777cb7a46e494ac276028c020ea467
+        ports:
+        - name: http
+          containerPort: 80
+        env:
+        - name: APPSMITH_ENCRYPTION_PASSWORD
+          value: chaosatlas-p08-local
+        - name: APPSMITH_ENCRYPTION_SALT
+          value: chaosatlas-p08-salt
+        resources:
+          requests:
+            cpu: 500m
+            memory: 3000Mi
+          limits:
+            cpu: '2'
+            memory: 4Gi
+        readinessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 80
+          initialDelaySeconds: 45
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 12
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 80
+          initialDelaySeconds: 90
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 6
+        volumeMounts:
+        - name: appsmith-stacks
+          mountPath: /appsmith-stacks
+      volumes:
+      - name: appsmith-stacks
+        emptyDir: {}

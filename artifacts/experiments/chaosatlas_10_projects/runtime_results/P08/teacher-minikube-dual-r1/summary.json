@@ -1,0 +1,291 @@
+{
+  "arms": [
+    {
+      "arm": "ChaosAtlas-KB",
+      "baseline": {
+        "samples": [
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 47.0,
+            "observed_at": "2026-08-13T04:23:48.386719+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 32.0,
+            "observed_at": "2026-08-13T04:23:49.420429+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 15.0,
+            "observed_at": "2026-08-13T04:23:50.435531+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 31.0,
+            "observed_at": "2026-08-13T04:23:51.453240+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 16.0,
+            "observed_at": "2026-08-13T04:23:52.469585+00:00",
+            "status_code": 200
+          }
+        ],
+        "stable": true
+      },
+      "candidate_id": "P08-appsmith-server-pod_kill-01",
+      "cleanup": {
+        "absent_confirmed": true,
+        "delete_code": 0,
+        "delete_output": "podchaos.chaos-mesh.org \"p08-appsmith-pod-kill-chaosatlas-kb\" deleted from chaosatlas-p08 namespace",
+        "global_p08_absent": true,
+        "verify_output": "Error from server (NotFound): podchaos.chaos-mesh.org \"p08-appsmith-pod-kill-chaosatlas-kb\" not found"
+      },
+      "human_review": "pending",
+      "injected": true,
+      "injection_at": "2026-08-13T04:23:57.931976+00:00",
+      "mutation_applied": true,
+      "namespace": "chaosatlas-p08",
+      "post_recovery_oracle": {
+        "samples": [
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 16.0,
+            "observed_at": "2026-08-13T04:24:56.854454+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 31.0,
+            "observed_at": "2026-08-13T04:24:57.881410+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 16.0,
+            "observed_at": "2026-08-13T04:24:58.898067+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 31.0,
+            "observed_at": "2026-08-13T04:24:59.925758+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 16.0,
+            "observed_at": "2026-08-13T04:25:00.941202+00:00",
+            "status_code": 200
+          }
+        ],
+        "stable": true
+      },
+      "pre_injection_health": {
+        "deployment": {
+          "available": 1,
+          "ready": 1,
+          "updated": 1
+        },
+        "healthy": true,
+        "pods": [
+          {
+            "name": "appsmith-server-667cd669d5-kl9t9",
+            "phase": "Running",
+            "ready": true,
+            "uid": "e03f742a-6c27-4635-90bf-5a0cbc26060a"
+          }
+        ],
+        "stable_successes": 3
+      },
+      "project_id": "P08",
+      "recovered": true,
+      "recovery_health": {
+        "deployment": {
+          "available": 1,
+          "ready": 1,
+          "updated": 1
+        },
+        "healthy": true,
+        "pods": [
+          {
+            "name": "appsmith-server-667cd669d5-zhdg4",
+            "phase": "Running",
+            "ready": true,
+            "uid": "c7598916-6a3b-4535-a06a-94f059e6f899"
+          }
+        ],
+        "stable_successes": 3
+      },
+      "residual_chaos": [],
+      "status": "completed"
+    },
+    {
+      "arm": "ChaosAtlas-noKB",
+      "baseline": {
+        "samples": [
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 16.0,
+            "observed_at": "2026-08-13T04:25:02.978930+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 31.0,
+            "observed_at": "2026-08-13T04:25:04.004792+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 16.0,
+            "observed_at": "2026-08-13T04:25:05.022330+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 31.0,
+            "observed_at": "2026-08-13T04:25:06.053248+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 16.0,
+            "observed_at": "2026-08-13T04:25:07.069838+00:00",
+            "status_code": 200
+          }
+        ],
+        "stable": true
+      },
+      "candidate_id": "P08-appsmith-server-pod_kill-01",
+      "cleanup": {
+        "absent_confirmed": true,
+        "delete_code": 0,
+        "delete_output": "podchaos.chaos-mesh.org \"p08-appsmith-pod-kill-chaosatlas-nokb\" deleted from chaosatlas-p08 namespace",
+        "global_p08_absent": true,
+        "verify_output": "Error from server (NotFound): podchaos.chaos-mesh.org \"p08-appsmith-pod-kill-chaosatlas-nokb\" not found"
+      },
+      "human_review": "pending",
+      "injected": true,
+      "injection_at": "2026-08-13T04:25:12.526907+00:00",
+      "mutation_applied": true,
+      "namespace": "chaosatlas-p08",
+      "post_recovery_oracle": {
+        "samples": [
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 31.0,
+            "observed_at": "2026-08-13T04:26:15.586399+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 16.0,
+            "observed_at": "2026-08-13T04:26:16.602704+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 16.0,
+            "observed_at": "2026-08-13T04:26:17.620078+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 31.0,
+            "observed_at": "2026-08-13T04:26:18.647997+00:00",
+            "status_code": 200
+          },
+          {
+            "body_sha256": "d43e36151fa5ba27c8d44d6af0ee250fa9d8a4d9ff0565a8b8fbdaac59ed58b4",
+            "error": null,
+            "latency_ms": 31.0,
+            "observed_at": "2026-08-13T04:26:19.678633+00:00",
+            "status_code": 200
+          }
+        ],
+        "stable": true
+      },
+      "pre_injection_health": {
+        "deployment": {
+          "available": 1,
+          "ready": 1,
+          "updated": 1
+        },
+        "healthy": true,
+        "pods": [
+          {
+            "name": "appsmith-server-667cd669d5-zhdg4",
+            "phase": "Running",
+            "ready": true,
+            "uid": "c7598916-6a3b-4535-a06a-94f059e6f899"
+          }
+        ],
+        "stable_successes": 3
+      },
+      "project_id": "P08",
+      "recovered": true,
+      "recovery_health": {
+        "deployment": {
+          "available": 1,
+          "ready": 1,
+          "updated": 1
+        },
+        "healthy": true,
+        "pods": [
+          {
+            "name": "appsmith-server-667cd669d5-r2j49",
+            "phase": "Running",
+            "ready": true,
+            "uid": "3ee71026-2c74-4e50-bd30-1f3fe2ce5a15"
+          }
+        ],
+        "stable_successes": 3
+      },
+      "residual_chaos": [],
+      "status": "completed"
+    }
+  ],
+  "deployment_cleanup": {
+    "absent_confirmed": true,
+    "delete_code": 0,
+    "delete_output": "deployment.apps \"appsmith-server\" deleted from chaosatlas-p08 namespace",
+    "verify_output": "Error from server (NotFound): deployments.apps \"appsmith-server\" not found"
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "namespace": "chaosatlas-p08",
+  "project_id": "P08",
+  "residual_chaos": [],
+  "schema_version": "1.0",
+  "service_cleanup": {
+    "absent_confirmed": true,
+    "delete_code": 0,
+    "delete_output": "service \"appsmith\" deleted from chaosatlas-p08 namespace",
+    "verify_output": "Error from server (NotFound): services \"appsmith\" not found"
+  },
+  "status": "completed"
+}

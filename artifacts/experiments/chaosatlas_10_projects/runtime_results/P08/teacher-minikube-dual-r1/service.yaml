@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: appsmith
+  namespace: chaosatlas-p08
+  labels: &id001
+    app.kubernetes.io/name: appsmith
+    app.kubernetes.io/part-of: chaosatlas-p08
+spec:
+  selector: *id001
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
