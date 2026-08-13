@@ -394,6 +394,28 @@
 
 # 2026-08-13 P08/P09 continuation
 
+# 2026-08-13 P08/P09 source and profile continuation
+
+- Restored P09 commit `cd0e88c680dec24dcd423b880302104f13d28462` into the new
+  ignored path `sources_restored_r2/P09`; tree SHA `f0344ffb...91aca9`, 13,455
+  Git files, and all required deployment files verified.
+- Generated isolated `runtime_profiles/P09-r2` from the restored source using
+  five existing immutable image digests. Profile validation and the local
+  deterministic mock oracle both passed; Compose SHA matched the manifest and
+  `runtime_apply_allowed` remains false.
+- Added an explicit-path P09 profile validator and retained the old validator
+  entry point as a compatibility wrapper, so new profile reports do not
+  overwrite historical evidence.
+- Restored P08 commit `107634b7e3229bb69d53674cb9ebc67bc1ed02a8` into the new
+  ignored path `sources_restored_r2/P08`; tree SHA
+  `8942eb9ca4169c8eab7434b8066b5c1718cf1206`, 13,540 Git files, and Docker/
+  Helm deployment assets verified.
+- P08 static gate remains blocked: its Compose has one `appsmith` service with
+  mutable `appsmith-ce:release`, no healthcheck, no resource limits, and no
+  deterministic runtime oracle; no namespace or workload was created.
+- No DeepSeek/GitHub credential was read, no external model call was made, and
+  no Kubernetes mutation was performed.
+
 - Rechecked the teacher Minikube context: `chaosatlas-p02` remained healthy and
   `kubectl get podchaos,networkchaos,stresschaos -A` returned no resources.
 - P08 remains blocked before runtime: its manifest is marked

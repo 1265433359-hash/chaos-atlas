@@ -13,6 +13,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 PROJECT = ROOT / "artifacts/experiments/chaosatlas_10_projects/sources/P09"
 RESTORED_PROJECT = ROOT / "artifacts/experiments/chaosatlas_10_projects/sources_restored/P09"
+RESTORED_PROJECT_R2 = ROOT / "artifacts/experiments/chaosatlas_10_projects/sources_restored_r2/P09"
 OUT = ROOT / "artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P09"
 
 CORE = ["init_permissions", "api", "worker", "worker_beat", "web", "db_postgres", "redis"]
@@ -23,14 +24,16 @@ def sha256(path: Path) -> str | None:
     return hashlib.sha256(path.read_bytes()).hexdigest() if path.exists() else None
 
 
+def select_project() -> tuple[Path, Path]:
+    for project in (PROJECT, RESTORED_PROJECT, RESTORED_PROJECT_R2):
+        compose = project / "docker/docker-compose.yaml"
+        if compose.exists():
+            return project, compose
+    return PROJECT, PROJECT / "docker/docker-compose.yaml"
+
+
 def build() -> dict[str, Any]:
-    project = PROJECT
-    compose_path = project / "docker/docker-compose.yaml"
-    if not compose_path.exists():
-        restored_compose = RESTORED_PROJECT / "docker/docker-compose.yaml"
-        if restored_compose.exists():
-            project = RESTORED_PROJECT
-            compose_path = restored_compose
+    project, compose_path = select_project()
     compose = yaml.safe_load(compose_path.read_text(encoding="utf-8-sig")) if compose_path.exists() else {}
     services = compose.get("services") or {}
     missing_env = [name for name in ("docker/.env", "docker/middleware.env") if not (project / name).exists()]

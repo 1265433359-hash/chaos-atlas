@@ -15,7 +15,15 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[5]
 PROJECT = ROOT / "artifacts/experiments/chaosatlas_10_projects/sources_restored/P09"
-COMPOSE = PROJECT / "docker/docker-compose.yaml"
+PROJECT_R2 = ROOT / "artifacts/experiments/chaosatlas_10_projects/sources_restored_r2/P09"
+
+
+def select_project() -> tuple[Path, Path]:
+    for project in (PROJECT, PROJECT_R2):
+        compose = project / "docker/docker-compose.yaml"
+        if compose.exists():
+            return project, compose
+    return PROJECT, PROJECT / "docker/docker-compose.yaml"
 
 SERVICES = ("init-permissions", "api", "worker", "worker-beat", "web", "postgres", "redis")
 FORBIDDEN = ("agent-backend", "plugin-daemon", "sandbox", "ssrf-proxy", "nginx", "vector databases")
@@ -115,9 +123,12 @@ def main() -> int:
     invalid = {k: v for k, v in digests.items() if "@sha256:" not in v or len(v.rsplit("@sha256:", 1)[-1]) != 64}
     if invalid:
         raise SystemExit("image references must be digest-pinned: " + ", ".join(f"{k}={v}" for k, v in sorted(invalid.items())))
+    project, compose = select_project()
+    if not compose.exists():
+        raise SystemExit("missing P09 source: docker/docker-compose.yaml")
     docs = generate(digests)
     args.output.write_text("---\n".join(yaml.safe_dump(x, sort_keys=False) for x in docs), encoding="utf-8")
-    manifest = {"schema_version": "1.0", "project_id": "P09", "namespace": "chaosatlas-p09", "status": "generated_dry_run_only", "source_commit": "cd0e88c680dec24dcd423b880302104f13d28462", "compose_sha256": sha256(COMPOSE), "included_services": list(SERVICES), "excluded_services": list(FORBIDDEN), "images": digests, "resource_count": len(docs), "runtime_apply_allowed": False}
+    manifest = {"schema_version": "1.0", "project_id": "P09", "namespace": "chaosatlas-p09", "status": "generated_dry_run_only", "source_root": str(project.relative_to(ROOT)).replace("\\", "/"), "source_commit": "cd0e88c680dec24dcd423b880302104f13d28462", "compose_sha256": sha256(compose), "included_services": list(SERVICES), "excluded_services": list(FORBIDDEN), "images": digests, "resource_count": len(docs), "runtime_apply_allowed": False}
     (args.output.parent / "profile_manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     (args.output.parent / "runtime.env.example").write_text("\n".join(f"{k}={v}" for k, v in sorted(env_config().items())) + "\n", encoding="utf-8")
     print(json.dumps(manifest, indent=2))

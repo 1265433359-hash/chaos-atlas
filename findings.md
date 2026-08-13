@@ -213,6 +213,23 @@ Artifact checks found nine classification-index mismatches rather than three; al
 
 ## P08/P09 continuation finding (2026-08-13)
 
+## P08/P09 source and profile continuation finding (2026-08-13)
+
+- P09 fixed source was restored into the new ignored `sources_restored_r2/P09`
+  path and matched the registered commit/tree/file count. An isolated digest-
+  pinned profile and explicit-path validator report were generated without
+  applying Kubernetes resources.
+- P09 profile checks passed for namespace locality, forbidden-service exclusion,
+  immutable images, and required resources. The deterministic local mock oracle
+  returned `P09-MOCK-OK`; this is an offline oracle check, not a runtime gate.
+- P08 fixed source was restored into `sources_restored_r2/P08` and matched its
+  registered commit. Its Compose contains only `appsmith`, but uses mutable
+  `index.docker.io/appsmith/appsmith-ce:release` and has no healthcheck, restart
+  policy, or resource limits. The independent P08-r2 static gate therefore
+  remains blocked and no runtime namespace was created.
+- P09/P08 source/profile regression tests passed: 24 tests. No credentials,
+  model calls, Docker operations, or Kubernetes mutations were used.
+
 - P08 remains pre-runtime blocked: its project manifest is `pending_resource_pilot`,
   marks the resource class as very high, and no P08 source-restoration or
   runtime-profile directory is present in the current workspace.

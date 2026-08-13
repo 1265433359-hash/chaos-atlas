@@ -32,9 +32,69 @@ def test_p09_preflight_uses_verified_restored_source_when_frozen_source_is_incom
 
     monkeypatch.setattr(preflight, "PROJECT", frozen)
     monkeypatch.setattr(preflight, "RESTORED_PROJECT", restored)
+    monkeypatch.setattr(preflight, "RESTORED_PROJECT_R2", tmp_path / "missing-r2")
     result = preflight.build()
 
     assert result["source_root"].endswith("sources_restored/P09")
     assert result["all_service_count"] == 2
     assert "mutable_images_require_digest_pinning" in result["reasons"]
     assert "core_profile_service_missing" in result["reasons"]
+
+
+def test_p09_profile_validator_accepts_explicit_profile_and_output(monkeypatch, tmp_path: Path) -> None:
+    import tools.p09_profile_validator as validator
+
+    profile = tmp_path / "minimal-profile.yaml"
+    output = tmp_path / "profile-preflight.json"
+    profile.write_text(
+        """apiVersion: v1
+kind: Namespace
+metadata:
+  name: chaosatlas-p09
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  namespace: chaosatlas-p09
+spec:
+  template:
+    spec:
+      containers:
+          - name: api
+            image: example/api@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: worker
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: worker-beat
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-permissions
+""",
+        encoding="utf-8",
+    )
+    assert validator.run(profile, output) == 0
+    assert output.exists()
