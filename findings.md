@@ -353,3 +353,48 @@ Artifact checks found nine classification-index mismatches rather than three; al
 - Sock Shop has no usable Zipkin backend in the frozen topology. Every report records `zipkin-unavailable.json`; no trace-based call-chain claim is made.
 - The result is an intentional native-full capability upper bound with project-specific knowledge and allowed pollution. It must not be presented as a fair comparison against full-v1, ablation, or V2-LOO.
 - The formal RCA review remains `human_review=pending`, and no knowledge-base update was performed.
+
+# Sock Shop YAML confidence platform-recovery finding (2026-08-14)
+
+- `net-delay-catalogue` ablation replicate 2 is not evidence that the network
+  mutation caused a lasting business weakness. Its Chaos resource had already
+  recovered and been deleted when the recovery oracle repeatedly returned
+  `/catalogue` HTTP 500.
+- The direct evidence points instead to an independent deployment condition:
+  the stock `session-db` Redis container combines a read-only root filesystem
+  with default RDB persistence to `/data`. Redis logged failed background saves
+  and then rejected writes with `MISCONF` because
+  `stop-writes-on-bgsave-error` was enabled.
+- The runtime report remains preserved as `failed`/`invalid_runtime` evidence;
+  it is excluded from stable-weakness counting. A new r3 runtime root must
+  reuse only completed reports and rerun the affected replicate only after the
+  formal baseline is clean.
+- The source-side preparation fix disables Redis persistence for that
+  read-only session deployment. It is a deployment-stability correction, not a
+  ChaosAtlas method change and not a claim about Sock Shop application root
+  cause beyond the captured Redis evidence.
+
+# Sock Shop YAML confidence r4 finding (2026-08-14)
+
+- `runtime-exec-r3` was fail-fast. Its `runtime_candidates=10` field reflected
+  only the ablation candidates processed before the first stop, not the full
+  frozen discovery set. `runtime-exec-r4` therefore reused the 57 completed
+  r3 reports and executed the remaining 19 ablation slots, including the
+  failed `net-delay-catalogue` retry.
+- The exact r3 `net-delay-catalogue` YAML passed server-side dry-run before
+  r4. All r4 reports passed baseline, injection, recovery, cleanup, washout,
+  diagnostics, and mutation-hash checks; after the batch, the global
+  PodChaos/NetworkChaos/StressChaos scan was empty.
+- r4's pending review has 19 completed runtime candidates per method:
+  native-full has 4 stable weaknesses, 3 nonrepeatable findings, and 12
+  no-impact candidates; chaosatlas-ablation has 6, 3, and 10 respectively.
+  The stable-weakness yields are 21.05% and 31.58%.
+- This is not evidence that the ablation is intrinsically better. The methods
+  produced different mutation identities, and r4's newly executed ablation
+  slots used the documented 240-second recovery observation budget after the
+  Redis remediation. The counts describe end-to-end discovery plus validation
+  yield under the recorded conditions.
+- No specific internal mechanism is inferred from a business-oracle failure.
+  Sock Shop has no usable Zipkin backend in this frozen topology; every
+  diagnostics set records the trace state as unavailable. `human_review`
+  remains `pending` and `knowledge_base_updated` remains `false`.

@@ -97,6 +97,7 @@ def test_failed_washout_preserves_journey_evidence(tmp_path: Path, monkeypatch) 
     monkeypatch.setattr(runner, "wait_for_lifecycle", lambda *_args: (True, {}, []))
     monkeypatch.setattr(runner, "delete_resource", lambda *_args: {"absent_confirmed": True})
     monkeypatch.setattr(runner, "global_residuals", lambda: ([], []))
+    monkeypatch.setattr(runner, "capture_diagnostics", lambda *_args: {"status": "captured", "files": []})
     calls = {"journey": 0, "clock": 0}
 
     def journey() -> dict[str, bool]:
@@ -127,6 +128,7 @@ def test_failed_washout_preserves_journey_evidence(tmp_path: Path, monkeypatch) 
     assert report["washout"]["stable"] is False
     assert len(report["washout"]["journeys"]) > 0
     assert report["washout"]["consecutive_successes"] == 0
+    assert report["diagnostics"]["status"] == "captured"
 
 
 def test_port_forward_does_not_pipe_unbounded_kubectl_output(tmp_path: Path, monkeypatch) -> None:

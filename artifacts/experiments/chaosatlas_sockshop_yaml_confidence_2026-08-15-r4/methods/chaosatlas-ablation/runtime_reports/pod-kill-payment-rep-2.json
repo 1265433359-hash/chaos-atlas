@@ -1,0 +1,1848 @@
+{
+  "schema_version": "sock-shop-two-arm-lifecycle-v1",
+  "project_id": "sock-shop",
+  "namespace": "chaosatlas-sock-shop",
+  "arm": "chaosatlas-ablation",
+  "seed": 0,
+  "mutation_id": "pod-kill-payment",
+  "replicate": 2,
+  "mutation": {
+    "path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r2/runtime-exec-r2/methods/chaosatlas-ablation/mutations/yc-pod-kill-payment-7e09dd25.yaml",
+    "sha256": "b1c4cd9dcbd6e6efb0d4edde8dd59b35ae3845fdccb63221227bd83fddedf7f3"
+  },
+  "baseline": {
+    "pass": true,
+    "journeys": [
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 0.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 15.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 0.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 16.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 31.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 0.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 0.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      }
+    ],
+    "successes_required": 5
+  },
+  "injection": {
+    "applied": true,
+    "injected": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "podchaos.chaos-mesh.org/yc-pod-kill-payment-7e09dd25 created",
+      "stderr": ""
+    },
+    "lifecycle": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-14T18:33:46Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-sock-shop/payment-66c7cd54b4-nzpgf",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-14T18:33:46Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    }
+  },
+  "observation": {
+    "journeys": [
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 16.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 31.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 32.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 31.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 0.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      }
+    ],
+    "classification": "no_business_impact_observed"
+  },
+  "recovery": {
+    "recovered": true,
+    "resource_recovered": true,
+    "state": {
+      "selector": "name=payment",
+      "pod_count": 1,
+      "active_pod_count": 1,
+      "ready_pods": [
+        "payment-66c7cd54b4-5mj4t"
+      ],
+      "ready_uids": [
+        "0eda73d3-d4fc-4793-8133-478582d62ce3"
+      ],
+      "expected_pod_count": 1,
+      "pre_kill_uids": [
+        "c6096916-68f7-40b0-b0a8-68fece195743"
+      ],
+      "stable_checks": 2
+    },
+    "port_forward_rebinds": 1,
+    "port_forward_restarted": true,
+    "journeys": [
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 0.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 15.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 16.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 0.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 16.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 32.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 0.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 16.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      }
+    ]
+  },
+  "cleanup": {
+    "delete_command_ok": true,
+    "delete_output": "podchaos.chaos-mesh.org \"yc-pod-kill-payment-7e09dd25\" deleted from chaosatlas-sock-shop namespace",
+    "resource_absent_after_delete": true,
+    "absent_confirmed": true,
+    "verify_status": "absent",
+    "verify_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-pod-kill-payment-7e09dd25\" not found",
+    "delete_failed": false,
+    "residual_resources": [],
+    "global_scan_errors": []
+  },
+  "washout": {
+    "stable": true,
+    "journeys": [
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 0.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 31.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 32.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 16.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 0.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 32.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 16.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 32.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 31.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 32.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 31.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 15.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 31.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 32.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 15.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 31.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 0.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 31.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 0.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 31.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 32.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 32.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 32.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 0.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 0.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 32.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 31.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 31.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 32.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      },
+      {
+        "pass": true,
+        "samples": [
+          {
+            "step": "front-end",
+            "path": "/",
+            "status_code": 200,
+            "latency_ms": 15.0,
+            "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "catalogue",
+            "path": "/catalogue",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "d67fa28f71f203dfb3181f3a46af8be83537d8cbe88bfcefb82d6bc4aadf02fb",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "login",
+            "path": "/login",
+            "status_code": 200,
+            "latency_ms": 16.0,
+            "body_sha256": "a46de54b7866d2031635b965100c4fc2e5714d65cbb50a9ea8d3372b598f9f6d",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          },
+          {
+            "step": "orders",
+            "path": "/orders",
+            "status_code": 201,
+            "latency_ms": 15.0,
+            "body_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "contract_ok": true,
+            "pass": true,
+            "error": null
+          }
+        ]
+      }
+    ],
+    "elapsed_seconds": 61.828,
+    "successes_required": 10,
+    "consecutive_successes": 21
+  },
+  "diagnostics": {
+    "status": "captured",
+    "files": [
+      {
+        "path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r2/runtime-exec-r2/methods/chaosatlas-ablation/runtime_reports/pod-kill-payment-rep-2.diagnostics/front-end.log",
+        "sha256": "51a4fdb3130aaed08d9e9cde928bb93025e7d87b9e8e8adad629a691e4df9f96",
+        "return_code": 0
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r2/runtime-exec-r2/methods/chaosatlas-ablation/runtime_reports/pod-kill-payment-rep-2.diagnostics/catalogue.log",
+        "sha256": "2ca1034d970d8bf7d57bdcf99cdcd39a9ece43c62fbbc48051c2d81711cebf0f",
+        "return_code": 0
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r2/runtime-exec-r2/methods/chaosatlas-ablation/runtime_reports/pod-kill-payment-rep-2.diagnostics/orders.log",
+        "sha256": "737019535c6cbbbffd67eb2abc5c662ede964c06f5f5fd9dbeccc52299028206",
+        "return_code": 0
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r2/runtime-exec-r2/methods/chaosatlas-ablation/runtime_reports/pod-kill-payment-rep-2.diagnostics/target.log",
+        "sha256": "e7fde8d1d1a044e15550f965dfc98cf1b6120e4a28b24f9ef1f6925fd87c6f4f",
+        "return_code": 0
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r2/runtime-exec-r2/methods/chaosatlas-ablation/runtime_reports/pod-kill-payment-rep-2.diagnostics/events.json",
+        "sha256": "e51a2ce579aec0e8fce5772754fc2aa762ae63a37dcc66d6c9aef4584e5b0c9e",
+        "return_code": 0
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r2/runtime-exec-r2/methods/chaosatlas-ablation/runtime_reports/pod-kill-payment-rep-2.diagnostics/zipkin-unavailable.json",
+        "sha256": "71edd8215638f40978a932ffdc3f83459513d934eb4eb0843730036cade40336",
+        "return_code": 0
+      }
+    ]
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "status": "completed",
+  "errors": [],
+  "started_at": "2026-08-14T18:33:44.911754+00:00",
+  "mutation_gate": {
+    "status": "passed",
+    "errors": []
+  },
+  "preflight": {
+    "checked_at": "2026-08-14T18:33:45.136275+00:00",
+    "mutation": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r2/runtime-exec-r2/methods/chaosatlas-ablation/mutations/yc-pod-kill-payment-7e09dd25.yaml",
+    "kind": "PodChaos",
+    "namespace": "chaosatlas-sock-shop",
+    "name": "yc-pod-kill-payment-7e09dd25",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-sock-shop"
+      ],
+      "labelSelectors": {
+        "name": "payment"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "chaosatlas-online-boutique",
+          "chaosatlas-otel",
+          "chaosatlas-sock-shop",
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "sock-shop-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "selector_labels_ok": true,
+        "requested_namespaces": [
+          "chaosatlas-sock-shop"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "chaosatlas-sock-shop",
+          "name": "payment-66c7cd54b4-nzpgf",
+          "uid": "c6096916-68f7-40b0-b0a8-68fece195743",
+          "terminating": false,
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            80
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "mutation_name_status": "available",
+      "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-pod-kill-payment-7e09dd25\" not found",
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-pod-kill-payment-7e09dd25\" not found\n"
+  },
+  "port_forward": {
+    "return_code": 1,
+    "stopped_by_runner": true,
+    "stdout": "",
+    "stderr": ""
+  },
+  "finished_at": "2026-08-14T18:38:03.181526+00:00"
+}

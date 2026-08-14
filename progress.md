@@ -663,3 +663,75 @@
 - Runtime batch completed 24/24. Independent verification passed with 24 reports, 16 `no_business_impact_observed`, and 8 `weakness_observed`.
 - The eight weak reports are seed-1003 H2/H4/H6/H8, each reproduced twice. All lifecycle, cleanup, washout, diagnostics, and SHA-256 checks passed; final global Chaos scan was empty.
 - Weakness RCA is recorded in `artifacts/experiments/chaosatlas_native_full_2026-08-14-r1/native-full-rca-review.md`. It confirms business impact and bounded database-connectivity log evidence, while keeping Zipkin-unavailable and mechanism inference boundaries explicit.
+
+# Sock Shop YAML confidence native-vs-ablation (2026-08-14)
+
+- Added and verified `tools/yaml_confidence_categories.py`: all 1,935 raw YAML files are inventoried, including parse-failure rows with parent-directory kind fallback.
+- Added and verified `tools/yaml_confidence_stopping.py`: Beta posterior upper-95 approximation, novelty reasons, motif coverage, and max/min stop semantics.
+- Added and verified `tools/build_sock_shop_confidence_inputs.py`: native-full and ablation inputs are separated, with `human_review=pending` and `knowledge_base_updated=false`.
+- Added and verified `tools/run_sock_shop_confidence_discovery.py`: fake-model contract passes; ablation payload excludes knowledge projection fields.
+- Added and verified `tools/run_sock_shop_confidence_runtime.py`: mutation compilation is namespace-local and SHA-recorded; HTTP/composite categories are retained as gate failures rather than executed.
+- Added and verified `tools/review_sock_shop_confidence_experiment.py`: stable weakness requires at least two completed replicates with business failure.
+- Direct-script import regression was found and fixed for all four new CLI modules.
+- Offline artifact directory: `artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r1/`.
+- Offline classification result: 1,935 total, 1,506 in five-category runtime scope. Counts are Pod 341, Network 428, Stress 352, Protocol/HTTP 263, Composite/Scheduled 122.
+- Fake discovery result: native-full 25 hypotheses; ablation 25 hypotheses. Static runtime plan: each arm has 19 runtime candidates and 6 gate failures.
+- No DeepSeek key was read, no external model request was sent, and no Kubernetes mutation was performed in this phase.
+- Date note: the artifact directory keeps the requested `2026-08-15-r1` naming, while this execution occurred on August 14, 2026.
+
+# 2026-08-14 Sock Shop YAML confidence runtime recovery
+
+- `runtime-exec-r2` stopped after 58 reports: all 38 native-full reports were
+  completed; ablation had 19 completed reports and one failed
+  `net-delay-catalogue` replicate-2 report.
+- The failed report confirmed injection, Chaos resource recovery, deletion, and
+  an empty global Chaos scan. It failed only at business recovery: 85/87
+  recovery journeys returned HTTP 500 on `/catalogue`, so it did not satisfy
+  the mandatory recovery/washout gate and is not a business-weakness result.
+- Diagnostics traced the 500 to the front-end session Redis path. `session-db`
+  used `readOnlyRootFilesystem: true` with no writable `/data` volume; Redis
+  background RDB writes therefore failed with `Read-only file system`, and
+  `stop-writes-on-bgsave-error=yes` surfaced `MISCONF` to the oracle.
+- Added a TDD regression in `test_prepare_sock_shop_two_arm.py`; the RED run
+  failed on missing Redis args and the GREEN run passed 3 tests after
+  `prepare_sock_shop_two_arm.py` disables RDB/AOF persistence for this
+  read-only `session-db` configuration.
+- The live `session-db` Pod was set to
+  `stop-writes-on-bgsave-error=no` as a namespace-local temporary remediation.
+  The direct deployment-args persistence command is unsupported by this
+  kubectl version, so the durable source-side fix remains in the manifest
+  preparer and the running Pod configuration is explicitly recorded.
+- A fresh, no-injection formal cookie-based oracle completed 5/5 successful
+  journeys after remediation. Immediately before continuation,
+  `kubectl get podchaos,networkchaos,stresschaos -A` was empty.
+- Next action: create `runtime-exec-r3`, reuse only `status=completed` reports
+  from r2, then execute the corrected retry of the failed unit and all
+  remaining ablation units.
+
+# 2026-08-14 Sock Shop YAML confidence r4 closure
+
+- The artifact directory keeps the requested `2026-08-15` naming, while the
+  r4 report timestamps are on August 14, 2026 UTC.
+- The exact `net-delay-catalogue` mutation passed server-side dry-run. Before
+  execution, all 14 Sock Shop Pods were Ready and the global
+  PodChaos/NetworkChaos/StressChaos scan was empty.
+- `runtime-exec-r4` reused 57 completed r3 reports and executed 19 remaining
+  ablation report slots. This included the failed `net-delay-catalogue`
+  replicate-2 retry plus 18 slots that r3 never reached because its
+  fail-fast plan stopped early.
+- All 76 r4 reports are `completed`: failure-free baselines, confirmed
+  injection, business recovery, cleanup absence, stable washout, captured
+  diagnostics, and mutation SHA-256 verification all passed. Final global
+  Chaos scan was empty.
+- The pending review records native-full as 4 stable weaknesses / 19 runtime
+  candidates (21.05%, 5,230.211 seconds) and chaosatlas-ablation as 6 / 19
+  (31.58%, 7,647.607 seconds). These are method-specific discovery yields,
+  not a causal superiority claim: candidate identities differ, and the newly
+  completed ablation slots used the documented 240-second recovery budget.
+- Fixed two offline evidence-accounting defects with TDD: fail-fast plans now
+  report planned versus processed runtime candidates, and the review tool
+  ignores nested diagnostic JSON, infers a five-category label from a mutation
+  ID when needed, and derives method wall-clock time from reports.
+- Focused runtime/review regression: 25 passed. The only warning is the
+  pre-existing Windows `.pytest_cache` ACL warning. No knowledge-base update,
+  key read, or external model request occurred in this closure.

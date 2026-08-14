@@ -168,7 +168,7 @@ def capture_diagnostics(report_path: Path, selector: str) -> dict[str, Any]:
     return {"status": "captured", "files": files}
 
 
-def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_id: str, replicate: int, *, baseline_count: int = 5, washout_seconds: float = 60, washout_successes: int = 10, washout_timeout: float = 180) -> dict[str, Any]:
+def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_id: str, replicate: int, *, baseline_count: int = 5, recovery_timeout: float = 180, washout_seconds: float = 60, washout_successes: int = 10, washout_timeout: float = 180) -> dict[str, Any]:
     if report_path.exists():
         raise FileExistsError(report_path)
     report: dict[str, Any] = {"schema_version": "sock-shop-two-arm-lifecycle-v1", "project_id": "sock-shop", "namespace": NAMESPACE, "arm": arm, "seed": seed, "mutation_id": hypothesis_id, "replicate": replicate, "mutation": {"path": str(mutation).replace("\\", "/"), "sha256": hashlib.sha256(mutation.read_bytes()).hexdigest()}, "baseline": {"pass": False}, "injection": {"applied": False, "injected": False}, "observation": {}, "recovery": {"recovered": False}, "cleanup": {"absent_confirmed": False, "residual_resources": []}, "washout": {"stable": False}, "diagnostics": {"status": "pending"}, "human_review": "pending", "knowledge_base_updated": False, "status": "running", "errors": [], "started_at": now()}
@@ -240,7 +240,9 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
             rebind_port_forward()
             report["recovery"]["port_forward_restarted"] = True
         recovery_journeys: list[dict[str, Any]] = []
-        deadline = time.monotonic() + 180
+        report["recovery"]["successes_required"] = baseline_count
+        report["recovery"]["timeout_seconds"] = recovery_timeout
+        deadline = time.monotonic() + recovery_timeout
         while time.monotonic() < deadline and consecutive_successes(recovery_journeys) < baseline_count:
             ensure_port_forward_alive()
             journey = run_journey()
@@ -289,6 +291,14 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
             cleanup = delete_resource(kind, NAMESPACE, name)
             residuals, residual_errors = global_residuals()
             report["cleanup"] = {**cleanup, "residual_resources": residuals, "global_scan_errors": residual_errors}
+        if report["diagnostics"].get("status") == "pending" and selector_query:
+            try:
+                report["diagnostics"] = capture_diagnostics(report_path, selector_query)
+            except Exception as exc:
+                report["diagnostics"] = {
+                    "status": "unavailable",
+                    "error": f"{type(exc).__name__}: {exc}",
+                }
         report["port_forward"] = stop_process(process)
         report["finished_at"] = now()
         report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -304,8 +314,17 @@ def main() -> int:
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--hypothesis-id", required=True)
     parser.add_argument("--replicate", type=int, required=True)
+    parser.add_argument("--recovery-timeout", type=float, default=180)
     args = parser.parse_args()
-    result = run_one(args.mutation, args.report, args.arm, args.seed, args.hypothesis_id, args.replicate)
+    result = run_one(
+        args.mutation,
+        args.report,
+        args.arm,
+        args.seed,
+        args.hypothesis_id,
+        args.replicate,
+        recovery_timeout=args.recovery_timeout,
+    )
     print(json.dumps({"status": result["status"], "classification": (result.get("observation") or {}).get("classification"), "errors": result["errors"]}))
     return 0 if result["status"] == "completed" else 2
 

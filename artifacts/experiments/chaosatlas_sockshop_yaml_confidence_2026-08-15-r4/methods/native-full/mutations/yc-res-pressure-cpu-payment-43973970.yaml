@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: yc-res-pressure-cpu-payment-43973970
+  namespace: chaosatlas-sock-shop
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: payment
+  duration: 30s
+  stressors:
+    cpu:
+      workers: 1
+      load: 50

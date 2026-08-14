@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: yc-net-delay-catalogue-cdcab218
+  namespace: chaosatlas-sock-shop
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: catalogue
+  action: delay
+  duration: 30s
+  delay:
+    latency: 500ms
+    correlation: '100'
+    jitter: 0ms

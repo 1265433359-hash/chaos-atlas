@@ -1,0 +1,2836 @@
+{
+  "experiment": "sock_shop_yaml_confidence",
+  "status": "completed",
+  "executed_units": 19,
+  "methods": {
+    "native-full": {
+      "generated_hypotheses": 25,
+      "runtime_candidates": 19,
+      "gate_failed": 6,
+      "candidates": [
+        {
+          "hypothesis_id": "pod-kill-front-end",
+          "target_service": "front-end",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-front-end-c0a736f8",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-pod-kill-front-end-c0a736f8.yaml",
+          "sha256": "398af25ee3015f8555857d7780e8c43cf03d5412a16b4f983cf3d44cfb685fa0",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-front-end",
+            "target_service": "front-end",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "entry",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the front-end pod directly disrupts the entry point of the golden journey, causing immediate failures across all steps (home, catalogue, login, orders). This is a high-impact, common fault pattern (64.8% of PodChaos) with short duration to minimize recovery time.",
+            "method": "native-full",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_call_chain_position",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 1,
+              "novel_count": 1,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-front-end-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-front-end-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-front-end-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-front-end-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "pod-kill-carts-db",
+          "target_service": "carts-db",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-carts-db-d35927c6",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-pod-kill-carts-db-d35927c6.yaml",
+          "sha256": "dec373480622816d707f3aaef7d3614f5b49c40427ffd0f8ad8c986ab53ae05f",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-carts-db",
+            "target_service": "carts-db",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the carts-db pod disrupts the data dependency for the carts service, which is part of the authenticated orders journey. This causes failures in the orders step (HTTP 201 expected) and potentially the login step if carts is used for session data. This is a common fault pattern (64.8% of PodChaos) with short duration to minimize recovery time.",
+            "method": "native-full",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_call_chain_position"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 2,
+              "novel_count": 2,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-carts-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-carts-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-carts-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-carts-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "pod-kill-orders-db",
+          "target_service": "orders-db",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-orders-db-127d9c65",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-pod-kill-orders-db-127d9c65.yaml",
+          "sha256": "7ceed29f6a8da6f0de00083bb49e7bf5dd0eccd07289af0fe172084c6623292d",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-orders-db",
+            "target_service": "orders-db",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the orders-db pod directly disrupts the data dependency for the orders service, which is critical for the authenticated orders step (HTTP 201 expected). This will cause the orders step to fail, and since orders-db is a backend dependency, it may also impact other services that rely on it. This is a common fault pattern (64.8% of PodChaos) with short duration to minimize recovery time.",
+            "method": "native-full",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 3,
+              "novel_count": 3,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-orders-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-orders-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-orders-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-orders-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "pod-kill-catalogue-db",
+          "target_service": "catalogue-db",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-catalogue-db-0fc08a50",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-pod-kill-catalogue-db-0fc08a50.yaml",
+          "sha256": "f8283a327c89617e326da64b69e0fb04f232dc1a060c97c610a14a710c86ab46",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-catalogue-db",
+            "target_service": "catalogue-db",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the catalogue-db pod disrupts the data dependency for the catalogue service, which is part of the golden journey (catalogue step expects JSON array). This will cause the catalogue step to fail, and since catalogue-db is a backend dependency, it may also impact other services that rely on it. This is a common fault pattern (64.8% of PodChaos) with short duration to minimize recovery time.",
+            "method": "native-full",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 4,
+              "novel_count": 4,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-catalogue-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-catalogue-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-catalogue-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-catalogue-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "pod-kill-user-db",
+          "target_service": "user-db",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-user-db-8da22823",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-pod-kill-user-db-8da22823.yaml",
+          "sha256": "4fe198071a8e0d6afc51cb44daab1b5d4854d154dd04d06264e6b9acf512c078",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-user-db",
+            "target_service": "user-db",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the user-db pod disrupts the data dependency for the user service, which is used during the login step (HTTP 200 expected). This will cause the login step to fail, and since user-db is a backend dependency, it may also impact other services that rely on it. This is a common fault pattern (64.8% of PodChaos) with short duration to minimize recovery time.",
+            "method": "native-full",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 5,
+              "novel_count": 5,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-user-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-user-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-user-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-user-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "pod-kill-payment",
+          "target_service": "payment",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-payment-78d1e7a9",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-pod-kill-payment-78d1e7a9.yaml",
+          "sha256": "59b054166fc15a89b85c21eb1168acf1202021804960ad0ffa5a98c272ff17f2",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-payment",
+            "target_service": "payment",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "supporting-service",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the payment pod disrupts the payment service, which is a supporting service in the authenticated orders journey. Although the golden journey is read-only and may not directly invoke payment, payment is a dependency for order processing and its failure could cause cascading issues or timeouts. This tests resilience to supporting service failures, a common pattern (64.8% of PodChaos) with short duration to minimize recovery time.",
+            "method": "native-full",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_call_chain_position"
+            ],
+            "stop_snapshot": {
+              "stop": true,
+              "reason": "max_hypotheses",
+              "generated": 6,
+              "novel_count": 6,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-payment-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-payment-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\pod-kill-payment-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\pod-kill-payment-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-delay-front-end",
+          "target_service": "front-end",
+          "kind": "NetworkChaos",
+          "name": "yc-net-delay-front-end-cba272a1",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-net-delay-front-end-cba272a1.yaml",
+          "sha256": "7d8d08e485fa342aecc3029dcb49c31c4b5d4171f209535e5f8e1983d72d68a9",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-delay-front-end",
+            "target_service": "front-end",
+            "action_or_target": "delay",
+            "call_chain_position": "entry",
+            "motifs": [
+              "action_or_target=delay",
+              "mode=all",
+              "selector_shape=app-label",
+              "duration_bucket=medium",
+              "intensity_bucket=low"
+            ],
+            "rationale": "Network delay on the front-end service is the most common fault type in this category (support 213, ratio 0.4977) and directly impacts the entry point of the golden journey, likely causing timeouts or slow responses for all steps.",
+            "method": "native-full",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_call_chain_position",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 1,
+              "novel_count": 1,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.416667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-delay-front-end-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-delay-front-end-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-delay-front-end-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-delay-front-end-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-loss-carts-db",
+          "target_service": "carts-db",
+          "kind": "NetworkChaos",
+          "name": "yc-net-loss-carts-db-b43d3a4c",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-net-loss-carts-db-b43d3a4c.yaml",
+          "sha256": "f7679cc39e03b2023875342fa1831a54e1b4631819c6f0b383852c22ea9074ac",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-loss-carts-db",
+            "target_service": "carts-db",
+            "action_or_target": "loss",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "action_or_target=loss",
+              "intensity_bucket=high",
+              "mode=all",
+              "selector_shape=app-label",
+              "duration_bucket=medium"
+            ],
+            "rationale": "Network loss on carts-db is a high-impact fault (loss with high intensity has lift 2.63) and directly affects the data dependency for the orders step, likely causing failures or timeouts in the golden journey.",
+            "method": "native-full",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_call_chain_position",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 2,
+              "novel_count": 2,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.5
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-loss-carts-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-loss-carts-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-loss-carts-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-loss-carts-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-partition-orders-db",
+          "target_service": "orders-db",
+          "kind": "NetworkChaos",
+          "name": "yc-net-partition-orders-db-d5b0bfa2",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-net-partition-orders-db-d5b0bfa2.yaml",
+          "sha256": "dc12c43e8713950d2a6754bd75625893b2575d4a9741e9435db136c258fb8689",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-partition-orders-db",
+            "target_service": "orders-db",
+            "action_or_target": "partition",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "action_or_target=partition",
+              "intensity_bucket=partition",
+              "mode=all",
+              "selector_shape=app-label",
+              "duration_bucket=medium"
+            ],
+            "rationale": "Network partition on orders-db is a high-lift fault (partition with intensity partition has lift 4.32) and directly impacts the data dependency for the orders step, likely causing failures or timeouts in the golden journey.",
+            "method": "native-full",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 3,
+              "novel_count": 3,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.666667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-partition-orders-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-partition-orders-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-partition-orders-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-partition-orders-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-delay-catalogue",
+          "target_service": "catalogue",
+          "kind": "NetworkChaos",
+          "name": "yc-net-delay-catalogue-0c59ac39",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-net-delay-catalogue-0c59ac39.yaml",
+          "sha256": "e875b014a4bc73c7f7276fd1f373cb34328cb995c9ec7ebc77879526f191e86b",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-delay-catalogue",
+            "target_service": "catalogue",
+            "action_or_target": "delay",
+            "call_chain_position": "business-service",
+            "motifs": [
+              "action_or_target=delay",
+              "mode=all",
+              "selector_shape=app-label",
+              "duration_bucket=medium",
+              "intensity_bucket=low"
+            ],
+            "rationale": "Network delay on the catalogue service is a common fault type (support 213, ratio 0.4977) and directly impacts the catalogue browse step, likely causing timeouts or slow responses in the golden journey.",
+            "method": "native-full",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_call_chain_position"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 4,
+              "novel_count": 4,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.666667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-delay-catalogue-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-delay-catalogue-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-delay-catalogue-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-delay-catalogue-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-delay-user",
+          "target_service": "user",
+          "kind": "NetworkChaos",
+          "name": "yc-net-delay-user-d0152996",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-net-delay-user-d0152996.yaml",
+          "sha256": "be42fb0c06920d9778094660b356f7fa6de9ca9b97ec2d35e3983f6966f1b948",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-delay-user",
+            "target_service": "user",
+            "action_or_target": "delay",
+            "call_chain_position": "supporting-service",
+            "motifs": [
+              "action_or_target=delay",
+              "mode=all",
+              "selector_shape=app-label",
+              "duration_bucket=medium",
+              "intensity_bucket=low"
+            ],
+            "rationale": "Network delay on the user service is a common fault type (support 213, ratio 0.4977) and directly impacts the login step, which depends on user authentication, likely causing timeouts or slow responses in the golden journey.",
+            "method": "native-full",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_call_chain_position"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 5,
+              "novel_count": 5,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.666667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-delay-user-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-delay-user-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-delay-user-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-delay-user-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-loss-catalogue",
+          "target_service": "catalogue",
+          "kind": "NetworkChaos",
+          "name": "yc-net-loss-catalogue-2aaac7c1",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-net-loss-catalogue-2aaac7c1.yaml",
+          "sha256": "479ad2c46aa69289e779a677d09519f4ff3e611318fe26ef5bb5b8bf395f8889",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-loss-catalogue",
+            "target_service": "catalogue",
+            "action_or_target": "loss",
+            "call_chain_position": "business-service",
+            "motifs": [
+              "action_or_target=loss",
+              "intensity_bucket=medium",
+              "mode=all",
+              "selector_shape=app-label",
+              "duration_bucket=medium"
+            ],
+            "rationale": "Network loss on catalogue is a high-impact fault (loss with medium intensity has lift 2.01) and directly impacts the catalogue browse step, likely causing failures or timeouts in the golden journey.",
+            "method": "native-full",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 6,
+              "novel_count": 6,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.75
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-loss-catalogue-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-loss-catalogue-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-loss-catalogue-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-loss-catalogue-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-delay-orders",
+          "target_service": "orders",
+          "kind": "NetworkChaos",
+          "name": "yc-net-delay-orders-92628aa3",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-net-delay-orders-92628aa3.yaml",
+          "sha256": "f237242364713fc37dc6dc6ac76e7fb81033f1bdc649953011fb62da649e25c7",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-delay-orders",
+            "target_service": "orders",
+            "action_or_target": "delay",
+            "call_chain_position": "business-service",
+            "motifs": [
+              "action_or_target=delay",
+              "mode=all",
+              "selector_shape=app-label",
+              "duration_bucket=medium",
+              "intensity_bucket=low"
+            ],
+            "rationale": "Network delay on the orders service is a common fault type (support 213, ratio 0.4977) and directly impacts the authenticated orders step, likely causing timeouts or slow responses in the golden journey.",
+            "method": "native-full",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 7,
+              "novel_count": 7,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.75
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-delay-orders-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-delay-orders-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-delay-orders-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-delay-orders-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-loss-front-end",
+          "target_service": "front-end",
+          "kind": "NetworkChaos",
+          "name": "yc-net-loss-front-end-140052d3",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-net-loss-front-end-140052d3.yaml",
+          "sha256": "635ff5219a5e4cfa2c0c79b7ccd395043058de819a568c1c4f71058f2684c5bf",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-loss-front-end",
+            "target_service": "front-end",
+            "action_or_target": "loss",
+            "call_chain_position": "entry",
+            "motifs": [
+              "action_or_target=loss",
+              "intensity_bucket=medium",
+              "mode=all",
+              "selector_shape=app-label",
+              "duration_bucket=medium"
+            ],
+            "rationale": "Network loss on the front-end service is a high-impact fault (loss with medium intensity has lift 2.01) and directly impacts the entry point of the golden journey, likely causing failures or timeouts for all steps.",
+            "method": "native-full",
+            "category": "Network degradation",
+            "novel": false,
+            "novelty_reasons": [],
+            "stop_snapshot": {
+              "stop": true,
+              "reason": "max_hypotheses",
+              "generated": 8,
+              "novel_count": 7,
+              "duplicate_count": 1,
+              "upper95": 0.998377,
+              "feature_coverage": 0.75
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-loss-front-end-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-loss-front-end-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\net-loss-front-end-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\net-loss-front-end-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "res-pressure-cpu-front-end",
+          "target_service": "front-end",
+          "kind": "StressChaos",
+          "name": "yc-res-pressure-cpu-front-end-55566b47",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-res-pressure-cpu-front-end-55566b47.yaml",
+          "sha256": "dd689ed640e85cffa951c2915c71a1663857f6ae88f429efd1ec2681749f4ff0",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "id": "res-pressure-cpu-front-end",
+            "target_service": "front-end",
+            "action_or_target": "cpu",
+            "call_chain_position": "entry",
+            "motifs": [
+              "duration_bucket=medium",
+              "mode=one",
+              "selector_shape=app-label",
+              "action_or_target=cpu",
+              "intensity_bucket=high"
+            ],
+            "rationale": "CPU stress on the entry point front-end is likely to directly impact all user-facing requests, causing timeouts or errors in the golden journey. The high intensity and medium duration align with common resource pressure patterns.",
+            "method": "native-full",
+            "category": "Resource pressure",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_call_chain_position",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 1,
+              "novel_count": 1,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.416667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\res-pressure-cpu-front-end-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\res-pressure-cpu-front-end-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\res-pressure-cpu-front-end-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\res-pressure-cpu-front-end-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "res-pressure-mem-carts-db",
+          "target_service": "carts-db",
+          "kind": "StressChaos",
+          "name": "yc-res-pressure-mem-carts-db-0ae7659b",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-res-pressure-mem-carts-db-0ae7659b.yaml",
+          "sha256": "c0cd0218bf45de05b40ac56b516edf5bf17f4d71b754019047fe08fa88e12297",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "id": "res-pressure-mem-carts-db",
+            "target_service": "carts-db",
+            "action_or_target": "memory",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "duration_bucket=medium",
+              "mode=one",
+              "selector_shape=app-label",
+              "action_or_target=memory",
+              "intensity_bucket=unknown"
+            ],
+            "rationale": "Memory pressure on carts-db, a data dependency for the carts service, can cause slow queries or connection failures, impacting the authenticated orders journey. The high lift between memory and unknown intensity suggests a common pattern, and medium duration aligns with typical resource pressure experiments.",
+            "method": "native-full",
+            "category": "Resource pressure",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_call_chain_position",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 2,
+              "novel_count": 2,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.583333
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\res-pressure-mem-carts-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\res-pressure-mem-carts-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\res-pressure-mem-carts-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\res-pressure-mem-carts-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "res-pressure-cpu-catalogue",
+          "target_service": "catalogue",
+          "kind": "StressChaos",
+          "name": "yc-res-pressure-cpu-catalogue-db0691c4",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-res-pressure-cpu-catalogue-db0691c4.yaml",
+          "sha256": "43abe53bcabb5410bb20658082ed86b04a3c1a01ac0405c4256453245c9acca7",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "id": "res-pressure-cpu-catalogue",
+            "target_service": "catalogue",
+            "action_or_target": "cpu",
+            "call_chain_position": "business-service",
+            "motifs": [
+              "duration_bucket=medium",
+              "mode=one",
+              "selector_shape=app-label",
+              "action_or_target=cpu",
+              "intensity_bucket=high"
+            ],
+            "rationale": "CPU stress on the catalogue service, a business service in the browse path, can cause slow responses or timeouts for catalogue browsing, directly impacting the golden journey. High intensity and medium duration align with common resource pressure patterns.",
+            "method": "native-full",
+            "category": "Resource pressure",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_call_chain_position"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 3,
+              "novel_count": 3,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.583333
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\res-pressure-cpu-catalogue-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\res-pressure-cpu-catalogue-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\res-pressure-cpu-catalogue-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\res-pressure-cpu-catalogue-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "res-pressure-cpu-orders",
+          "target_service": "orders",
+          "kind": "StressChaos",
+          "name": "yc-res-pressure-cpu-orders-f97b0e15",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-res-pressure-cpu-orders-f97b0e15.yaml",
+          "sha256": "91d403208c5e9d02f8dfb9c1518bdd1f77abfc7445678f590b67890df21d8c01",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "id": "res-pressure-cpu-orders",
+            "target_service": "orders",
+            "action_or_target": "cpu",
+            "call_chain_position": "business-service",
+            "motifs": [
+              "duration_bucket=medium",
+              "mode=one",
+              "selector_shape=app-label",
+              "action_or_target=cpu",
+              "intensity_bucket=high"
+            ],
+            "rationale": "CPU stress on the orders service, a business service in the authenticated orders journey, can cause slow processing or timeouts for order operations, directly impacting the golden journey. High intensity and medium duration align with common resource pressure patterns.",
+            "method": "native-full",
+            "category": "Resource pressure",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 4,
+              "novel_count": 4,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.583333
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\res-pressure-cpu-orders-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\res-pressure-cpu-orders-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\res-pressure-cpu-orders-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\res-pressure-cpu-orders-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "res-pressure-cpu-payment",
+          "target_service": "payment",
+          "kind": "StressChaos",
+          "name": "yc-res-pressure-cpu-payment-43973970",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\mutations\\yc-res-pressure-cpu-payment-43973970.yaml",
+          "sha256": "4d26f5e9d112c15392a6a1cfbe656191228ed2bc58ece817193e29f42686e127",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "native-full",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "id": "res-pressure-cpu-payment",
+            "target_service": "payment",
+            "action_or_target": "cpu",
+            "call_chain_position": "business-service",
+            "motifs": [
+              "duration_bucket=medium",
+              "mode=one",
+              "selector_shape=app-label",
+              "action_or_target=cpu",
+              "intensity_bucket=high"
+            ],
+            "rationale": "CPU stress on the payment service, a business service in the authenticated orders journey, can cause slow payment processing or timeouts, directly impacting the golden journey. High intensity and medium duration align with common resource pressure patterns.",
+            "method": "native-full",
+            "category": "Resource pressure",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": true,
+              "reason": "max_hypotheses",
+              "generated": 5,
+              "novel_count": 5,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.583333
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\res-pressure-cpu-payment-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\res-pressure-cpu-payment-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\native-full\\runtime_reports\\res-pressure-cpu-payment-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\native-full\\runtime_reports\\res-pressure-cpu-payment-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "http-error-short-catalogue",
+          "target_service": "catalogue",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "native-full",
+          "category": "Protocol/HTTP fault",
+          "runtime_invocations": []
+        },
+        {
+          "hypothesis_id": "http-error-short-catalogue",
+          "target_service": "catalogue",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "native-full",
+          "category": "Protocol/HTTP fault",
+          "runtime_invocations": []
+        },
+        {
+          "hypothesis_id": "http-error-short-catalogue",
+          "target_service": "catalogue",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "native-full",
+          "category": "Protocol/HTTP fault",
+          "runtime_invocations": []
+        },
+        {
+          "hypothesis_id": "http-abort-catalogue-entry",
+          "target_service": "front-end",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "native-full",
+          "category": "Protocol/HTTP fault",
+          "runtime_invocations": []
+        },
+        {
+          "hypothesis_id": "sched-delay-front-end",
+          "target_service": "front-end",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "native-full",
+          "category": "Composite/scheduled fault",
+          "runtime_invocations": []
+        },
+        {
+          "hypothesis_id": "sched-delay-catalogue-db",
+          "target_service": "catalogue-db",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "native-full",
+          "category": "Composite/scheduled fault",
+          "runtime_invocations": []
+        }
+      ]
+    },
+    "chaosatlas-ablation": {
+      "generated_hypotheses": 25,
+      "runtime_candidates": 19,
+      "gate_failed": 6,
+      "candidates": [
+        {
+          "hypothesis_id": "pod-kill-front-end",
+          "target_service": "front-end",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-front-end-64436754",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-pod-kill-front-end-64436754.yaml",
+          "sha256": "cd53efe5a8d323d70ab353bf375823cab37082d163173ff71b0a52c3b45f4847",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-front-end",
+            "target_service": "front-end",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "entry",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the front-end pod directly disrupts the entry point, causing immediate failures across all golden journey steps. This is a high-impact, common fault type.",
+            "method": "chaosatlas-ablation",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_call_chain_position",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 1,
+              "novel_count": 1,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-front-end-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-front-end-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-front-end-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-front-end-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "pod-kill-carts-db",
+          "target_service": "carts-db",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-carts-db-0660241f",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-pod-kill-carts-db-0660241f.yaml",
+          "sha256": "66ca45b5dd22cb6c4a6745d77fa070d02fc47c738afdbd75abb04cc9ba4b585d",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-carts-db",
+            "target_service": "carts-db",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the carts-db pod disrupts the data dependency for the carts service, which is used in the authenticated orders golden journey. This is a common fault type and likely to cause failures in the orders step.",
+            "method": "chaosatlas-ablation",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_call_chain_position"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 2,
+              "novel_count": 2,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-carts-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-carts-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-carts-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-carts-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "pod-kill-orders-db",
+          "target_service": "orders-db",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-orders-db-c9984d9b",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-pod-kill-orders-db-c9984d9b.yaml",
+          "sha256": "e8ab2bd6d2a354c1ba2209fa85379c35c7f543d3dc171e57eb4bf723440c6c45",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-orders-db",
+            "target_service": "orders-db",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the orders-db pod disrupts the data dependency for the orders service, which is critical for the authenticated orders golden journey. This is a common fault type and likely to cause failures in the orders step.",
+            "method": "chaosatlas-ablation",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 3,
+              "novel_count": 3,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-orders-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-orders-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-orders-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-orders-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "pod-kill-catalogue-db",
+          "target_service": "catalogue-db",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-catalogue-db-98c7fc26",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-pod-kill-catalogue-db-98c7fc26.yaml",
+          "sha256": "c3cb2f8bd8ed93bb24a1dcb4fe92259bb44dc3bb4dfd2c37f47a29ab1fdfd113",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-catalogue-db",
+            "target_service": "catalogue-db",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the catalogue-db pod disrupts the data dependency for the catalogue service, which is used in the catalogue browse golden journey. This is a common fault type and likely to cause failures in the catalogue step.",
+            "method": "chaosatlas-ablation",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 4,
+              "novel_count": 4,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-catalogue-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-catalogue-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-catalogue-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-catalogue-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "pod-kill-user-db",
+          "target_service": "user-db",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-user-db-903ef7dc",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-pod-kill-user-db-903ef7dc.yaml",
+          "sha256": "4c2c5f410bb8448f7dbf7709c5a09684972bcf8e7db41397b6544b8613a417be",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-user-db",
+            "target_service": "user-db",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the user-db pod disrupts the data dependency for the user service, which is critical for the demo login golden journey. This is a common fault type and likely to cause failures in the login step.",
+            "method": "chaosatlas-ablation",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 5,
+              "novel_count": 5,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-user-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-user-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-user-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-user-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "pod-kill-payment",
+          "target_service": "payment",
+          "kind": "PodChaos",
+          "name": "yc-pod-kill-payment-7e09dd25",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-pod-kill-payment-7e09dd25.yaml",
+          "sha256": "b1c4cd9dcbd6e6efb0d4edde8dd59b35ae3845fdccb63221227bd83fddedf7f3",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "id": "pod-kill-payment",
+            "target_service": "payment",
+            "action_or_target": "pod-kill",
+            "call_chain_position": "business-service",
+            "motifs": [
+              "action_or_target=pod-kill",
+              "mode=one",
+              "selector_shape=app-label",
+              "duration_bucket=short"
+            ],
+            "rationale": "Killing the payment pod disrupts the business service used in the authenticated orders golden journey, likely causing failures in the orders step. This is a common fault type and a novel target not yet covered.",
+            "method": "chaosatlas-ablation",
+            "category": "Pod disruption",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_call_chain_position"
+            ],
+            "stop_snapshot": {
+              "stop": true,
+              "reason": "max_hypotheses",
+              "generated": 6,
+              "novel_count": 6,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.363636
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-payment-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-payment-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-payment-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\pod-kill-payment-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-delay-front-end",
+          "target_service": "front-end",
+          "kind": "NetworkChaos",
+          "name": "yc-net-delay-front-end-33baaae1",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-delay-front-end-33baaae1.yaml",
+          "sha256": "d2ba07d44a24ba6042e462d689b8b001cb9ea4431b0c0cb88e8fc35014c35813",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-delay-front-end",
+            "target_service": "front-end",
+            "action_or_target": "delay",
+            "call_chain_position": "entry",
+            "motifs": [
+              "selector_shape=app-label",
+              "mode=all",
+              "duration_bucket=medium",
+              "action_or_target=delay",
+              "intensity_bucket=low"
+            ],
+            "rationale": "Network delay on the front-end entry point is a common fault type (49.77% support) and directly impacts all user-facing steps (home, catalogue, login, orders). Low intensity delay (lift 2.01 with delay) is likely to cause timeouts without immediate failure, testing resilience.",
+            "method": "chaosatlas-ablation",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_call_chain_position",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 1,
+              "novel_count": 1,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.416667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-front-end-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-front-end-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-front-end-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-front-end-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-loss-catalogue-db",
+          "target_service": "catalogue-db",
+          "kind": "NetworkChaos",
+          "name": "yc-net-loss-catalogue-db-3260bb2e",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-loss-catalogue-db-3260bb2e.yaml",
+          "sha256": "6732400b6874bb0567383cf8bec367d6dfb86fe679f43da3b176b34841c464d8",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-loss-catalogue-db",
+            "target_service": "catalogue-db",
+            "action_or_target": "loss",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "selector_shape=app-label",
+              "mode=all",
+              "duration_bucket=medium",
+              "action_or_target=loss",
+              "intensity_bucket=high"
+            ],
+            "rationale": "Network loss on catalogue-db is a data-dependency fault that can cause the catalogue service to fail or return incomplete data, impacting the catalogue browse step. High intensity loss is a common motif (18.69% support) and has high lift with loss (2.63), making it a likely failure mode.",
+            "method": "chaosatlas-ablation",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_call_chain_position",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 2,
+              "novel_count": 2,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.5
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-catalogue-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-catalogue-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-catalogue-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-catalogue-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-partition-orders-db",
+          "target_service": "orders-db",
+          "kind": "NetworkChaos",
+          "name": "yc-net-partition-orders-db-1edb587d",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-partition-orders-db-1edb587d.yaml",
+          "sha256": "793c92d160857d54b1dd01d025646c62b818218c3375dfb396985dfcfb421469",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-partition-orders-db",
+            "target_service": "orders-db",
+            "action_or_target": "partition",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "selector_shape=app-label",
+              "mode=all",
+              "duration_bucket=medium",
+              "action_or_target=partition",
+              "intensity_bucket=partition"
+            ],
+            "rationale": "Network partition on orders-db is a data-dependency fault that can cause the orders service to fail or hang, impacting the authenticated orders step. Partition has high support (23.13%) and high lift with intensity_bucket=partition (4.32), making it a likely failure mode.",
+            "method": "chaosatlas-ablation",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 3,
+              "novel_count": 3,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.666667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-partition-orders-db-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\net-partition-orders-db-rep-1.json"
+            },
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-partition-orders-db-rep-2.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\net-partition-orders-db-rep-2.json"
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-delay-catalogue",
+          "target_service": "catalogue",
+          "kind": "NetworkChaos",
+          "name": "yc-net-delay-catalogue-cdcab218",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-delay-catalogue-cdcab218.yaml",
+          "sha256": "134100cbc77f35b28d7a7a3603eac5c605f2554f44f4d03ac624f4e2d1f39c93",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-delay-catalogue",
+            "target_service": "catalogue",
+            "action_or_target": "delay",
+            "call_chain_position": "business-service",
+            "motifs": [
+              "selector_shape=app-label",
+              "mode=all",
+              "duration_bucket=medium",
+              "action_or_target=delay",
+              "intensity_bucket=low"
+            ],
+            "rationale": "Network delay on the catalogue service is a business-service fault that can slow down the catalogue browse step, potentially causing timeouts. Delay is the most common action (49.77% support) and low intensity has high lift with delay (2.01), making it a likely failure mode.",
+            "method": "chaosatlas-ablation",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_call_chain_position"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 4,
+              "novel_count": 4,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.666667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-catalogue-rep-1.json",
+              "execute_requested": true,
+              "executed": false,
+              "skipped_completed": true,
+              "source_report": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r2\\runtime-exec-r3\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-catalogue-rep-1.json"
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-delay-catalogue-cdcab218.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-catalogue-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "net-delay-catalogue",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-catalogue-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-delay-user",
+          "target_service": "user",
+          "kind": "NetworkChaos",
+          "name": "yc-net-delay-user-04fc119f",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-delay-user-04fc119f.yaml",
+          "sha256": "c9d35001c8c4ed883a5f2e05930f4872f70e1f50f87bcd6c2e521b08ba9c1013",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-delay-user",
+            "target_service": "user",
+            "action_or_target": "delay",
+            "call_chain_position": "supporting-service",
+            "motifs": [
+              "selector_shape=app-label",
+              "mode=all",
+              "duration_bucket=medium",
+              "action_or_target=delay",
+              "intensity_bucket=low"
+            ],
+            "rationale": "Network delay on the user service is a supporting-service fault that can slow down login and order processing, potentially causing timeouts. Delay is the most common action (49.77% support) and low intensity has high lift with delay (2.01), making it a likely failure mode.",
+            "method": "chaosatlas-ablation",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_call_chain_position"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 5,
+              "novel_count": 5,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.666667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-delay-user-04fc119f.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-user-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "net-delay-user",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-user-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-delay-user-04fc119f.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-user-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "net-delay-user",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-delay-user-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-loss-front-end",
+          "target_service": "front-end",
+          "kind": "NetworkChaos",
+          "name": "yc-net-loss-front-end-d4195e9f",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-loss-front-end-d4195e9f.yaml",
+          "sha256": "3b9a3b2ad9efc742fe2e177f1dd377700788f9fc214a7ece239119a1bd36d71a",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-loss-front-end",
+            "target_service": "front-end",
+            "action_or_target": "loss",
+            "call_chain_position": "entry",
+            "motifs": [
+              "selector_shape=app-label",
+              "mode=all",
+              "duration_bucket=medium",
+              "action_or_target=loss",
+              "intensity_bucket=high"
+            ],
+            "rationale": "Network loss on the front-end entry point is a common fault type (loss has 49.77% support overall, and high intensity has lift 2.63 with loss). This directly impacts all user-facing steps (home, catalogue, login, orders), potentially causing timeouts or failures. High intensity loss is a likely failure mode.",
+            "method": "chaosatlas-ablation",
+            "category": "Network degradation",
+            "novel": false,
+            "novelty_reasons": [],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 6,
+              "novel_count": 5,
+              "duplicate_count": 1,
+              "upper95": 0.987414,
+              "feature_coverage": 0.666667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-loss-front-end-d4195e9f.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-front-end-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "net-loss-front-end",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-front-end-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-loss-front-end-d4195e9f.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-front-end-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "net-loss-front-end",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-front-end-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-loss-catalogue",
+          "target_service": "catalogue",
+          "kind": "NetworkChaos",
+          "name": "yc-net-loss-catalogue-8f4ea24e",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-loss-catalogue-8f4ea24e.yaml",
+          "sha256": "38b2f83224d2688167e1034c15c25517daae3d4a4e82be585221a5812c60d501",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-loss-catalogue",
+            "target_service": "catalogue",
+            "action_or_target": "loss",
+            "call_chain_position": "business-service",
+            "motifs": [
+              "selector_shape=app-label",
+              "mode=all",
+              "duration_bucket=medium",
+              "action_or_target=loss",
+              "intensity_bucket=high"
+            ],
+            "rationale": "Network loss on the catalogue service is a business-service fault that can cause the catalogue browse step to fail or return incomplete data. High intensity loss has high lift with loss (2.63) and is a common motif (18.69% support), making it a likely failure mode.",
+            "method": "chaosatlas-ablation",
+            "category": "Network degradation",
+            "novel": false,
+            "novelty_reasons": [],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 7,
+              "novel_count": 5,
+              "duplicate_count": 2,
+              "upper95": 0.911867,
+              "feature_coverage": 0.666667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-loss-catalogue-8f4ea24e.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-catalogue-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "net-loss-catalogue",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-catalogue-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-loss-catalogue-8f4ea24e.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-catalogue-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "net-loss-catalogue",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-loss-catalogue-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "net-partition-carts-db",
+          "target_service": "carts-db",
+          "kind": "NetworkChaos",
+          "name": "yc-net-partition-carts-db-be5ff008",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-partition-carts-db-be5ff008.yaml",
+          "sha256": "29b85a1ba3394cb0f9c11144378da3a4763668e3db9eb58516a3d5ed9f374fae",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Network degradation",
+          "hypothesis": {
+            "id": "net-partition-carts-db",
+            "target_service": "carts-db",
+            "action_or_target": "partition",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "selector_shape=app-label",
+              "mode=all",
+              "duration_bucket=medium",
+              "action_or_target=partition",
+              "intensity_bucket=partition"
+            ],
+            "rationale": "Network partition on carts-db is a data-dependency fault that can cause the carts service to fail or hang, impacting the authenticated orders step (which relies on cart data). Partition has high support (23.13%) and high lift with intensity_bucket=partition (4.32), making it a likely failure mode.",
+            "method": "chaosatlas-ablation",
+            "category": "Network degradation",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": true,
+              "reason": "max_hypotheses",
+              "generated": 8,
+              "novel_count": 6,
+              "duplicate_count": 2,
+              "upper95": 0.927269,
+              "feature_coverage": 0.666667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-partition-carts-db-be5ff008.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-partition-carts-db-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "net-partition-carts-db",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-partition-carts-db-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-net-partition-carts-db-be5ff008.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-partition-carts-db-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "net-partition-carts-db",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\net-partition-carts-db-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "res-cpu-front-end",
+          "target_service": "front-end",
+          "kind": "StressChaos",
+          "name": "yc-res-cpu-front-end-67b46845",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-cpu-front-end-67b46845.yaml",
+          "sha256": "d13a83ca1b99f1b52714ad8a8526c09f57bc62f2d6463815d43098257926b0a4",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "id": "res-cpu-front-end",
+            "target_service": "front-end",
+            "action_or_target": "cpu",
+            "call_chain_position": "entry",
+            "motifs": [
+              "duration_bucket=medium",
+              "mode=one",
+              "selector_shape=app-label",
+              "action_or_target=cpu",
+              "intensity_bucket=high"
+            ],
+            "rationale": "CPU stress on the entry point front-end is likely to cause timeouts or errors in all downstream requests, directly impacting the golden journey. The high intensity and medium duration are common in the category, and the front-end is a single point of entry.",
+            "method": "chaosatlas-ablation",
+            "category": "Resource pressure",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_call_chain_position",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 1,
+              "novel_count": 1,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.416667
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-cpu-front-end-67b46845.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-front-end-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "res-cpu-front-end",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-front-end-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-cpu-front-end-67b46845.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-front-end-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "res-cpu-front-end",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-front-end-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "res-mem-carts-db",
+          "target_service": "carts-db",
+          "kind": "StressChaos",
+          "name": "yc-res-mem-carts-db-82326ad9",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-mem-carts-db-82326ad9.yaml",
+          "sha256": "ec511dae15bcb60fe293d1f064e53e41c43850583a8710370682df3ef7dc8d15",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "id": "res-mem-carts-db",
+            "target_service": "carts-db",
+            "action_or_target": "memory",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "duration_bucket=medium",
+              "mode=one",
+              "selector_shape=app-label",
+              "action_or_target=memory",
+              "intensity_bucket=unknown"
+            ],
+            "rationale": "Memory pressure on the carts-db, a data dependency for the carts service, could cause slow responses or failures in the carts service, which is part of the golden journey. The high lift between memory and unknown intensity suggests this combination is common and likely impactful.",
+            "method": "chaosatlas-ablation",
+            "category": "Resource pressure",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_action_or_target",
+              "new_call_chain_position",
+              "new_required_motif"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 2,
+              "novel_count": 2,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.583333
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-mem-carts-db-82326ad9.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-mem-carts-db-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "res-mem-carts-db",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-mem-carts-db-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-mem-carts-db-82326ad9.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-mem-carts-db-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "res-mem-carts-db",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-mem-carts-db-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "res-cpu-catalogue",
+          "target_service": "catalogue",
+          "kind": "StressChaos",
+          "name": "yc-res-cpu-catalogue-be41a66f",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-cpu-catalogue-be41a66f.yaml",
+          "sha256": "f94a0133fc21e0748dd04db95d6a07ca7aafde6294cef88b79a456edc5e8e991",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "id": "res-cpu-catalogue",
+            "target_service": "catalogue",
+            "action_or_target": "cpu",
+            "call_chain_position": "business-service",
+            "motifs": [
+              "duration_bucket=medium",
+              "mode=one",
+              "selector_shape=app-label",
+              "action_or_target=cpu",
+              "intensity_bucket=high"
+            ],
+            "rationale": "CPU stress on the catalogue service, a business service in the golden journey, could cause timeouts or errors in catalogue browsing, directly impacting the user experience. The high intensity and medium duration are common in the category, and the catalogue is a critical dependency for the front-end.",
+            "method": "chaosatlas-ablation",
+            "category": "Resource pressure",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service",
+              "new_call_chain_position"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 3,
+              "novel_count": 3,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.583333
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-cpu-catalogue-be41a66f.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-catalogue-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "res-cpu-catalogue",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-catalogue-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-cpu-catalogue-be41a66f.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-catalogue-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "res-cpu-catalogue",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-catalogue-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "res-mem-user-db",
+          "target_service": "user-db",
+          "kind": "StressChaos",
+          "name": "yc-res-mem-user-db-84aa8eb3",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-mem-user-db-84aa8eb3.yaml",
+          "sha256": "5fcd22b484626856cd01db0aca11e65d1c044527dc3f5bc3e38c27fa6c31dbb5",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "id": "res-mem-user-db",
+            "target_service": "user-db",
+            "action_or_target": "memory",
+            "call_chain_position": "data-dependency",
+            "motifs": [
+              "duration_bucket=medium",
+              "mode=one",
+              "selector_shape=app-label",
+              "action_or_target=memory",
+              "intensity_bucket=unknown"
+            ],
+            "rationale": "Memory pressure on user-db, a data dependency for the user service, could cause slow responses or failures in login, which is part of the golden journey. The high lift between memory and unknown intensity suggests this combination is common and likely impactful.",
+            "method": "chaosatlas-ablation",
+            "category": "Resource pressure",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": false,
+              "reason": "continue",
+              "generated": 4,
+              "novel_count": 4,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.583333
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-mem-user-db-84aa8eb3.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-mem-user-db-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "res-mem-user-db",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-mem-user-db-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-mem-user-db-84aa8eb3.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-mem-user-db-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "res-mem-user-db",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-mem-user-db-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "res-cpu-orders",
+          "target_service": "orders",
+          "kind": "StressChaos",
+          "name": "yc-res-cpu-orders-400e5e46",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-cpu-orders-400e5e46.yaml",
+          "sha256": "4c29858e1af4fc61a000430e8f8c2d55e1d8d4c7a5de33dcb710b7f5e634435d",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "id": "res-cpu-orders",
+            "target_service": "orders",
+            "action_or_target": "cpu",
+            "call_chain_position": "business-service",
+            "motifs": [
+              "duration_bucket=medium",
+              "mode=one",
+              "selector_shape=app-label",
+              "action_or_target=cpu",
+              "intensity_bucket=high"
+            ],
+            "rationale": "CPU stress on the orders service, a business service in the golden journey, could cause timeouts or errors in order retrieval, directly impacting the authenticated orders read-only step. The high intensity and medium duration are common in the category, and orders is a critical dependency for the front-end.",
+            "method": "chaosatlas-ablation",
+            "category": "Resource pressure",
+            "novel": true,
+            "novelty_reasons": [
+              "new_target_service"
+            ],
+            "stop_snapshot": {
+              "stop": true,
+              "reason": "max_hypotheses",
+              "generated": 5,
+              "novel_count": 5,
+              "duplicate_count": 0,
+              "upper95": 1.0,
+              "feature_coverage": 0.583333
+            }
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-cpu-orders-400e5e46.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-orders-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "res-cpu-orders",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-orders-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\mutations\\yc-res-cpu-orders-400e5e46.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-orders-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "res-cpu-orders",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r4\\methods\\chaosatlas-ablation\\runtime_reports\\res-cpu-orders-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "http-error-short",
+          "target_service": "front-end",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Protocol/HTTP fault",
+          "runtime_invocations": []
+        },
+        {
+          "hypothesis_id": "http-abort-front-end",
+          "target_service": "front-end",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Protocol/HTTP fault",
+          "runtime_invocations": []
+        },
+        {
+          "hypothesis_id": "http-abort-catalogue",
+          "target_service": "catalogue",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Protocol/HTTP fault",
+          "runtime_invocations": []
+        },
+        {
+          "hypothesis_id": "http-abort-carts",
+          "target_service": "carts",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Protocol/HTTP fault",
+          "runtime_invocations": []
+        },
+        {
+          "hypothesis_id": "sched-delay-front-end",
+          "target_service": "front-end",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Composite/scheduled fault",
+          "runtime_invocations": []
+        },
+        {
+          "hypothesis_id": "sched-delay-carts-db",
+          "target_service": "carts-db",
+          "kind": null,
+          "path": null,
+          "sha256": null,
+          "gate": {
+            "status": "failed",
+            "reason": "runner_unsupported_category"
+          },
+          "method": "chaosatlas-ablation",
+          "category": "Composite/scheduled fault",
+          "runtime_invocations": []
+        }
+      ]
+    }
+  },
+  "timing_fields": [
+    "generation_seconds",
+    "compile_seconds",
+    "gate_seconds",
+    "runtime_seconds",
+    "washout_seconds",
+    "total_wall_clock_seconds"
+  ],
+  "recovery_timeout_seconds": 240.0,
+  "timing": {
+    "compile_seconds": 2499.422,
+    "gate_seconds": 0.0,
+    "runtime_seconds": 0.0,
+    "washout_seconds": 0.0,
+    "total_wall_clock_seconds": 2499.422
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

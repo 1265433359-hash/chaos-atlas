@@ -95,3 +95,47 @@ spec:
             source_commit=SOURCE_COMMIT,
             image_overrides={"mongo": "mongo@sha256:" + "f" * 64},
         )
+
+
+def test_sock_shop_session_db_disables_redis_persistence_on_read_only_root_filesystem(tmp_path: Path) -> None:
+    source = tmp_path / "complete-demo.yaml"
+    source.write_text(
+        """---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: session-db
+  namespace: sock-shop
+spec:
+  selector:
+    matchLabels: {name: session-db}
+  template:
+    metadata:
+      labels: {name: session-db}
+    spec:
+      containers:
+      - name: session-db
+        image: redis:alpine
+        securityContext:
+          readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: session-db
+  namespace: sock-shop
+spec:
+  selector: {name: session-db}
+""",
+        encoding="utf-8",
+    )
+    manifest = build_sock_shop_manifest(
+        source,
+        source_commit=SOURCE_COMMIT,
+        image_overrides={"redis:alpine": "redis@sha256:" + "b" * 64},
+    )
+    docs = list(yaml.safe_load_all(manifest["deployable_manifest"]))
+    session = next(doc for doc in docs if doc.get("metadata", {}).get("name") == "session-db")
+    container = session["spec"]["template"]["spec"]["containers"][0]
+    assert container["args"] == ["--save", "", "--appendonly", "no", "--stop-writes-on-bgsave-error", "no"]
+    assert container["securityContext"]["readOnlyRootFilesystem"] is True

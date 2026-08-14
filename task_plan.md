@@ -10,6 +10,16 @@
 - 阶段 6：等待用户确认后推送当前分支；推送前再次确认出境边界。状态：pending。
 - 边界：不删除用户实验产物；不提交未筛选临时目录；不把 pending 审核写入知识库；不声称 Word PNG 视觉渲染已通过。
 
+## Sock Shop YAML 置信停止两臂实验（2026-08-14）
+- 目标：基于 1,935 个真实 YAML 的五大类统计与 Beta 置信停止规则，完成 Sock Shop `native-full` 与 `ChaosAtlas-ablation` 的独立候选生成、运行时验证和人工待审比较。
+- 阶段 1：离线 YAML 分类、特征统计、置信停止、输入构建与 DeepSeek 发现。状态：complete（两臂各 25 个假设、19 个 runtime 候选、6 个显式 gate_failed）。
+- 阶段 2：运行时批次。状态：complete（`runtime-exec-r2/r3` 保留原 failed 证据；`runtime-exec-r4` 形成 76/76 个 completed 报告）。
+- 阶段 3：修复 Sock Shop session-db 与只读根文件系统不兼容的 Redis RDB 写入。状态：complete（准备器已覆盖该配置；当前 live Pod 已临时设置 `stop-writes-on-bgsave-error=no`，正式 cookie oracle 5/5 通过）。
+- 阶段 4：续跑与恢复预算修订。状态：complete（r3 的 fail-fast 计划摘要只记录已处理的 10 个 ablation 候选；r4 使用冻结 discovery 输入和 completed-only 复用，补齐 18 个未执行槽位并重测失败单元；唯一协议改动为 recovery timeout 180 -> 240 秒）。
+- 阶段 5：验收 76 个 runtime 报告、复核 mutation/diagnostic SHA-256、分析日志/events，生成 `human_review=pending` 的比较审核。状态：complete（所有生命周期、cleanup、washout 和 SHA-256 验收通过；全局 Chaos 资源为空）。
+- 阶段 6：focused regression、敏感信息扫描、选择性暂存本次代码/测试/报告/必要证据并本地提交。状态：in_progress（focused regression 已通过；敏感扫描、diff 审核和选择性提交待执行）。
+- 边界：仅操作 `chaosatlas-sock-shop`；不修复 Docker、Minikube 或 Chaos Mesh；不把 pending 审核写入知识库；不提交密钥或未筛选的大型 runtime 目录；默认不 push。
+
 ## 三项目两臂正式实验续跑（2026-08-14 当前会话）
 - 目标：不重跑已完成单元，完成 OpenTelemetry Demo 剩余正式单元和新 Sock Shop 的 ChaosAtlas-full/ChaosAtlas-ablation 正式实验，并对 Online Boutique、OpenTelemetry Demo、Sock Shop 形成可复核结果与问题清单。
 - 阶段 1：等待 OTel `runtime_results-r3` 串行批次自然完成，核验 48 个去重单元、生命周期、diagnostic/mutation SHA-256、pending human review 与全局无残留。状态：complete（48/48，验收 passed）。
@@ -382,3 +392,15 @@ Constraints:
 - [complete] Commit and push the teacher R3 runner (`727c9a5`).
 - [pending] Execute R3 on teacher Minikube, ingest results, produce pending human-review cards, and obtain explicit review decisions.
 - [pending] Only after review, project approved abstractions into the later-project KB and proceed to the next deployable project.
+
+## Sock Shop YAML confidence native-vs-ablation pipeline (2026-08-14)
+- Goal: build the offline Sock Shop pipeline that classifies the 1,935 real YAMLs into five big categories, generates confidence-stopped hypotheses for native-full vs ChaosAtlas-ablation, and prepares a static runtime plan without touching Kubernetes yet.
+- [complete] Add the YAML five-category classifier and inventory/statistics writer.
+- [complete] Add the Beta confidence stop engine with novelty tracking and coverage-aware stopping.
+- [complete] Add the frozen-input builder separating native-full and ablation method boundaries.
+- [complete] Add the offline discovery runner with fake-model and DeepSeek-ready entry points.
+- [complete] Add the runtime planner that compiles namespace-local mutations and marks unsupported categories as gate_failed.
+- [complete] Add the review summarizer that distinguishes stable weaknesses from unstable and no-impact candidates.
+- [complete] Generate the first offline artifact directory `artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r1/`.
+- [in_progress] Run focused regression over the new modules, scan for sensitive data, validate diffs, and decide whether to proceed to authorized DeepSeek-backed discovery/runtime.
+- Boundary: do not touch Sock Shop Kubernetes until the offline pipeline and verification finish; keep `human_review=pending` and `knowledge_base_updated=false`.

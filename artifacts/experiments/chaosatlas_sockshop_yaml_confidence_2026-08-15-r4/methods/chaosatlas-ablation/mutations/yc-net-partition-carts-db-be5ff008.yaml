@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: yc-net-partition-carts-db-be5ff008
+  namespace: chaosatlas-sock-shop
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: carts-db
+  action: partition
+  duration: 30s
+  direction: to

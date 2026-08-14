@@ -1,0 +1,4396 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "apiVersion": "v1",
+            "count": 5,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T16:34:10Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{catalogue}",
+                "kind": "Pod",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359633",
+                "uid": "29367f0c-da13-45e1-8a47-255bf6804a5a"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:40Z",
+            "message": "Container image \"weaveworksdemos/catalogue@sha256:0147a65b7116569439eefb1a6dbed455fe022464ef70e0c3cab75bc4a226b39b\" already present on machine and can be accessed by the pod",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T18:42:02Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbb9262ed4bcfe",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377097",
+                "uid": "12e66a1b-ea07-4e14-94f2-e990d6658cc1"
+            },
+            "reason": "Pulled",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 5,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T16:34:11Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{catalogue}",
+                "kind": "Pod",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359633",
+                "uid": "29367f0c-da13-45e1-8a47-255bf6804a5a"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:40Z",
+            "message": "Container created",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T18:42:02Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbb9263c1202ae",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377098",
+                "uid": "9c80c016-d28f-4a4d-90e3-236af1b63065"
+            },
+            "reason": "Created",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 5,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T16:34:11Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{catalogue}",
+                "kind": "Pod",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359633",
+                "uid": "29367f0c-da13-45e1-8a47-255bf6804a5a"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:40Z",
+            "message": "Container started",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T18:42:03Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbb92651dd52a6",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377101",
+                "uid": "4e03d145-2fa1-4089-a1c5-fcc6344e39aa"
+            },
+            "reason": "Started",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 43,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T17:22:38Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{catalogue}",
+                "kind": "Pod",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359633",
+                "uid": "29367f0c-da13-45e1-8a47-255bf6804a5a"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:39Z",
+            "message": "Readiness probe failed: Get \"http://10.244.2.13:80/health\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T18:41:55Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbbbcb2bd095d5",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377090",
+                "uid": "3be4bb20-12dd-4549-8117-ca831d957c6f"
+            },
+            "reason": "Unhealthy",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Warning"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 30,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T17:22:38Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{catalogue}",
+                "kind": "Pod",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359633",
+                "uid": "29367f0c-da13-45e1-8a47-255bf6804a5a"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:37Z",
+            "message": "Liveness probe failed: Get \"http://10.244.2.13:80/health\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T18:41:55Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbbbcb2ead2e57",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377087",
+                "uid": "cadbdf3e-bc62-4e33-ad16-44daae5c94bd"
+            },
+            "reason": "Unhealthy",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Warning"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 4,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:42:02Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{catalogue}",
+                "kind": "Pod",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359633",
+                "uid": "29367f0c-da13-45e1-8a47-255bf6804a5a"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:40Z",
+            "message": "Container catalogue failed liveness probe, will be restarted",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T18:42:02Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbc0207242d662",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377096",
+                "uid": "770217d5-257b-4b48-bc7a-766ef35da044"
+            },
+            "reason": "Killing",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:22Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373260",
+                "uid": "fa1596c8-bc1e-4fb1-8ee7-4ec07d1060a5"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:22Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:52:22Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbc0b0d8a847ea",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373267",
+                "uid": "b02c3b90-50b1-4903-8e0f-87b2e5d9295b"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:52Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373333",
+                "uid": "fa1596c8-bc1e-4fb1-8ee7-4ec07d1060a5"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:52Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:52:52Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbc0b79ed81d08",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373338",
+                "uid": "ed94a823-1575-48a4-b605-c4975da8e8ed"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373453",
+                "uid": "fa1596c8-bc1e-4fb1-8ee7-4ec07d1060a5"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:08Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:54:08Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbc0c955aad1ae",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373458",
+                "uid": "3a755383-2c04-4b3c-b301-68e25374905d"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:38Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373526",
+                "uid": "fa1596c8-bc1e-4fb1-8ee7-4ec07d1060a5"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:38Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:54:38Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbc0d04d4ce65e",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373531",
+                "uid": "029b93a1-095d-4a17-a61e-f79cc9a70ce1"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:03Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375231",
+                "uid": "fa1596c8-bc1e-4fb1-8ee7-4ec07d1060a5"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:03Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:16:03Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbc1fb85fa51e1",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375236",
+                "uid": "caf88629-d2d3-4221-84ae-2a36670a7510"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:33Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375306",
+                "uid": "fa1596c8-bc1e-4fb1-8ee7-4ec07d1060a5"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:33Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:16:33Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbc20278a2e4d9",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375311",
+                "uid": "d0a30794-f200-4f29-9da1-bde7a10d5310"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:38:31Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377065",
+                "uid": "fa1596c8-bc1e-4fb1-8ee7-4ec07d1060a5"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:31Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:38:31Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbc33558f054c7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377071",
+                "uid": "392f32b0-4781-4005-912e-1bd1461227f4"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:39:00Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "catalogue-546f6b848f-jkwv7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377130",
+                "uid": "fa1596c8-bc1e-4fb1-8ee7-4ec07d1060a5"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:39:00Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:39:00Z",
+                "name": "catalogue-546f6b848f-jkwv7.18cbc33c190ab588",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377135",
+                "uid": "5b02adca-e5e7-4024-8f23-ccd5e98fe85a"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 6,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:14:32Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{front-end}",
+                "kind": "Pod",
+                "name": "front-end-7c99fd6d8d-sqq7t",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2369448",
+                "uid": "8aa9eefa-5bc6-4132-8614-5f256f7f77f0"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:56Z",
+            "message": "Container image \"weaveworksdemos/front-end@sha256:26a2d9b6b291dee2dca32fca3f5bff6c2fa07bb5954359afcbc8001cc70eac71\" already present on machine and can be accessed by the pod",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T18:14:32Z",
+                "name": "front-end-7c99fd6d8d-sqq7t.18cbbea027433ec0",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373132",
+                "uid": "8b87b703-638c-49e1-8dfe-53502573f578"
+            },
+            "reason": "Pulled",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 6,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:14:32Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{front-end}",
+                "kind": "Pod",
+                "name": "front-end-7c99fd6d8d-sqq7t",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2369448",
+                "uid": "8aa9eefa-5bc6-4132-8614-5f256f7f77f0"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:56Z",
+            "message": "Container created",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T18:14:32Z",
+                "name": "front-end-7c99fd6d8d-sqq7t.18cbbea02bf34ea3",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373134",
+                "uid": "05b62976-981b-4b3e-ac56-ce43d284b3e0"
+            },
+            "reason": "Created",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 6,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:14:32Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{front-end}",
+                "kind": "Pod",
+                "name": "front-end-7c99fd6d8d-sqq7t",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2369448",
+                "uid": "8aa9eefa-5bc6-4132-8614-5f256f7f77f0"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:56Z",
+            "message": "Container started",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T18:14:32Z",
+                "name": "front-end-7c99fd6d8d-sqq7t.18cbbea030e3147c",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373135",
+                "uid": "33dcb06c-ba6e-4cc5-bb1b-93673d43a431"
+            },
+            "reason": "Started",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "orders-db-6566d7c6d-zw7q2",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373036",
+                "uid": "bfd5f3d0-3250-4bc7-b607-398f2194a800"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:08Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:50:08Z",
+                "name": "orders-db-6566d7c6d-zw7q2.18cbc0916f46a760",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373041",
+                "uid": "1c6f940e-2c80-4db7-b86d-e7ef2b6591d5"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:37Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "orders-db-6566d7c6d-zw7q2",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373093",
+                "uid": "bfd5f3d0-3250-4bc7-b607-398f2194a800"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:37Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:50:37Z",
+                "name": "orders-db-6566d7c6d-zw7q2.18cbc09830cc46c3",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373098",
+                "uid": "0ba85e33-cd15-43ca-8121-3f9ec0008cd5"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 3,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T16:34:12Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{user}",
+                "kind": "Pod",
+                "name": "user-66f6885fc5-h6gvj",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359757",
+                "uid": "73d79432-9c92-4af5-afc1-58ecdb41e5b6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:06Z",
+            "message": "Container image \"weaveworksdemos/user@sha256:2ffccc332963c89e035fea52201012208bf62df43a55fe461ad6598a5c757ab7\" already present on machine and can be accessed by the pod",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T19:43:06Z",
+                "name": "user-66f6885fc5-h6gvj.18cbb926aaf988b7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377496",
+                "uid": "15ba5c1c-41f6-44be-b370-a80d9dac362b"
+            },
+            "reason": "Pulled",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 3,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T16:34:13Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{user}",
+                "kind": "Pod",
+                "name": "user-66f6885fc5-h6gvj",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359757",
+                "uid": "73d79432-9c92-4af5-afc1-58ecdb41e5b6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:06Z",
+            "message": "Container created",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T19:43:06Z",
+                "name": "user-66f6885fc5-h6gvj.18cbb926bc77ccab",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377503",
+                "uid": "707190f0-d7a6-467a-b660-47361c302284"
+            },
+            "reason": "Created",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 3,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T16:34:14Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{user}",
+                "kind": "Pod",
+                "name": "user-66f6885fc5-h6gvj",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359757",
+                "uid": "73d79432-9c92-4af5-afc1-58ecdb41e5b6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:06Z",
+            "message": "Container started",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T19:43:06Z",
+                "name": "user-66f6885fc5-h6gvj.18cbb926f0cb150b",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377504",
+                "uid": "2d6ac148-7210-4342-8027-fe05e0eb44dc"
+            },
+            "reason": "Started",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 34,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T16:59:39Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{user}",
+                "kind": "Pod",
+                "name": "user-66f6885fc5-h6gvj",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359757",
+                "uid": "73d79432-9c92-4af5-afc1-58ecdb41e5b6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:52Z",
+            "message": "Readiness probe failed: Get \"http://10.244.2.22:80/health\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T19:43:00Z",
+                "name": "user-66f6885fc5-h6gvj.18cbba89fea8f5cc",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377929",
+                "uid": "69023f37-a3aa-4951-94e4-56f1996ee4f8"
+            },
+            "reason": "Unhealthy",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Warning"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 14,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T16:59:39Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{user}",
+                "kind": "Pod",
+                "name": "user-66f6885fc5-h6gvj",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359757",
+                "uid": "73d79432-9c92-4af5-afc1-58ecdb41e5b6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:06Z",
+            "message": "Liveness probe failed: Get \"http://10.244.2.22:80/health\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T19:43:00Z",
+                "name": "user-66f6885fc5-h6gvj.18cbba8a17ea2fce",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377494",
+                "uid": "5051970d-d66b-4ddf-bd62-ca09df42d745"
+            },
+            "reason": "Unhealthy",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Warning"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 2,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T17:26:15Z",
+            "involvedObject": {
+                "apiVersion": "v1",
+                "fieldPath": "spec.containers{user}",
+                "kind": "Pod",
+                "name": "user-66f6885fc5-h6gvj",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2359757",
+                "uid": "73d79432-9c92-4af5-afc1-58ecdb41e5b6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:06Z",
+            "message": "Container user failed liveness probe, will be restarted",
+            "metadata": {
+                "creationTimestamp": "2026-08-14T19:43:06Z",
+                "name": "user-66f6885fc5-h6gvj.18cbbbfdc8b029b9",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377495",
+                "uid": "0078eb79-ed37-45f1-a6e0-2fe2668e1af7"
+            },
+            "reason": "Killing",
+            "reportingComponent": "kubelet",
+            "reportingInstance": "minikube",
+            "source": {
+                "component": "kubelet",
+                "host": "minikube"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:42:57Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "user-66f6885fc5-h6gvj",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377467",
+                "uid": "dee83782-a8f9-420c-9147-339298ac249f"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:42:57Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:42:57Z",
+                "name": "user-66f6885fc5-h6gvj.18cbc37352803cce",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377472",
+                "uid": "b76068b4-1de1-4f73-9a9d-f727e8a5ff8c"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:43:27Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "user-66f6885fc5-h6gvj",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377535",
+                "uid": "dee83782-a8f9-420c-9147-339298ac249f"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:27Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:43:27Z",
+                "name": "user-66f6885fc5-h6gvj.18cbc37a434ec19d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377540",
+                "uid": "48261285-287b-4795-970f-db25afc4eb1f"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:23Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "user-66f6885fc5-h6gvj",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377870",
+                "uid": "dee83782-a8f9-420c-9147-339298ac249f"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:23Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:47:23Z",
+                "name": "user-66f6885fc5-h6gvj.18cbc3b156e04a63",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377876",
+                "uid": "f2543e5b-b1f2-4b6d-a345-f4aa6616493f"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:53Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "PodNetworkChaos",
+                "name": "user-66f6885fc5-h6gvj",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377934",
+                "uid": "dee83782-a8f9-420c-9147-339298ac249f"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:53Z",
+            "message": "Successfully update ObservedGeneration and FailedMessage of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "ObservedGeneration and FailedMessage",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:47:53Z",
+                "name": "user-66f6885fc5-h6gvj.18cbc3b831b909d8",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377939",
+                "uid": "9d91baf1-7c07-49fd-8c1a-7ee3edb88a50"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "podnetworkchaos"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:22Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373252",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:22Z",
+            "message": "Finalizer has been inited",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-inited"
+                },
+                "creationTimestamp": "2026-08-14T18:52:22Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b0d3c39057",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373254",
+                "uid": "021332d7-ace9-4f56-a222-9dee872d7d50"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:22Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373252",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:22Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:52:22Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b0d479e821",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373256",
+                "uid": "b984b26a-6cb1-4fe4-a65b-b2ab9e882133"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:22Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373253",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:22Z",
+            "message": "Experiment has started",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "started"
+                },
+                "creationTimestamp": "2026-08-14T18:52:22Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b0d47afea3",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373255",
+                "uid": "ba834002-f6cc-4580-90ef-97dcd2d9a079"
+            },
+            "reason": "Started",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:22Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373253",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:22Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:52:22Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b0d52f6b1a",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373258",
+                "uid": "2eb11a50-0de4-4ff3-8667-929ab4593065"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:22Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373259",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:22Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:52:22Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b0d737f0f8",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373262",
+                "uid": "2fb7e8ed-db22-4891-8a92-07a7519946c6"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:22Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373264",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:22Z",
+            "message": "Successfully apply chaos for chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+                    "chaos-mesh.org/type": "applied"
+                },
+                "creationTimestamp": "2026-08-14T18:52:22Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b0d8a99e88",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373268",
+                "uid": "b66bea3f-80cc-446b-9cb9-9d5a6fd6d98c"
+            },
+            "reason": "Applied",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:22Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373264",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:22Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:52:22Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b0d97b5f97",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373270",
+                "uid": "664e16af-9bf8-43c7-94c9-e3ebff768701"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:52Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373271",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:52Z",
+            "message": "Time up according to the duration",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "time-up"
+                },
+                "creationTimestamp": "2026-08-14T18:52:52Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b79b659161",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373330",
+                "uid": "e1267373-e0dd-410c-a0d8-a936273e9763"
+            },
+            "reason": "TimeUp",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:52Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373271",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:52Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:52:52Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b79c77c328",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373332",
+                "uid": "56fc0849-ff5b-4ff4-bae3-5da38a64102a"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:52Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373331",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:52Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:52:52Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b79e0506f9",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373335",
+                "uid": "f8f07b5c-d30c-40e0-8a9e-3c4d3b8d0664"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:52Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373336",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:52Z",
+            "message": "Successfully recover chaos for chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+                    "chaos-mesh.org/type": "recovered"
+                },
+                "creationTimestamp": "2026-08-14T18:52:52Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b79ede64b7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373339",
+                "uid": "98dc38c2-8ffe-4d3c-9541-26a93e731bfa"
+            },
+            "reason": "Recovered",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:52Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373336",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:52Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:52:52Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b79fb1b2bf",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373341",
+                "uid": "1ef79772-29f2-445d-9978-43db9ce7c998"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:53Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373343",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:53Z",
+            "message": "Finalizer has been removed",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-removed"
+                },
+                "creationTimestamp": "2026-08-14T18:52:53Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b7dabe7e03",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373344",
+                "uid": "2fc8932f-200d-4f41-afda-fd42a29137f1"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:52:53Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373343",
+                "uid": "58101fea-3260-4a83-ba67-60229309a372"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:52:53Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:52:53Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0b7db657ef5",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373346",
+                "uid": "18b193b3-e06e-493f-98a4-a5470457be18"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373445",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:08Z",
+            "message": "Finalizer has been inited",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-inited"
+                },
+                "creationTimestamp": "2026-08-14T18:54:08Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0c9508cedbf",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373447",
+                "uid": "1534a6db-6b65-449e-beb7-ea04090e7cf3"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373445",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:08Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:54:08Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0c95162b94d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373449",
+                "uid": "58b26da9-4d23-411c-b880-9ca5982add28"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373446",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:08Z",
+            "message": "Experiment has started",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "started"
+                },
+                "creationTimestamp": "2026-08-14T18:54:08Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0c9516414a7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373448",
+                "uid": "04372da3-57b7-497a-bfb9-2cdd8ae73812"
+            },
+            "reason": "Started",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373446",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:08Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:54:08Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0c952730add",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373451",
+                "uid": "abbf34f5-c2f4-49ed-8ce4-74c1ef02a167"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373452",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:08Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:54:08Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0c9543f4a0b",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373455",
+                "uid": "b448aded-81a9-4568-b55a-01f3863e6768"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373456",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:08Z",
+            "message": "Successfully apply chaos for chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+                    "chaos-mesh.org/type": "applied"
+                },
+                "creationTimestamp": "2026-08-14T18:54:08Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0c955b204dc",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373459",
+                "uid": "005d59af-1856-4e7e-9dbf-a8c767283a5b"
+            },
+            "reason": "Applied",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373456",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:08Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:54:08Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0c95663ffe7",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373461",
+                "uid": "d30a1054-ee1d-44cb-b6f2-554a57559adc"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:38Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373462",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:38Z",
+            "message": "Time up according to the duration",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "time-up"
+                },
+                "creationTimestamp": "2026-08-14T18:54:38Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0d0497431dc",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373523",
+                "uid": "a9f4a9b1-fe6c-4a8d-8496-eb3e6f4b4267"
+            },
+            "reason": "TimeUp",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:38Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373462",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:38Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:54:38Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0d04a72dbc4",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373525",
+                "uid": "d5dedbcd-e673-4988-80da-b9c7fee53ea7"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:38Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373524",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:38Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:54:38Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0d04bdee650",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373528",
+                "uid": "aa370977-c59f-4558-b058-76fe741f9e85"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:38Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373529",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:38Z",
+            "message": "Successfully recover chaos for chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+                    "chaos-mesh.org/type": "recovered"
+                },
+                "creationTimestamp": "2026-08-14T18:54:38Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0d04d502770",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373532",
+                "uid": "e0049979-fe1a-4278-b423-7a45638ad53b"
+            },
+            "reason": "Recovered",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:38Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373529",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:38Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:54:38Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0d04e1e492d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373534",
+                "uid": "ce6ea9ed-fc2c-4d0a-b200-be1db0cbd471"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:38Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373536",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:38Z",
+            "message": "Finalizer has been removed",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-removed"
+                },
+                "creationTimestamp": "2026-08-14T18:54:38Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0d05f740948",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373537",
+                "uid": "1f42e960-6400-41bc-ba5f-ab62771bc341"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:54:38Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373536",
+                "uid": "851fa472-2d5c-43ff-9873-2a0e29613183"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:54:38Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:54:38Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc0d05fff147f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373539",
+                "uid": "cb80be4e-7e39-4cef-be5e-86efb2860ed3"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:03Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375223",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:03Z",
+            "message": "Finalizer has been inited",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-inited"
+                },
+                "creationTimestamp": "2026-08-14T19:16:03Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc1fb80bc34c3",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375224",
+                "uid": "e4fd4578-d7a8-42ff-abfa-9968a4e213ec"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:03Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375223",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:03Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:16:03Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc1fb8175a36b",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375227",
+                "uid": "ba8ff295-0d0d-4a52-9cc2-ba485978b2b6"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:03Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375225",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:03Z",
+            "message": "Experiment has started",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "started"
+                },
+                "creationTimestamp": "2026-08-14T19:16:03Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc1fb817692e8",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375226",
+                "uid": "d1ca0564-a589-48cd-838a-44b6f1a855fe"
+            },
+            "reason": "Started",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:03Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375225",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:03Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:16:03Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc1fb82673fb1",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375229",
+                "uid": "a252d1a6-2459-4d46-a7eb-9805f032236e"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:03Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375230",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:03Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:16:03Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc1fb848c5c0e",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375233",
+                "uid": "8b7c2f76-9ff6-4e4d-b0e4-b3d178b45e21"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:03Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375234",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:03Z",
+            "message": "Successfully apply chaos for chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+                    "chaos-mesh.org/type": "applied"
+                },
+                "creationTimestamp": "2026-08-14T19:16:03Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc1fb85faa38b",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375237",
+                "uid": "8ee21bf2-924f-4c56-9649-4ff5161217d0"
+            },
+            "reason": "Applied",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:03Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375234",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:03Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:16:03Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc1fb86d0958e",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375239",
+                "uid": "221ed201-36ae-4d0d-9d9c-fdc0728a99c5"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:33Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375240",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:33Z",
+            "message": "Time up according to the duration",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "time-up"
+                },
+                "creationTimestamp": "2026-08-14T19:16:33Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc2027592d4a1",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375303",
+                "uid": "30a8a6ed-507b-4980-afd4-6bb5c1253cf4"
+            },
+            "reason": "TimeUp",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:33Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375240",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:33Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:16:33Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc2027648325b",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375305",
+                "uid": "849cca51-65eb-4960-ac0d-c576fee61208"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:33Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375304",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:33Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:16:33Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc20277b3bc67",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375308",
+                "uid": "6138818e-a5d5-4629-8fc1-6c7a49019c59"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:33Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375309",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:33Z",
+            "message": "Successfully recover chaos for chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+                    "chaos-mesh.org/type": "recovered"
+                },
+                "creationTimestamp": "2026-08-14T19:16:33Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc20278a6ef28",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375312",
+                "uid": "f5cee950-3f7b-47ba-a84a-514db66a9e2f"
+            },
+            "reason": "Recovered",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:33Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375309",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:33Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:16:33Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc20279bbe001",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375314",
+                "uid": "f066774f-b016-4103-aed8-39695b131fd9"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:33Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375316",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:33Z",
+            "message": "Finalizer has been removed",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-removed"
+                },
+                "creationTimestamp": "2026-08-14T19:16:33Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc2028961a4e5",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375317",
+                "uid": "74903fb1-a242-4312-be52-a0f33a2a58a9"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:16:33Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375316",
+                "uid": "757fa85e-bb88-4597-9bee-bd275598365d"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:16:33Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:16:33Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc2028a335b4a",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2375319",
+                "uid": "c5e45f4d-cec5-4903-bea3-e1d6fb070ab8"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:38:30Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377057",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:30Z",
+            "message": "Finalizer has been inited",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-inited"
+                },
+                "creationTimestamp": "2026-08-14T19:38:30Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc335540e6195",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377059",
+                "uid": "9aca2350-8832-4ded-9110-4233c097f6fd"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:38:31Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377057",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:31Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:38:31Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33554a3e35c",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377061",
+                "uid": "6c240fa3-3edc-4744-b3b4-f0d2f035821c"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:38:31Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377058",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:31Z",
+            "message": "Experiment has started",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "started"
+                },
+                "creationTimestamp": "2026-08-14T19:38:31Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33554a46be0",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377060",
+                "uid": "9a8c9694-cd25-4ae7-9d9c-be6a431a9f6f"
+            },
+            "reason": "Started",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:38:31Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377058",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:31Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:38:31Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33555993b56",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377063",
+                "uid": "bbf6f25a-46d4-47c4-ad68-32690a8754c1"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:38:31Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377064",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:31Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:38:31Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33557d1496c",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377067",
+                "uid": "e87f8ab0-af21-41fd-b766-e88987bdcab8"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:38:31Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377068",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:31Z",
+            "message": "Successfully apply chaos for chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+                    "chaos-mesh.org/type": "applied"
+                },
+                "creationTimestamp": "2026-08-14T19:38:31Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33558f0c4b3",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377070",
+                "uid": "e84d8421-ff09-412b-9126-9cee536c54d5"
+            },
+            "reason": "Applied",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:38:31Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377068",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:38:31Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:38:31Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33559c5b132",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377073",
+                "uid": "5c0d1e63-d6ee-4d32-b36f-7b8db53146a4"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:39:00Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377074",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:39:00Z",
+            "message": "Time up according to the duration",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "time-up"
+                },
+                "creationTimestamp": "2026-08-14T19:39:00Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33c150170f8",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377127",
+                "uid": "c6a0ae5b-6e60-46eb-a916-2122813cd272"
+            },
+            "reason": "TimeUp",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:39:00Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377074",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:39:00Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:39:00Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33c1634bc64",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377129",
+                "uid": "8a9af4de-3cdb-4e75-99d3-cb540e0d9d81"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:39:00Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377128",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:39:00Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:39:00Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33c179ec678",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377132",
+                "uid": "16b6937e-cbd7-4317-bda0-539748d0d9cc"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:39:00Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377133",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:39:00Z",
+            "message": "Successfully recover chaos for chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/catalogue-546f6b848f-jkwv7",
+                    "chaos-mesh.org/type": "recovered"
+                },
+                "creationTimestamp": "2026-08-14T19:39:00Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33c190d4550",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377136",
+                "uid": "66629bb0-2f9e-431c-a19f-f2c8131cf28c"
+            },
+            "reason": "Recovered",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:39:00Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377133",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:39:00Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:39:00Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33c19e279cf",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377138",
+                "uid": "5665a8e7-48c8-4e89-ac44-0ce5f0811252"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:39:00Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377140",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:39:00Z",
+            "message": "Finalizer has been removed",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-removed"
+                },
+                "creationTimestamp": "2026-08-14T19:39:00Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33c26cfe581",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377141",
+                "uid": "10e4256c-91af-4ba2-a5ba-ea6b7f38444c"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:39:00Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-catalogue-cdcab218",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377140",
+                "uid": "adb4be28-646f-4f4a-8a5c-923e922d90dc"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:39:00Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:39:00Z",
+                "name": "yc-net-delay-catalogue-cdcab218.18cbc33c27786fb6",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377143",
+                "uid": "aa30114c-d5d9-492e-ab00-8498f6770d0b"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:42:57Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377459",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:42:57Z",
+            "message": "Finalizer has been inited",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-inited"
+                },
+                "creationTimestamp": "2026-08-14T19:42:57Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3734e1574e6",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377461",
+                "uid": "fd67e244-a4fa-49cf-a6f1-fdeacf9ab37a"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:42:57Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377459",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:42:57Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:42:57Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3734ecb4477",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377462",
+                "uid": "0eaceda6-779e-42d7-8393-d1e86e2e5068"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:42:57Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377460",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:42:57Z",
+            "message": "Experiment has started",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "started"
+                },
+                "creationTimestamp": "2026-08-14T19:42:57Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3734ecc697e",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377463",
+                "uid": "f8147467-c2aa-47ba-b281-e9bb7bc092cc"
+            },
+            "reason": "Started",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:42:57Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377460",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:42:57Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:42:57Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3734f7ee835",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377465",
+                "uid": "9ce2970f-330c-463e-a7fc-5a021a76d9bd"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:42:57Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377466",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:42:57Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:42:57Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc373514ae311",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377469",
+                "uid": "dadc99e9-ba86-4184-9d3a-9a5d601247db"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:42:57Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377470",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:42:57Z",
+            "message": "Successfully apply chaos for chaosatlas-sock-shop/user-66f6885fc5-h6gvj",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/user-66f6885fc5-h6gvj",
+                    "chaos-mesh.org/type": "applied"
+                },
+                "creationTimestamp": "2026-08-14T19:42:57Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3735285dc5d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377473",
+                "uid": "ee9f9766-9d40-44a5-9719-eac4112256f6"
+            },
+            "reason": "Applied",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:42:57Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377470",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:42:57Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:42:57Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3735351f91d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377475",
+                "uid": "20e7e643-4854-45e4-abd3-93b4dcdd318e"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:43:27Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377476",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:27Z",
+            "message": "Time up according to the duration",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "time-up"
+                },
+                "creationTimestamp": "2026-08-14T19:43:27Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc37a3f7edc26",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377532",
+                "uid": "6a9b0ef1-7530-4eb4-b710-af917ee5786c"
+            },
+            "reason": "TimeUp",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:43:27Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377476",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:27Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:43:27Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc37a408fdc19",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377534",
+                "uid": "5bf96e5f-4e73-4b84-ac55-73ee5a1db794"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:43:27Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377533",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:27Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:43:27Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc37a41fe1131",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377537",
+                "uid": "668f2185-23f2-4b06-a855-7d409b551751"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:43:27Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377538",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:27Z",
+            "message": "Successfully recover chaos for chaosatlas-sock-shop/user-66f6885fc5-h6gvj",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/user-66f6885fc5-h6gvj",
+                    "chaos-mesh.org/type": "recovered"
+                },
+                "creationTimestamp": "2026-08-14T19:43:27Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc37a434e8f2b",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377541",
+                "uid": "239702d1-98c8-4cb1-9714-9cc42767f05c"
+            },
+            "reason": "Recovered",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:43:27Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377538",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:27Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:43:27Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc37a4447b735",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377543",
+                "uid": "e8cbc406-9656-4fac-bbdd-37ddc520e789"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:43:27Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377545",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:27Z",
+            "message": "Finalizer has been removed",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-removed"
+                },
+                "creationTimestamp": "2026-08-14T19:43:27Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc37a5315948e",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377546",
+                "uid": "3c82b0d0-e17d-4666-a9a8-b69e92824dbb"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:43:27Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377545",
+                "uid": "f25150ce-1dc8-451c-b458-315ddebe83c6"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:43:27Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:43:27Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc37a5386dd66",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377548",
+                "uid": "c207046e-8453-487c-ad60-47972a162c71"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:23Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377862",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:23Z",
+            "message": "Finalizer has been inited",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-inited"
+                },
+                "creationTimestamp": "2026-08-14T19:47:23Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b150f0d1f8",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377863",
+                "uid": "6b2d78b7-f0ef-4e64-a1ea-533e18756329"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:23Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377862",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:23Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:47:23Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b151832f47",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377866",
+                "uid": "1347ad37-564a-4c8d-8107-07f2bf81e5e8"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:23Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377864",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:23Z",
+            "message": "Experiment has started",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "started"
+                },
+                "creationTimestamp": "2026-08-14T19:47:23Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b151847879",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377865",
+                "uid": "9f511356-e5e8-40d6-aaa9-0a07953d6ec4"
+            },
+            "reason": "Started",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:23Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377864",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:23Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:47:23Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b151fc88ee",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377868",
+                "uid": "dfd1bdaa-6d80-412c-98d0-13fbc318170d"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:23Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377869",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:23Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:47:23Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b154657d41",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377873",
+                "uid": "5caf01a2-f6eb-43e2-b133-12681533864a"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:23Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377874",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:23Z",
+            "message": "Successfully apply chaos for chaosatlas-sock-shop/user-66f6885fc5-h6gvj",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/user-66f6885fc5-h6gvj",
+                    "chaos-mesh.org/type": "applied"
+                },
+                "creationTimestamp": "2026-08-14T19:47:23Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b156e9fbe5",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377877",
+                "uid": "7dbbfbe3-70e8-459d-8e9a-13e7b40c32d8"
+            },
+            "reason": "Applied",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:23Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377874",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:23Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:47:23Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b157d9f333",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377879",
+                "uid": "7fa609c7-4406-4cc0-bf35-838adb7f9ec0"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:53Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377880",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:53Z",
+            "message": "Time up according to the duration",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "time-up"
+                },
+                "creationTimestamp": "2026-08-14T19:47:53Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b82e4ed8d9",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377931",
+                "uid": "c4277366-4d3e-46ab-ab30-17309dc87911"
+            },
+            "reason": "TimeUp",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:53Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377880",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:53Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:47:53Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b82f7ed2dd",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377933",
+                "uid": "5bdf0c71-4b23-4255-8678-0c8fa0540682"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:53Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377932",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:53Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:47:53Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b830ad1ea0",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377936",
+                "uid": "e3311529-c910-40d7-b3ef-e45e64f4865a"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:53Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377937",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:53Z",
+            "message": "Successfully recover chaos for chaosatlas-sock-shop/user-66f6885fc5-h6gvj",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/user-66f6885fc5-h6gvj",
+                    "chaos-mesh.org/type": "recovered"
+                },
+                "creationTimestamp": "2026-08-14T19:47:53Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b831be74d5",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377940",
+                "uid": "bd3985f9-1308-463c-9a61-66e7cd47b0ea"
+            },
+            "reason": "Recovered",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:53Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377937",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:53Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:47:53Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b83275810c",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377942",
+                "uid": "17978567-3aa3-46d5-a63b-214e1bae26c6"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:53Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377945",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:53Z",
+            "message": "Finalizer has been removed",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-removed"
+                },
+                "creationTimestamp": "2026-08-14T19:47:53Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b857f4bdaf",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377946",
+                "uid": "412e38ce-abc6-4804-b405-f02b53941ea0"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T19:47:53Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-delay-user-04fc119f",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377945",
+                "uid": "169fc36b-3e7d-4102-a3f1-bee2333916ff"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T19:47:53Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T19:47:53Z",
+                "name": "yc-net-delay-user-04fc119f.18cbc3b8589f622b",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2377948",
+                "uid": "ef70eac0-fe61-4e0c-adbb-c148dea0d662"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:07Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373028",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:07Z",
+            "message": "Finalizer has been inited",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-inited"
+                },
+                "creationTimestamp": "2026-08-14T18:50:07Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc0916a09d189",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373030",
+                "uid": "6ee4bc3c-3477-4277-aaf2-c95fab135c8f"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:07Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373028",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:07Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:50:07Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc0916ad96872",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373032",
+                "uid": "d891ae2f-5c12-40c6-b2d6-200c9bce6b64"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:07Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373029",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:07Z",
+            "message": "Experiment has started",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "started"
+                },
+                "creationTimestamp": "2026-08-14T18:50:07Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc0916ada8fa1",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373031",
+                "uid": "64530c1b-ed2e-4015-ae8c-30a021afdba2"
+            },
+            "reason": "Started",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:07Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373029",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:07Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:50:07Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc0916bb5dc05",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373034",
+                "uid": "2c682182-cc27-42c6-825b-1f13fd9c06b0"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373035",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:08Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:50:08Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc0916d5f555e",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373038",
+                "uid": "cdea88b3-8f25-43ad-a8d2-0a6d2d94473d"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373039",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:08Z",
+            "message": "Successfully apply chaos for chaosatlas-sock-shop/orders-db-6566d7c6d-zw7q2",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/orders-db-6566d7c6d-zw7q2",
+                    "chaos-mesh.org/type": "applied"
+                },
+                "creationTimestamp": "2026-08-14T18:50:08Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc0916f4a00e0",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373042",
+                "uid": "5005fa83-5660-4cd8-b170-57b013d2a6fc"
+            },
+            "reason": "Applied",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:08Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373039",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:08Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:50:08Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc0916fff008c",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373044",
+                "uid": "fe3048d4-baa8-44f4-8839-b5f7eafb463e"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:37Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373045",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:37Z",
+            "message": "Time up according to the duration",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "time-up"
+                },
+                "creationTimestamp": "2026-08-14T18:50:37Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc0982cbd1e11",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373090",
+                "uid": "f1a83f90-96b6-4af3-ac16-144214a4d34d"
+            },
+            "reason": "TimeUp",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:37Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373045",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:37Z",
+            "message": "Successfully update desiredPhase of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "desiredPhase",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:50:37Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc0982ddba900",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373092",
+                "uid": "92242f75-64c0-487b-b529-8b8cadbea37f"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "desiredphase"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:37Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373091",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:37Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:50:37Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc0982f47580a",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373095",
+                "uid": "c961985f-74ae-4af8-8c63-29c8c12b8697"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:37Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373096",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:37Z",
+            "message": "Successfully recover chaos for chaosatlas-sock-shop/orders-db-6566d7c6d-zw7q2",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/id": "chaosatlas-sock-shop/orders-db-6566d7c6d-zw7q2",
+                    "chaos-mesh.org/type": "recovered"
+                },
+                "creationTimestamp": "2026-08-14T18:50:37Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc09830d1f73a",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373099",
+                "uid": "037fb889-21b8-4b54-9a12-0518afd168d0"
+            },
+            "reason": "Recovered",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:37Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373096",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:37Z",
+            "message": "Successfully update records of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "records",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:50:37Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc09831a58ce9",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373101",
+                "uid": "144b6906-1156-4033-8b7d-226dbff10e9f"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "records"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:56Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373129",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:56Z",
+            "message": "Finalizer has been removed",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/type": "finalizer-removed"
+                },
+                "creationTimestamp": "2026-08-14T18:50:56Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc09cc2cb3a70",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373130",
+                "uid": "e180bafe-a76c-4ac2-a4f1-9c5565d3fef1"
+            },
+            "reason": "FinalizerInited",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        },
+        {
+            "apiVersion": "v1",
+            "count": 1,
+            "eventTime": null,
+            "firstTimestamp": "2026-08-14T18:50:56Z",
+            "involvedObject": {
+                "apiVersion": "chaos-mesh.org/v1alpha1",
+                "kind": "NetworkChaos",
+                "name": "yc-net-partition-orders-db-1edb587d",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373129",
+                "uid": "294185f4-9bd0-460f-b199-c299875aaba7"
+            },
+            "kind": "Event",
+            "lastTimestamp": "2026-08-14T18:50:56Z",
+            "message": "Successfully update finalizer of resource",
+            "metadata": {
+                "annotations": {
+                    "chaos-mesh.org/field": "finalizer",
+                    "chaos-mesh.org/type": "updated"
+                },
+                "creationTimestamp": "2026-08-14T18:50:56Z",
+                "name": "yc-net-partition-orders-db-1edb587d.18cbc09cc378f7a6",
+                "namespace": "chaosatlas-sock-shop",
+                "resourceVersion": "2373133",
+                "uid": "962cb954-1d6f-438d-a246-d41e046f395a"
+            },
+            "reason": "Updated",
+            "reportingComponent": "",
+            "reportingInstance": "",
+            "source": {
+                "component": "initFinalizers"
+            },
+            "type": "Normal"
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}

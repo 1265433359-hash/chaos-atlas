@@ -1,0 +1,451 @@
+{
+  "experiment": "sock_shop_yaml_confidence",
+  "methods": {
+    "native-full": {
+      "reports": 38,
+      "completed_replicates": 38,
+      "runtime_candidates": 19,
+      "stable_weaknesses": 4,
+      "unstable_or_nonrepeatable": 3,
+      "no_business_impact_observed": 12,
+      "invalid_runtime": 0,
+      "gate_failed": 0,
+      "hit_rate": 0.2105,
+      "total_wall_clock_seconds": 5230.211,
+      "stable_weaknesses_per_hour": 2.753,
+      "categories": {
+        "Network degradation": {
+          "stable_weakness": 2,
+          "unstable_or_nonrepeatable": 3,
+          "no_business_impact_observed": 3
+        },
+        "Pod disruption": {
+          "stable_weakness": 2,
+          "unstable_or_nonrepeatable": 0,
+          "no_business_impact_observed": 4
+        },
+        "Resource pressure": {
+          "stable_weakness": 0,
+          "unstable_or_nonrepeatable": 0,
+          "no_business_impact_observed": 5
+        }
+      },
+      "mutations": [
+        {
+          "mutation_id": "net-delay-catalogue",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "unstable_or_nonrepeatable"
+        },
+        {
+          "mutation_id": "net-delay-front-end",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "net-delay-orders",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "net-delay-user",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "outcome": "stable_weakness"
+        },
+        {
+          "mutation_id": "net-loss-carts-db",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "weakness_observed"
+          ],
+          "outcome": "unstable_or_nonrepeatable"
+        },
+        {
+          "mutation_id": "net-loss-catalogue",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "net-loss-front-end",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "weakness_observed"
+          ],
+          "outcome": "unstable_or_nonrepeatable"
+        },
+        {
+          "mutation_id": "net-partition-orders-db",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "outcome": "stable_weakness"
+        },
+        {
+          "mutation_id": "pod-kill-carts-db",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "pod-kill-catalogue-db",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "outcome": "stable_weakness"
+        },
+        {
+          "mutation_id": "pod-kill-front-end",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "pod-kill-orders-db",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "outcome": "stable_weakness"
+        },
+        {
+          "mutation_id": "pod-kill-payment",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "pod-kill-user-db",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "res-pressure-cpu-catalogue",
+          "category": "Resource pressure",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "res-pressure-cpu-front-end",
+          "category": "Resource pressure",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "res-pressure-cpu-orders",
+          "category": "Resource pressure",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "res-pressure-cpu-payment",
+          "category": "Resource pressure",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "res-pressure-mem-carts-db",
+          "category": "Resource pressure",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        }
+      ]
+    },
+    "chaosatlas-ablation": {
+      "reports": 38,
+      "completed_replicates": 38,
+      "runtime_candidates": 19,
+      "stable_weaknesses": 6,
+      "unstable_or_nonrepeatable": 3,
+      "no_business_impact_observed": 10,
+      "invalid_runtime": 0,
+      "gate_failed": 0,
+      "hit_rate": 0.3158,
+      "total_wall_clock_seconds": 7647.607,
+      "stable_weaknesses_per_hour": 2.824,
+      "categories": {
+        "Network degradation": {
+          "stable_weakness": 4,
+          "unstable_or_nonrepeatable": 3,
+          "no_business_impact_observed": 1
+        },
+        "Pod disruption": {
+          "stable_weakness": 2,
+          "unstable_or_nonrepeatable": 0,
+          "no_business_impact_observed": 4
+        },
+        "Resource pressure": {
+          "stable_weakness": 0,
+          "unstable_or_nonrepeatable": 0,
+          "no_business_impact_observed": 5
+        }
+      },
+      "mutations": [
+        {
+          "mutation_id": "net-delay-catalogue",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "weakness_observed"
+          ],
+          "outcome": "unstable_or_nonrepeatable"
+        },
+        {
+          "mutation_id": "net-delay-front-end",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "net-delay-user",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "outcome": "stable_weakness"
+        },
+        {
+          "mutation_id": "net-loss-catalogue",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "weakness_observed"
+          ],
+          "outcome": "unstable_or_nonrepeatable"
+        },
+        {
+          "mutation_id": "net-loss-catalogue-db",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "unstable_or_nonrepeatable"
+        },
+        {
+          "mutation_id": "net-loss-front-end",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "outcome": "stable_weakness"
+        },
+        {
+          "mutation_id": "net-partition-carts-db",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "outcome": "stable_weakness"
+        },
+        {
+          "mutation_id": "net-partition-orders-db",
+          "category": "Network degradation",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "outcome": "stable_weakness"
+        },
+        {
+          "mutation_id": "pod-kill-carts-db",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "pod-kill-catalogue-db",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "outcome": "stable_weakness"
+        },
+        {
+          "mutation_id": "pod-kill-front-end",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "pod-kill-orders-db",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "outcome": "stable_weakness"
+        },
+        {
+          "mutation_id": "pod-kill-payment",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "pod-kill-user-db",
+          "category": "Pod disruption",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "res-cpu-catalogue",
+          "category": "Resource pressure",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "res-cpu-front-end",
+          "category": "Resource pressure",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "res-cpu-orders",
+          "category": "Resource pressure",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "res-mem-carts-db",
+          "category": "Resource pressure",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        },
+        {
+          "mutation_id": "res-mem-user-db",
+          "category": "Resource pressure",
+          "replicates": 2,
+          "classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "outcome": "no_business_impact_observed"
+        }
+      ]
+    }
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

@@ -18,6 +18,26 @@ except ModuleNotFoundError:
 
 NAMESPACE = "chaosatlas-sock-shop"
 VERIFIED_MONGO_IMAGE = "mongo@sha256:6189a342f8da4568b4b111c378a890b1fe186b1bc133742bff8811fe63d2e01e"
+SESSION_DB_EPHEMERAL_REDIS_ARGS = [
+    "--save",
+    "",
+    "--appendonly",
+    "no",
+    "--stop-writes-on-bgsave-error",
+    "no",
+]
+
+
+def _disable_session_db_persistence_on_read_only_root(docs: list[dict[str, Any]]) -> None:
+    for doc in docs:
+        if doc.get("kind") != "Deployment" or (doc.get("metadata") or {}).get("name") != "session-db":
+            continue
+        containers = doc.get("spec", {}).get("template", {}).get("spec", {}).get("containers", [])
+        for container in containers:
+            security = container.get("securityContext") or {}
+            if container.get("name") == "session-db" and security.get("readOnlyRootFilesystem") is True:
+                # Redis defaults to RDB writes under /data, which is unavailable here.
+                container["args"] = list(SESSION_DB_EPHEMERAL_REDIS_ARGS)
 
 
 def build_sock_shop_manifest(source: Path, *, source_commit: str, image_overrides: dict[str, str]) -> dict[str, Any]:
@@ -29,6 +49,7 @@ def build_sock_shop_manifest(source: Path, *, source_commit: str, image_override
         for container in doc.get("spec", {}).get("template", {}).get("spec", {}).get("containers", [])
     ) and image_overrides.get("mongo") != VERIFIED_MONGO_IMAGE:
         raise ValueError("unversioned mongo must resolve to the verified Mongo compatibility image")
+    _disable_session_db_persistence_on_read_only_root(docs)
     for doc in docs:
         if doc.get("kind") == "Service":
             spec = doc.setdefault("spec", {})
