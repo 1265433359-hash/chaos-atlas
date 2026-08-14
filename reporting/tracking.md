@@ -6,9 +6,12 @@
 
 | 日期 | 项目 | Issue 标题 | 状态 | 维护者响应 | 备注 |
 |---|---|---|---|---|---|
-| 2026-08-05 | FudanSELab/train-ticket | Disabled downstream call in `queryOrdersForRefresh` | not-submitted | — | 草稿在 `reporting/train-ticket/issues/`，用户与导师决策中 |
-| 2026-08-05 | GoogleCloudPlatform/microservices-demo | F2: frontend 核心数据路径无降级 → 整站级联 500 | draft | — | 证据在 `artifacts/online-boutique/findings.md`，用户决策中 |
-| 2026-08-05 | GoogleCloudPlatform/microservices-demo | F1: checkout 业务链无 timeout → 全额传导/无限挂起 | draft | — | 同上（作 F2 佐证或单独提交） |
+| 2026-08-10 | open-telemetry/opentelemetry-demo | OpenTelemetry Demo: shipping quote failure reports "email service" instead of "shipping service" | open | pending | https://github.com/open-telemetry/opentelemetry-demo/issues/3818 |
+| 2026-08-10 | FudanSELab/train-ticket | Train Ticket: station lookup exceeds the client timeout under a 3-second outbound delay | open | pending | https://github.com/FudanSELab/train-ticket/issues/311 |
+| 2026-08-10 | FudanSELab/train-ticket | Train Ticket: /order/refresh may skip the ts-order-service to ts-station-service station-name lookup | open | pending | https://github.com/FudanSELab/train-ticket/issues/310 |
+| 2026-08-10 | GoogleCloudPlatform/microservices-demo | Online Boutique: paymentservice probe restarts the container after a 2-second delay | open | pending | https://github.com/GoogleCloudPlatform/microservices-demo/issues/3475 |
+| 2026-08-10 | GoogleCloudPlatform/microservices-demo | Online Boutique: Checkout waits for delayed or unavailable payment, shipping, and email services | open | pending | https://github.com/GoogleCloudPlatform/microservices-demo/issues/3474 |
+| 2026-08-10 | GoogleCloudPlatform/microservices-demo | Online Boutique: home page returns HTTP 500 while productcatalogservice is unavailable | open | pending | https://github.com/GoogleCloudPlatform/microservices-demo/issues/3473 |
 
 ## 响应预期参考（2026-08-05 核实）
 
