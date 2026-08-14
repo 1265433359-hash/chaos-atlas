@@ -1,0 +1,677 @@
+{
+  "schema_version": "unified-lifecycle-v1",
+  "project_id": "online-boutique",
+  "namespace": "chaosatlas-online-boutique",
+  "arm": "ChaosAtlas-ablation",
+  "seed": 1002,
+  "mutation_id": "h2",
+  "replicate": 1,
+  "mutation": {
+    "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-discovery-r3/seed-1002/chaosatlas-ablation/mutations/1afaca546345.yaml",
+    "sha256": "41995c1cbf88abbaa4aaeb1b482baf077c3c18480399bf87f15d2b81c2fa5279"
+  },
+  "baseline": {
+    "pass": true,
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 2828.0,
+      "stdout": "[0] ok oid=fa9751fc-974e-11f1-8b70-dee125c89387 tracking=HL-44047-228095455 (18.5ms)\n[1] ok oid=fae8187b-974e-11f1-8b70-dee125c89387 tracking=HD-44449-229641155 (17.9ms)\n[2] ok oid=fb383913-974e-11f1-8b70-dee125c89387 tracking=JK-44135-225600311 (17.5ms)\n[3] ok oid=fb88e8d0-974e-11f1-8b70-dee125c89387 tracking=VE-44475-220185830 (14.0ms)\n[4] ok oid=fbe12135-974e-11f1-8b70-dee125c89387 tracking=OT-44238-229907238 (18.8ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 18.5,
+          "result": "ok oid=fa9751fc-974e-11f1-8b70-dee125c89387 tracking=HL-44047-228095455",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 17.9,
+          "result": "ok oid=fae8187b-974e-11f1-8b70-dee125c89387 tracking=HD-44449-229641155",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "OK",
+          "latency_ms": 17.5,
+          "result": "ok oid=fb383913-974e-11f1-8b70-dee125c89387 tracking=JK-44135-225600311",
+          "error": null
+        },
+        {
+          "sample": 4,
+          "grpc_status": "OK",
+          "latency_ms": 14.0,
+          "result": "ok oid=fb88e8d0-974e-11f1-8b70-dee125c89387 tracking=VE-44475-220185830",
+          "error": null
+        },
+        {
+          "sample": 5,
+          "grpc_status": "OK",
+          "latency_ms": 18.8,
+          "result": "ok oid=fbe12135-974e-11f1-8b70-dee125c89387 tracking=OT-44238-229907238",
+          "error": null
+        }
+      ]
+    },
+    "successes_required": 5
+  },
+  "injection": {
+    "applied": true,
+    "injected": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "podchaos.chaos-mesh.org/atlas-online-boutique-1afaca546345 created",
+      "stderr": ""
+    },
+    "lifecycle": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-13T19:41:32Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-online-boutique/cartservice-5565d6f5db-rpq7x",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-13T19:41:32Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    }
+  },
+  "observation": {
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 10750.0,
+      "stdout": "[0] cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n>)\n[1] cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)\n[2] cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)\n[3] cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)\n[4] cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "CART_ADD_FAILED",
+          "latency_ms": null,
+          "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n>)",
+          "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n>)"
+        },
+        {
+          "sample": 2,
+          "grpc_status": "CART_ADD_FAILED",
+          "latency_ms": null,
+          "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)",
+          "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)"
+        },
+        {
+          "sample": 3,
+          "grpc_status": "CART_ADD_FAILED",
+          "latency_ms": null,
+          "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)",
+          "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)"
+        },
+        {
+          "sample": 4,
+          "grpc_status": "CART_ADD_FAILED",
+          "latency_ms": null,
+          "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)",
+          "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)"
+        },
+        {
+          "sample": 5,
+          "grpc_status": "CART_ADD_FAILED",
+          "latency_ms": null,
+          "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)",
+          "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)"
+        }
+      ]
+    },
+    "classification": "weakness_observed"
+  },
+  "recovery": {
+    "recovered": true,
+    "resource_recovered": true,
+    "state": {
+      "selector": "app=cartservice",
+      "pod_count": 1,
+      "active_pod_count": 1,
+      "ready_pods": [
+        "cartservice-5565d6f5db-99g7g"
+      ],
+      "ready_uids": [
+        "65090cc9-92df-42a3-82a4-c969f2d31d04"
+      ],
+      "expected_pod_count": 1,
+      "pre_kill_uids": [
+        "04c0e78e-8fad-476d-960a-d3d37cd9b069"
+      ],
+      "stable_checks": 2
+    },
+    "workload": {
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "CART_ADD_FAILED",
+          "latency_ms": null,
+          "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)",
+          "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)"
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 45.8,
+          "result": "ok oid=0f8d64b3-974f-11f1-8b70-dee125c89387 tracking=TO-44840-220468595",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 59.9,
+          "result": "ok oid=11c329f9-974f-11f1-8b70-dee125c89387 tracking=NC-44124-228948348",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.6,
+          "result": "ok oid=13f3b00e-974f-11f1-8b70-dee125c89387 tracking=UO-44817-229608469",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.8,
+          "result": "ok oid=16247d98-974f-11f1-8b70-dee125c89387 tracking=GE-44660-228693424",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 14.6,
+          "result": "ok oid=184e32fd-974f-11f1-8b70-dee125c89387 tracking=JC-44498-226412974",
+          "error": null
+        }
+      ]
+    },
+    "business": {
+      "recovered": true,
+      "samples": [
+        {
+          "sample": 1,
+          "grpc_status": "CART_ADD_FAILED",
+          "latency_ms": null,
+          "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)",
+          "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)"
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 45.8,
+          "result": "ok oid=0f8d64b3-974f-11f1-8b70-dee125c89387 tracking=TO-44840-220468595",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 59.9,
+          "result": "ok oid=11c329f9-974f-11f1-8b70-dee125c89387 tracking=NC-44124-228948348",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.6,
+          "result": "ok oid=13f3b00e-974f-11f1-8b70-dee125c89387 tracking=UO-44817-229608469",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.8,
+          "result": "ok oid=16247d98-974f-11f1-8b70-dee125c89387 tracking=GE-44660-228693424",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 14.6,
+          "result": "ok oid=184e32fd-974f-11f1-8b70-dee125c89387 tracking=JC-44498-226412974",
+          "error": null
+        }
+      ],
+      "workloads": [
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 2625.0,
+          "stdout": "[0] cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "CART_ADD_FAILED",
+              "latency_ms": null,
+              "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)",
+              "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)"
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 1313.0,
+          "stdout": "[0] ok oid=0f8d64b3-974f-11f1-8b70-dee125c89387 tracking=TO-44840-220468595 (45.8ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 45.8,
+              "result": "ok oid=0f8d64b3-974f-11f1-8b70-dee125c89387 tracking=TO-44840-220468595",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 687.0,
+          "stdout": "[0] ok oid=11c329f9-974f-11f1-8b70-dee125c89387 tracking=NC-44124-228948348 (59.9ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 59.9,
+              "result": "ok oid=11c329f9-974f-11f1-8b70-dee125c89387 tracking=NC-44124-228948348",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 672.0,
+          "stdout": "[0] ok oid=13f3b00e-974f-11f1-8b70-dee125c89387 tracking=UO-44817-229608469 (15.6ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 15.6,
+              "result": "ok oid=13f3b00e-974f-11f1-8b70-dee125c89387 tracking=UO-44817-229608469",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 688.0,
+          "stdout": "[0] ok oid=16247d98-974f-11f1-8b70-dee125c89387 tracking=GE-44660-228693424 (15.8ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 15.8,
+              "result": "ok oid=16247d98-974f-11f1-8b70-dee125c89387 tracking=GE-44660-228693424",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] ok oid=184e32fd-974f-11f1-8b70-dee125c89387 tracking=JC-44498-226412974 (14.6ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 14.6,
+              "result": "ok oid=184e32fd-974f-11f1-8b70-dee125c89387 tracking=JC-44498-226412974",
+              "error": null
+            }
+          ]
+        }
+      ],
+      "consecutive_successes": 5,
+      "successes_required": 5,
+      "elapsed_seconds": 22.469,
+      "port_forward_reconnects": 1
+    }
+  },
+  "cleanup": {
+    "delete_command_ok": true,
+    "delete_output": "podchaos.chaos-mesh.org \"atlas-online-boutique-1afaca546345\" deleted from chaosatlas-online-boutique namespace",
+    "resource_absent_after_delete": true,
+    "absent_confirmed": true,
+    "verify_status": "absent",
+    "verify_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"atlas-online-boutique-1afaca546345\" not found",
+    "delete_failed": false,
+    "residual_resources": [],
+    "global_scan_errors": []
+  },
+  "washout": {
+    "stable": true,
+    "samples": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.5,
+        "result": "ok oid=18acfbde-974f-11f1-8b70-dee125c89387 tracking=MW-44012-221772747",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 19.5,
+        "result": "ok oid=1ad770c6-974f-11f1-8b70-dee125c89387 tracking=UN-44541-228290205",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.2,
+        "result": "ok oid=1d0a07aa-974f-11f1-8b70-dee125c89387 tracking=OS-44835-227686794",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.4,
+        "result": "ok oid=1f33d635-974f-11f1-8b70-dee125c89387 tracking=HK-44728-228403618",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 18.3,
+        "result": "ok oid=2165a4f4-974f-11f1-8b70-dee125c89387 tracking=QI-44751-225995405",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.2,
+        "result": "ok oid=238f47b2-974f-11f1-8b70-dee125c89387 tracking=OW-44527-226980624",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.9,
+        "result": "ok oid=25c11415-974f-11f1-8b70-dee125c89387 tracking=DH-44297-221346005",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.9,
+        "result": "ok oid=27ea8c62-974f-11f1-8b70-dee125c89387 tracking=OE-44949-227403949",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.9,
+        "result": "ok oid=2a1b6435-974f-11f1-8b70-dee125c89387 tracking=WP-44829-229261674",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 62.1,
+        "result": "ok oid=2c5256cf-974f-11f1-8b70-dee125c89387 tracking=KI-44096-224109153",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.7,
+        "result": "ok oid=2e7c1060-974f-11f1-8b70-dee125c89387 tracking=XS-44114-223412635",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 60.9,
+        "result": "ok oid=30ab658f-974f-11f1-8b70-dee125c89387 tracking=FJ-44709-223620493",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 20.4,
+        "result": "ok oid=32de2e53-974f-11f1-8b70-dee125c89387 tracking=TV-44868-226144520",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.6,
+        "result": "ok oid=350fd5bd-974f-11f1-8b70-dee125c89387 tracking=JS-44917-221115544",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.6,
+        "result": "ok oid=373913d6-974f-11f1-8b70-dee125c89387 tracking=QY-44684-223923052",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 19.5,
+        "result": "ok oid=3963e282-974f-11f1-8b70-dee125c89387 tracking=OM-44522-226909580",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 58.3,
+        "result": "ok oid=3b9a79df-974f-11f1-8b70-dee125c89387 tracking=UA-44941-220108086",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.3,
+        "result": "ok oid=3dc45e38-974f-11f1-8b70-dee125c89387 tracking=AY-44757-225707596",
+        "error": null
+      }
+    ],
+    "elapsed_seconds": 62.843,
+    "successes_required": 10
+  },
+  "diagnostics": {
+    "status": "captured",
+    "files": [
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1002/chaosatlas-ablation/h2/rep-1.diagnostics/events.log",
+        "sha256": "e5496791a01c8c1a6c0a8879e4ec2995037036f7be240bc46f641da4267bb4b3",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1002/chaosatlas-ablation/h2/rep-1.diagnostics/checkoutservice.log",
+        "sha256": "f8dfa8d0a9ae6da5fe16b296337f3a76e40c1170ec3e391b187c90ac946cee39",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1002/chaosatlas-ablation/h2/rep-1.diagnostics/cartservice.log",
+        "sha256": "1615781a0a30539f076049eef6ff66db96977a17ebce2112f566d87f48dfc289",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1002/chaosatlas-ablation/h2/rep-1.diagnostics/target.log",
+        "sha256": "1615781a0a30539f076049eef6ff66db96977a17ebce2112f566d87f48dfc289",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1002/chaosatlas-ablation/h2/rep-1.diagnostics/trace-unavailable.json",
+        "sha256": "e5aedb8d45c3b788ef05d1c51f229fa7dc1a0bb9a53d4bf3e869f0058b35fb77",
+        "return_code": "0"
+      }
+    ]
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "status": "completed",
+  "errors": [],
+  "started_at": "2026-08-13T19:41:27.444838+00:00",
+  "preflight": {
+    "checked_at": "2026-08-13T19:41:27.658978+00:00",
+    "mutation": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-discovery-r3/seed-1002/chaosatlas-ablation/mutations/1afaca546345.yaml",
+    "kind": "PodChaos",
+    "namespace": "chaosatlas-online-boutique",
+    "name": "atlas-online-boutique-1afaca546345",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-online-boutique"
+      ],
+      "labelSelectors": {
+        "app": "cartservice"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "chaosatlas-online-boutique",
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "sock-shop-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "selector_labels_ok": true,
+        "requested_namespaces": [
+          "chaosatlas-online-boutique"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "chaosatlas-online-boutique",
+          "name": "cartservice-5565d6f5db-rpq7x",
+          "uid": "04c0e78e-8fad-476d-960a-d3d37cd9b069",
+          "terminating": false,
+          "ready": true,
+          "restarts": 16,
+          "ports": [
+            7070
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "mutation_name_status": "available",
+      "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"atlas-online-boutique-1afaca546345\" not found",
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"atlas-online-boutique-1afaca546345\" not found\n"
+  },
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:15050 -> 5050\nForwarding from [::1]:15050 -> 5050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:17070 -> 7070\nForwarding from [::1]:17070 -> 7070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-13T19:43:22.844025+00:00",
+  "eligibility": {
+    "eligible": true,
+    "reasons": []
+  }
+}

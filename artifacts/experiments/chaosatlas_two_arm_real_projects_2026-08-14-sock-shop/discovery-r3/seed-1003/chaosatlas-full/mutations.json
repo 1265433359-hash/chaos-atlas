@@ -1,0 +1,152 @@
+{
+  "status": "valid",
+  "compiler": "open_discovery_mutation_compiler_v1",
+  "generated_count": 4,
+  "rejected_count": 0,
+  "generated": [
+    {
+      "index": 0,
+      "hypothesis_id": "hyp-001",
+      "canonical_signature": "67f55da59486a3b590d08c159ef4124a13a095227acb1a6f9a369e3a156ac277",
+      "kind": "NetworkChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: NetworkChaos\nmetadata:\n  name: atlas-sock-shop-67f55da59486\n  namespace: chaosatlas-sock-shop\n  labels:\n    chaosatlas.dev/project: sock-shop\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-sock-shop\n    labelSelectors:\n      name: front-end\n  action: delay\n  delay:\n    latency: 500ms\n    correlation: '100'\n    jitter: 0ms\n  duration: 30s\n  direction: to\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "sock-shop",
+        "project_commit": null,
+        "topology_graph_hash": "ff58525e8236a9a5076a12613a9204e4f43b192542620f25a9ef0c5229d3a2dd",
+        "canonical_signature": "67f55da59486a3b590d08c159ef4124a13a095227acb1a6f9a369e3a156ac277",
+        "hypothesis_id": "hyp-001",
+        "target": "service/front-end",
+        "target_kind": "service",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 500,
+          "duration_s": 30
+        },
+        "namespace": "chaosatlas-sock-shop",
+        "resolved_source": {
+          "target": "workload/front-end",
+          "kind": "Deployment",
+          "name": "front-end",
+          "selector": {
+            "name": "front-end"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 1,
+      "hypothesis_id": "hyp-002",
+      "canonical_signature": "7541adb57d988a2217001e5d89c50510701e96ed300cd4caeb4609690b1fe81f",
+      "kind": "NetworkChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: NetworkChaos\nmetadata:\n  name: atlas-sock-shop-7541adb57d98\n  namespace: chaosatlas-sock-shop\n  labels:\n    chaosatlas.dev/project: sock-shop\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-sock-shop\n    labelSelectors:\n      name: front-end\n  action: loss\n  loss:\n    loss: '100'\n    correlation: '100'\n  duration: 30s\n  direction: to\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "sock-shop",
+        "project_commit": null,
+        "topology_graph_hash": "ff58525e8236a9a5076a12613a9204e4f43b192542620f25a9ef0c5229d3a2dd",
+        "canonical_signature": "7541adb57d988a2217001e5d89c50510701e96ed300cd4caeb4609690b1fe81f",
+        "hypothesis_id": "hyp-002",
+        "target": "service/front-end",
+        "target_kind": "service",
+        "fault_family": "network_loss",
+        "parameters": {
+          "loss_percent": 100,
+          "duration_s": 30
+        },
+        "namespace": "chaosatlas-sock-shop",
+        "resolved_source": {
+          "target": "workload/front-end",
+          "kind": "Deployment",
+          "name": "front-end",
+          "selector": {
+            "name": "front-end"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 2,
+      "hypothesis_id": "hyp-003",
+      "canonical_signature": "2f342d8645eae955bd930fc3af8b4717b06572b2317e456bd745bb30a167683a",
+      "kind": "PodChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: PodChaos\nmetadata:\n  name: atlas-sock-shop-2f342d8645ea\n  namespace: chaosatlas-sock-shop\n  labels:\n    chaosatlas.dev/project: sock-shop\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-sock-shop\n    labelSelectors:\n      name: front-end\n  action: pod-kill\n  duration: 30s\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "sock-shop",
+        "project_commit": null,
+        "topology_graph_hash": "ff58525e8236a9a5076a12613a9204e4f43b192542620f25a9ef0c5229d3a2dd",
+        "canonical_signature": "2f342d8645eae955bd930fc3af8b4717b06572b2317e456bd745bb30a167683a",
+        "hypothesis_id": "hyp-003",
+        "target": "workload/front-end",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "namespace": "chaosatlas-sock-shop",
+        "resolved_source": {
+          "target": "workload/front-end",
+          "kind": "Deployment",
+          "name": "front-end",
+          "selector": {
+            "name": "front-end"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 3,
+      "hypothesis_id": "hyp-004",
+      "canonical_signature": "3140c5e28b7ef3d51289ede8f19ddabe718b5b16d075a28f513505b6bb19ea7a",
+      "kind": "NetworkChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: NetworkChaos\nmetadata:\n  name: atlas-sock-shop-3140c5e28b7e\n  namespace: chaosatlas-sock-shop\n  labels:\n    chaosatlas.dev/project: sock-shop\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-sock-shop\n    labelSelectors:\n      name: catalogue\n  action: delay\n  delay:\n    latency: 500ms\n    correlation: '100'\n    jitter: 0ms\n  duration: 30s\n  direction: to\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "sock-shop",
+        "project_commit": null,
+        "topology_graph_hash": "ff58525e8236a9a5076a12613a9204e4f43b192542620f25a9ef0c5229d3a2dd",
+        "canonical_signature": "3140c5e28b7ef3d51289ede8f19ddabe718b5b16d075a28f513505b6bb19ea7a",
+        "hypothesis_id": "hyp-004",
+        "target": "service/catalogue",
+        "target_kind": "service",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 500,
+          "duration_s": 30
+        },
+        "namespace": "chaosatlas-sock-shop",
+        "resolved_source": {
+          "target": "workload/catalogue",
+          "kind": "Deployment",
+          "name": "catalogue",
+          "selector": {
+            "name": "catalogue"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    }
+  ],
+  "rejected": []
+}

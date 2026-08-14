@@ -1,0 +1,614 @@
+{
+  "schema_version": "otel-two-arm-lifecycle-v1",
+  "project_id": "opentelemetry-demo",
+  "namespace": "chaosatlas-otel",
+  "arm": "ChaosAtlas-ablation",
+  "seed": 1003,
+  "mutation_id": "H4",
+  "replicate": 1,
+  "mutation": {
+    "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-14-otel/discovery-r3/seed-1003/chaosatlas-ablation/mutations/66c1880de46e.yaml",
+    "sha256": "ff97826ca7ad71d01703166ff620b16b1f8e2749dd3d77183411c2a72690b93e"
+  },
+  "baseline": {
+    "pass": true,
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "artifacts\\opentelemetry-demo\\otel_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 2812.0,
+      "stdout": "[0] ok oid=1df3e88c-976a-11f1-a79b-12cf12aec49c tracking=de80b6bf-e5ca-4363-9a0a-7049490181b4 (23.4ms)\n[1] ok oid=1e454c34-976a-11f1-a79b-12cf12aec49c tracking=6f5646b8-33a2-468d-8fc8-bb04ca844845 (21.5ms)\n[2] ok oid=1e96de72-976a-11f1-a79b-12cf12aec49c tracking=48b8a080-31ec-4fa7-985d-202eece4f071 (22.0ms)\n[3] ok oid=1ee81308-976a-11f1-a79b-12cf12aec49c tracking=6692b622-515e-497c-aaf8-7f6c9509c23b (21.2ms)\n[4] ok oid=1f394c5f-976a-11f1-a79b-12cf12aec49c tracking=f5312011-829e-4f00-b52a-ae29cf1b8f64 (21.3ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 23.4,
+          "result": "ok oid=1df3e88c-976a-11f1-a79b-12cf12aec49c tracking=de80b6bf-e5ca-4363-9a0a-7049490181b4",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 21.5,
+          "result": "ok oid=1e454c34-976a-11f1-a79b-12cf12aec49c tracking=6f5646b8-33a2-468d-8fc8-bb04ca844845",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "OK",
+          "latency_ms": 22.0,
+          "result": "ok oid=1e96de72-976a-11f1-a79b-12cf12aec49c tracking=48b8a080-31ec-4fa7-985d-202eece4f071",
+          "error": null
+        },
+        {
+          "sample": 4,
+          "grpc_status": "OK",
+          "latency_ms": 21.2,
+          "result": "ok oid=1ee81308-976a-11f1-a79b-12cf12aec49c tracking=6692b622-515e-497c-aaf8-7f6c9509c23b",
+          "error": null
+        },
+        {
+          "sample": 5,
+          "grpc_status": "OK",
+          "latency_ms": 21.3,
+          "result": "ok oid=1f394c5f-976a-11f1-a79b-12cf12aec49c tracking=f5312011-829e-4f00-b52a-ae29cf1b8f64",
+          "error": null
+        }
+      ]
+    },
+    "successes_required": 5
+  },
+  "injection": {
+    "applied": true,
+    "injected": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "networkchaos.chaos-mesh.org/atlas-opentelemetry-demo-66c1880de46e created",
+      "stderr": ""
+    },
+    "lifecycle": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-13T22:55:47Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-otel/cart-688585d9f5-ztkr6",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-13T22:55:47Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    }
+  },
+  "observation": {
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "artifacts\\opentelemetry-demo\\otel_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 22828.0,
+      "stdout": "[0] ok oid=20f1f9be-976a-11f1-a79b-12cf12aec49c tracking=72c3a638-6f98-4ee0-93d0-7b456b8d74d5 (2524.1ms)\n[1] ok oid=23a6069d-976a-11f1-a79b-12cf12aec49c tracking=d6172dc1-42e1-4e87-9bbc-222eb485c7d2 (2524.2ms)\n[2] ok oid=2659fbd8-976a-11f1-a79b-12cf12aec49c tracking=aa737e27-314f-4155-8886-040ead39d611 (2524.0ms)\n[3] ok oid=290e24ef-976a-11f1-a79b-12cf12aec49c tracking=2047660f-65e8-40b9-97f1-d41e6d29a95b (2524.6ms)\n[4] ok oid=2bc260ff-976a-11f1-a79b-12cf12aec49c tracking=7da4cc9d-a4cc-4c6b-96bb-f2e1c710b429 (2525.0ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 2524.1,
+          "result": "ok oid=20f1f9be-976a-11f1-a79b-12cf12aec49c tracking=72c3a638-6f98-4ee0-93d0-7b456b8d74d5",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 2524.2,
+          "result": "ok oid=23a6069d-976a-11f1-a79b-12cf12aec49c tracking=d6172dc1-42e1-4e87-9bbc-222eb485c7d2",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "OK",
+          "latency_ms": 2524.0,
+          "result": "ok oid=2659fbd8-976a-11f1-a79b-12cf12aec49c tracking=aa737e27-314f-4155-8886-040ead39d611",
+          "error": null
+        },
+        {
+          "sample": 4,
+          "grpc_status": "OK",
+          "latency_ms": 2524.6,
+          "result": "ok oid=290e24ef-976a-11f1-a79b-12cf12aec49c tracking=2047660f-65e8-40b9-97f1-d41e6d29a95b",
+          "error": null
+        },
+        {
+          "sample": 5,
+          "grpc_status": "OK",
+          "latency_ms": 2525.0,
+          "result": "ok oid=2bc260ff-976a-11f1-a79b-12cf12aec49c tracking=7da4cc9d-a4cc-4c6b-96bb-f2e1c710b429",
+          "error": null
+        }
+      ]
+    },
+    "classification": "no_business_impact_observed"
+  },
+  "recovery": {
+    "recovered": true,
+    "resource_recovered": true,
+    "state": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-13T22:55:47Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-13T22:56:47Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-otel/cart-688585d9f5-ztkr6",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-13T22:55:47Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-13T22:56:47Z"
+      ],
+      "desired_phase": "Stop"
+    },
+    "business": {
+      "recovered": true,
+      "samples": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 22.7,
+          "result": "ok oid=442268ad-976a-11f1-a79b-12cf12aec49c tracking=5ceba63d-3f6e-4bff-9628-004811b312de",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 66.4,
+          "result": "ok oid=45c18ee3-976a-11f1-a79b-12cf12aec49c tracking=8868b4a7-d382-4e63-8a0d-fe54105bbe64",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 21.9,
+          "result": "ok oid=47534ea2-976a-11f1-a79b-12cf12aec49c tracking=f4ec5c76-8489-4835-be99-9a0176d1f057",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 22.3,
+          "result": "ok oid=48e5e9f8-976a-11f1-a79b-12cf12aec49c tracking=f8710c2e-c5cb-4f3a-8e95-6ea481dc2ac2",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 21.9,
+          "result": "ok oid=4a777d27-976a-11f1-a79b-12cf12aec49c tracking=7fbc9cb9-dd11-479e-b3da-c2b711cebaa8",
+          "error": null
+        }
+      ],
+      "workloads": [
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\opentelemetry-demo\\otel_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 641.0,
+          "stdout": "[0] ok oid=442268ad-976a-11f1-a79b-12cf12aec49c tracking=5ceba63d-3f6e-4bff-9628-004811b312de (22.7ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 22.7,
+              "result": "ok oid=442268ad-976a-11f1-a79b-12cf12aec49c tracking=5ceba63d-3f6e-4bff-9628-004811b312de",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\opentelemetry-demo\\otel_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 718.0,
+          "stdout": "[0] ok oid=45c18ee3-976a-11f1-a79b-12cf12aec49c tracking=8868b4a7-d382-4e63-8a0d-fe54105bbe64 (66.4ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 66.4,
+              "result": "ok oid=45c18ee3-976a-11f1-a79b-12cf12aec49c tracking=8868b4a7-d382-4e63-8a0d-fe54105bbe64",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\opentelemetry-demo\\otel_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] ok oid=47534ea2-976a-11f1-a79b-12cf12aec49c tracking=f4ec5c76-8489-4835-be99-9a0176d1f057 (21.9ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 21.9,
+              "result": "ok oid=47534ea2-976a-11f1-a79b-12cf12aec49c tracking=f4ec5c76-8489-4835-be99-9a0176d1f057",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\opentelemetry-demo\\otel_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] ok oid=48e5e9f8-976a-11f1-a79b-12cf12aec49c tracking=f8710c2e-c5cb-4f3a-8e95-6ea481dc2ac2 (22.3ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 22.3,
+              "result": "ok oid=48e5e9f8-976a-11f1-a79b-12cf12aec49c tracking=f8710c2e-c5cb-4f3a-8e95-6ea481dc2ac2",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\opentelemetry-demo\\otel_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 641.0,
+          "stdout": "[0] ok oid=4a777d27-976a-11f1-a79b-12cf12aec49c tracking=7fbc9cb9-dd11-479e-b3da-c2b711cebaa8 (21.9ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 21.9,
+              "result": "ok oid=4a777d27-976a-11f1-a79b-12cf12aec49c tracking=7fbc9cb9-dd11-479e-b3da-c2b711cebaa8",
+              "error": null
+            }
+          ]
+        }
+      ],
+      "successes_required": 5
+    }
+  },
+  "cleanup": {
+    "delete_command_ok": true,
+    "delete_output": "networkchaos.chaos-mesh.org \"atlas-opentelemetry-demo-66c1880de46e\" deleted from chaosatlas-otel namespace",
+    "resource_absent_after_delete": true,
+    "absent_confirmed": true,
+    "verify_status": "absent",
+    "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-opentelemetry-demo-66c1880de46e\" not found",
+    "delete_failed": false,
+    "residual_resources": [],
+    "global_scan_errors": []
+  },
+  "washout": {
+    "stable": true,
+    "samples": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 21.3,
+        "result": "ok oid=4ad71cbc-976a-11f1-a79b-12cf12aec49c tracking=88af8c09-5956-46e0-8d79-e80f50c331da",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 22.1,
+        "result": "ok oid=4d07a207-976a-11f1-a79b-12cf12aec49c tracking=d8083944-9766-413a-8ad4-43ef309b3ed9",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 21.9,
+        "result": "ok oid=4f3a6ba6-976a-11f1-a79b-12cf12aec49c tracking=18fbe8c6-c190-43b7-bca0-3a79248ba53e",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 21.3,
+        "result": "ok oid=516b4008-976a-11f1-a79b-12cf12aec49c tracking=d2a38960-1644-4e56-9b1a-c4c21f9e6425",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 26.0,
+        "result": "ok oid=539de459-976a-11f1-a79b-12cf12aec49c tracking=db566da2-3993-4192-b186-f3f32abecb75",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 65.2,
+        "result": "ok oid=55d5952e-976a-11f1-a79b-12cf12aec49c tracking=a4df5336-5cbe-43c4-83a7-9c3e9781db33",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 21.1,
+        "result": "ok oid=57ffb0e6-976a-11f1-a79b-12cf12aec49c tracking=9aecf570-fa12-4729-a917-068269fe2549",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 64.1,
+        "result": "ok oid=5a36cf7f-976a-11f1-a79b-12cf12aec49c tracking=e431b17d-e9b3-474e-8c09-9ec386a61ea4",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 23.4,
+        "result": "ok oid=5c68572e-976a-11f1-a79b-12cf12aec49c tracking=32a7d8cb-1733-4dcc-ac75-c21c04919561",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 22.1,
+        "result": "ok oid=5e92a07e-976a-11f1-a79b-12cf12aec49c tracking=befda8a3-9541-4701-985c-d9e42a0fb6d9",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 22.2,
+        "result": "ok oid=60bd1d7d-976a-11f1-a79b-12cf12aec49c tracking=3d046b50-71cd-44c6-afc0-8e9378f877d9",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 22.2,
+        "result": "ok oid=62e75a42-976a-11f1-a79b-12cf12aec49c tracking=d91b35f1-b233-49b6-97d3-6b82661fac72",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 20.6,
+        "result": "ok oid=65112dea-976a-11f1-a79b-12cf12aec49c tracking=beb3d170-3a3a-494f-927b-71ff764385ea",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 21.8,
+        "result": "ok oid=67429118-976a-11f1-a79b-12cf12aec49c tracking=18107a84-c8dd-4f08-ba08-21313fe0244a",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 23.2,
+        "result": "ok oid=69737245-976a-11f1-a79b-12cf12aec49c tracking=e032983c-5ab1-4f41-b282-ea7a163b3cfe",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 21.3,
+        "result": "ok oid=6b9deb1b-976a-11f1-a79b-12cf12aec49c tracking=2e0b28a3-3378-4024-bbeb-7bf8ad62e899",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 21.0,
+        "result": "ok oid=6dc803ec-976a-11f1-a79b-12cf12aec49c tracking=356f97ea-33cb-42c4-a109-efca85e4b12b",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 23.4,
+        "result": "ok oid=6ff8a4c1-976a-11f1-a79b-12cf12aec49c tracking=64319c1d-2e37-4c5a-ad4b-fe02ec89a42a",
+        "error": null
+      }
+    ],
+    "successes_required": 10,
+    "elapsed_seconds": 62.922
+  },
+  "diagnostics": {
+    "status": "captured",
+    "files": [
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-14-otel/runtime_results-r3/opentelemetry-demo/seed-1003/chaosatlas-ablation/H4-rep-1.diagnostics/checkout.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "return_code": 0
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-14-otel/runtime_results-r3/opentelemetry-demo/seed-1003/chaosatlas-ablation/H4-rep-1.diagnostics/cart.log",
+        "sha256": "ee5576ed1ec6d54f3c5216705905e3e046e282f8bc68c07e2537dc9ae4c68a63",
+        "return_code": 0
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-14-otel/runtime_results-r3/opentelemetry-demo/seed-1003/chaosatlas-ablation/H4-rep-1.diagnostics/events.json",
+        "sha256": "2981beaeba722624137b16de3de06a490ae287af2709205edfef16aa02a51bf0",
+        "return_code": 0
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-14-otel/runtime_results-r3/opentelemetry-demo/seed-1003/chaosatlas-ablation/H4-rep-1.diagnostics/zipkin.json",
+        "sha256": "82b58e6913439268003d1ed0e6497ad20247f201d2244f6a1b36a41fb0325aed",
+        "return_code": 0
+      }
+    ]
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "status": "completed",
+  "errors": [],
+  "mutation_gate": {
+    "status": "passed",
+    "errors": []
+  },
+  "preflight": {
+    "checked_at": "2026-08-13T22:55:43.398978+00:00",
+    "mutation": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-14-otel/discovery-r3/seed-1003/chaosatlas-ablation/mutations/66c1880de46e.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "chaosatlas-otel",
+    "name": "atlas-opentelemetry-demo-66c1880de46e",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-otel"
+      ],
+      "labelSelectors": {
+        "app": "cart"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "chaosatlas-online-boutique",
+          "chaosatlas-otel",
+          "chaosatlas-sock-shop",
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "sock-shop-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "selector_labels_ok": true,
+        "requested_namespaces": [
+          "chaosatlas-otel"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "chaosatlas-otel",
+          "name": "cart-688585d9f5-ztkr6",
+          "uid": "f0c43eb3-03fa-48a0-8a3c-c35680d36437",
+          "terminating": false,
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            7070
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "mutation_name_status": "available",
+      "mutation_name_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-opentelemetry-demo-66c1880de46e\" not found",
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-opentelemetry-demo-66c1880de46e\" not found\n"
+  },
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:15050 -> 5050\nForwarding from [::1]:15050 -> 5050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:17070 -> 7070\nForwarding from [::1]:17070 -> 7070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-13T22:58:03.471969+00:00"
+}

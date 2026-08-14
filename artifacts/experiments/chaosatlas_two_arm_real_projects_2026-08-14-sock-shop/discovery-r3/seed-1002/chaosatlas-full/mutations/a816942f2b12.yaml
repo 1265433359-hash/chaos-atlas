@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: atlas-sock-shop-a816942f2b12
+  namespace: chaosatlas-sock-shop
+  labels:
+    chaosatlas.dev/project: sock-shop
+    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: user
+  action: pod-kill
+  duration: 30s

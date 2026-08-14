@@ -1,0 +1,218 @@
+{
+  "method_id": "ChaosAtlas-full",
+  "project_id": "online-boutique",
+  "project_commit": "9a4616e77f0f9cbcbecaf27d711c38890dda1404",
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "target": "workload/checkoutservice",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the checkoutservice pod will cause the place_order workflow to fail because checkoutservice is a critical synchronous dependency in the order placement path.",
+      "weakness_surface": "Single replica of checkoutservice; no redundancy; synchronous call from frontend to checkoutservice.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/checkoutservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/checkoutservice",
+          "target": "workload/checkoutservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Order placement succeeds with order_id and shipping_tracking_id.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After pod restart, checkoutservice becomes available and order placement succeeds again."
+    },
+    {
+      "hypothesis_id": "H2",
+      "target": "workload/frontend",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the frontend pod will cause the frontend health check to fail and the entire workflow to be unavailable.",
+      "weakness_surface": "Single replica of frontend; frontend is the entry point for both health check and order placement.",
+      "call_chain": [
+        {
+          "source": "service/frontend-external",
+          "target": "workload/frontend",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Frontend health check returns HTTP 200 and order placement succeeds.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After pod restart, frontend becomes available and health check and order placement succeed."
+    },
+    {
+      "hypothesis_id": "H3",
+      "target": "workload/cartservice",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the cartservice pod will cause the AddItem step to fail, preventing the order placement workflow from completing.",
+      "weakness_surface": "Single replica of cartservice; cartservice is required for adding items to the cart.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/cartservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/cartservice",
+          "target": "workload/cartservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Order placement workflow completes successfully.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After pod restart, cartservice becomes available and workflow succeeds."
+    },
+    {
+      "hypothesis_id": "H4",
+      "target": "workload/productcatalogservice",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the productcatalogservice pod will cause the frontend to fail when loading product information, potentially affecting the order placement workflow.",
+      "weakness_surface": "Single replica of productcatalogservice; frontend depends on it for product details.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/productcatalogservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/productcatalogservice",
+          "target": "workload/productcatalogservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Frontend health check and order placement succeed.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After pod restart, productcatalogservice becomes available and workflow succeeds."
+    },
+    {
+      "hypothesis_id": "H5",
+      "target": "workload/checkoutservice",
+      "target_kind": "workload",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Introducing 500ms latency to checkoutservice will cause the order placement to exceed timeouts and fail.",
+      "weakness_surface": "Synchronous call from frontend to checkoutservice; no evidence of timeout/retry configuration.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/checkoutservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/checkoutservice",
+          "target": "workload/checkoutservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Order placement succeeds with order_id and shipping_tracking_id.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After latency injection ends, checkoutservice responds normally and order placement succeeds."
+    },
+    {
+      "hypothesis_id": "H6",
+      "target": "workload/frontend",
+      "target_kind": "workload",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Introducing 500ms latency to frontend will cause the health check to be slow and potentially fail if the client has a timeout.",
+      "weakness_surface": "Frontend is the entry point; health check may have a short timeout.",
+      "call_chain": [
+        {
+          "source": "service/frontend-external",
+          "target": "workload/frontend",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Frontend health check returns HTTP 200.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After latency injection ends, frontend responds normally and health check succeeds."
+    },
+    {
+      "hypothesis_id": "H7",
+      "target": "workload/checkoutservice",
+      "target_kind": "workload",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 50,
+        "duration_s": 30
+      },
+      "hypothesis": "Introducing 50% packet loss to checkoutservice will cause intermittent failures in order placement due to lost requests.",
+      "weakness_surface": "Synchronous call from frontend to checkoutservice; no evidence of retry logic.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/checkoutservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/checkoutservice",
+          "target": "workload/checkoutservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Order placement succeeds with order_id and shipping_tracking_id.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After loss injection ends, checkoutservice becomes reliable and order placement succeeds."
+    },
+    {
+      "hypothesis_id": "H8",
+      "target": "workload/frontend",
+      "target_kind": "workload",
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load_percent": 80,
+        "duration_s": 30
+      },
+      "hypothesis": "Stressing the frontend CPU to 80% will cause the health check to become slow or fail due to resource exhaustion.",
+      "weakness_surface": "Frontend is the entry point; CPU starvation may cause timeouts.",
+      "call_chain": [
+        {
+          "source": "service/frontend-external",
+          "target": "workload/frontend",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Frontend health check returns HTTP 200.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After stress ends, frontend CPU normalizes and health check succeeds."
+    }
+  ]
+}

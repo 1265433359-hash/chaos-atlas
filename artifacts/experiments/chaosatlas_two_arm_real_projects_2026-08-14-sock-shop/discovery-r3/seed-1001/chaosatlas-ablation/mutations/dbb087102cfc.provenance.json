@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "sock-shop",
+  "project_commit": null,
+  "topology_graph_hash": "ff58525e8236a9a5076a12613a9204e4f43b192542620f25a9ef0c5229d3a2dd",
+  "canonical_signature": "dbb087102cfcccc3202153691acc4b13ad4536daff43fd731f6e7ffb4e81da4e",
+  "hypothesis_id": "hyp-004",
+  "target": "workload/orders",
+  "target_kind": "service",
+  "fault_family": "pod_kill",
+  "parameters": {
+    "mode": "one"
+  },
+  "namespace": "chaosatlas-sock-shop",
+  "resolved_source": {
+    "target": "workload/orders",
+    "kind": "Deployment",
+    "name": "orders",
+    "selector": {
+      "name": "orders"
+    },
+    "selector_source": "topology.pod_labels"
+  },
+  "resolved_destination": null,
+  "runtime_gate_required": true,
+  "execution_ready": false
+}

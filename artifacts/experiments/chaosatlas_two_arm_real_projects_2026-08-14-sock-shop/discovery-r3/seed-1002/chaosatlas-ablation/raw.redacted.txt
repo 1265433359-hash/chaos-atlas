@@ -1,0 +1,187 @@
+{
+  "project_id": "sock-shop",
+  "project_commit": "9dff06fae4981921caec6a62393a6ebfce4b3e3f",
+  "hypotheses": [
+    {
+      "hypothesis_id": "hyp-001",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 60
+      },
+      "hypothesis": "Injecting 500ms network delay on the front-end service will cause the front-end home page to exceed the 15s timeout, violating the non-empty HTML contract.",
+      "weakness_surface": "front-end is the entry point for all golden journey steps; delay directly impacts response times.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "front-end home returns non-empty HTML within 15s",
+      "validation_plan": "Inject delay on service/front-end, then call GET / and check response time and content.",
+      "recovery_expectation": "Removing delay restores normal response within 15s."
+    },
+    {
+      "hypothesis_id": "hyp-002",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 60
+      },
+      "hypothesis": "Injecting 100% network loss on the front-end service will cause all golden journey steps to fail, violating all contracts.",
+      "weakness_surface": "front-end is the sole entry point; total loss blocks all user requests.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "front-end home returns non-empty HTML within 15s",
+      "validation_plan": "Inject loss on service/front-end, then call GET / and check for timeout or error.",
+      "recovery_expectation": "Removing loss restores connectivity and contracts."
+    },
+    {
+      "hypothesis_id": "hyp-003",
+      "target": "workload/catalogue",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the catalogue pod will cause the catalogue browse step to fail, violating the JSON array contract.",
+      "weakness_surface": "catalogue is directly used by the front-end for the /catalogue endpoint; no replica means downtime.",
+      "call_chain": [
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue browse returns JSON array within 15s",
+      "validation_plan": "Kill catalogue pod, then call GET /catalogue and check for JSON array.",
+      "recovery_expectation": "Pod restart restores catalogue service."
+    },
+    {
+      "hypothesis_id": "hyp-004",
+      "target": "workload/user",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the user pod will cause the login step to fail, violating the cookie set contract.",
+      "weakness_surface": "user service is required for authentication; no replica means login failure.",
+      "call_chain": [
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "login returns HTTP 200 and sets cookie",
+      "validation_plan": "Kill user pod, then call GET /login and check for cookie.",
+      "recovery_expectation": "Pod restart restores login functionality."
+    },
+    {
+      "hypothesis_id": "hyp-005",
+      "target": "service/catalogue",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 60
+      },
+      "hypothesis": "Injecting 500ms network delay on the catalogue service will cause the catalogue browse step to exceed the 15s timeout, violating the JSON array contract.",
+      "weakness_surface": "catalogue is a direct dependency for the /catalogue endpoint; delay increases response time.",
+      "call_chain": [
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue browse returns JSON array within 15s",
+      "validation_plan": "Inject delay on service/catalogue, then call GET /catalogue and check response time.",
+      "recovery_expectation": "Removing delay restores normal response."
+    },
+    {
+      "hypothesis_id": "hyp-006",
+      "target": "service/user",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 60
+      },
+      "hypothesis": "Injecting 500ms network delay on the user service will cause the login step to exceed the 15s timeout, violating the cookie set contract.",
+      "weakness_surface": "user service is required for authentication; delay increases login response time.",
+      "call_chain": [
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "login returns HTTP 200 and sets cookie within 15s",
+      "validation_plan": "Inject delay on service/user, then call GET /login and check response time.",
+      "recovery_expectation": "Removing delay restores normal login."
+    },
+    {
+      "hypothesis_id": "hyp-007",
+      "target": "workload/orders",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the orders pod will cause the authenticated orders step to fail, violating the JSON array or object contract.",
+      "weakness_surface": "orders service is required for the /orders endpoint; no replica means failure.",
+      "call_chain": [
+        {
+          "source": "service/orders",
+          "target": "workload/orders",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "authenticated orders returns HTTP 201 and JSON array or object",
+      "validation_plan": "Kill orders pod, then call GET /orders and check for JSON.",
+      "recovery_expectation": "Pod restart restores orders service."
+    },
+    {
+      "hypothesis_id": "hyp-008",
+      "target": "service/orders",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 60
+      },
+      "hypothesis": "Injecting 500ms network delay on the orders service will cause the authenticated orders step to exceed the 15s timeout, violating the JSON array or object contract.",
+      "weakness_surface": "orders service is required for the /orders endpoint; delay increases response time.",
+      "call_chain": [
+        {
+          "source": "service/orders",
+          "target": "workload/orders",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "authenticated orders returns HTTP 201 and JSON within 15s",
+      "validation_plan": "Inject delay on service/orders, then call GET /orders and check response time.",
+      "recovery_expectation": "Removing delay restores normal response."
+    }
+  ]
+}

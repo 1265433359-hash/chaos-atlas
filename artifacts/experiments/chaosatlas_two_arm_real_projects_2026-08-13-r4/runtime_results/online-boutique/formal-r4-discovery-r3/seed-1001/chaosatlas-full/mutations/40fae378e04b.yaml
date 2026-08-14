@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: atlas-online-boutique-40fae378e04b
+  namespace: chaosatlas-online-boutique
+  labels:
+    chaosatlas.dev/project: online-boutique
+    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-online-boutique
+    labelSelectors:
+      app: shippingservice
+  action: delay
+  delay:
+    latency: 500ms
+    correlation: '100'
+    jitter: 0ms
+  duration: 30s
+  direction: to

@@ -1,0 +1,35 @@
+{
+  "schema_version": "chaosatlas-two-arm-runtime-profile-v1",
+  "project_id": "sock-shop",
+  "namespace": "chaosatlas-sock-shop",
+  "status": "runtime_ready",
+  "runtime_ready": true,
+  "blocked_reasons": [],
+  "cluster_facts": {
+    "context": "minikube",
+    "node_ready": true,
+    "namespace": "chaosatlas-sock-shop",
+    "deployments_available": 14,
+    "deployments_total": 14,
+    "server_side_dry_run": "passed",
+    "deployments_healthy": true,
+    "baseline_windows": {
+      "passed": 2,
+      "successes": [
+        5,
+        5
+      ]
+    },
+    "recovery_rehearsal": "passed",
+    "cleanup": "passed",
+    "global_residual_scan": "clear",
+    "washout": {
+      "stable": true,
+      "successes": 21
+    }
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "project_manifest_path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-14-sock-shop/input-bundles-r2/manifests/sock-shop/manifest.json",
+  "project_manifest_sha256": "c20666c8379b39ee3955ef7c5f75daa3b4431a011946387da2efbe97dd2ac122"
+}

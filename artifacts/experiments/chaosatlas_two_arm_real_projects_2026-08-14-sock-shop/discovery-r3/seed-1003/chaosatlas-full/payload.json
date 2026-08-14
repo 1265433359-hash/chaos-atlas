@@ -1,0 +1,218 @@
+{
+  "project_id": "sock-shop",
+  "project_commit": "9dff06fae4981921caec6a62393a6ebfce4b3e3f",
+  "hypotheses": [
+    {
+      "hypothesis_id": "hyp-001",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Injecting 500ms network delay on the front-end service will cause the front-end home page to exceed the 15s timeout, violating the non-empty HTML contract.",
+      "weakness_surface": "front-end is the entry point for all golden journey steps; no timeout/retry evidence for the home page.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "front-end home returns HTTP 200 with non-empty HTML within 15s.",
+      "validation_plan": "Inject delay on service/front-end, then execute front-end home step and check HTTP status and response time.",
+      "recovery_expectation": "Removing the delay restores normal response within washout period."
+    },
+    {
+      "hypothesis_id": "hyp-002",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 30
+      },
+      "hypothesis": "Injecting 100% network loss on the front-end service will cause all golden journey steps to fail, violating all contracts.",
+      "weakness_surface": "front-end is the single entry point; no redundancy or fallback evidenced.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "All golden journey steps return expected HTTP statuses and contracts.",
+      "validation_plan": "Inject loss on service/front-end, then execute all steps and verify failures.",
+      "recovery_expectation": "Removing loss restores all steps within washout period."
+    },
+    {
+      "hypothesis_id": "hyp-003",
+      "target": "workload/front-end",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the single front-end pod will cause the front-end service to have no available endpoints, failing all golden journey steps.",
+      "weakness_surface": "single replica workload; no redundancy evidenced.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "All golden journey steps succeed.",
+      "validation_plan": "Kill the front-end pod, then execute all steps and verify failures.",
+      "recovery_expectation": "Pod restart restores service within washout period."
+    },
+    {
+      "hypothesis_id": "hyp-004",
+      "target": "service/catalogue",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Injecting 500ms network delay on the catalogue service will cause the catalogue browse step to exceed the 15s timeout, violating the JSON array contract.",
+      "weakness_surface": "catalogue is a synchronous downstream call from front-end; no timeout evidence.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue browse returns HTTP 200 with JSON array within 15s.",
+      "validation_plan": "Inject delay on service/catalogue, then execute catalogue browse step and check response.",
+      "recovery_expectation": "Removing delay restores normal response within washout period."
+    },
+    {
+      "hypothesis_id": "hyp-005",
+      "target": "service/catalogue",
+      "target_kind": "service",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 30
+      },
+      "hypothesis": "Injecting 100% network loss on the catalogue service will cause the catalogue browse step to fail, violating the JSON array contract.",
+      "weakness_surface": "catalogue is a synchronous downstream call; no retry/fallback evidenced.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue browse returns HTTP 200 with JSON array.",
+      "validation_plan": "Inject loss on service/catalogue, then execute catalogue browse step and verify failure.",
+      "recovery_expectation": "Removing loss restores catalogue browse within washout period."
+    },
+    {
+      "hypothesis_id": "hyp-006",
+      "target": "workload/catalogue",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the single catalogue pod will cause the catalogue service to have no available endpoints, failing the catalogue browse step.",
+      "weakness_surface": "single replica workload; no redundancy evidenced.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue browse returns HTTP 200 with JSON array.",
+      "validation_plan": "Kill the catalogue pod, then execute catalogue browse step and verify failure.",
+      "recovery_expectation": "Pod restart restores catalogue browse within washout period."
+    },
+    {
+      "hypothesis_id": "hyp-007",
+      "target": "service/user",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Injecting 500ms network delay on the user service will cause the login step to exceed the 15s timeout, violating the Cookie set contract.",
+      "weakness_surface": "login depends on user service; no timeout evidence.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "login returns HTTP 200 and sets a cookie.",
+      "validation_plan": "Inject delay on service/user, then execute login step and check response.",
+      "recovery_expectation": "Removing delay restores login within washout period."
+    },
+    {
+      "hypothesis_id": "hyp-008",
+      "target": "service/user",
+      "target_kind": "service",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 30
+      },
+      "hypothesis": "Injecting 100% network loss on the user service will cause the login step to fail, violating the Cookie set contract.",
+      "weakness_surface": "login depends on user service; no retry/fallback evidenced.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "login returns HTTP 200 and sets a cookie.",
+      "validation_plan": "Inject loss on service/user, then execute login step and verify failure.",
+      "recovery_expectation": "Removing loss restores login within washout period."
+    }
+  ]
+}

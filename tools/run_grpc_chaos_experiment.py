@@ -33,15 +33,21 @@ except ImportError as exc:  # pragma: no cover
 
 
 CLIENT_LINE = re.compile(r"^\[(?P<sample>\d+)\]\s+(?P<result>.*?)\s+\((?P<latency>[0-9.]+)ms\)\s*$")
+CLIENT_CART_FAILURE_LINE = re.compile(r"^\[(?P<sample>\d+)\]\s+(?P<result>cart_add_failed\b.*)$")
+CLIENT_SAMPLE_BLOCK = re.compile(
+    r"^\[(?P<sample>\d+)\]\s+(?P<body>.*?)(?=^\[\d+\]\s+|\Z)",
+    re.MULTILINE | re.DOTALL,
+)
+CLIENT_LATENCY_SUFFIX = re.compile(r"\s*\((?P<latency>[0-9.]+)ms\)\s*\Z", re.DOTALL)
 
 
 def parse_client_output(stdout: str, stderr: str = "") -> list[dict[str, Any]]:
     observations: list[dict[str, Any]] = []
-    for line in stdout.splitlines():
-        match = CLIENT_LINE.match(line.strip())
-        if not match:
-            continue
-        result = match.group("result")
+    for match in CLIENT_SAMPLE_BLOCK.finditer(stdout):
+        body = match.group("body").strip()
+        latency_match = CLIENT_LATENCY_SUFFIX.search(body)
+        latency_ms = float(latency_match.group("latency")) if latency_match else None
+        result = body[:latency_match.start()].strip() if latency_match else body
         if result.startswith("ok "):
             status = "OK"
             error = None
@@ -59,7 +65,7 @@ def parse_client_output(stdout: str, stderr: str = "") -> list[dict[str, Any]]:
             {
                 "sample": int(match.group("sample")) + 1,
                 "grpc_status": status,
-                "latency_ms": float(match.group("latency")),
+                "latency_ms": latency_ms,
                 "result": result,
                 "error": error,
             }

@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "tool": "runtime_applicability_gate",
+  "results": [
+    {
+      "checked_at": "2026-08-13T18:16:07.749444+00:00",
+      "mutation": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-discovery-r3/seed-1001/chaosatlas-full/mutations/965f795f1bf1.yaml",
+      "kind": "NetworkChaos",
+      "namespace": "chaosatlas-online-boutique",
+      "name": "atlas-online-boutique-965f795f1bf1",
+      "selector": {
+        "namespaces": [
+          "chaosatlas-online-boutique"
+        ],
+        "labelSelectors": {
+          "app": "cartservice"
+        }
+      },
+      "decision": "ready_for_injection",
+      "checks": {
+        "scope_guard": {
+          "allowed_namespace": "train-ticket-lab",
+          "allowed_namespaces": [
+            "chaosatlas-online-boutique",
+            "online-boutique-lab",
+            "otel-demo-lab",
+            "sock-shop-lab",
+            "train-ticket-lab"
+          ],
+          "metadata_namespace_ok": true,
+          "selector_namespaces_ok": true,
+          "selector_labels_ok": true,
+          "requested_namespaces": [
+            "chaosatlas-online-boutique"
+          ],
+          "requested_mode": "one",
+          "allowed_modes": [
+            "one"
+          ],
+          "mode_ok": true
+        },
+        "yaml_shape": true,
+        "crd_exists": true,
+        "chaos_components_ready": true,
+        "selector_matches": true,
+        "target_pods": [
+          {
+            "namespace": "chaosatlas-online-boutique",
+            "name": "cartservice-5565d6f5db-rpq7x",
+            "uid": "04c0e78e-8fad-476d-960a-d3d37cd9b069",
+            "terminating": false,
+            "ready": true,
+            "restarts": 10,
+            "ports": [
+              7070
+            ]
+          }
+        ],
+        "target_pods_ready": true,
+        "target_port_exists": true,
+        "mutation_name_available": true,
+        "mutation_name_status": "available",
+        "mutation_name_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-online-boutique-965f795f1bf1\" not found",
+        "injector_prerequisite": {
+          "status": "pass",
+          "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+        }
+      },
+      "errors": [],
+      "interpretation": {
+        "selected_is_not_injected": true,
+        "defense_conclusion_allowed": true
+      },
+      "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-online-boutique-965f795f1bf1\" not found\n"
+    }
+  ],
+  "summary": {
+    "ready_for_injection": 1,
+    "blocked": 0,
+    "not_applicable": 0
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "status": "valid",
+  "compiler": "open_discovery_mutation_compiler_v1",
+  "generated_count": 4,
+  "rejected_count": 0,
+  "generated": [
+    {
+      "index": 0,
+      "hypothesis_id": "H1",
+      "canonical_signature": "26de454f2fb79802682b1f9f6a007876b91d08d4b2afc2e96da25931671a450b",
+      "kind": "NetworkChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: NetworkChaos\nmetadata:\n  name: atlas-online-boutique-26de454f2fb7\n  namespace: chaosatlas-online-boutique\n  labels:\n    chaosatlas.dev/project: online-boutique\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-online-boutique\n    labelSelectors:\n      app: checkoutservice\n  action: delay\n  delay:\n    latency: 500ms\n    correlation: '100'\n    jitter: 0ms\n  duration: 30s\n  direction: to\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "online-boutique",
+        "project_commit": null,
+        "topology_graph_hash": "38ba4f9a65b025af7a73148fe3d899ccc090ba744cd3896de5a93d582ad75557",
+        "canonical_signature": "26de454f2fb79802682b1f9f6a007876b91d08d4b2afc2e96da25931671a450b",
+        "hypothesis_id": "H1",
+        "target": "workload/checkoutservice",
+        "target_kind": "service",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 500,
+          "duration_s": 30
+        },
+        "namespace": "chaosatlas-online-boutique",
+        "resolved_source": {
+          "target": "workload/checkoutservice",
+          "kind": "Deployment",
+          "name": "checkoutservice",
+          "selector": {
+            "app": "checkoutservice"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 1,
+      "hypothesis_id": "H2",
+      "canonical_signature": "941a4340ff4d4a2f54a9297e8db7fada8a3cb5de1ebd8878fdeb3045e67742c9",
+      "kind": "NetworkChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: NetworkChaos\nmetadata:\n  name: atlas-online-boutique-941a4340ff4d\n  namespace: chaosatlas-online-boutique\n  labels:\n    chaosatlas.dev/project: online-boutique\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-online-boutique\n    labelSelectors:\n      app: paymentservice\n  action: delay\n  delay:\n    latency: 500ms\n    correlation: '100'\n    jitter: 0ms\n  duration: 30s\n  direction: to\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "online-boutique",
+        "project_commit": null,
+        "topology_graph_hash": "38ba4f9a65b025af7a73148fe3d899ccc090ba744cd3896de5a93d582ad75557",
+        "canonical_signature": "941a4340ff4d4a2f54a9297e8db7fada8a3cb5de1ebd8878fdeb3045e67742c9",
+        "hypothesis_id": "H2",
+        "target": "workload/paymentservice",
+        "target_kind": "service",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 500,
+          "duration_s": 30
+        },
+        "namespace": "chaosatlas-online-boutique",
+        "resolved_source": {
+          "target": "workload/paymentservice",
+          "kind": "Deployment",
+          "name": "paymentservice",
+          "selector": {
+            "app": "paymentservice"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 2,
+      "hypothesis_id": "H3",
+      "canonical_signature": "40fae378e04b3dc461d3c99db88fdd593b796d63131373b5050f2d3878d03fe5",
+      "kind": "NetworkChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: NetworkChaos\nmetadata:\n  name: atlas-online-boutique-40fae378e04b\n  namespace: chaosatlas-online-boutique\n  labels:\n    chaosatlas.dev/project: online-boutique\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-online-boutique\n    labelSelectors:\n      app: shippingservice\n  action: delay\n  delay:\n    latency: 500ms\n    correlation: '100'\n    jitter: 0ms\n  duration: 30s\n  direction: to\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "online-boutique",
+        "project_commit": null,
+        "topology_graph_hash": "38ba4f9a65b025af7a73148fe3d899ccc090ba744cd3896de5a93d582ad75557",
+        "canonical_signature": "40fae378e04b3dc461d3c99db88fdd593b796d63131373b5050f2d3878d03fe5",
+        "hypothesis_id": "H3",
+        "target": "workload/shippingservice",
+        "target_kind": "service",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 500,
+          "duration_s": 30
+        },
+        "namespace": "chaosatlas-online-boutique",
+        "resolved_source": {
+          "target": "workload/shippingservice",
+          "kind": "Deployment",
+          "name": "shippingservice",
+          "selector": {
+            "app": "shippingservice"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 3,
+      "hypothesis_id": "H4",
+      "canonical_signature": "965f795f1bf161d0eeeec9fc6bd8f376fceb6922bc6dabb670deb46756756d44",
+      "kind": "NetworkChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: NetworkChaos\nmetadata:\n  name: atlas-online-boutique-965f795f1bf1\n  namespace: chaosatlas-online-boutique\n  labels:\n    chaosatlas.dev/project: online-boutique\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-online-boutique\n    labelSelectors:\n      app: cartservice\n  action: delay\n  delay:\n    latency: 500ms\n    correlation: '100'\n    jitter: 0ms\n  duration: 30s\n  direction: to\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "online-boutique",
+        "project_commit": null,
+        "topology_graph_hash": "38ba4f9a65b025af7a73148fe3d899ccc090ba744cd3896de5a93d582ad75557",
+        "canonical_signature": "965f795f1bf161d0eeeec9fc6bd8f376fceb6922bc6dabb670deb46756756d44",
+        "hypothesis_id": "H4",
+        "target": "workload/cartservice",
+        "target_kind": "service",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 500,
+          "duration_s": 30
+        },
+        "namespace": "chaosatlas-online-boutique",
+        "resolved_source": {
+          "target": "workload/cartservice",
+          "kind": "Deployment",
+          "name": "cartservice",
+          "selector": {
+            "app": "cartservice"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    }
+  ],
+  "rejected": []
+}

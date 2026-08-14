@@ -1,0 +1,187 @@
+{
+  "project_id": "sock-shop",
+  "project_commit": "9dff06fae4981921caec6a62393a6ebfce4b3e3f",
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "target": "workload/front-end",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the single front-end pod will cause the front-end service to have no healthy endpoints, resulting in HTTP 503 for all golden journey steps.",
+      "weakness_surface": "single replica workload with no redundancy",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "front-end service must return HTTP 200 for all steps",
+      "validation_plan": "Inject pod_kill on workload/front-end, then call front-end service endpoints /, /catalogue, /login, /orders and verify HTTP status codes.",
+      "recovery_expectation": "Pod restarts and service recovers after Kubernetes reschedules."
+    },
+    {
+      "hypothesis_id": "H2",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 60
+      },
+      "hypothesis": "Introducing 500ms network delay on the front-end service will cause timeouts for the golden journey steps, leading to HTTP 500 or 504.",
+      "weakness_surface": "synchronous downstream call without evidenced timeout",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "front-end service must return HTTP 200 for all steps",
+      "validation_plan": "Inject network_delay on service/front-end, then call front-end service endpoints and verify HTTP status codes.",
+      "recovery_expectation": "After delay duration, service returns to normal."
+    },
+    {
+      "hypothesis_id": "H3",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 60
+      },
+      "hypothesis": "100% network loss on the front-end service will make it unreachable, causing all golden journey steps to fail with connection errors.",
+      "weakness_surface": "synchronous downstream call without evidenced timeout",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "front-end service must return HTTP 200 for all steps",
+      "validation_plan": "Inject network_loss on service/front-end, then call front-end service endpoints and verify HTTP status codes.",
+      "recovery_expectation": "After loss duration, service returns to normal."
+    },
+    {
+      "hypothesis_id": "H4",
+      "target": "workload/catalogue",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the catalogue pod will cause the catalogue service to have no healthy endpoints, resulting in HTTP 503 for the catalogue browse step.",
+      "weakness_surface": "single replica workload with no redundancy",
+      "call_chain": [
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue browse step must return HTTP 200",
+      "validation_plan": "Inject pod_kill on workload/catalogue, then call front-end /catalogue and verify HTTP status code.",
+      "recovery_expectation": "Pod restarts and service recovers after Kubernetes reschedules."
+    },
+    {
+      "hypothesis_id": "H5",
+      "target": "service/catalogue",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 60
+      },
+      "hypothesis": "Introducing 500ms network delay on the catalogue service will cause timeouts for the catalogue browse step, leading to HTTP 500 or 504.",
+      "weakness_surface": "synchronous downstream call without evidenced timeout",
+      "call_chain": [
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue browse step must return HTTP 200",
+      "validation_plan": "Inject network_delay on service/catalogue, then call front-end /catalogue and verify HTTP status code.",
+      "recovery_expectation": "After delay duration, service returns to normal."
+    },
+    {
+      "hypothesis_id": "H6",
+      "target": "service/catalogue",
+      "target_kind": "service",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 60
+      },
+      "hypothesis": "100% network loss on the catalogue service will make it unreachable, causing the catalogue browse step to fail with connection errors.",
+      "weakness_surface": "synchronous downstream call without evidenced timeout",
+      "call_chain": [
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue browse step must return HTTP 200",
+      "validation_plan": "Inject network_loss on service/catalogue, then call front-end /catalogue and verify HTTP status code.",
+      "recovery_expectation": "After loss duration, service returns to normal."
+    },
+    {
+      "hypothesis_id": "H7",
+      "target": "workload/user",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the user pod will cause the user service to have no healthy endpoints, resulting in HTTP 503 for the login step.",
+      "weakness_surface": "single replica workload with no redundancy",
+      "call_chain": [
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "login step must return HTTP 200",
+      "validation_plan": "Inject pod_kill on workload/user, then call front-end /login and verify HTTP status code.",
+      "recovery_expectation": "Pod restarts and service recovers after Kubernetes reschedules."
+    },
+    {
+      "hypothesis_id": "H8",
+      "target": "service/user",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 60
+      },
+      "hypothesis": "Introducing 500ms network delay on the user service will cause timeouts for the login step, leading to HTTP 500 or 504.",
+      "weakness_surface": "synchronous downstream call without evidenced timeout",
+      "call_chain": [
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "login step must return HTTP 200",
+      "validation_plan": "Inject network_delay on service/user, then call front-end /login and verify HTTP status code.",
+      "recovery_expectation": "After delay duration, service returns to normal."
+    }
+  ]
+}

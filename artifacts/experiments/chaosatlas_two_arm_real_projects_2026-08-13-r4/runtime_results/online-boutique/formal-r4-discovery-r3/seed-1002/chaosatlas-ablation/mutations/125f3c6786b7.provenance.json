@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "online-boutique",
+  "project_commit": null,
+  "topology_graph_hash": "38ba4f9a65b025af7a73148fe3d899ccc090ba744cd3896de5a93d582ad75557",
+  "canonical_signature": "125f3c6786b757d9670c2da9c9d576b5d73899dd5e0038bf21c22a1ea97274fc",
+  "hypothesis_id": "h1",
+  "target": "workload/checkoutservice",
+  "target_kind": "service",
+  "fault_family": "pod_kill",
+  "parameters": {
+    "mode": "one"
+  },
+  "namespace": "chaosatlas-online-boutique",
+  "resolved_source": {
+    "target": "workload/checkoutservice",
+    "kind": "Deployment",
+    "name": "checkoutservice",
+    "selector": {
+      "app": "checkoutservice"
+    },
+    "selector_source": "topology.pod_labels"
+  },
+  "resolved_destination": null,
+  "runtime_gate_required": true,
+  "execution_ready": false
+}

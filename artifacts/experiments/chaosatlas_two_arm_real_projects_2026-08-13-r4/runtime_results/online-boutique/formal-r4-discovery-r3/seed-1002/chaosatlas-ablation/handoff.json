@@ -1,0 +1,544 @@
+{
+  "schema_version": "chaosatlas-two-arm-discovery-handoff-v1",
+  "status": "handoff_ready",
+  "project_id": "online-boutique",
+  "method_id": "ChaosAtlas-ablation",
+  "seed": 1002,
+  "prompt_input_sha256": "4d1b1688ca658e15385adf7f9bc646ac8c723e586fa498df8701e125a5b16c45",
+  "model_output_sha256": "b721c87ca7c7d80626df56569740f2c664c1041e81b96d6394daf953b848c32b",
+  "model_call": {
+    "performed": false,
+    "credentials_logged": false
+  },
+  "compiled": {
+    "status": "valid",
+    "accepted": [
+      {
+        "hypothesis_id": "h1",
+        "canonical_signature": "125f3c6786b757d9670c2da9c9d576b5d73899dd5e0038bf21c22a1ea97274fc",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "online-boutique",
+        "namespace": "chaosatlas-online-boutique",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/checkoutservice",
+        "resolved_target": "chaosatlas-online-boutique/deployment/checkoutservice",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "hypothesis": "Killing the checkoutservice pod will cause the place order workflow to fail, as checkoutservice is the orchestrator for order placement.",
+        "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+        "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+        "recovery_expectation": "After pod restart, checkoutservice becomes available and order placement succeeds.",
+        "call_chain": [
+          {
+            "source": "service/frontend",
+            "target": "service/checkoutservice",
+            "relation": "calls",
+            "evidence_ref": "topology"
+          },
+          {
+            "source": "service/checkoutservice",
+            "target": "workload/checkoutservice",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "checkoutservice is a critical dependency in the order placement workflow; its absence breaks the business transaction.",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "h2",
+        "canonical_signature": "1afaca5463450bdc281957424753660380e9996de4c93945894cf84c8f6efb4c",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "online-boutique",
+        "namespace": "chaosatlas-online-boutique",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/cartservice",
+        "resolved_target": "chaosatlas-online-boutique/deployment/cartservice",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "hypothesis": "Killing the cartservice pod will cause the add item step to fail, preventing the order from being placed.",
+        "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+        "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+        "recovery_expectation": "After pod restart, cartservice becomes available and add item succeeds.",
+        "call_chain": [
+          {
+            "source": "service/frontend",
+            "target": "service/cartservice",
+            "relation": "calls",
+            "evidence_ref": "topology"
+          },
+          {
+            "source": "service/cartservice",
+            "target": "workload/cartservice",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "cartservice is required for adding items to the cart; without it, the workflow cannot proceed.",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "h3",
+        "canonical_signature": "9ba1564151e6a111601029c5bbf6d442ac7ab64a77deb68473c0982a9e2013c3",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "online-boutique",
+        "namespace": "chaosatlas-online-boutique",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/frontend",
+        "resolved_target": "chaosatlas-online-boutique/deployment/frontend",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "hypothesis": "Killing the frontend pod will cause the health check to fail, breaking the entire workflow.",
+        "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+        "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+        "recovery_expectation": "After pod restart, frontend becomes available and health check succeeds.",
+        "call_chain": [
+          {
+            "source": "service/frontend-external",
+            "target": "workload/frontend",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "frontend is the entry point; its unavailability directly impacts the health check and user interactions.",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "h4",
+        "canonical_signature": "d3e6a4124bdf1ca2e5b52e60d49f32bd63648f84f1b6ad3c52cca62c53841699",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "online-boutique",
+        "namespace": "chaosatlas-online-boutique",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/productcatalogservice",
+        "resolved_target": "chaosatlas-online-boutique/deployment/productcatalogservice",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "hypothesis": "Killing the productcatalogservice pod will cause product listing to fail, preventing item selection and order placement.",
+        "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+        "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+        "recovery_expectation": "After pod restart, productcatalogservice becomes available and product listing works.",
+        "call_chain": [
+          {
+            "source": "service/frontend",
+            "target": "service/productcatalogservice",
+            "relation": "calls",
+            "evidence_ref": "topology"
+          },
+          {
+            "source": "service/productcatalogservice",
+            "target": "workload/productcatalogservice",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "productcatalogservice provides product data; without it, the frontend cannot display products or add items.",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "h5",
+        "canonical_signature": "26de454f2fb79802682b1f9f6a007876b91d08d4b2afc2e96da25931671a450b",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "online-boutique",
+        "namespace": "chaosatlas-online-boutique",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/checkoutservice",
+        "resolved_target": "chaosatlas-online-boutique/deployment/checkoutservice",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 500,
+          "duration_s": 30
+        },
+        "hypothesis": "Introducing 500ms latency to checkoutservice will cause timeouts in the order placement, leading to workflow failure.",
+        "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+        "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+        "recovery_expectation": "After latency injection ends, checkoutservice responds normally and order placement succeeds.",
+        "call_chain": [
+          {
+            "source": "service/frontend",
+            "target": "service/checkoutservice",
+            "relation": "calls",
+            "evidence_ref": "topology"
+          },
+          {
+            "source": "service/checkoutservice",
+            "target": "workload/checkoutservice",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "checkoutservice is critical for order placement; increased latency may exceed client timeouts.",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "h6",
+        "canonical_signature": "965f795f1bf161d0eeeec9fc6bd8f376fceb6922bc6dabb670deb46756756d44",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "online-boutique",
+        "namespace": "chaosatlas-online-boutique",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/cartservice",
+        "resolved_target": "chaosatlas-online-boutique/deployment/cartservice",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 500,
+          "duration_s": 30
+        },
+        "hypothesis": "Introducing 500ms latency to cartservice will cause add item to be slow, potentially timing out and failing the workflow.",
+        "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+        "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+        "recovery_expectation": "After latency injection ends, cartservice responds normally and add item succeeds.",
+        "call_chain": [
+          {
+            "source": "service/frontend",
+            "target": "service/cartservice",
+            "relation": "calls",
+            "evidence_ref": "topology"
+          },
+          {
+            "source": "service/cartservice",
+            "target": "workload/cartservice",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "cartservice is used in the add item step; high latency may cause client timeouts.",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "h7",
+        "canonical_signature": "6dfa79891727cbaaed2be714a693fc6f685934b02ff802708468b897b6f51edf",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "online-boutique",
+        "namespace": "chaosatlas-online-boutique",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/checkoutservice",
+        "resolved_target": "chaosatlas-online-boutique/deployment/checkoutservice",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "network_loss",
+        "parameters": {
+          "loss_percent": 50,
+          "duration_s": 30
+        },
+        "hypothesis": "Introducing 50% packet loss to checkoutservice will cause intermittent failures in order placement, likely breaking the workflow.",
+        "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+        "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+        "recovery_expectation": "After loss injection ends, checkoutservice becomes reliable and order placement succeeds.",
+        "call_chain": [
+          {
+            "source": "service/frontend",
+            "target": "service/checkoutservice",
+            "relation": "calls",
+            "evidence_ref": "topology"
+          },
+          {
+            "source": "service/checkoutservice",
+            "target": "workload/checkoutservice",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "checkoutservice is critical; packet loss may cause request failures or retries that exceed timeouts.",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "h8",
+        "canonical_signature": "9a2253ff591575c3479de64e48a63b28fcc11c0b586c2c868228b6d03cb5e23e",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "online-boutique",
+        "namespace": "chaosatlas-online-boutique",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/cartservice",
+        "resolved_target": "chaosatlas-online-boutique/deployment/cartservice",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "network_loss",
+        "parameters": {
+          "loss_percent": 50,
+          "duration_s": 30
+        },
+        "hypothesis": "Introducing 50% packet loss to cartservice will cause add item to fail intermittently, preventing order placement.",
+        "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+        "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+        "recovery_expectation": "After loss injection ends, cartservice becomes reliable and add item succeeds.",
+        "call_chain": [
+          {
+            "source": "service/frontend",
+            "target": "service/cartservice",
+            "relation": "calls",
+            "evidence_ref": "topology"
+          },
+          {
+            "source": "service/cartservice",
+            "target": "workload/cartservice",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "cartservice is used in add item; packet loss may cause request failures.",
+        "execution_ready": false
+      }
+    ],
+    "rejected": [],
+    "accepted_count": 8,
+    "rejected_count": 0,
+    "compiler": "open_discovery_compiler_v1"
+  },
+  "selected_hypotheses": [
+    {
+      "hypothesis_id": "h1",
+      "canonical_signature": "125f3c6786b757d9670c2da9c9d576b5d73899dd5e0038bf21c22a1ea97274fc",
+      "novelty": "novel_candidate",
+      "status": "accepted_novel_candidate",
+      "project_id": "online-boutique",
+      "namespace": "chaosatlas-online-boutique",
+      "workload_id": "topology-backed-workload",
+      "workload_contract": "frozen-business-oracle",
+      "target": "workload/checkoutservice",
+      "resolved_target": "chaosatlas-online-boutique/deployment/checkoutservice",
+      "resolver_status": "static_only",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the checkoutservice pod will cause the place order workflow to fail, as checkoutservice is the orchestrator for order placement.",
+      "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After pod restart, checkoutservice becomes available and order placement succeeds.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/checkoutservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/checkoutservice",
+          "target": "workload/checkoutservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "weakness_surface": "checkoutservice is a critical dependency in the order placement workflow; its absence breaks the business transaction.",
+      "execution_ready": false,
+      "compile_status": "accepted"
+    },
+    {
+      "hypothesis_id": "h2",
+      "canonical_signature": "1afaca5463450bdc281957424753660380e9996de4c93945894cf84c8f6efb4c",
+      "novelty": "novel_candidate",
+      "status": "accepted_novel_candidate",
+      "project_id": "online-boutique",
+      "namespace": "chaosatlas-online-boutique",
+      "workload_id": "topology-backed-workload",
+      "workload_contract": "frozen-business-oracle",
+      "target": "workload/cartservice",
+      "resolved_target": "chaosatlas-online-boutique/deployment/cartservice",
+      "resolver_status": "static_only",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the cartservice pod will cause the add item step to fail, preventing the order from being placed.",
+      "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After pod restart, cartservice becomes available and add item succeeds.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/cartservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/cartservice",
+          "target": "workload/cartservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "weakness_surface": "cartservice is required for adding items to the cart; without it, the workflow cannot proceed.",
+      "execution_ready": false,
+      "compile_status": "accepted"
+    },
+    {
+      "hypothesis_id": "h3",
+      "canonical_signature": "9ba1564151e6a111601029c5bbf6d442ac7ab64a77deb68473c0982a9e2013c3",
+      "novelty": "novel_candidate",
+      "status": "accepted_novel_candidate",
+      "project_id": "online-boutique",
+      "namespace": "chaosatlas-online-boutique",
+      "workload_id": "topology-backed-workload",
+      "workload_contract": "frozen-business-oracle",
+      "target": "workload/frontend",
+      "resolved_target": "chaosatlas-online-boutique/deployment/frontend",
+      "resolver_status": "static_only",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the frontend pod will cause the health check to fail, breaking the entire workflow.",
+      "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After pod restart, frontend becomes available and health check succeeds.",
+      "call_chain": [
+        {
+          "source": "service/frontend-external",
+          "target": "workload/frontend",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "weakness_surface": "frontend is the entry point; its unavailability directly impacts the health check and user interactions.",
+      "execution_ready": false,
+      "compile_status": "accepted"
+    },
+    {
+      "hypothesis_id": "h4",
+      "canonical_signature": "d3e6a4124bdf1ca2e5b52e60d49f32bd63648f84f1b6ad3c52cca62c53841699",
+      "novelty": "novel_candidate",
+      "status": "accepted_novel_candidate",
+      "project_id": "online-boutique",
+      "namespace": "chaosatlas-online-boutique",
+      "workload_id": "topology-backed-workload",
+      "workload_contract": "frozen-business-oracle",
+      "target": "workload/productcatalogservice",
+      "resolved_target": "chaosatlas-online-boutique/deployment/productcatalogservice",
+      "resolver_status": "static_only",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the productcatalogservice pod will cause product listing to fail, preventing item selection and order placement.",
+      "expected_invariant": "frontend HTTP 200 and successful order response with order_id and shipping_tracking_id",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "After pod restart, productcatalogservice becomes available and product listing works.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/productcatalogservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/productcatalogservice",
+          "target": "workload/productcatalogservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "weakness_surface": "productcatalogservice provides product data; without it, the frontend cannot display products or add items.",
+      "execution_ready": false,
+      "compile_status": "accepted"
+    }
+  ],
+  "budget_not_executed": [
+    "h5",
+    "h6",
+    "h7",
+    "h8"
+  ],
+  "runtime_units": [
+    {
+      "hypothesis_id": "h1",
+      "canonical_signature": "125f3c6786b757d9670c2da9c9d576b5d73899dd5e0038bf21c22a1ea97274fc",
+      "replicate": 1,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "h1",
+      "canonical_signature": "125f3c6786b757d9670c2da9c9d576b5d73899dd5e0038bf21c22a1ea97274fc",
+      "replicate": 2,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "h2",
+      "canonical_signature": "1afaca5463450bdc281957424753660380e9996de4c93945894cf84c8f6efb4c",
+      "replicate": 1,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "h2",
+      "canonical_signature": "1afaca5463450bdc281957424753660380e9996de4c93945894cf84c8f6efb4c",
+      "replicate": 2,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "h3",
+      "canonical_signature": "9ba1564151e6a111601029c5bbf6d442ac7ab64a77deb68473c0982a9e2013c3",
+      "replicate": 1,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "h3",
+      "canonical_signature": "9ba1564151e6a111601029c5bbf6d442ac7ab64a77deb68473c0982a9e2013c3",
+      "replicate": 2,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "h4",
+      "canonical_signature": "d3e6a4124bdf1ca2e5b52e60d49f32bd63648f84f1b6ad3c52cca62c53841699",
+      "replicate": 1,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "h4",
+      "canonical_signature": "d3e6a4124bdf1ca2e5b52e60d49f32bd63648f84f1b6ad3c52cca62c53841699",
+      "replicate": 2,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    }
+  ],
+  "max_executed_hypotheses": 4,
+  "repetitions": 2,
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

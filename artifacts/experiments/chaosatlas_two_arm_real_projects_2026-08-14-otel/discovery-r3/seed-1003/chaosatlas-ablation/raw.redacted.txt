@@ -1,0 +1,190 @@
+{
+  "project_id": "opentelemetry-demo",
+  "project_commit": "2e72d8bcdf754603e956406808630bc9663c992c",
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "target": "workload/checkout",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the checkout pod will cause the checkout service to be unavailable, leading to failed order placement.",
+      "weakness_surface": "checkout is the entry service for the workflow; its pod is a single replica and directly handles order placement.",
+      "call_chain": [
+        {
+          "source": "service/checkout",
+          "target": "workload/checkout",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "The workflow requires 10 consecutive successful order responses; killing checkout will break this invariant.",
+      "validation_plan": "Inject pod_kill on workload/checkout, observe order responses, then recover and cleanup.",
+      "recovery_expectation": "After pod restart, checkout service becomes available and workflow can succeed again."
+    },
+    {
+      "hypothesis_id": "H2",
+      "target": "workload/cart",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the cart pod will cause cart service unavailability, breaking the AddItem step and preventing order placement.",
+      "weakness_surface": "cart is a supporting service for the workflow; its pod is a single replica and is required for adding items.",
+      "call_chain": [
+        {
+          "source": "service/cart",
+          "target": "workload/cart",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "The workflow requires successful AddItem before PlaceOrder; killing cart will break this invariant.",
+      "validation_plan": "Inject pod_kill on workload/cart, observe AddItem failures, then recover and cleanup.",
+      "recovery_expectation": "After pod restart, cart service becomes available and workflow can succeed again."
+    },
+    {
+      "hypothesis_id": "H3",
+      "target": "workload/checkout",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 60
+      },
+      "hypothesis": "Introducing 500ms network delay to checkout pod will cause timeouts in order placement, leading to failed workflow.",
+      "weakness_surface": "checkout is the entry service; network delay increases response time and may cause client timeouts.",
+      "call_chain": [
+        {
+          "source": "service/checkout",
+          "target": "workload/checkout",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "The workflow requires 10 consecutive successful order responses; delay may cause timeouts and break invariant.",
+      "validation_plan": "Inject network_delay on workload/checkout, observe order response times, then recover and cleanup.",
+      "recovery_expectation": "After removing delay, checkout service returns to normal and workflow can succeed."
+    },
+    {
+      "hypothesis_id": "H4",
+      "target": "workload/cart",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 60
+      },
+      "hypothesis": "Introducing 500ms network delay to cart pod will cause AddItem timeouts, preventing successful order placement.",
+      "weakness_surface": "cart is a supporting service; delay in cart calls may cause the checkout workflow to fail.",
+      "call_chain": [
+        {
+          "source": "service/cart",
+          "target": "workload/cart",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "The workflow requires successful AddItem; delay may cause timeouts and break invariant.",
+      "validation_plan": "Inject network_delay on workload/cart, observe AddItem response times, then recover and cleanup.",
+      "recovery_expectation": "After removing delay, cart service returns to normal and workflow can succeed."
+    },
+    {
+      "hypothesis_id": "H5",
+      "target": "workload/checkout",
+      "target_kind": "service",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 50,
+        "duration_s": 60
+      },
+      "hypothesis": "Introducing 50% network loss to checkout pod will cause intermittent failures in order placement, breaking the workflow.",
+      "weakness_surface": "checkout is the entry service; packet loss may cause request failures and retries.",
+      "call_chain": [
+        {
+          "source": "service/checkout",
+          "target": "workload/checkout",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "The workflow requires 10 consecutive successful order responses; loss will cause failures and break invariant.",
+      "validation_plan": "Inject network_loss on workload/checkout, observe order failures, then recover and cleanup.",
+      "recovery_expectation": "After removing loss, checkout service returns to normal and workflow can succeed."
+    },
+    {
+      "hypothesis_id": "H6",
+      "target": "workload/cart",
+      "target_kind": "service",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 50,
+        "duration_s": 60
+      },
+      "hypothesis": "Introducing 50% network loss to cart pod will cause AddItem failures, preventing successful order placement.",
+      "weakness_surface": "cart is a supporting service; loss may cause AddItem requests to fail.",
+      "call_chain": [
+        {
+          "source": "service/cart",
+          "target": "workload/cart",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "The workflow requires successful AddItem; loss will cause failures and break invariant.",
+      "validation_plan": "Inject network_loss on workload/cart, observe AddItem failures, then recover and cleanup.",
+      "recovery_expectation": "After removing loss, cart service returns to normal and workflow can succeed."
+    },
+    {
+      "hypothesis_id": "H7",
+      "target": "workload/checkout",
+      "target_kind": "service",
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 2,
+        "load_percent": 80,
+        "duration_s": 60
+      },
+      "hypothesis": "Stressing CPU on checkout pod will degrade performance, causing timeouts and failed order placement.",
+      "weakness_surface": "checkout is the entry service; CPU stress may slow down request processing.",
+      "call_chain": [
+        {
+          "source": "service/checkout",
+          "target": "workload/checkout",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "The workflow requires 10 consecutive successful order responses; CPU stress may cause timeouts and break invariant.",
+      "validation_plan": "Inject container_cpu_stress on workload/checkout, observe order response times, then recover and cleanup.",
+      "recovery_expectation": "After stopping stress, checkout service returns to normal and workflow can succeed."
+    },
+    {
+      "hypothesis_id": "H8",
+      "target": "workload/cart",
+      "target_kind": "service",
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 2,
+        "load_percent": 80,
+        "duration_s": 60
+      },
+      "hypothesis": "Stressing CPU on cart pod will degrade AddItem performance, causing timeouts and preventing order placement.",
+      "weakness_surface": "cart is a supporting service; CPU stress may slow down AddItem processing.",
+      "call_chain": [
+        {
+          "source": "service/cart",
+          "target": "workload/cart",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "The workflow requires successful AddItem; CPU stress may cause timeouts and break invariant.",
+      "validation_plan": "Inject container_cpu_stress on workload/cart, observe AddItem response times, then recover and cleanup.",
+      "recovery_expectation": "After stopping stress, cart service returns to normal and workflow can succeed."
+    }
+  ]
+}

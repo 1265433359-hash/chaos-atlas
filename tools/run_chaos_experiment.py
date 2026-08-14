@@ -5,9 +5,11 @@ from __future__ import annotations
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import json
+import os
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -342,7 +344,10 @@ def wait_for_port(host: str, port: int, process: subprocess.Popen[str], timeout:
 
 
 def start_port_forward(namespace: str, service: str, local_port: int, remote_port: int) -> subprocess.Popen[str]:
-    return subprocess.Popen(
+    # kubectl writes one line per forwarded request. A PIPE can fill during a
+    # long business journey and block kubectl itself, making the oracle time out.
+    output = tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8", suffix=".log", delete=False)
+    process = subprocess.Popen(
         [
             "kubectl",
             "port-forward",
@@ -351,10 +356,13 @@ def start_port_forward(namespace: str, service: str, local_port: int, remote_por
             f"svc/{service}",
             f"{local_port}:{remote_port}",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdout=output,
+        stderr=output,
         text=True,
     )
+    process._chaosatlas_output_file = output  # type: ignore[attr-defined]
+    process._chaosatlas_output_path = output.name  # type: ignore[attr-defined]
+    return process
 
 
 def stop_process(process: subprocess.Popen[str] | None) -> dict[str, Any] | None:
@@ -368,6 +376,20 @@ def stop_process(process: subprocess.Popen[str] | None) -> dict[str, Any] | None
             process.kill()
             process.wait(timeout=5)
     stdout, stderr = process.communicate()
+    output_file = getattr(process, "_chaosatlas_output_file", None)
+    output_path = getattr(process, "_chaosatlas_output_path", None)
+    if output_file is not None and hasattr(output_file, "flush"):
+        output_file.flush()
+    if output_file is not None and hasattr(output_file, "close"):
+        output_file.close()
+    if output_path:
+        try:
+            os.unlink(output_path)
+        except OSError:
+            pass
+    for stream in (getattr(process, "stdout", None), getattr(process, "stderr", None)):
+        if stream is not None and hasattr(stream, "close"):
+            stream.close()
     return {
         "return_code": process.returncode,
         "stopped_by_runner": True,

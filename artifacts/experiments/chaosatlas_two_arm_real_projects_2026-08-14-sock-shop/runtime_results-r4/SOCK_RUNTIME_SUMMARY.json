@@ -1,0 +1,392 @@
+{
+  "schema_version": "two-arm-runtime-summary-v1",
+  "reports": 48,
+  "methods": {
+    "ChaosAtlas-ablation": {
+      "reports": 24,
+      "weakness_observed": 14,
+      "no_business_impact_observed": 10
+    },
+    "ChaosAtlas-full": {
+      "reports": 24,
+      "weakness_observed": 11,
+      "no_business_impact_observed": 13
+    }
+  },
+  "hypotheses": [
+    {
+      "seed": 1001,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-001",
+      "target": "workload/catalogue",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 2,
+      "no_business_impact_repetitions": 0,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1001,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-002",
+      "target": "workload/front-end",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 0,
+      "no_business_impact_repetitions": 2,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1001,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-003",
+      "target": "workload/user",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 2,
+      "no_business_impact_repetitions": 0,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1001,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-004",
+      "target": "workload/orders",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 0,
+      "no_business_impact_repetitions": 2,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1001,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "H1",
+      "target": "workload/front-end",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 0,
+      "no_business_impact_repetitions": 2,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1001,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "H2",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 60
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 0,
+      "no_business_impact_repetitions": 2,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1001,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "H3",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 60
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 2,
+      "no_business_impact_repetitions": 0,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1001,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "H4",
+      "target": "workload/catalogue",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 2,
+      "no_business_impact_repetitions": 0,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1002,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-001",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 60
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 1,
+      "no_business_impact_repetitions": 1,
+      "consistency": "mixed"
+    },
+    {
+      "seed": 1002,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-002",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 60
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 2,
+      "no_business_impact_repetitions": 0,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1002,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-003",
+      "target": "workload/catalogue",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 2,
+      "no_business_impact_repetitions": 0,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1002,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-004",
+      "target": "workload/user",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 2,
+      "no_business_impact_repetitions": 0,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1002,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "H1",
+      "target": "workload/front-end",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 0,
+      "no_business_impact_repetitions": 2,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1002,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "H2",
+      "target": "workload/catalogue",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 2,
+      "no_business_impact_repetitions": 0,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1002,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "H3",
+      "target": "workload/user",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 2,
+      "no_business_impact_repetitions": 0,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1002,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "H4",
+      "target": "workload/orders",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 0,
+      "no_business_impact_repetitions": 2,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1003,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-001",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 0,
+      "no_business_impact_repetitions": 2,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1003,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-002",
+      "target": "service/catalogue",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 1,
+      "no_business_impact_repetitions": 1,
+      "consistency": "mixed"
+    },
+    {
+      "seed": 1003,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-003",
+      "target": "service/user",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 2,
+      "no_business_impact_repetitions": 0,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1003,
+      "arm": "ChaosAtlas-ablation",
+      "hypothesis_id": "hyp-004",
+      "target": "service/orders",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 0,
+      "no_business_impact_repetitions": 2,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1003,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "hyp-001",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 0,
+      "no_business_impact_repetitions": 2,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1003,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "hyp-002",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 30
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 2,
+      "no_business_impact_repetitions": 0,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1003,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "hyp-003",
+      "target": "workload/front-end",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 0,
+      "no_business_impact_repetitions": 2,
+      "consistency": "consistent"
+    },
+    {
+      "seed": 1003,
+      "arm": "ChaosAtlas-full",
+      "hypothesis_id": "hyp-004",
+      "target": "service/catalogue",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "repetitions": 2,
+      "weakness_repetitions": 1,
+      "no_business_impact_repetitions": 1,
+      "consistency": "mixed"
+    }
+  ],
+  "claim_boundary": "Observed business-oracle outcomes only; no internal retry, cache, discovery, registration, or other mechanism is inferred.",
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

@@ -1,0 +1,225 @@
+{
+  "method_id": "ChaosAtlas-ablation",
+  "project_id": "online-boutique",
+  "project_commit": "9a4616e77f0f9cbcbecaf27d711c38890dda1404",
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "target": "workload/checkoutservice",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the checkoutservice pod will cause the place order workflow to fail because checkoutservice is the orchestrator for order placement.",
+      "weakness_surface": "checkoutservice is a critical dependency for the place order workflow; its absence will break the order placement.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/checkoutservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/checkoutservice",
+          "target": "workload/checkoutservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Place order workflow succeeds with order_id and shipping_tracking_id.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "Pod restarts and workflow succeeds after recovery."
+    },
+    {
+      "hypothesis_id": "H2",
+      "target": "workload/cartservice",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the cartservice pod will cause the add item step to fail, preventing the order from being placed.",
+      "weakness_surface": "cartservice is required for adding items to the cart; without it, the workflow cannot proceed.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/cartservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/cartservice",
+          "target": "workload/cartservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Place order workflow succeeds with order_id and shipping_tracking_id.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "Pod restarts and workflow succeeds after recovery."
+    },
+    {
+      "hypothesis_id": "H3",
+      "target": "workload/frontend",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the frontend pod will cause the health check to fail, but the order workflow may still succeed if the client retries.",
+      "weakness_surface": "frontend is the entry point for the workflow; its failure will cause immediate health check failure.",
+      "call_chain": [
+        {
+          "source": "service/frontend-external",
+          "target": "workload/frontend",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Frontend health check returns HTTP 200 and place order workflow succeeds.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "Pod restarts and health check succeeds after recovery."
+    },
+    {
+      "hypothesis_id": "H4",
+      "target": "workload/redis-cart",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the redis-cart pod will cause the cart data to be lost, leading to an empty cart and order failure.",
+      "weakness_surface": "redis-cart stores cart state; its failure will cause the add item step to fail or the cart to be empty.",
+      "call_chain": [
+        {
+          "source": "service/cartservice",
+          "target": "service/redis-cart",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/redis-cart",
+          "target": "workload/redis-cart",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Place order workflow succeeds with order_id and shipping_tracking_id.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "Pod restarts and cart state is reinitialized; workflow may need to be re-run."
+    },
+    {
+      "hypothesis_id": "H5",
+      "target": "workload/paymentservice",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the paymentservice pod will cause the checkout to fail because payment processing is required for order placement.",
+      "weakness_surface": "paymentservice is a dependency of checkoutservice; its failure will break the order placement.",
+      "call_chain": [
+        {
+          "source": "service/checkoutservice",
+          "target": "service/paymentservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/paymentservice",
+          "target": "workload/paymentservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Place order workflow succeeds with order_id and shipping_tracking_id.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "Pod restarts and workflow succeeds after recovery."
+    },
+    {
+      "hypothesis_id": "H6",
+      "target": "workload/shippingservice",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the shippingservice pod will cause the checkout to fail because shipping tracking ID generation is required.",
+      "weakness_surface": "shippingservice is a dependency of checkoutservice; its failure will prevent the order from completing.",
+      "call_chain": [
+        {
+          "source": "service/checkoutservice",
+          "target": "service/shippingservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/shippingservice",
+          "target": "workload/shippingservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Place order workflow succeeds with order_id and shipping_tracking_id.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "Pod restarts and workflow succeeds after recovery."
+    },
+    {
+      "hypothesis_id": "H7",
+      "target": "workload/productcatalogservice",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the productcatalogservice pod will cause the frontend to fail to load product details, but the order workflow may still succeed if the client uses cached data.",
+      "weakness_surface": "productcatalogservice is used for product information; its failure may affect the frontend but not necessarily the order placement.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/productcatalogservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/productcatalogservice",
+          "target": "workload/productcatalogservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Frontend health check returns HTTP 200 and place order workflow succeeds.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "Pod restarts and workflow succeeds after recovery."
+    },
+    {
+      "hypothesis_id": "H8",
+      "target": "workload/recommendationservice",
+      "target_kind": "workload",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the recommendationservice pod will cause the frontend to fail to load recommendations, but the order workflow may still succeed.",
+      "weakness_surface": "recommendationservice is used for product recommendations; its failure may affect the frontend but not the order placement.",
+      "call_chain": [
+        {
+          "source": "service/frontend",
+          "target": "service/recommendationservice",
+          "relation": "calls",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/recommendationservice",
+          "target": "workload/recommendationservice",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "Frontend health check returns HTTP 200 and place order workflow succeeds.",
+      "validation_plan": "baseline, inject, observe, recover, cleanup, washout",
+      "recovery_expectation": "Pod restarts and workflow succeeds after recovery."
+    }
+  ]
+}

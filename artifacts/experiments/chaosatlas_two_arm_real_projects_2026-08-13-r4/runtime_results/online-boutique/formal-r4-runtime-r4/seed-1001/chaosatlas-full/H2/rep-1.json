@@ -1,0 +1,752 @@
+{
+  "schema_version": "unified-lifecycle-v1",
+  "project_id": "online-boutique",
+  "namespace": "chaosatlas-online-boutique",
+  "arm": "ChaosAtlas-full",
+  "seed": 1001,
+  "mutation_id": "H2",
+  "replicate": 1,
+  "mutation": {
+    "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-discovery-r3/seed-1001/chaosatlas-full/mutations/941a4340ff4d.yaml",
+    "sha256": "baff594d55d9d832bc9d6e9f03f22026776c9d026beb6bd3b6b97e170c93bf8e"
+  },
+  "baseline": {
+    "pass": true,
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 2875.0,
+      "stdout": "[0] ok oid=c6a805c3-974c-11f1-a2f3-06f40739097f tracking=DE-44104-226062138 (19.4ms)\n[1] ok oid=c70089ef-974c-11f1-a2f3-06f40739097f tracking=SO-44127-226325999 (58.0ms)\n[2] ok oid=c7507f98-974c-11f1-a2f3-06f40739097f tracking=XF-44371-221280024 (13.8ms)\n[3] ok oid=c7a72758-974c-11f1-a2f3-06f40739097f tracking=AH-44384-225324352 (56.9ms)\n[4] ok oid=c7f74922-974c-11f1-a2f3-06f40739097f tracking=IR-44000-226514623 (14.1ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 19.4,
+          "result": "ok oid=c6a805c3-974c-11f1-a2f3-06f40739097f tracking=DE-44104-226062138",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 58.0,
+          "result": "ok oid=c70089ef-974c-11f1-a2f3-06f40739097f tracking=SO-44127-226325999",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "OK",
+          "latency_ms": 13.8,
+          "result": "ok oid=c7507f98-974c-11f1-a2f3-06f40739097f tracking=XF-44371-221280024",
+          "error": null
+        },
+        {
+          "sample": 4,
+          "grpc_status": "OK",
+          "latency_ms": 56.9,
+          "result": "ok oid=c7a72758-974c-11f1-a2f3-06f40739097f tracking=AH-44384-225324352",
+          "error": null
+        },
+        {
+          "sample": 5,
+          "grpc_status": "OK",
+          "latency_ms": 14.1,
+          "result": "ok oid=c7f74922-974c-11f1-a2f3-06f40739097f tracking=IR-44000-226514623",
+          "error": null
+        }
+      ]
+    },
+    "successes_required": 5
+  },
+  "injection": {
+    "applied": true,
+    "injected": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "networkchaos.chaos-mesh.org/atlas-online-boutique-941a4340ff4d created",
+      "stderr": ""
+    },
+    "lifecycle": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-13T19:25:46Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-online-boutique/paymentservice-8646bb5ddd-c4c9w",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-13T19:25:46Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    }
+  },
+  "observation": {
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 5297.0,
+      "stdout": "[0] ok oid=c8cdef99-974c-11f1-a2f3-06f40739097f tracking=EN-44287-227620612 (558.7ms)\n[1] ok oid=c96a7227-974c-11f1-a2f3-06f40739097f tracking=FW-44546-220899243 (514.4ms)\n[2] ok oid=ca086492-974c-11f1-a2f3-06f40739097f tracking=QC-44494-226300600 (524.0ms)\n[3] ok oid=caa4d4d9-974c-11f1-a2f3-06f40739097f tracking=OV-44654-221183441 (514.2ms)\n[4] ok oid=cb412f90-974c-11f1-a2f3-06f40739097f tracking=DG-44749-225345557 (514.1ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 558.7,
+          "result": "ok oid=c8cdef99-974c-11f1-a2f3-06f40739097f tracking=EN-44287-227620612",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 514.4,
+          "result": "ok oid=c96a7227-974c-11f1-a2f3-06f40739097f tracking=FW-44546-220899243",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "OK",
+          "latency_ms": 524.0,
+          "result": "ok oid=ca086492-974c-11f1-a2f3-06f40739097f tracking=QC-44494-226300600",
+          "error": null
+        },
+        {
+          "sample": 4,
+          "grpc_status": "OK",
+          "latency_ms": 514.2,
+          "result": "ok oid=caa4d4d9-974c-11f1-a2f3-06f40739097f tracking=OV-44654-221183441",
+          "error": null
+        },
+        {
+          "sample": 5,
+          "grpc_status": "OK",
+          "latency_ms": 514.1,
+          "result": "ok oid=cb412f90-974c-11f1-a2f3-06f40739097f tracking=DG-44749-225345557",
+          "error": null
+        }
+      ]
+    },
+    "classification": "no_business_impact_observed"
+  },
+  "recovery": {
+    "recovered": true,
+    "resource_recovered": true,
+    "state": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-13T19:25:46Z",
+              "type": "Succeeded"
+            },
+            {
+              "message": "failed to apply for pod chaosatlas-online-boutique/paymentservice-8646bb5ddd-c4c9w: unable to set ip tables chains for pod paymentservice-8646bb5ddd-c4c9w",
+              "operation": "Recover",
+              "timestamp": "2026-08-13T19:26:15Z",
+              "type": "Failed"
+            },
+            {
+              "message": "failed to apply for pod chaosatlas-online-boutique/paymentservice-8646bb5ddd-c4c9w: unable to set ip tables chains for pod paymentservice-8646bb5ddd-c4c9w",
+              "operation": "Recover",
+              "timestamp": "2026-08-13T19:26:15Z",
+              "type": "Failed"
+            },
+            {
+              "message": "failed to apply for pod chaosatlas-online-boutique/paymentservice-8646bb5ddd-c4c9w: unable to flush ip sets for pod paymentservice-8646bb5ddd-c4c9w",
+              "operation": "Recover",
+              "timestamp": "2026-08-13T19:26:15Z",
+              "type": "Failed"
+            },
+            {
+              "message": "failed to apply for pod chaosatlas-online-boutique/paymentservice-8646bb5ddd-c4c9w: unable to flush ip sets for pod paymentservice-8646bb5ddd-c4c9w",
+              "operation": "Recover",
+              "timestamp": "2026-08-13T19:26:15Z",
+              "type": "Failed"
+            },
+            {
+              "message": "failed to apply for pod chaosatlas-online-boutique/paymentservice-8646bb5ddd-c4c9w: unable to flush ip sets for pod paymentservice-8646bb5ddd-c4c9w",
+              "operation": "Recover",
+              "timestamp": "2026-08-13T19:26:15Z",
+              "type": "Failed"
+            },
+            {
+              "message": "failed to apply for pod chaosatlas-online-boutique/paymentservice-8646bb5ddd-c4c9w: unable to flush ip sets for pod paymentservice-8646bb5ddd-c4c9w",
+              "operation": "Recover",
+              "timestamp": "2026-08-13T19:26:15Z",
+              "type": "Failed"
+            },
+            {
+              "message": "failed to apply for pod chaosatlas-online-boutique/paymentservice-8646bb5ddd-c4c9w: unable to flush ip sets for pod paymentservice-8646bb5ddd-c4c9w",
+              "operation": "Recover",
+              "timestamp": "2026-08-13T19:26:15Z",
+              "type": "Failed"
+            },
+            {
+              "message": "failed to apply for pod chaosatlas-online-boutique/paymentservice-8646bb5ddd-c4c9w: unable to flush ip sets for pod paymentservice-8646bb5ddd-c4c9w",
+              "operation": "Recover",
+              "timestamp": "2026-08-13T19:26:15Z",
+              "type": "Failed"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-13T19:26:15Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-online-boutique/paymentservice-8646bb5ddd-c4c9w",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-13T19:25:46Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-13T19:26:15Z",
+        "2026-08-13T19:26:15Z",
+        "2026-08-13T19:26:15Z",
+        "2026-08-13T19:26:15Z",
+        "2026-08-13T19:26:15Z",
+        "2026-08-13T19:26:15Z",
+        "2026-08-13T19:26:15Z",
+        "2026-08-13T19:26:15Z",
+        "2026-08-13T19:26:15Z"
+      ],
+      "desired_phase": "Stop"
+    },
+    "workload": {
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 60.8,
+          "result": "rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.104.112.26:50051: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.104.112.26:50051: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 20.5,
+          "result": "ok oid=dce53dd2-974c-11f1-a2f3-06f40739097f tracking=GS-44098-225069637",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 21.5,
+          "result": "ok oid=df1771cc-974c-11f1-a2f3-06f40739097f tracking=VX-44071-221215152",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 63.3,
+          "result": "ok oid=e14ebb6f-974c-11f1-a2f3-06f40739097f tracking=SM-44720-222855393",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 24.4,
+          "result": "ok oid=e38035d5-974c-11f1-a2f3-06f40739097f tracking=VG-44825-227834082",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 32.0,
+          "result": "ok oid=e5b6c354-974c-11f1-a2f3-06f40739097f tracking=CT-44086-227749512",
+          "error": null
+        }
+      ]
+    },
+    "business": {
+      "recovered": true,
+      "samples": [
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 60.8,
+          "result": "rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.104.112.26:50051: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.104.112.26:50051: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 20.5,
+          "result": "ok oid=dce53dd2-974c-11f1-a2f3-06f40739097f tracking=GS-44098-225069637",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 21.5,
+          "result": "ok oid=df1771cc-974c-11f1-a2f3-06f40739097f tracking=VX-44071-221215152",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 63.3,
+          "result": "ok oid=e14ebb6f-974c-11f1-a2f3-06f40739097f tracking=SM-44720-222855393",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 24.4,
+          "result": "ok oid=e38035d5-974c-11f1-a2f3-06f40739097f tracking=VG-44825-227834082",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 32.0,
+          "result": "ok oid=e5b6c354-974c-11f1-a2f3-06f40739097f tracking=CT-44086-227749512",
+          "error": null
+        }
+      ],
+      "workloads": [
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 735.0,
+          "stdout": "[0] rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.104.112.26:50051: connect: connection refused\" (60.8ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "INTERNAL",
+              "latency_ms": 60.8,
+              "result": "rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.104.112.26:50051: connect: connection refused\"",
+              "error": "rpc_error code=INTERNAL details=failed to charge card: could not charge the card: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.104.112.26:50051: connect: connection refused\""
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] ok oid=dce53dd2-974c-11f1-a2f3-06f40739097f tracking=GS-44098-225069637 (20.5ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 20.5,
+              "result": "ok oid=dce53dd2-974c-11f1-a2f3-06f40739097f tracking=GS-44098-225069637",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 687.0,
+          "stdout": "[0] ok oid=df1771cc-974c-11f1-a2f3-06f40739097f tracking=VX-44071-221215152 (21.5ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 21.5,
+              "result": "ok oid=df1771cc-974c-11f1-a2f3-06f40739097f tracking=VX-44071-221215152",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 719.0,
+          "stdout": "[0] ok oid=e14ebb6f-974c-11f1-a2f3-06f40739097f tracking=SM-44720-222855393 (63.3ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 63.3,
+              "result": "ok oid=e14ebb6f-974c-11f1-a2f3-06f40739097f tracking=SM-44720-222855393",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 672.0,
+          "stdout": "[0] ok oid=e38035d5-974c-11f1-a2f3-06f40739097f tracking=VG-44825-227834082 (24.4ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 24.4,
+              "result": "ok oid=e38035d5-974c-11f1-a2f3-06f40739097f tracking=VG-44825-227834082",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 719.0,
+          "stdout": "[0] ok oid=e5b6c354-974c-11f1-a2f3-06f40739097f tracking=CT-44086-227749512 (32.0ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 32.0,
+              "result": "ok oid=e5b6c354-974c-11f1-a2f3-06f40739097f tracking=CT-44086-227749512",
+              "error": null
+            }
+          ]
+        }
+      ],
+      "consecutive_successes": 5,
+      "successes_required": 5,
+      "elapsed_seconds": 18.438,
+      "port_forward_reconnects": 0
+    }
+  },
+  "cleanup": {
+    "delete_command_ok": true,
+    "delete_output": "networkchaos.chaos-mesh.org \"atlas-online-boutique-941a4340ff4d\" deleted from chaosatlas-online-boutique namespace",
+    "resource_absent_after_delete": true,
+    "absent_confirmed": true,
+    "verify_status": "absent",
+    "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-online-boutique-941a4340ff4d\" not found",
+    "delete_failed": false,
+    "residual_resources": [],
+    "global_scan_errors": []
+  },
+  "washout": {
+    "stable": true,
+    "samples": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.4,
+        "result": "ok oid=e61e8b51-974c-11f1-a2f3-06f40739097f tracking=IA-44152-223525921",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.1,
+        "result": "ok oid=e84e3e3a-974c-11f1-a2f3-06f40739097f tracking=PK-44826-224998547",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 55.2,
+        "result": "ok oid=ea7dcf83-974c-11f1-a2f3-06f40739097f tracking=PJ-44353-225084630",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.0,
+        "result": "ok oid=eca72447-974c-11f1-a2f3-06f40739097f tracking=AJ-44861-224691148",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.8,
+        "result": "ok oid=eed04a9b-974c-11f1-a2f3-06f40739097f tracking=WL-44230-226584319",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 62.2,
+        "result": "ok oid=f1014a69-974c-11f1-a2f3-06f40739097f tracking=YR-44426-227947240",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 58.7,
+        "result": "ok oid=f33791ab-974c-11f1-a2f3-06f40739097f tracking=VA-44686-228623354",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 20.0,
+        "result": "ok oid=f56911f4-974c-11f1-a2f3-06f40739097f tracking=NL-44672-221448116",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 61.7,
+        "result": "ok oid=f7a4604b-974c-11f1-a2f3-06f40739097f tracking=YG-44778-220737107",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 18.1,
+        "result": "ok oid=f9d0095e-974c-11f1-a2f3-06f40739097f tracking=NU-44323-228718222",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.9,
+        "result": "ok oid=fbfacf7f-974c-11f1-a2f3-06f40739097f tracking=IA-44890-223925139",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 62.7,
+        "result": "ok oid=fe323c76-974c-11f1-a2f3-06f40739097f tracking=NC-44593-228977666",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 18.7,
+        "result": "ok oid=005c91be-974d-11f1-a2f3-06f40739097f tracking=VQ-44690-220067120",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 20.7,
+        "result": "ok oid=02881810-974d-11f1-a2f3-06f40739097f tracking=YE-44184-225279697",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 16.9,
+        "result": "ok oid=04b37184-974d-11f1-a2f3-06f40739097f tracking=HF-44820-224057153",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 20.1,
+        "result": "ok oid=06e4665c-974d-11f1-a2f3-06f40739097f tracking=XK-44044-226493727",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 19.0,
+        "result": "ok oid=09111596-974d-11f1-a2f3-06f40739097f tracking=JY-44955-222272246",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 19.6,
+        "result": "ok oid=0b3e597f-974d-11f1-a2f3-06f40739097f tracking=WL-44297-227478114",
+        "error": null
+      }
+    ],
+    "elapsed_seconds": 62.968,
+    "successes_required": 10
+  },
+  "diagnostics": {
+    "status": "captured",
+    "files": [
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H2/rep-1.diagnostics/events.log",
+        "sha256": "be788276064ba27ca1fdf1ae0d99f26813ef5cca544a4018551f9daab9963a00",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H2/rep-1.diagnostics/checkoutservice.log",
+        "sha256": "6407e90bcce9c41dd855000ce041ee2440d27217ac840453a5ce53a0c27bd9b9",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H2/rep-1.diagnostics/cartservice.log",
+        "sha256": "efe134169b226eba6827eee5b1283a08e12bad5712939ce5479cbbe2bca8f72b",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H2/rep-1.diagnostics/target.log",
+        "sha256": "59cf57d5978c3bf9c8891ca64a63407e0b7bc30e18c23cebd120747e35729c9c",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H2/rep-1.diagnostics/trace-unavailable.json",
+        "sha256": "e5aedb8d45c3b788ef05d1c51f229fa7dc1a0bb9a53d4bf3e869f0058b35fb77",
+        "return_code": "0"
+      }
+    ]
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "status": "completed",
+  "errors": [],
+  "started_at": "2026-08-13T19:25:41.325568+00:00",
+  "preflight": {
+    "checked_at": "2026-08-13T19:25:41.545011+00:00",
+    "mutation": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-discovery-r3/seed-1001/chaosatlas-full/mutations/941a4340ff4d.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "chaosatlas-online-boutique",
+    "name": "atlas-online-boutique-941a4340ff4d",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-online-boutique"
+      ],
+      "labelSelectors": {
+        "app": "paymentservice"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "chaosatlas-online-boutique",
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "sock-shop-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "selector_labels_ok": true,
+        "requested_namespaces": [
+          "chaosatlas-online-boutique"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "chaosatlas-online-boutique",
+          "name": "paymentservice-8646bb5ddd-c4c9w",
+          "uid": "5e2461da-af18-44dc-8b7a-bffd34b29afe",
+          "terminating": false,
+          "ready": true,
+          "restarts": 15,
+          "ports": [
+            50051
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "mutation_name_status": "available",
+      "mutation_name_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-online-boutique-941a4340ff4d\" not found",
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-online-boutique-941a4340ff4d\" not found\n"
+  },
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:15050 -> 5050\nForwarding from [::1]:15050 -> 5050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:17070 -> 7070\nForwarding from [::1]:17070 -> 7070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-13T19:27:39.072997+00:00",
+  "eligibility": {
+    "eligible": true,
+    "reasons": []
+  }
+}

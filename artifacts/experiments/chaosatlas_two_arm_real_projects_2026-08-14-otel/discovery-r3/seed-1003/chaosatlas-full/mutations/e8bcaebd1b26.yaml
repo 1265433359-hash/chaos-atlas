@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: atlas-opentelemetry-demo-e8bcaebd1b26
+  namespace: chaosatlas-otel
+  labels:
+    chaosatlas.dev/project: opentelemetry-demo
+    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-otel
+    labelSelectors:
+      app: checkout
+  stressors:
+    cpu:
+      workers: 2
+      load: 80
+  duration: 30s

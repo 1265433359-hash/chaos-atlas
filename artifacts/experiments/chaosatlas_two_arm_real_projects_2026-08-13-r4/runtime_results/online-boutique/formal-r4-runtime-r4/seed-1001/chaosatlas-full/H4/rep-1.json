@@ -1,0 +1,840 @@
+{
+  "schema_version": "unified-lifecycle-v1",
+  "project_id": "online-boutique",
+  "namespace": "chaosatlas-online-boutique",
+  "arm": "ChaosAtlas-full",
+  "seed": 1001,
+  "mutation_id": "H4",
+  "replicate": 1,
+  "mutation": {
+    "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-discovery-r3/seed-1001/chaosatlas-full/mutations/965f795f1bf1.yaml",
+    "sha256": "8f2e7a4aa6da652af37f8f0b44247fd893c7de75f63da583bfdb2b49dd5d3bc8"
+  },
+  "baseline": {
+    "pass": true,
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 2797.0,
+      "stdout": "[0] ok oid=dc0cba5a-974d-11f1-a2f3-06f40739097f tracking=FE-44799-223945603 (19.4ms)\n[1] ok oid=dc5f4dd2-974d-11f1-a2f3-06f40739097f tracking=EU-44547-226310178 (17.6ms)\n[2] ok oid=dcb01afd-974d-11f1-a2f3-06f40739097f tracking=GX-44503-224426073 (16.1ms)\n[3] ok oid=dd008e91-974d-11f1-a2f3-06f40739097f tracking=JT-44004-229222061 (16.2ms)\n[4] ok oid=dd523af0-974d-11f1-a2f3-06f40739097f tracking=LF-44823-228116276 (18.4ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 19.4,
+          "result": "ok oid=dc0cba5a-974d-11f1-a2f3-06f40739097f tracking=FE-44799-223945603",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 17.6,
+          "result": "ok oid=dc5f4dd2-974d-11f1-a2f3-06f40739097f tracking=EU-44547-226310178",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "OK",
+          "latency_ms": 16.1,
+          "result": "ok oid=dcb01afd-974d-11f1-a2f3-06f40739097f tracking=GX-44503-224426073",
+          "error": null
+        },
+        {
+          "sample": 4,
+          "grpc_status": "OK",
+          "latency_ms": 16.2,
+          "result": "ok oid=dd008e91-974d-11f1-a2f3-06f40739097f tracking=JT-44004-229222061",
+          "error": null
+        },
+        {
+          "sample": 5,
+          "grpc_status": "OK",
+          "latency_ms": 18.4,
+          "result": "ok oid=dd523af0-974d-11f1-a2f3-06f40739097f tracking=LF-44823-228116276",
+          "error": null
+        }
+      ]
+    },
+    "successes_required": 5
+  },
+  "injection": {
+    "applied": true,
+    "injected": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "networkchaos.chaos-mesh.org/atlas-online-boutique-965f795f1bf1 created",
+      "stderr": ""
+    },
+    "lifecycle": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-13T19:33:31Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-online-boutique/cartservice-5565d6f5db-rpq7x",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-13T19:33:31Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    }
+  },
+  "observation": {
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 18031.0,
+      "stdout": "[0] ok oid=debe07ec-974d-11f1-a2f3-06f40739097f tracking=QL-44686-229861071 (2037.1ms)\n[1] ok oid=e0df0174-974d-11f1-a2f3-06f40739097f tracking=MI-44869-226704636 (2056.7ms)\n[2] ok oid=e305230a-974d-11f1-a2f3-06f40739097f tracking=RE-44146-225545449 (2076.5ms)\n[3] ok oid=e52c12d5-974d-11f1-a2f3-06f40739097f tracking=WR-44260-220308327 (2061.0ms)\n[4] ok oid=e74d6026-974d-11f1-a2f3-06f40739097f tracking=IO-44881-225032572 (2037.9ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 2037.1,
+          "result": "ok oid=debe07ec-974d-11f1-a2f3-06f40739097f tracking=QL-44686-229861071",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 2056.7,
+          "result": "ok oid=e0df0174-974d-11f1-a2f3-06f40739097f tracking=MI-44869-226704636",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "OK",
+          "latency_ms": 2076.5,
+          "result": "ok oid=e305230a-974d-11f1-a2f3-06f40739097f tracking=RE-44146-225545449",
+          "error": null
+        },
+        {
+          "sample": 4,
+          "grpc_status": "OK",
+          "latency_ms": 2061.0,
+          "result": "ok oid=e52c12d5-974d-11f1-a2f3-06f40739097f tracking=WR-44260-220308327",
+          "error": null
+        },
+        {
+          "sample": 5,
+          "grpc_status": "OK",
+          "latency_ms": 2037.9,
+          "result": "ok oid=e74d6026-974d-11f1-a2f3-06f40739097f tracking=IO-44881-225032572",
+          "error": null
+        }
+      ]
+    },
+    "classification": "no_business_impact_observed"
+  },
+  "recovery": {
+    "recovered": true,
+    "resource_recovered": true,
+    "state": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-13T19:33:31Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-13T19:34:01Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-online-boutique/cartservice-5565d6f5db-rpq7x",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-13T19:33:31Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-13T19:34:01Z"
+      ],
+      "desired_phase": "Stop"
+    },
+    "workload": {
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 71.0,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 8.8,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 53.1,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 10.5,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 10.1,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 32.2,
+          "result": "ok oid=fba779f6-974d-11f1-a2f3-06f40739097f tracking=JL-44007-222895687",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 21.5,
+          "result": "ok oid=fdd43134-974d-11f1-a2f3-06f40739097f tracking=BC-44092-223171863",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 16.7,
+          "result": "ok oid=ffffc808-974d-11f1-a2f3-06f40739097f tracking=CB-44134-228458302",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 19.2,
+          "result": "ok oid=02302401-974e-11f1-a2f3-06f40739097f tracking=OB-44203-229054908",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 16.0,
+          "result": "ok oid=045aab0f-974e-11f1-a2f3-06f40739097f tracking=JC-44612-222128103",
+          "error": null
+        }
+      ]
+    },
+    "business": {
+      "recovered": true,
+      "samples": [
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 71.0,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 8.8,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 53.1,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 10.5,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 10.1,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 32.2,
+          "result": "ok oid=fba779f6-974d-11f1-a2f3-06f40739097f tracking=JL-44007-222895687",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 21.5,
+          "result": "ok oid=fdd43134-974d-11f1-a2f3-06f40739097f tracking=BC-44092-223171863",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 16.7,
+          "result": "ok oid=ffffc808-974d-11f1-a2f3-06f40739097f tracking=CB-44134-228458302",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 19.2,
+          "result": "ok oid=02302401-974e-11f1-a2f3-06f40739097f tracking=OB-44203-229054908",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 16.0,
+          "result": "ok oid=045aab0f-974e-11f1-a2f3-06f40739097f tracking=JC-44612-222128103",
+          "error": null
+        }
+      ],
+      "workloads": [
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 1906.0,
+          "stdout": "[0] rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\" (71.0ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "INTERNAL",
+              "latency_ms": 71.0,
+              "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+              "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\" (8.8ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "INTERNAL",
+              "latency_ms": 8.8,
+              "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+              "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 671.0,
+          "stdout": "[0] rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\" (53.1ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "INTERNAL",
+              "latency_ms": 53.1,
+              "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+              "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\" (10.5ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "INTERNAL",
+              "latency_ms": 10.5,
+              "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+              "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\" (10.1ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "INTERNAL",
+              "latency_ms": 10.1,
+              "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+              "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 641.0,
+          "stdout": "[0] ok oid=fba779f6-974d-11f1-a2f3-06f40739097f tracking=JL-44007-222895687 (32.2ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 32.2,
+              "result": "ok oid=fba779f6-974d-11f1-a2f3-06f40739097f tracking=JL-44007-222895687",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 641.0,
+          "stdout": "[0] ok oid=fdd43134-974d-11f1-a2f3-06f40739097f tracking=BC-44092-223171863 (21.5ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 21.5,
+              "result": "ok oid=fdd43134-974d-11f1-a2f3-06f40739097f tracking=BC-44092-223171863",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 640.0,
+          "stdout": "[0] ok oid=ffffc808-974d-11f1-a2f3-06f40739097f tracking=CB-44134-228458302 (16.7ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 16.7,
+              "result": "ok oid=ffffc808-974d-11f1-a2f3-06f40739097f tracking=CB-44134-228458302",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 672.0,
+          "stdout": "[0] ok oid=02302401-974e-11f1-a2f3-06f40739097f tracking=OB-44203-229054908 (19.2ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 19.2,
+              "result": "ok oid=02302401-974e-11f1-a2f3-06f40739097f tracking=OB-44203-229054908",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 641.0,
+          "stdout": "[0] ok oid=045aab0f-974e-11f1-a2f3-06f40739097f tracking=JC-44612-222128103 (16.0ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 16.0,
+              "result": "ok oid=045aab0f-974e-11f1-a2f3-06f40739097f tracking=JC-44612-222128103",
+              "error": null
+            }
+          ]
+        }
+      ],
+      "consecutive_successes": 5,
+      "successes_required": 5,
+      "elapsed_seconds": 34.062,
+      "port_forward_reconnects": 0
+    }
+  },
+  "cleanup": {
+    "delete_command_ok": true,
+    "delete_output": "networkchaos.chaos-mesh.org \"atlas-online-boutique-965f795f1bf1\" deleted from chaosatlas-online-boutique namespace",
+    "resource_absent_after_delete": true,
+    "absent_confirmed": true,
+    "verify_status": "absent",
+    "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-online-boutique-965f795f1bf1\" not found",
+    "delete_failed": false,
+    "residual_resources": [],
+    "global_scan_errors": []
+  },
+  "washout": {
+    "stable": true,
+    "samples": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 16.7,
+        "result": "ok oid=04c06488-974e-11f1-a2f3-06f40739097f tracking=BT-44385-224431813",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 66.4,
+        "result": "ok oid=06f2cd60-974e-11f1-a2f3-06f40739097f tracking=UG-44740-229558549",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 61.4,
+        "result": "ok oid=0924f565-974e-11f1-a2f3-06f40739097f tracking=YX-44901-228065751",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.7,
+        "result": "ok oid=0b4f3384-974e-11f1-a2f3-06f40739097f tracking=DJ-44900-226458466",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 21.3,
+        "result": "ok oid=0d8058c5-974e-11f1-a2f3-06f40739097f tracking=YR-44736-220737000",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 17.0,
+        "result": "ok oid=0fb16644-974e-11f1-a2f3-06f40739097f tracking=VI-44849-220014697",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 22.9,
+        "result": "ok oid=11e2c49a-974e-11f1-a2f3-06f40739097f tracking=OA-44967-221276695",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.3,
+        "result": "ok oid=140d73db-974e-11f1-a2f3-06f40739097f tracking=NW-44090-222030148",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 23.0,
+        "result": "ok oid=164018ae-974e-11f1-a2f3-06f40739097f tracking=GR-44276-221672472",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 17.1,
+        "result": "ok oid=186c184f-974e-11f1-a2f3-06f40739097f tracking=XX-44635-228515152",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 22.5,
+        "result": "ok oid=1a9ed58d-974e-11f1-a2f3-06f40739097f tracking=WT-44631-220748261",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.9,
+        "result": "ok oid=1cc99c47-974e-11f1-a2f3-06f40739097f tracking=LC-44913-223082371",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 61.0,
+        "result": "ok oid=1f011868-974e-11f1-a2f3-06f40739097f tracking=DR-44099-228282511",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.9,
+        "result": "ok oid=213365c2-974e-11f1-a2f3-06f40739097f tracking=IH-44180-227098998",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 62.8,
+        "result": "ok oid=236c749c-974e-11f1-a2f3-06f40739097f tracking=YO-44724-222108013",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 19.9,
+        "result": "ok oid=25969e54-974e-11f1-a2f3-06f40739097f tracking=WV-44180-228433241",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 70.3,
+        "result": "ok oid=27d02035-974e-11f1-a2f3-06f40739097f tracking=JN-44978-227934670",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 18.6,
+        "result": "ok oid=29fe525e-974e-11f1-a2f3-06f40739097f tracking=GA-44273-222256505",
+        "error": null
+      }
+    ],
+    "elapsed_seconds": 63.14,
+    "successes_required": 10
+  },
+  "diagnostics": {
+    "status": "captured",
+    "files": [
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H4/rep-1.diagnostics/events.log",
+        "sha256": "8f74ce66ae558045f77248fddcd04b9a5b1e4fc273ddd6e56b0daa25df66404e",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H4/rep-1.diagnostics/checkoutservice.log",
+        "sha256": "24cebd45b3cfff1159c4ef713e3faa7a8174d5937659a249b1c2b9c0a5a0113c",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H4/rep-1.diagnostics/cartservice.log",
+        "sha256": "c61c33fc3a4adbf8f103c3d0907b30b0f11395a89ddfb5d412a988598188b8ca",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H4/rep-1.diagnostics/target.log",
+        "sha256": "c61c33fc3a4adbf8f103c3d0907b30b0f11395a89ddfb5d412a988598188b8ca",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H4/rep-1.diagnostics/trace-unavailable.json",
+        "sha256": "e5aedb8d45c3b788ef05d1c51f229fa7dc1a0bb9a53d4bf3e869f0058b35fb77",
+        "return_code": "0"
+      }
+    ]
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "status": "completed",
+  "errors": [],
+  "started_at": "2026-08-13T19:33:26.691940+00:00",
+  "preflight": {
+    "checked_at": "2026-08-13T19:33:26.930408+00:00",
+    "mutation": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-discovery-r3/seed-1001/chaosatlas-full/mutations/965f795f1bf1.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "chaosatlas-online-boutique",
+    "name": "atlas-online-boutique-965f795f1bf1",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-online-boutique"
+      ],
+      "labelSelectors": {
+        "app": "cartservice"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "chaosatlas-online-boutique",
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "sock-shop-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "selector_labels_ok": true,
+        "requested_namespaces": [
+          "chaosatlas-online-boutique"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "chaosatlas-online-boutique",
+          "name": "cartservice-5565d6f5db-rpq7x",
+          "uid": "04c0e78e-8fad-476d-960a-d3d37cd9b069",
+          "terminating": false,
+          "ready": true,
+          "restarts": 14,
+          "ports": [
+            7070
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "mutation_name_status": "available",
+      "mutation_name_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-online-boutique-965f795f1bf1\" not found",
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-online-boutique-965f795f1bf1\" not found\n"
+  },
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:15050 -> 5050\nForwarding from [::1]:15050 -> 5050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:17070 -> 7070\nForwarding from [::1]:17070 -> 7070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-13T19:35:40.161542+00:00",
+  "eligibility": {
+    "eligible": true,
+    "reasons": []
+  }
+}

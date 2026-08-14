@@ -1,0 +1,153 @@
+{
+  "status": "valid",
+  "compiler": "open_discovery_mutation_compiler_v1",
+  "generated_count": 4,
+  "rejected_count": 0,
+  "generated": [
+    {
+      "index": 0,
+      "hypothesis_id": "H1",
+      "canonical_signature": "17fbed5b40d3d49d14906c8d16d5755b065e5b5a87cf7fe32dad564a7067dc3f",
+      "kind": "PodChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: PodChaos\nmetadata:\n  name: atlas-opentelemetry-demo-17fbed5b40d3\n  namespace: chaosatlas-otel\n  labels:\n    chaosatlas.dev/project: opentelemetry-demo\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-otel\n    labelSelectors:\n      app: checkout\n  action: pod-kill\n  duration: 30s\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "opentelemetry-demo",
+        "project_commit": null,
+        "topology_graph_hash": "bf36103236c103a2b40570b501b4068e77d125de9b3126bec364bb12494114a7",
+        "canonical_signature": "17fbed5b40d3d49d14906c8d16d5755b065e5b5a87cf7fe32dad564a7067dc3f",
+        "hypothesis_id": "H1",
+        "target": "workload/checkout",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "namespace": "chaosatlas-otel",
+        "resolved_source": {
+          "target": "workload/checkout",
+          "kind": "Deployment",
+          "name": "checkout",
+          "selector": {
+            "app": "checkout"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 1,
+      "hypothesis_id": "H2",
+      "canonical_signature": "62a0ecffa497252ece5c9ac11efef536b18e1f7d5d7865b357c87c6faa2ad190",
+      "kind": "NetworkChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: NetworkChaos\nmetadata:\n  name: atlas-opentelemetry-demo-62a0ecffa497\n  namespace: chaosatlas-otel\n  labels:\n    chaosatlas.dev/project: opentelemetry-demo\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-otel\n    labelSelectors:\n      app: checkout\n  action: delay\n  delay:\n    latency: 500ms\n    correlation: '100'\n    jitter: 0ms\n  duration: 30s\n  direction: to\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "opentelemetry-demo",
+        "project_commit": null,
+        "topology_graph_hash": "bf36103236c103a2b40570b501b4068e77d125de9b3126bec364bb12494114a7",
+        "canonical_signature": "62a0ecffa497252ece5c9ac11efef536b18e1f7d5d7865b357c87c6faa2ad190",
+        "hypothesis_id": "H2",
+        "target": "service/checkout",
+        "target_kind": "service",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 500,
+          "duration_s": 30
+        },
+        "namespace": "chaosatlas-otel",
+        "resolved_source": {
+          "target": "workload/checkout",
+          "kind": "Deployment",
+          "name": "checkout",
+          "selector": {
+            "app": "checkout"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 2,
+      "hypothesis_id": "H3",
+      "canonical_signature": "d8cff5465f406b80df65c097280019381201cfdb6427c9685307bb06923062c6",
+      "kind": "NetworkChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: NetworkChaos\nmetadata:\n  name: atlas-opentelemetry-demo-d8cff5465f40\n  namespace: chaosatlas-otel\n  labels:\n    chaosatlas.dev/project: opentelemetry-demo\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-otel\n    labelSelectors:\n      app: checkout\n  action: loss\n  loss:\n    loss: '50'\n    correlation: '100'\n  duration: 30s\n  direction: to\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "opentelemetry-demo",
+        "project_commit": null,
+        "topology_graph_hash": "bf36103236c103a2b40570b501b4068e77d125de9b3126bec364bb12494114a7",
+        "canonical_signature": "d8cff5465f406b80df65c097280019381201cfdb6427c9685307bb06923062c6",
+        "hypothesis_id": "H3",
+        "target": "service/checkout",
+        "target_kind": "service",
+        "fault_family": "network_loss",
+        "parameters": {
+          "loss_percent": 50,
+          "duration_s": 30
+        },
+        "namespace": "chaosatlas-otel",
+        "resolved_source": {
+          "target": "workload/checkout",
+          "kind": "Deployment",
+          "name": "checkout",
+          "selector": {
+            "app": "checkout"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 3,
+      "hypothesis_id": "H4",
+      "canonical_signature": "e8bcaebd1b26c66459ebdb3d70285745aefe5d283f9520635213454a938eacf0",
+      "kind": "StressChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: StressChaos\nmetadata:\n  name: atlas-opentelemetry-demo-e8bcaebd1b26\n  namespace: chaosatlas-otel\n  labels:\n    chaosatlas.dev/project: opentelemetry-demo\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-otel\n    labelSelectors:\n      app: checkout\n  stressors:\n    cpu:\n      workers: 2\n      load: 80\n  duration: 30s\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "opentelemetry-demo",
+        "project_commit": null,
+        "topology_graph_hash": "bf36103236c103a2b40570b501b4068e77d125de9b3126bec364bb12494114a7",
+        "canonical_signature": "e8bcaebd1b26c66459ebdb3d70285745aefe5d283f9520635213454a938eacf0",
+        "hypothesis_id": "H4",
+        "target": "workload/checkout",
+        "target_kind": "service",
+        "fault_family": "container_cpu_stress",
+        "parameters": {
+          "workers": 2,
+          "load_percent": 80,
+          "duration_s": 30
+        },
+        "namespace": "chaosatlas-otel",
+        "resolved_source": {
+          "target": "workload/checkout",
+          "kind": "Deployment",
+          "name": "checkout",
+          "selector": {
+            "app": "checkout"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    }
+  ],
+  "rejected": []
+}

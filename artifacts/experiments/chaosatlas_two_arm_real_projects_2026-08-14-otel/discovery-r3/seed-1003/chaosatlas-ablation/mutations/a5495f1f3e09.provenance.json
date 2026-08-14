@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "opentelemetry-demo",
+  "project_commit": null,
+  "topology_graph_hash": "bf36103236c103a2b40570b501b4068e77d125de9b3126bec364bb12494114a7",
+  "canonical_signature": "a5495f1f3e0935769a730b669ab77f77e418e0dc8bf5f998171879ac6d9ba50c",
+  "hypothesis_id": "H3",
+  "target": "workload/checkout",
+  "target_kind": "service",
+  "fault_family": "network_delay",
+  "parameters": {
+    "latency_ms": 500,
+    "duration_s": 60
+  },
+  "namespace": "chaosatlas-otel",
+  "resolved_source": {
+    "target": "workload/checkout",
+    "kind": "Deployment",
+    "name": "checkout",
+    "selector": {
+      "app": "checkout"
+    },
+    "selector_source": "topology.pod_labels"
+  },
+  "resolved_destination": null,
+  "runtime_gate_required": true,
+  "execution_ready": false
+}

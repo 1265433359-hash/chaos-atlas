@@ -1,0 +1,149 @@
+{
+  "status": "valid",
+  "compiler": "open_discovery_mutation_compiler_v1",
+  "generated_count": 4,
+  "rejected_count": 0,
+  "generated": [
+    {
+      "index": 0,
+      "hypothesis_id": "h1",
+      "canonical_signature": "125f3c6786b757d9670c2da9c9d576b5d73899dd5e0038bf21c22a1ea97274fc",
+      "kind": "PodChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: PodChaos\nmetadata:\n  name: atlas-online-boutique-125f3c6786b7\n  namespace: chaosatlas-online-boutique\n  labels:\n    chaosatlas.dev/project: online-boutique\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-online-boutique\n    labelSelectors:\n      app: checkoutservice\n  action: pod-kill\n  duration: 30s\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "online-boutique",
+        "project_commit": null,
+        "topology_graph_hash": "38ba4f9a65b025af7a73148fe3d899ccc090ba744cd3896de5a93d582ad75557",
+        "canonical_signature": "125f3c6786b757d9670c2da9c9d576b5d73899dd5e0038bf21c22a1ea97274fc",
+        "hypothesis_id": "h1",
+        "target": "workload/checkoutservice",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "namespace": "chaosatlas-online-boutique",
+        "resolved_source": {
+          "target": "workload/checkoutservice",
+          "kind": "Deployment",
+          "name": "checkoutservice",
+          "selector": {
+            "app": "checkoutservice"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 1,
+      "hypothesis_id": "h2",
+      "canonical_signature": "1afaca5463450bdc281957424753660380e9996de4c93945894cf84c8f6efb4c",
+      "kind": "PodChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: PodChaos\nmetadata:\n  name: atlas-online-boutique-1afaca546345\n  namespace: chaosatlas-online-boutique\n  labels:\n    chaosatlas.dev/project: online-boutique\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-online-boutique\n    labelSelectors:\n      app: cartservice\n  action: pod-kill\n  duration: 30s\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "online-boutique",
+        "project_commit": null,
+        "topology_graph_hash": "38ba4f9a65b025af7a73148fe3d899ccc090ba744cd3896de5a93d582ad75557",
+        "canonical_signature": "1afaca5463450bdc281957424753660380e9996de4c93945894cf84c8f6efb4c",
+        "hypothesis_id": "h2",
+        "target": "workload/cartservice",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "namespace": "chaosatlas-online-boutique",
+        "resolved_source": {
+          "target": "workload/cartservice",
+          "kind": "Deployment",
+          "name": "cartservice",
+          "selector": {
+            "app": "cartservice"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 2,
+      "hypothesis_id": "h3",
+      "canonical_signature": "9ba1564151e6a111601029c5bbf6d442ac7ab64a77deb68473c0982a9e2013c3",
+      "kind": "PodChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: PodChaos\nmetadata:\n  name: atlas-online-boutique-9ba1564151e6\n  namespace: chaosatlas-online-boutique\n  labels:\n    chaosatlas.dev/project: online-boutique\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-online-boutique\n    labelSelectors:\n      app: frontend\n  action: pod-kill\n  duration: 30s\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "online-boutique",
+        "project_commit": null,
+        "topology_graph_hash": "38ba4f9a65b025af7a73148fe3d899ccc090ba744cd3896de5a93d582ad75557",
+        "canonical_signature": "9ba1564151e6a111601029c5bbf6d442ac7ab64a77deb68473c0982a9e2013c3",
+        "hypothesis_id": "h3",
+        "target": "workload/frontend",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "namespace": "chaosatlas-online-boutique",
+        "resolved_source": {
+          "target": "workload/frontend",
+          "kind": "Deployment",
+          "name": "frontend",
+          "selector": {
+            "app": "frontend"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    },
+    {
+      "index": 3,
+      "hypothesis_id": "h4",
+      "canonical_signature": "d3e6a4124bdf1ca2e5b52e60d49f32bd63648f84f1b6ad3c52cca62c53841699",
+      "kind": "PodChaos",
+      "yaml": "apiVersion: chaos-mesh.org/v1alpha1\nkind: PodChaos\nmetadata:\n  name: atlas-online-boutique-d3e6a4124bdf\n  namespace: chaosatlas-online-boutique\n  labels:\n    chaosatlas.dev/project: online-boutique\n    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-online-boutique\n    labelSelectors:\n      app: productcatalogservice\n  action: pod-kill\n  duration: 30s\n",
+      "provenance": {
+        "schema_version": "1.0",
+        "generator": "open_discovery_mutation_compiler_v1",
+        "project_id": "online-boutique",
+        "project_commit": null,
+        "topology_graph_hash": "38ba4f9a65b025af7a73148fe3d899ccc090ba744cd3896de5a93d582ad75557",
+        "canonical_signature": "d3e6a4124bdf1ca2e5b52e60d49f32bd63648f84f1b6ad3c52cca62c53841699",
+        "hypothesis_id": "h4",
+        "target": "workload/productcatalogservice",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "namespace": "chaosatlas-online-boutique",
+        "resolved_source": {
+          "target": "workload/productcatalogservice",
+          "kind": "Deployment",
+          "name": "productcatalogservice",
+          "selector": {
+            "app": "productcatalogservice"
+          },
+          "selector_source": "topology.pod_labels"
+        },
+        "resolved_destination": null,
+        "runtime_gate_required": true,
+        "execution_ready": false
+      }
+    }
+  ],
+  "rejected": []
+}

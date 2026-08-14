@@ -1,0 +1,660 @@
+{
+  "schema_version": "unified-lifecycle-v1",
+  "project_id": "online-boutique",
+  "namespace": "chaosatlas-online-boutique",
+  "arm": "ChaosAtlas-full",
+  "seed": 1001,
+  "mutation_id": "H1",
+  "replicate": 2,
+  "mutation": {
+    "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-discovery-r3/seed-1001/chaosatlas-full/mutations/26de454f2fb7.yaml",
+    "sha256": "a5664466075cd28172076d8557f4e4a10bb6e384bece5886c29af14d039f70e1"
+  },
+  "baseline": {
+    "pass": true,
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 2781.0,
+      "stdout": "[0] ok oid=82934ad0-974c-11f1-bd02-06f40739097f tracking=ML-44324-221495690 (16.2ms)\n[1] ok oid=82e3423f-974c-11f1-bd02-06f40739097f tracking=FD-44144-226080225 (13.7ms)\n[2] ok oid=83333b2f-974c-11f1-bd02-06f40739097f tracking=OR-44924-226412763 (14.1ms)\n[3] ok oid=83834d09-974c-11f1-bd02-06f40739097f tracking=TM-44121-226470224 (13.7ms)\n[4] ok oid=83d35224-974c-11f1-bd02-06f40739097f tracking=CO-44419-220320464 (14.1ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 16.2,
+          "result": "ok oid=82934ad0-974c-11f1-bd02-06f40739097f tracking=ML-44324-221495690",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 13.7,
+          "result": "ok oid=82e3423f-974c-11f1-bd02-06f40739097f tracking=FD-44144-226080225",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "OK",
+          "latency_ms": 14.1,
+          "result": "ok oid=83333b2f-974c-11f1-bd02-06f40739097f tracking=OR-44924-226412763",
+          "error": null
+        },
+        {
+          "sample": 4,
+          "grpc_status": "OK",
+          "latency_ms": 13.7,
+          "result": "ok oid=83834d09-974c-11f1-bd02-06f40739097f tracking=TM-44121-226470224",
+          "error": null
+        },
+        {
+          "sample": 5,
+          "grpc_status": "OK",
+          "latency_ms": 14.1,
+          "result": "ok oid=83d35224-974c-11f1-bd02-06f40739097f tracking=CO-44419-220320464",
+          "error": null
+        }
+      ]
+    },
+    "successes_required": 5
+  },
+  "injection": {
+    "applied": true,
+    "injected": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "networkchaos.chaos-mesh.org/atlas-online-boutique-26de454f2fb7 created",
+      "stderr": ""
+    },
+    "lifecycle": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-13T19:23:51Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-online-boutique/checkoutservice-777ccb964b-mj5p5",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-13T19:23:51Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    }
+  },
+  "observation": {
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 25281.0,
+      "stdout": "[0] ok oid=84a17f39-974c-11f1-bd02-06f40739097f tracking=KL-44912-229665921 (4516.9ms)\n[1] ok oid=87a200e2-974c-11f1-bd02-06f40739097f tracking=CV-44197-221109918 (4515.3ms)\n[2] ok oid=8aa1ce8b-974c-11f1-bd02-06f40739097f tracking=YM-44190-229269403 (4519.9ms)\n[3] ok oid=8da7baf6-974c-11f1-bd02-06f40739097f tracking=YN-44310-222764902 (4557.8ms)\n[4] ok oid=90a6bdf2-974c-11f1-bd02-06f40739097f tracking=LR-44118-226573733 (4515.7ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 4516.9,
+          "result": "ok oid=84a17f39-974c-11f1-bd02-06f40739097f tracking=KL-44912-229665921",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 4515.3,
+          "result": "ok oid=87a200e2-974c-11f1-bd02-06f40739097f tracking=CV-44197-221109918",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "OK",
+          "latency_ms": 4519.9,
+          "result": "ok oid=8aa1ce8b-974c-11f1-bd02-06f40739097f tracking=YM-44190-229269403",
+          "error": null
+        },
+        {
+          "sample": 4,
+          "grpc_status": "OK",
+          "latency_ms": 4557.8,
+          "result": "ok oid=8da7baf6-974c-11f1-bd02-06f40739097f tracking=YN-44310-222764902",
+          "error": null
+        },
+        {
+          "sample": 5,
+          "grpc_status": "OK",
+          "latency_ms": 4515.7,
+          "result": "ok oid=90a6bdf2-974c-11f1-bd02-06f40739097f tracking=LR-44118-226573733",
+          "error": null
+        }
+      ]
+    },
+    "classification": "no_business_impact_observed"
+  },
+  "recovery": {
+    "recovered": true,
+    "resource_recovered": true,
+    "state": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-13T19:23:51Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-13T19:24:21Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-online-boutique/checkoutservice-777ccb964b-mj5p5",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-13T19:23:51Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-13T19:24:21Z"
+      ],
+      "desired_phase": "Stop"
+    },
+    "workload": {
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 588.2,
+          "result": "ok oid=967d33be-974c-11f1-a2f3-06f40739097f tracking=LD-44016-226659368",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 20.7,
+          "result": "ok oid=99037d74-974c-11f1-a2f3-06f40739097f tracking=AX-44983-226336166",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 14.5,
+          "result": "ok oid=9b2d83de-974c-11f1-a2f3-06f40739097f tracking=JD-44338-223938565",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.1,
+          "result": "ok oid=9d57552f-974c-11f1-a2f3-06f40739097f tracking=AM-44211-222605272",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 62.5,
+          "result": "ok oid=9f8eac9f-974c-11f1-a2f3-06f40739097f tracking=ON-44521-224364186",
+          "error": null
+        }
+      ]
+    },
+    "business": {
+      "recovered": true,
+      "samples": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 588.2,
+          "result": "ok oid=967d33be-974c-11f1-a2f3-06f40739097f tracking=LD-44016-226659368",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 20.7,
+          "result": "ok oid=99037d74-974c-11f1-a2f3-06f40739097f tracking=AX-44983-226336166",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 14.5,
+          "result": "ok oid=9b2d83de-974c-11f1-a2f3-06f40739097f tracking=JD-44338-223938565",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.1,
+          "result": "ok oid=9d57552f-974c-11f1-a2f3-06f40739097f tracking=AM-44211-222605272",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 62.5,
+          "result": "ok oid=9f8eac9f-974c-11f1-a2f3-06f40739097f tracking=ON-44521-224364186",
+          "error": null
+        }
+      ],
+      "workloads": [
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 1219.0,
+          "stdout": "[0] ok oid=967d33be-974c-11f1-a2f3-06f40739097f tracking=LD-44016-226659368 (588.2ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 588.2,
+              "result": "ok oid=967d33be-974c-11f1-a2f3-06f40739097f tracking=LD-44016-226659368",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 688.0,
+          "stdout": "[0] ok oid=99037d74-974c-11f1-a2f3-06f40739097f tracking=AX-44983-226336166 (20.7ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 20.7,
+              "result": "ok oid=99037d74-974c-11f1-a2f3-06f40739097f tracking=AX-44983-226336166",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] ok oid=9b2d83de-974c-11f1-a2f3-06f40739097f tracking=JD-44338-223938565 (14.5ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 14.5,
+              "result": "ok oid=9b2d83de-974c-11f1-a2f3-06f40739097f tracking=JD-44338-223938565",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] ok oid=9d57552f-974c-11f1-a2f3-06f40739097f tracking=AM-44211-222605272 (15.1ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 15.1,
+              "result": "ok oid=9d57552f-974c-11f1-a2f3-06f40739097f tracking=AM-44211-222605272",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 718.0,
+          "stdout": "[0] ok oid=9f8eac9f-974c-11f1-a2f3-06f40739097f tracking=ON-44521-224364186 (62.5ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 62.5,
+              "result": "ok oid=9f8eac9f-974c-11f1-a2f3-06f40739097f tracking=ON-44521-224364186",
+              "error": null
+            }
+          ]
+        }
+      ],
+      "consecutive_successes": 5,
+      "successes_required": 5,
+      "elapsed_seconds": 15.157,
+      "port_forward_reconnects": 0
+    }
+  },
+  "cleanup": {
+    "delete_command_ok": true,
+    "delete_output": "networkchaos.chaos-mesh.org \"atlas-online-boutique-26de454f2fb7\" deleted from chaosatlas-online-boutique namespace",
+    "resource_absent_after_delete": true,
+    "absent_confirmed": true,
+    "verify_status": "absent",
+    "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-online-boutique-26de454f2fb7\" not found",
+    "delete_failed": false,
+    "residual_resources": [],
+    "global_scan_errors": []
+  },
+  "washout": {
+    "stable": true,
+    "samples": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.8,
+        "result": "ok oid=9fed906e-974c-11f1-a2f3-06f40739097f tracking=KK-44575-222681500",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.2,
+        "result": "ok oid=a21dac5d-974c-11f1-a2f3-06f40739097f tracking=HC-44409-226680179",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 20.4,
+        "result": "ok oid=a447d10c-974c-11f1-a2f3-06f40739097f tracking=CD-44825-220417244",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 13.7,
+        "result": "ok oid=a67119c1-974c-11f1-a2f3-06f40739097f tracking=IV-44305-227723202",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 62.6,
+        "result": "ok oid=a8a7c66f-974c-11f1-a2f3-06f40739097f tracking=VL-44658-223393080",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 16.1,
+        "result": "ok oid=aad7f3a3-974c-11f1-a2f3-06f40739097f tracking=EY-44392-220837972",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.0,
+        "result": "ok oid=ad07ae06-974c-11f1-a2f3-06f40739097f tracking=QQ-44381-224738913",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 63.3,
+        "result": "ok oid=af391d51-974c-11f1-a2f3-06f40739097f tracking=TF-44114-225810721",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.0,
+        "result": "ok oid=b168e212-974c-11f1-a2f3-06f40739097f tracking=HP-44267-222630711",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 61.0,
+        "result": "ok oid=b39f32af-974c-11f1-a2f3-06f40739097f tracking=YN-44444-227627305",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.5,
+        "result": "ok oid=b5cf990b-974c-11f1-a2f3-06f40739097f tracking=JY-44850-223526421",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.1,
+        "result": "ok oid=b7f91047-974c-11f1-a2f3-06f40739097f tracking=IO-44978-227711737",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.7,
+        "result": "ok oid=ba28d9c3-974c-11f1-a2f3-06f40739097f tracking=UF-44448-224644526",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.1,
+        "result": "ok oid=bc58901d-974c-11f1-a2f3-06f40739097f tracking=MH-44749-221727431",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.0,
+        "result": "ok oid=be82a424-974c-11f1-a2f3-06f40739097f tracking=YG-44970-226811311",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 16.8,
+        "result": "ok oid=c0ac0779-974c-11f1-a2f3-06f40739097f tracking=EJ-44446-223108001",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.0,
+        "result": "ok oid=c2dc6fb9-974c-11f1-a2f3-06f40739097f tracking=OQ-44376-226736587",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 16.0,
+        "result": "ok oid=c505fe7b-974c-11f1-a2f3-06f40739097f tracking=RT-44061-225518551",
+        "error": null
+      }
+    ],
+    "elapsed_seconds": 62.86,
+    "successes_required": 10
+  },
+  "diagnostics": {
+    "status": "captured",
+    "files": [
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H1/rep-2.diagnostics/events.log",
+        "sha256": "75339f85dfb4a5af7d5c2481393f814806b0aab53e92facf158c025fd483ed0c",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H1/rep-2.diagnostics/checkoutservice.log",
+        "sha256": "0a2604b49144210813de954bf396d9a8a55cbaafb3ee4e9da8ba603051631881",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H1/rep-2.diagnostics/cartservice.log",
+        "sha256": "c72830cad4d2c66a339fbe8b1244f927587091cc6d996e35f6f3be9903dc4815",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H1/rep-2.diagnostics/target.log",
+        "sha256": "0a2604b49144210813de954bf396d9a8a55cbaafb3ee4e9da8ba603051631881",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-runtime-r4/seed-1001/chaosatlas-full/H1/rep-2.diagnostics/trace-unavailable.json",
+        "sha256": "e5aedb8d45c3b788ef05d1c51f229fa7dc1a0bb9a53d4bf3e869f0058b35fb77",
+        "return_code": "0"
+      }
+    ]
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "status": "completed",
+  "errors": [],
+  "started_at": "2026-08-13T19:23:47.100977+00:00",
+  "preflight": {
+    "checked_at": "2026-08-13T19:23:47.322969+00:00",
+    "mutation": "artifacts/experiments/chaosatlas_two_arm_real_projects_2026-08-13-r4/runtime_results/online-boutique/formal-r4-discovery-r3/seed-1001/chaosatlas-full/mutations/26de454f2fb7.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "chaosatlas-online-boutique",
+    "name": "atlas-online-boutique-26de454f2fb7",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-online-boutique"
+      ],
+      "labelSelectors": {
+        "app": "checkoutservice"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "chaosatlas-online-boutique",
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "sock-shop-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "selector_labels_ok": true,
+        "requested_namespaces": [
+          "chaosatlas-online-boutique"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "chaosatlas-online-boutique",
+          "name": "checkoutservice-777ccb964b-mj5p5",
+          "uid": "e2e7788c-2d3a-412e-adee-fd9853bf23ac",
+          "terminating": false,
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            5050
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "mutation_name_status": "available",
+      "mutation_name_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-online-boutique-26de454f2fb7\" not found",
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-online-boutique-26de454f2fb7\" not found\n"
+  },
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:15050 -> 5050\nForwarding from [::1]:15050 -> 5050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050\nHandling connection for 15050",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "Forwarding from 127.0.0.1:17070 -> 7070\nForwarding from [::1]:17070 -> 7070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070\nHandling connection for 17070",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-13T19:25:41.239357+00:00",
+  "eligibility": {
+    "eligible": true,
+    "reasons": []
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "online-boutique",
+  "project_commit": null,
+  "topology_graph_hash": "38ba4f9a65b025af7a73148fe3d899ccc090ba744cd3896de5a93d582ad75557",
+  "canonical_signature": "1afaca5463450bdc281957424753660380e9996de4c93945894cf84c8f6efb4c",
+  "hypothesis_id": "h2",
+  "target": "workload/cartservice",
+  "target_kind": "service",
+  "fault_family": "pod_kill",
+  "parameters": {
+    "mode": "one"
+  },
+  "namespace": "chaosatlas-online-boutique",
+  "resolved_source": {
+    "target": "workload/cartservice",
+    "kind": "Deployment",
+    "name": "cartservice",
+    "selector": {
+      "app": "cartservice"
+    },
+    "selector_source": "topology.pod_labels"
+  },
+  "resolved_destination": null,
+  "runtime_gate_required": true,
+  "execution_ready": false
+}

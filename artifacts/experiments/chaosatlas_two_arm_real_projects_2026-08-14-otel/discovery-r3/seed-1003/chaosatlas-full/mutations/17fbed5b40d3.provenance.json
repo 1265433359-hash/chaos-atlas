@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "opentelemetry-demo",
+  "project_commit": null,
+  "topology_graph_hash": "bf36103236c103a2b40570b501b4068e77d125de9b3126bec364bb12494114a7",
+  "canonical_signature": "17fbed5b40d3d49d14906c8d16d5755b065e5b5a87cf7fe32dad564a7067dc3f",
+  "hypothesis_id": "H1",
+  "target": "workload/checkout",
+  "target_kind": "service",
+  "fault_family": "pod_kill",
+  "parameters": {
+    "mode": "one"
+  },
+  "namespace": "chaosatlas-otel",
+  "resolved_source": {
+    "target": "workload/checkout",
+    "kind": "Deployment",
+    "name": "checkout",
+    "selector": {
+      "app": "checkout"
+    },
+    "selector_source": "topology.pod_labels"
+  },
+  "resolved_destination": null,
+  "runtime_gate_required": true,
+  "execution_ready": false
+}

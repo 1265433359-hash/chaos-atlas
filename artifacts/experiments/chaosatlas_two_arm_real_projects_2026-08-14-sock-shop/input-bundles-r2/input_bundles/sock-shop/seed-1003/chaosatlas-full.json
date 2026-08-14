@@ -1,0 +1,564 @@
+{
+  "project_id": "sock-shop",
+  "seed": 1003,
+  "common_input": {
+    "schema_version": "chaosatlas-two-arm-common-v1",
+    "project_id": "sock-shop",
+    "project_commit": "9dff06fae4981921caec6a62393a6ebfce4b3e3f",
+    "source_manifest_sha256": "ff0abe7c95529ad74e3267f027679b3d174f52e8c1c6cc40d4c59b087183646b",
+    "namespace": "chaosatlas-sock-shop",
+    "topology": {
+      "project_id": "sock-shop",
+      "nodes": [
+        {
+          "id": "workload/carts",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "carts",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "carts"
+          }
+        },
+        {
+          "id": "workload/carts-db",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "carts-db",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "carts-db"
+          }
+        },
+        {
+          "id": "workload/catalogue",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "catalogue",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "catalogue"
+          }
+        },
+        {
+          "id": "workload/catalogue-db",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "catalogue-db",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "catalogue-db"
+          }
+        },
+        {
+          "id": "workload/front-end",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "front-end",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "front-end"
+          }
+        },
+        {
+          "id": "workload/orders",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "orders",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "orders"
+          }
+        },
+        {
+          "id": "workload/orders-db",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "orders-db",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "orders-db"
+          }
+        },
+        {
+          "id": "workload/payment",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "payment",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "payment"
+          }
+        },
+        {
+          "id": "workload/queue-master",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "queue-master",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "queue-master"
+          }
+        },
+        {
+          "id": "workload/rabbitmq",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "rabbitmq",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "rabbitmq"
+          }
+        },
+        {
+          "id": "workload/session-db",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "session-db",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "session-db"
+          }
+        },
+        {
+          "id": "workload/shipping",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "shipping",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "shipping"
+          }
+        },
+        {
+          "id": "workload/user",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "user",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "user"
+          }
+        },
+        {
+          "id": "workload/user-db",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "user-db",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "user-db"
+          }
+        },
+        {
+          "id": "service/carts",
+          "role": "routing",
+          "kind": "Service",
+          "name": "carts",
+          "selector": {
+            "name": "carts"
+          }
+        },
+        {
+          "id": "service/carts-db",
+          "role": "routing",
+          "kind": "Service",
+          "name": "carts-db",
+          "selector": {
+            "name": "carts-db"
+          }
+        },
+        {
+          "id": "service/catalogue",
+          "role": "routing",
+          "kind": "Service",
+          "name": "catalogue",
+          "selector": {
+            "name": "catalogue"
+          }
+        },
+        {
+          "id": "service/catalogue-db",
+          "role": "routing",
+          "kind": "Service",
+          "name": "catalogue-db",
+          "selector": {
+            "name": "catalogue-db"
+          }
+        },
+        {
+          "id": "service/front-end",
+          "role": "routing",
+          "kind": "Service",
+          "name": "front-end",
+          "selector": {
+            "name": "front-end"
+          }
+        },
+        {
+          "id": "service/orders",
+          "role": "routing",
+          "kind": "Service",
+          "name": "orders",
+          "selector": {
+            "name": "orders"
+          }
+        },
+        {
+          "id": "service/orders-db",
+          "role": "routing",
+          "kind": "Service",
+          "name": "orders-db",
+          "selector": {
+            "name": "orders-db"
+          }
+        },
+        {
+          "id": "service/payment",
+          "role": "routing",
+          "kind": "Service",
+          "name": "payment",
+          "selector": {
+            "name": "payment"
+          }
+        },
+        {
+          "id": "service/queue-master",
+          "role": "routing",
+          "kind": "Service",
+          "name": "queue-master",
+          "selector": {
+            "name": "queue-master"
+          }
+        },
+        {
+          "id": "service/rabbitmq",
+          "role": "routing",
+          "kind": "Service",
+          "name": "rabbitmq",
+          "selector": {
+            "name": "rabbitmq"
+          }
+        },
+        {
+          "id": "service/session-db",
+          "role": "routing",
+          "kind": "Service",
+          "name": "session-db",
+          "selector": {
+            "name": "session-db"
+          }
+        },
+        {
+          "id": "service/shipping",
+          "role": "routing",
+          "kind": "Service",
+          "name": "shipping",
+          "selector": {
+            "name": "shipping"
+          }
+        },
+        {
+          "id": "service/user",
+          "role": "routing",
+          "kind": "Service",
+          "name": "user",
+          "selector": {
+            "name": "user"
+          }
+        },
+        {
+          "id": "service/user-db",
+          "role": "routing",
+          "kind": "Service",
+          "name": "user-db",
+          "selector": {
+            "name": "user-db"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "source": "service/carts",
+          "target": "workload/carts",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/carts-db",
+          "target": "workload/carts-db",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/catalogue-db",
+          "target": "workload/catalogue-db",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/orders",
+          "target": "workload/orders",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/orders-db",
+          "target": "workload/orders-db",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/payment",
+          "target": "workload/payment",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/queue-master",
+          "target": "workload/queue-master",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/rabbitmq",
+          "target": "workload/rabbitmq",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/session-db",
+          "target": "workload/session-db",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/shipping",
+          "target": "workload/shipping",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/user-db",
+          "target": "workload/user-db",
+          "kind": "selector_routes",
+          "relation": "selects"
+        }
+      ],
+      "graph_hash": "ff58525e8236a9a5076a12613a9204e4f43b192542620f25a9ef0c5229d3a2dd"
+    },
+    "business_oracle": {
+      "workflow": "front-end home, catalogue browse, demo login, and authenticated orders read-only golden journey",
+      "success": "front-end, catalogue, and login return HTTP 200; authenticated orders returns HTTP 201; all satisfy frozen response contracts",
+      "steps": [
+        {
+          "id": "front-end",
+          "service": "front-end",
+          "path": "/",
+          "contract": "non-empty HTML"
+        },
+        {
+          "id": "catalogue",
+          "service": "front-end",
+          "path": "/catalogue",
+          "contract": "JSON array"
+        },
+        {
+          "id": "login",
+          "service": "front-end",
+          "path": "/login",
+          "method": "GET",
+          "auth": "frozen_demo_basic",
+          "contract": "Cookie is set",
+          "success_status": 200
+        },
+        {
+          "id": "orders",
+          "service": "front-end",
+          "path": "/orders",
+          "contract": "JSON array or object",
+          "success_status": 201
+        }
+      ],
+      "read_only": true,
+      "timeout_seconds": 15,
+      "baseline_successes": 5,
+      "washout_successes": 10
+    },
+    "runtime_contract": {
+      "fault_families": [
+        "pod_kill",
+        "network_delay",
+        "network_loss",
+        "container_cpu_stress"
+      ],
+      "max_hypotheses": 8,
+      "max_executed_hypotheses": 4,
+      "repetitions": 2,
+      "lifecycle": [
+        "baseline",
+        "inject",
+        "observe",
+        "recover",
+        "cleanup",
+        "washout"
+      ],
+      "namespace_scope": "chaosatlas-sock-shop"
+    },
+    "image_provenance": {
+      "images": [
+        {
+          "deployment": "carts",
+          "container": "carts",
+          "source_image": "weaveworksdemos/carts:0.4.8",
+          "image": "weaveworksdemos/carts@sha256:434d2f5a6e0e8beef1f253fe96f45b8437a703125fc003434c5282ecf8969a4f",
+          "immutable": true
+        },
+        {
+          "deployment": "carts-db",
+          "container": "carts-db",
+          "source_image": "mongo",
+          "image": "mongo@sha256:6189a342f8da4568b4b111c378a890b1fe186b1bc133742bff8811fe63d2e01e",
+          "immutable": true
+        },
+        {
+          "deployment": "catalogue",
+          "container": "catalogue",
+          "source_image": "weaveworksdemos/catalogue:0.3.5",
+          "image": "weaveworksdemos/catalogue@sha256:0147a65b7116569439eefb1a6dbed455fe022464ef70e0c3cab75bc4a226b39b",
+          "immutable": true
+        },
+        {
+          "deployment": "catalogue-db",
+          "container": "catalogue-db",
+          "source_image": "weaveworksdemos/catalogue-db:0.3.0",
+          "image": "weaveworksdemos/catalogue-db@sha256:7ba74ec9adf88f6625b8d85d3323d1ee5232b39877e1590021ea485cf9457251",
+          "immutable": true
+        },
+        {
+          "deployment": "front-end",
+          "container": "front-end",
+          "source_image": "weaveworksdemos/front-end:0.3.12",
+          "image": "weaveworksdemos/front-end@sha256:26a2d9b6b291dee2dca32fca3f5bff6c2fa07bb5954359afcbc8001cc70eac71",
+          "immutable": true
+        },
+        {
+          "deployment": "orders",
+          "container": "orders",
+          "source_image": "weaveworksdemos/orders:0.4.7",
+          "image": "weaveworksdemos/orders@sha256:b622e40e83433baf6374f15e076b53893f79958640fc6667dff597622eff03b9",
+          "immutable": true
+        },
+        {
+          "deployment": "orders-db",
+          "container": "orders-db",
+          "source_image": "mongo",
+          "image": "mongo@sha256:6189a342f8da4568b4b111c378a890b1fe186b1bc133742bff8811fe63d2e01e",
+          "immutable": true
+        },
+        {
+          "deployment": "payment",
+          "container": "payment",
+          "source_image": "weaveworksdemos/payment:0.4.3",
+          "image": "weaveworksdemos/payment@sha256:5ab1c9877480a018d4dda10d6dfa382776e6bca9fc1c60bacbb80903fde8cfe0",
+          "immutable": true
+        },
+        {
+          "deployment": "queue-master",
+          "container": "queue-master",
+          "source_image": "weaveworksdemos/queue-master:0.3.1",
+          "image": "weaveworksdemos/queue-master@sha256:6292d3095f4c7aeed8d863527f8ef6d7a75d3128f20fc61e57f398c100142712",
+          "immutable": true
+        },
+        {
+          "deployment": "rabbitmq",
+          "container": "rabbitmq",
+          "source_image": "rabbitmq:3.6.8-management",
+          "image": "rabbitmq@sha256:0297618bd60270f03665448b02b3b1110dfc51fae60a3c6804005169f0904dad",
+          "immutable": true
+        },
+        {
+          "deployment": "rabbitmq",
+          "container": "rabbitmq-exporter",
+          "source_image": "kbudde/rabbitmq-exporter",
+          "image": "kbudde/rabbitmq-exporter@sha256:12f27d6d84e6dbdd72c6bc2605e48af9910517394483c1dfa3230e49d3e32107",
+          "immutable": true
+        },
+        {
+          "deployment": "session-db",
+          "container": "session-db",
+          "source_image": "redis:alpine",
+          "image": "redis@sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005",
+          "immutable": true
+        },
+        {
+          "deployment": "shipping",
+          "container": "shipping",
+          "source_image": "weaveworksdemos/shipping:0.4.8",
+          "image": "weaveworksdemos/shipping@sha256:983305c948fded487f4a4acdeab5f898e89d577b4bc1ca3de7750076469ccad4",
+          "immutable": true
+        },
+        {
+          "deployment": "user",
+          "container": "user",
+          "source_image": "weaveworksdemos/user:0.4.7",
+          "image": "weaveworksdemos/user@sha256:2ffccc332963c89e035fea52201012208bf62df43a55fe461ad6598a5c757ab7",
+          "immutable": true
+        },
+        {
+          "deployment": "user-db",
+          "container": "user-db",
+          "source_image": "weaveworksdemos/user-db:0.3.0",
+          "image": "weaveworksdemos/user-db@sha256:695bc22c11396c7ae747118c56e619f3b3295d9d4cbec999d30230b3f399a389",
+          "immutable": true
+        }
+      ],
+      "all_immutable": true,
+      "mutable_images": []
+    },
+    "deployable_manifest_sha256": "a2bf2398c40ebbb54e10a0f1ee6cd1815df6e21232c650dabeebc761fd558828"
+  },
+  "common_input_sha256": "4c4df7841ec80ae3d23456fa928e378eaf4b8ac4488dfd45402079c0993cac82",
+  "method_id": "ChaosAtlas-full",
+  "knowledge_view": {
+    "schema_version": "chaosatlas-generic-knowledge-projection-v1",
+    "human_review": "pending",
+    "source_scope": "cross_project_generic_only",
+    "facts": [
+      {
+        "pattern": "synchronous_downstream_call",
+        "condition": "timeout_or_deadline_is_not_evidenced",
+        "use": "prioritize bounded delay/loss hypothesis"
+      },
+      {
+        "pattern": "single_replica_workload",
+        "condition": "replica redundancy is not evidenced",
+        "use": "prioritize bounded pod-kill hypothesis"
+      },
+      {
+        "pattern": "defense_boundary",
+        "condition": "timeout/retry/fallback is evidenced",
+        "use": "retain protected hypothesis and validate behavior"
+      }
+    ],
+    "projection_policy": "abstract patterns only; runtime evidence and target-project history excluded"
+  }
+}

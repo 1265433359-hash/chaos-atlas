@@ -1,0 +1,186 @@
+{
+  "project_id": "sock-shop",
+  "project_commit": "9dff06fae4981921caec6a62393a6ebfce4b3e3f",
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "target": "workload/front-end",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the front-end pod will cause the front-end service to be unavailable, breaking all golden journey steps.",
+      "weakness_surface": "single_replica_workload",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "front-end, catalogue, login, and orders steps return HTTP 200/201",
+      "validation_plan": "Inject pod_kill on workload/front-end, observe front-end service responses, then recover.",
+      "recovery_expectation": "Pod restarts and service recovers after washout."
+    },
+    {
+      "hypothesis_id": "H2",
+      "target": "workload/catalogue",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the catalogue pod will cause the catalogue browse step to fail, but other steps may still succeed.",
+      "weakness_surface": "single_replica_workload",
+      "call_chain": [
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue step returns JSON array",
+      "validation_plan": "Inject pod_kill on workload/catalogue, observe catalogue endpoint, then recover.",
+      "recovery_expectation": "Pod restarts and catalogue service recovers after washout."
+    },
+    {
+      "hypothesis_id": "H3",
+      "target": "workload/user",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the user pod will cause the login step to fail, as authentication depends on the user service.",
+      "weakness_surface": "single_replica_workload",
+      "call_chain": [
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "login step returns HTTP 200 and sets cookie",
+      "validation_plan": "Inject pod_kill on workload/user, observe login endpoint, then recover.",
+      "recovery_expectation": "Pod restarts and user service recovers after washout."
+    },
+    {
+      "hypothesis_id": "H4",
+      "target": "workload/orders",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the orders pod will cause the orders step to fail, as it depends on the orders service.",
+      "weakness_surface": "single_replica_workload",
+      "call_chain": [
+        {
+          "source": "service/orders",
+          "target": "workload/orders",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "orders step returns HTTP 201",
+      "validation_plan": "Inject pod_kill on workload/orders, observe orders endpoint, then recover.",
+      "recovery_expectation": "Pod restarts and orders service recovers after washout."
+    },
+    {
+      "hypothesis_id": "H5",
+      "target": "service/front-end",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Introducing network delay on the front-end service will cause timeouts and degrade all golden journey steps.",
+      "weakness_surface": "synchronous_downstream_call",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "all steps return HTTP 200/201 within timeout",
+      "validation_plan": "Inject network_delay on service/front-end, observe all steps, then recover.",
+      "recovery_expectation": "Delay removed and service returns to normal after washout."
+    },
+    {
+      "hypothesis_id": "H6",
+      "target": "service/catalogue",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Introducing network delay on the catalogue service will cause the catalogue browse step to be slow or fail.",
+      "weakness_surface": "synchronous_downstream_call",
+      "call_chain": [
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue step returns JSON array within timeout",
+      "validation_plan": "Inject network_delay on service/catalogue, observe catalogue endpoint, then recover.",
+      "recovery_expectation": "Delay removed and catalogue service returns to normal after washout."
+    },
+    {
+      "hypothesis_id": "H7",
+      "target": "service/user",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Introducing network delay on the user service will cause the login step to be slow or fail.",
+      "weakness_surface": "synchronous_downstream_call",
+      "call_chain": [
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "login step returns HTTP 200 and sets cookie within timeout",
+      "validation_plan": "Inject network_delay on service/user, observe login endpoint, then recover.",
+      "recovery_expectation": "Delay removed and user service returns to normal after washout."
+    },
+    {
+      "hypothesis_id": "H8",
+      "target": "service/orders",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Introducing network delay on the orders service will cause the orders step to be slow or fail.",
+      "weakness_surface": "synchronous_downstream_call",
+      "call_chain": [
+        {
+          "source": "service/orders",
+          "target": "workload/orders",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "orders step returns HTTP 201 within timeout",
+      "validation_plan": "Inject network_delay on service/orders, observe orders endpoint, then recover.",
+      "recovery_expectation": "Delay removed and orders service returns to normal after washout."
+    }
+  ]
+}

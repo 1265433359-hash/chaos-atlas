@@ -1,0 +1,490 @@
+{
+  "schema_version": "chaosatlas-two-arm-discovery-handoff-v1",
+  "status": "handoff_ready",
+  "project_id": "opentelemetry-demo",
+  "method_id": "ChaosAtlas-full",
+  "seed": 1002,
+  "prompt_input_sha256": "1f09ddc091b8b9838f2979b31b7c44ea1a976681f34ec02136e64b8f5a110a19",
+  "model_output_sha256": "16a979340ca86d640c6175155f405cdba0105d95b94c61268fcf47dc810e096e",
+  "model_call": {
+    "performed": false,
+    "credentials_logged": false
+  },
+  "compiled": {
+    "status": "valid",
+    "accepted": [
+      {
+        "hypothesis_id": "H1",
+        "canonical_signature": "17fbed5b40d3d49d14906c8d16d5755b065e5b5a87cf7fe32dad564a7067dc3f",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "opentelemetry-demo",
+        "namespace": "chaosatlas-otel",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/checkout",
+        "resolved_target": "chaosatlas-otel/deployment/checkout",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "hypothesis": "Killing the checkout pod will cause the checkout service to be unavailable, breaking the AddItem_then_PlaceOrder workflow.",
+        "expected_invariant": "The checkout service must respond successfully to order placement requests.",
+        "validation_plan": "Inject pod_kill on workload/checkout, then run the client workflow and observe if order responses succeed.",
+        "recovery_expectation": "Restart the checkout pod; workflow should recover after pod becomes ready.",
+        "call_chain": [
+          {
+            "source": "service/checkout",
+            "target": "workload/checkout",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "single_replica_workload",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "H2",
+        "canonical_signature": "d2d4dc9f538f003793bb9e533acac113b2d92ed6a9a1cdb9626d04a68212322f",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "opentelemetry-demo",
+        "namespace": "chaosatlas-otel",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/cart",
+        "resolved_target": "chaosatlas-otel/deployment/cart",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "pod_kill",
+        "parameters": {
+          "mode": "one"
+        },
+        "hypothesis": "Killing the cart pod will cause the cart service to be unavailable, breaking the AddItem step of the workflow.",
+        "expected_invariant": "The cart service must successfully add items to the cart.",
+        "validation_plan": "Inject pod_kill on workload/cart, then run the client workflow and observe if AddItem succeeds.",
+        "recovery_expectation": "Restart the cart pod; workflow should recover after pod becomes ready.",
+        "call_chain": [
+          {
+            "source": "service/cart",
+            "target": "workload/cart",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "single_replica_workload",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "H3",
+        "canonical_signature": "62a0ecffa497252ece5c9ac11efef536b18e1f7d5d7865b357c87c6faa2ad190",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "opentelemetry-demo",
+        "namespace": "chaosatlas-otel",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "service/checkout",
+        "resolved_target": "chaosatlas-otel/service/checkout",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 500,
+          "duration_s": 30
+        },
+        "hypothesis": "Introducing network delay on the checkout service will cause timeouts or slowdowns in order placement, potentially breaking the workflow.",
+        "expected_invariant": "Order placement should complete within acceptable latency.",
+        "validation_plan": "Inject network_delay on service/checkout, then run the client workflow and measure success and latency.",
+        "recovery_expectation": "After delay duration, traffic returns to normal and workflow should succeed.",
+        "call_chain": [
+          {
+            "source": "service/checkout",
+            "target": "workload/checkout",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "synchronous_downstream_call",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "H4",
+        "canonical_signature": "8d15b53f3756e0eb2191afa8aa0e5b20167dbff8d023ebdb27e01f9f2c85e54d",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "opentelemetry-demo",
+        "namespace": "chaosatlas-otel",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "service/cart",
+        "resolved_target": "chaosatlas-otel/service/cart",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "network_delay",
+        "parameters": {
+          "latency_ms": 500,
+          "duration_s": 30
+        },
+        "hypothesis": "Introducing network delay on the cart service will cause timeouts or slowdowns in AddItem, potentially breaking the workflow.",
+        "expected_invariant": "AddItem should complete within acceptable latency.",
+        "validation_plan": "Inject network_delay on service/cart, then run the client workflow and measure success and latency.",
+        "recovery_expectation": "After delay duration, traffic returns to normal and workflow should succeed.",
+        "call_chain": [
+          {
+            "source": "service/cart",
+            "target": "workload/cart",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "synchronous_downstream_call",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "H5",
+        "canonical_signature": "d8cff5465f406b80df65c097280019381201cfdb6427c9685307bb06923062c6",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "opentelemetry-demo",
+        "namespace": "chaosatlas-otel",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "service/checkout",
+        "resolved_target": "chaosatlas-otel/service/checkout",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "network_loss",
+        "parameters": {
+          "loss_percent": 50,
+          "duration_s": 30
+        },
+        "hypothesis": "Introducing network loss on the checkout service will cause request failures, breaking the order placement workflow.",
+        "expected_invariant": "Order placement should succeed without packet loss.",
+        "validation_plan": "Inject network_loss on service/checkout, then run the client workflow and observe failures.",
+        "recovery_expectation": "After loss duration, traffic returns to normal and workflow should succeed.",
+        "call_chain": [
+          {
+            "source": "service/checkout",
+            "target": "workload/checkout",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "synchronous_downstream_call",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "H6",
+        "canonical_signature": "3cee61671edb5e205a5fc7c423077c7be46fa283c3b437b2689d8033825f0518",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "opentelemetry-demo",
+        "namespace": "chaosatlas-otel",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "service/cart",
+        "resolved_target": "chaosatlas-otel/service/cart",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "network_loss",
+        "parameters": {
+          "loss_percent": 50,
+          "duration_s": 30
+        },
+        "hypothesis": "Introducing network loss on the cart service will cause request failures, breaking the AddItem step.",
+        "expected_invariant": "AddItem should succeed without packet loss.",
+        "validation_plan": "Inject network_loss on service/cart, then run the client workflow and observe failures.",
+        "recovery_expectation": "After loss duration, traffic returns to normal and workflow should succeed.",
+        "call_chain": [
+          {
+            "source": "service/cart",
+            "target": "workload/cart",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "synchronous_downstream_call",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "H7",
+        "canonical_signature": "e8bcaebd1b26c66459ebdb3d70285745aefe5d283f9520635213454a938eacf0",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "opentelemetry-demo",
+        "namespace": "chaosatlas-otel",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/checkout",
+        "resolved_target": "chaosatlas-otel/deployment/checkout",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "container_cpu_stress",
+        "parameters": {
+          "workers": 2,
+          "load_percent": 80,
+          "duration_s": 30
+        },
+        "hypothesis": "Stressing the checkout container CPU will cause performance degradation, potentially leading to timeouts and workflow failure.",
+        "expected_invariant": "Order placement should complete within acceptable latency.",
+        "validation_plan": "Inject container_cpu_stress on workload/checkout, then run the client workflow and measure success and latency.",
+        "recovery_expectation": "After stress duration, CPU returns to normal and workflow should succeed.",
+        "call_chain": [
+          {
+            "source": "service/checkout",
+            "target": "workload/checkout",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "synchronous_downstream_call",
+        "execution_ready": false
+      },
+      {
+        "hypothesis_id": "H8",
+        "canonical_signature": "69574bc3db576f47b8673067670707ae5fa4539bc07f3b344bbb8f9bf77c7066",
+        "novelty": "novel_candidate",
+        "status": "accepted_novel_candidate",
+        "project_id": "opentelemetry-demo",
+        "namespace": "chaosatlas-otel",
+        "workload_id": "topology-backed-workload",
+        "workload_contract": "frozen-business-oracle",
+        "target": "workload/cart",
+        "resolved_target": "chaosatlas-otel/deployment/cart",
+        "resolver_status": "static_only",
+        "target_kind": "service",
+        "fault_family": "container_cpu_stress",
+        "parameters": {
+          "workers": 2,
+          "load_percent": 80,
+          "duration_s": 30
+        },
+        "hypothesis": "Stressing the cart container CPU will cause performance degradation, potentially leading to timeouts and workflow failure.",
+        "expected_invariant": "AddItem should complete within acceptable latency.",
+        "validation_plan": "Inject container_cpu_stress on workload/cart, then run the client workflow and measure success and latency.",
+        "recovery_expectation": "After stress duration, CPU returns to normal and workflow should succeed.",
+        "call_chain": [
+          {
+            "source": "service/cart",
+            "target": "workload/cart",
+            "relation": "selects",
+            "evidence_ref": "topology"
+          }
+        ],
+        "weakness_surface": "synchronous_downstream_call",
+        "execution_ready": false
+      }
+    ],
+    "rejected": [],
+    "accepted_count": 8,
+    "rejected_count": 0,
+    "compiler": "open_discovery_compiler_v1"
+  },
+  "selected_hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "canonical_signature": "17fbed5b40d3d49d14906c8d16d5755b065e5b5a87cf7fe32dad564a7067dc3f",
+      "novelty": "novel_candidate",
+      "status": "accepted_novel_candidate",
+      "project_id": "opentelemetry-demo",
+      "namespace": "chaosatlas-otel",
+      "workload_id": "topology-backed-workload",
+      "workload_contract": "frozen-business-oracle",
+      "target": "workload/checkout",
+      "resolved_target": "chaosatlas-otel/deployment/checkout",
+      "resolver_status": "static_only",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the checkout pod will cause the checkout service to be unavailable, breaking the AddItem_then_PlaceOrder workflow.",
+      "expected_invariant": "The checkout service must respond successfully to order placement requests.",
+      "validation_plan": "Inject pod_kill on workload/checkout, then run the client workflow and observe if order responses succeed.",
+      "recovery_expectation": "Restart the checkout pod; workflow should recover after pod becomes ready.",
+      "call_chain": [
+        {
+          "source": "service/checkout",
+          "target": "workload/checkout",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "weakness_surface": "single_replica_workload",
+      "execution_ready": false,
+      "compile_status": "accepted"
+    },
+    {
+      "hypothesis_id": "H2",
+      "canonical_signature": "d2d4dc9f538f003793bb9e533acac113b2d92ed6a9a1cdb9626d04a68212322f",
+      "novelty": "novel_candidate",
+      "status": "accepted_novel_candidate",
+      "project_id": "opentelemetry-demo",
+      "namespace": "chaosatlas-otel",
+      "workload_id": "topology-backed-workload",
+      "workload_contract": "frozen-business-oracle",
+      "target": "workload/cart",
+      "resolved_target": "chaosatlas-otel/deployment/cart",
+      "resolver_status": "static_only",
+      "target_kind": "service",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "hypothesis": "Killing the cart pod will cause the cart service to be unavailable, breaking the AddItem step of the workflow.",
+      "expected_invariant": "The cart service must successfully add items to the cart.",
+      "validation_plan": "Inject pod_kill on workload/cart, then run the client workflow and observe if AddItem succeeds.",
+      "recovery_expectation": "Restart the cart pod; workflow should recover after pod becomes ready.",
+      "call_chain": [
+        {
+          "source": "service/cart",
+          "target": "workload/cart",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "weakness_surface": "single_replica_workload",
+      "execution_ready": false,
+      "compile_status": "accepted"
+    },
+    {
+      "hypothesis_id": "H3",
+      "canonical_signature": "62a0ecffa497252ece5c9ac11efef536b18e1f7d5d7865b357c87c6faa2ad190",
+      "novelty": "novel_candidate",
+      "status": "accepted_novel_candidate",
+      "project_id": "opentelemetry-demo",
+      "namespace": "chaosatlas-otel",
+      "workload_id": "topology-backed-workload",
+      "workload_contract": "frozen-business-oracle",
+      "target": "service/checkout",
+      "resolved_target": "chaosatlas-otel/service/checkout",
+      "resolver_status": "static_only",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Introducing network delay on the checkout service will cause timeouts or slowdowns in order placement, potentially breaking the workflow.",
+      "expected_invariant": "Order placement should complete within acceptable latency.",
+      "validation_plan": "Inject network_delay on service/checkout, then run the client workflow and measure success and latency.",
+      "recovery_expectation": "After delay duration, traffic returns to normal and workflow should succeed.",
+      "call_chain": [
+        {
+          "source": "service/checkout",
+          "target": "workload/checkout",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "weakness_surface": "synchronous_downstream_call",
+      "execution_ready": false,
+      "compile_status": "accepted"
+    },
+    {
+      "hypothesis_id": "H4",
+      "canonical_signature": "8d15b53f3756e0eb2191afa8aa0e5b20167dbff8d023ebdb27e01f9f2c85e54d",
+      "novelty": "novel_candidate",
+      "status": "accepted_novel_candidate",
+      "project_id": "opentelemetry-demo",
+      "namespace": "chaosatlas-otel",
+      "workload_id": "topology-backed-workload",
+      "workload_contract": "frozen-business-oracle",
+      "target": "service/cart",
+      "resolved_target": "chaosatlas-otel/service/cart",
+      "resolver_status": "static_only",
+      "target_kind": "service",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 30
+      },
+      "hypothesis": "Introducing network delay on the cart service will cause timeouts or slowdowns in AddItem, potentially breaking the workflow.",
+      "expected_invariant": "AddItem should complete within acceptable latency.",
+      "validation_plan": "Inject network_delay on service/cart, then run the client workflow and measure success and latency.",
+      "recovery_expectation": "After delay duration, traffic returns to normal and workflow should succeed.",
+      "call_chain": [
+        {
+          "source": "service/cart",
+          "target": "workload/cart",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "weakness_surface": "synchronous_downstream_call",
+      "execution_ready": false,
+      "compile_status": "accepted"
+    }
+  ],
+  "budget_not_executed": [
+    "H5",
+    "H6",
+    "H7",
+    "H8"
+  ],
+  "runtime_units": [
+    {
+      "hypothesis_id": "H1",
+      "canonical_signature": "17fbed5b40d3d49d14906c8d16d5755b065e5b5a87cf7fe32dad564a7067dc3f",
+      "replicate": 1,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "H1",
+      "canonical_signature": "17fbed5b40d3d49d14906c8d16d5755b065e5b5a87cf7fe32dad564a7067dc3f",
+      "replicate": 2,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "H2",
+      "canonical_signature": "d2d4dc9f538f003793bb9e533acac113b2d92ed6a9a1cdb9626d04a68212322f",
+      "replicate": 1,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "H2",
+      "canonical_signature": "d2d4dc9f538f003793bb9e533acac113b2d92ed6a9a1cdb9626d04a68212322f",
+      "replicate": 2,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "H3",
+      "canonical_signature": "62a0ecffa497252ece5c9ac11efef536b18e1f7d5d7865b357c87c6faa2ad190",
+      "replicate": 1,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "H3",
+      "canonical_signature": "62a0ecffa497252ece5c9ac11efef536b18e1f7d5d7865b357c87c6faa2ad190",
+      "replicate": 2,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "H4",
+      "canonical_signature": "8d15b53f3756e0eb2191afa8aa0e5b20167dbff8d023ebdb27e01f9f2c85e54d",
+      "replicate": 1,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    },
+    {
+      "hypothesis_id": "H4",
+      "canonical_signature": "8d15b53f3756e0eb2191afa8aa0e5b20167dbff8d023ebdb27e01f9f2c85e54d",
+      "replicate": 2,
+      "execution_started": false,
+      "status": "pending_runtime_adapter"
+    }
+  ],
+  "max_executed_hypotheses": 4,
+  "repetitions": 2,
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

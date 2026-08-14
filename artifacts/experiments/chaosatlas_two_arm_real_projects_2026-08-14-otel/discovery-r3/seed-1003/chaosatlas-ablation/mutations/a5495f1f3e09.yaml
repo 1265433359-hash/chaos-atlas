@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: atlas-opentelemetry-demo-a5495f1f3e09
+  namespace: chaosatlas-otel
+  labels:
+    chaosatlas.dev/project: opentelemetry-demo
+    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-otel
+    labelSelectors:
+      app: checkout
+  action: delay
+  delay:
+    latency: 500ms
+    correlation: '100'
+    jitter: 0ms
+  duration: 60s
+  direction: to
