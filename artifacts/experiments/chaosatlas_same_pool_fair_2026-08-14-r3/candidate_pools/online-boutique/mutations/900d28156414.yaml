@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: atlas-fair-online-boutique-9ab30b1c635a
+  namespace: chaosatlas-online-boutique
+  labels:
+    chaosatlas.dev/project: online-boutique
+    chaosatlas.dev/generator: same-pool-fair-candidates-v1
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-online-boutique
+    labelSelectors:
+      app: emailservice
+  duration: 30s
+  direction: to
+  action: delay
+  delay:
+    latency: 2000ms
+    correlation: '100'
+    jitter: 0ms

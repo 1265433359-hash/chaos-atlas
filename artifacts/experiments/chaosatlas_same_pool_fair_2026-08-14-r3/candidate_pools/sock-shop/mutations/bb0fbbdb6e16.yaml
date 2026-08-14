@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: atlas-fair-sock-shop-67b02bf0b19e
+  namespace: chaosatlas-sock-shop
+  labels:
+    chaosatlas.dev/project: sock-shop
+    chaosatlas.dev/generator: same-pool-fair-candidates-v1
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: carts
+  duration: 30s
+  direction: to
+  action: loss
+  loss:
+    loss: '100'
+    correlation: '100'

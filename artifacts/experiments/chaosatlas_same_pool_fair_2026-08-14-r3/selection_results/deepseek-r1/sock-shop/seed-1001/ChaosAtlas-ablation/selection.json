@@ -1,0 +1,53 @@
+{
+  "schema_version": "chaosatlas-same-pool-selection-result-v1",
+  "project_id": "sock-shop",
+  "seed": 1001,
+  "method_id": "ChaosAtlas-ablation",
+  "candidate_pool_sha256": "dc6a8a2d6a5dbcaba47700103bfc27bc056b05c0df4929a69e0099d69afce415",
+  "request_sha256": "68c94e1644164a62394b7f6b9d07f3a5325b2857f08e2e19c5de34885d8fedd8",
+  "model": "deepseek-v4-flash",
+  "model_metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 2564,
+    "prompt_tokens": 6626,
+    "completion_tokens": 260,
+    "total_tokens": 6886,
+    "finish_reason": "stop",
+    "message_fields": [
+      "content",
+      "role"
+    ],
+    "reasoning_content_chars": 0
+  },
+  "raw_sha256": "30e3c6d64aab91deb04bd6c1e03c6e23c44a3cb8941a4c9bb4ba1a08d6db6096",
+  "selection": {
+    "selected_candidates": [
+      {
+        "candidate_id": "sock-shop:front-end:pod_kill:8dbdf50509ea",
+        "rank": 1,
+        "reason": "Front-end is the entry point for the golden journey; killing it directly disrupts all user interactions."
+      },
+      {
+        "candidate_id": "sock-shop:catalogue:network_delay:a65916f4b46f",
+        "rank": 2,
+        "reason": "Catalogue is critical for browsing products; 2000ms delay severely impacts page load and user experience."
+      },
+      {
+        "candidate_id": "sock-shop:orders:network_delay:e37a698052ff",
+        "rank": 3,
+        "reason": "Orders are essential for the journey; high latency can cause timeouts and failed order placement."
+      },
+      {
+        "candidate_id": "sock-shop:carts:network_delay:4f53bb8524d3",
+        "rank": 4,
+        "reason": "Carts service is needed for adding items; 2000ms delay may break the add-to-cart flow."
+      }
+    ]
+  },
+  "status": "completed",
+  "errors": [],
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

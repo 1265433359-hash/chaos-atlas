@@ -1,0 +1,53 @@
+{
+  "schema_version": "chaosatlas-same-pool-selection-result-v1",
+  "project_id": "online-boutique",
+  "seed": 1003,
+  "method_id": "ChaosEater-adapter",
+  "candidate_pool_sha256": "da59cdddf5bd8d1377fbddafe53478368153efb4b822234fee62ca45175f12db",
+  "request_sha256": "4ed8a15743da25a70efdd77e305744b5a319005c4882ec201c9f973e1823871e",
+  "model": "deepseek-v4-flash",
+  "model_metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 2483,
+    "prompt_tokens": 5423,
+    "completion_tokens": 278,
+    "total_tokens": 5701,
+    "finish_reason": "stop",
+    "message_fields": [
+      "content",
+      "role"
+    ],
+    "reasoning_content_chars": 0
+  },
+  "raw_sha256": "737208db72b3bca72a91073a35e8f3c3e6cbe21e417e1db438129a03ef1ae0f2",
+  "selection": {
+    "selected_candidates": [
+      {
+        "candidate_id": "online-boutique:checkoutservice:pod_kill:eb62843849ee",
+        "rank": 1,
+        "reason": "Directly disrupts the checkout service, which is the core of the business oracle. A pod kill causes immediate unavailability, likely failing PlaceOrder."
+      },
+      {
+        "candidate_id": "online-boutique:checkoutservice:network_delay:7f958457853a",
+        "rank": 2,
+        "reason": "Introduces 2000ms latency to checkout, likely causing timeouts in PlaceOrder. High impact on the critical path."
+      },
+      {
+        "candidate_id": "online-boutique:cartservice:pod_kill:3a22d06bf148",
+        "rank": 3,
+        "reason": "Cart service is a dependency for checkout; killing it prevents cart retrieval, breaking PlaceOrder."
+      },
+      {
+        "candidate_id": "online-boutique:cartservice:network_delay:12e6034ed2a2",
+        "rank": 4,
+        "reason": "2000ms latency on cart service delays checkout's cart retrieval, likely causing timeouts and impacting PlaceOrder."
+      }
+    ]
+  },
+  "status": "completed",
+  "errors": [],
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

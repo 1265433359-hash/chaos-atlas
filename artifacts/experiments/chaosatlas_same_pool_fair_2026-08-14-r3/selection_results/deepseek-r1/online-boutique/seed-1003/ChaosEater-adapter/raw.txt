@@ -1,0 +1,24 @@
+{
+  "selected_candidates": [
+    {
+      "candidate_id": "online-boutique:checkoutservice:pod_kill:eb62843849ee",
+      "rank": 1,
+      "reason": "Directly disrupts the checkout service, which is the core of the business oracle. A pod kill causes immediate unavailability, likely failing PlaceOrder."
+    },
+    {
+      "candidate_id": "online-boutique:checkoutservice:network_delay:7f958457853a",
+      "rank": 2,
+      "reason": "Introduces 2000ms latency to checkout, likely causing timeouts in PlaceOrder. High impact on the critical path."
+    },
+    {
+      "candidate_id": "online-boutique:cartservice:pod_kill:3a22d06bf148",
+      "rank": 3,
+      "reason": "Cart service is a dependency for checkout; killing it prevents cart retrieval, breaking PlaceOrder."
+    },
+    {
+      "candidate_id": "online-boutique:cartservice:network_delay:12e6034ed2a2",
+      "rank": 4,
+      "reason": "2000ms latency on cart service delays checkout's cart retrieval, likely causing timeouts and impacting PlaceOrder."
+    }
+  ]
+}

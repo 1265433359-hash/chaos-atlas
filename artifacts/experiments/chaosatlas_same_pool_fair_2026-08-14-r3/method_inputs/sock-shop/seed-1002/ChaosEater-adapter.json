@@ -1,0 +1,1278 @@
+{
+  "schema_version": "chaosatlas-same-pool-method-input-v1",
+  "project_id": "sock-shop",
+  "seed": 1002,
+  "method_id": "ChaosEater-adapter",
+  "candidate_pool_sha256": "dc6a8a2d6a5dbcaba47700103bfc27bc056b05c0df4929a69e0099d69afce415",
+  "candidate_pool": [
+    {
+      "candidate_id": "sock-shop:carts-db:container_cpu_stress:925aeefe4209",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "carts-db",
+      "selector": {
+        "name": "carts-db"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "9f4cc0d769dd21a265c5b86224fcd2003b273d5832d29dacaf780a6a6cb5860d",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/925aeefe4209.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:carts-db:network_delay:5c986e4034f7",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "carts-db",
+      "selector": {
+        "name": "carts-db"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "bbabe4b5003fd038f5e94ba8ee32e781df74ff71a35d2a77d4419610b375de5d",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/5c986e4034f7.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:carts-db:network_delay:ad314bb706bb",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "carts-db",
+      "selector": {
+        "name": "carts-db"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "2e4f287576bbdbd1e79f5a9ce5d33501e3e2d7188477825ea7ca77f080943b0d",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/ad314bb706bb.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:carts-db:network_loss:88f92f6c4779",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "carts-db",
+      "selector": {
+        "name": "carts-db"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "bf6f0b62fb1db617db4ea88966c44161b27b6f0372c255fd970b17c0d975da66",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/88f92f6c4779.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:carts-db:pod_kill:75f90dae8537",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "carts-db",
+      "selector": {
+        "name": "carts-db"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "6b3cb7bf6260882a502f9b1cd6bce446b7d44002e49da7f616db3e461b3f13f5",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/75f90dae8537.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:carts:container_cpu_stress:58894ecd23ca",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "carts",
+      "selector": {
+        "name": "carts"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "27d40211d7d729b96441950dea88e1a014c3ec9b5a135b9f8ccb860d073513b7",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/58894ecd23ca.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:carts:network_delay:4f53bb8524d3",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "carts",
+      "selector": {
+        "name": "carts"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "2661b7adab0f2c9add136e5e6e09dcc5d577940232a6b1011df141cf37e31a9d",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/4f53bb8524d3.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:carts:network_delay:ec507d5f83bd",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "carts",
+      "selector": {
+        "name": "carts"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "37b7c4ebeaf6088b0a1d934225c65715eb8322f0afb35be320127b50f395a8ce",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/ec507d5f83bd.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:carts:network_loss:bb0fbbdb6e16",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "carts",
+      "selector": {
+        "name": "carts"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "f702d1f2078e2b0606dbcf24569772a4f0cae8a4c7317c70ae2d6da0e9fb039a",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/bb0fbbdb6e16.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:carts:pod_kill:f9dff8264694",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "carts",
+      "selector": {
+        "name": "carts"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "250e6e1f4ccf6c4e77c93cfc4ba763353dfdc76e2b2e759357681e0ab25a654a",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/f9dff8264694.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:catalogue-db:container_cpu_stress:9657d4683a42",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "catalogue-db",
+      "selector": {
+        "name": "catalogue-db"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "a07a3a5a28c4b439c38a4286b751fda5a321d510d240acfa1ee30656355732e6",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/9657d4683a42.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:catalogue-db:network_delay:293879f4caa3",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "catalogue-db",
+      "selector": {
+        "name": "catalogue-db"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "ae68577ca6acd5495c95437fe4a0e5103e19635450faeb34bef9af77ca6677a4",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/293879f4caa3.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:catalogue-db:network_delay:65c83a2ebc89",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "catalogue-db",
+      "selector": {
+        "name": "catalogue-db"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "65ee1720ae3caa63a1841d88bf39697e9b06456be034ebf228e5357dd9f9fe69",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/65c83a2ebc89.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:catalogue-db:network_loss:318e7966be3a",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "catalogue-db",
+      "selector": {
+        "name": "catalogue-db"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "ea94e9698c76d7dcb2ba82b74612025fa8b935e8850e1219eab4f4b24a6eef74",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/318e7966be3a.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:catalogue-db:pod_kill:c0509fb98eef",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "catalogue-db",
+      "selector": {
+        "name": "catalogue-db"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "fed6282e92f3dbee2c5b16e8c3223dd8c139b22d684d37eabe2b0c4acabfdbd8",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/c0509fb98eef.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:catalogue:container_cpu_stress:e431a3251991",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "catalogue",
+      "selector": {
+        "name": "catalogue"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "525e0ba6a405d643b70580d43144595588f367e1889dc7e58f5275da48cba7f3",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/e431a3251991.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:catalogue:network_delay:658c45fe5243",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "catalogue",
+      "selector": {
+        "name": "catalogue"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "608879436a5112bd605d021d85948b266b0cd000fbd93cfa8f5a0893b00d7c18",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/658c45fe5243.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:catalogue:network_delay:a65916f4b46f",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "catalogue",
+      "selector": {
+        "name": "catalogue"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "8449b130362e0e413aad78572ad83822f3edea74de852a63f57a52ab55806323",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/a65916f4b46f.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:catalogue:network_loss:444a368dc49e",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "catalogue",
+      "selector": {
+        "name": "catalogue"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "54d9aca8ae8eedbd25a682327407cd0085883d9316f0ef911f332207a1db56ac",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/444a368dc49e.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:catalogue:pod_kill:cef7cc04e4bf",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "catalogue",
+      "selector": {
+        "name": "catalogue"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "34a7adaa3f438d98928fbefa82a66170e2ae0df38c3276a1da85eb57292b8d21",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/cef7cc04e4bf.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:front-end:container_cpu_stress:4205ad39e476",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "front-end",
+      "selector": {
+        "name": "front-end"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "db3825f8a7c6728a23738d77813e7bec2debfcfb889246808de85d25e87ace3e",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/4205ad39e476.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:front-end:network_delay:3d4a3a0a431f",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "front-end",
+      "selector": {
+        "name": "front-end"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "d522400e62b760fdf57b83d30bd7edfe6fea10ae109f64f836682588202d38b1",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/3d4a3a0a431f.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:front-end:network_delay:f1d5a1a5dafd",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "front-end",
+      "selector": {
+        "name": "front-end"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "5a25f78b339bbcbeb2bfae4876a3bfc14bac8f6cb21464dfc5dccd28f84a2d1e",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/f1d5a1a5dafd.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:front-end:network_loss:0dec2a7acaa8",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "front-end",
+      "selector": {
+        "name": "front-end"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "1fa03d0b21da0b1ea8f8fb539f8fa013aa2623044eb32d57e29daed4b6035f71",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/0dec2a7acaa8.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:front-end:pod_kill:8dbdf50509ea",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "front-end",
+      "selector": {
+        "name": "front-end"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "6ff3697b1836c6fe8a37cf296f66ae5db86ade9979210bcea779c904518d10ea",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/8dbdf50509ea.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:orders-db:container_cpu_stress:c6b4bcf1cf8e",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "orders-db",
+      "selector": {
+        "name": "orders-db"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "fee22857628236211087fe1d2583d288553143e21d47034a2412aa0c73b49787",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/c6b4bcf1cf8e.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:orders-db:network_delay:34f896f226f6",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "orders-db",
+      "selector": {
+        "name": "orders-db"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "b2d836a88d8e430108bb67b610d99efb0e51451afe76408ee1e5dbe5ecc9c453",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/34f896f226f6.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:orders-db:network_delay:e38f1b5d8eca",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "orders-db",
+      "selector": {
+        "name": "orders-db"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "3eae858382c14fd8dce8b2999010ad325e03feb9ba3d5e4663f940ef720f16f4",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/e38f1b5d8eca.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:orders-db:network_loss:9844152f298d",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "orders-db",
+      "selector": {
+        "name": "orders-db"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "522c106d2b6b2196a4939f971911ec78a2ee656bd5b130994fdc9ab755180d34",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/9844152f298d.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:orders-db:pod_kill:74c6dcc6c962",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "orders-db",
+      "selector": {
+        "name": "orders-db"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "64510ef85acbe1bcec8a213186e105b579dd6779d057bf1c0cff72a8f6e0539e",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/74c6dcc6c962.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:orders:container_cpu_stress:ab513ee4d6e2",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "orders",
+      "selector": {
+        "name": "orders"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "5ed9811fc91d405c10f3a7117940a18a0929c3d2159123ba2d64d8e325455bd2",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/ab513ee4d6e2.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:orders:network_delay:c21716fc2d31",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "orders",
+      "selector": {
+        "name": "orders"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "ff7f90a23e0bbabb1f65f2616b9cf12b36a7bbe75710fb5e9b11c7068f6df33f",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/c21716fc2d31.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:orders:network_delay:e37a698052ff",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "orders",
+      "selector": {
+        "name": "orders"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "2dc614bc627739026edeb1cb834782e9856d7948f283c37bca2694aa9366d71a",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/e37a698052ff.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:orders:network_loss:95c5ffc9b2be",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "orders",
+      "selector": {
+        "name": "orders"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "27df4224715e35edef23384f63ef54a84648297a2725509bfa60b56b143db294",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/95c5ffc9b2be.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:orders:pod_kill:6b9801f1e544",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "orders",
+      "selector": {
+        "name": "orders"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "635c9eadcbcdb4ca4d4f78d9f4ed8b1560b67dc9cc875e28904d0633c7261be1",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/6b9801f1e544.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:payment:container_cpu_stress:e6d68f81fb54",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "payment",
+      "selector": {
+        "name": "payment"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "6b6eca23924a946b773952b3fcc907addd2264fd0db187bd43e6ccd869c028e6",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/e6d68f81fb54.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:payment:network_delay:303c1cb0daa2",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "payment",
+      "selector": {
+        "name": "payment"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "38e237bab1c9b3f00d6d40c6e6a6ed8d1eb64f2250c68b0af5249fc4673d1a7a",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/303c1cb0daa2.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:payment:network_delay:c575828282c4",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "payment",
+      "selector": {
+        "name": "payment"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "19a80a3185841b605738a11d42c02b768b49a9a9e04dfc36952a9aeb28435dd7",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/c575828282c4.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:payment:network_loss:a5552f8f8046",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "payment",
+      "selector": {
+        "name": "payment"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "db0e2321ce054887d898e3e28641b7f8281ae6058dfe64a7a3dddf1e1fb38202",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/a5552f8f8046.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:payment:pod_kill:ad186afa5da6",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "payment",
+      "selector": {
+        "name": "payment"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "1a099131d77fc903c8cf85f298c94f25fd78075fff2ac1b4ef28720743c6289e",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/ad186afa5da6.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:queue-master:container_cpu_stress:700c7bdd31e5",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "queue-master",
+      "selector": {
+        "name": "queue-master"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "3431d6371b294656a95b2fd0f26bf325ddeb2c21837f745ea6238fe23ee8ac19",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/700c7bdd31e5.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:queue-master:network_delay:91c8719623e3",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "queue-master",
+      "selector": {
+        "name": "queue-master"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "3dad1d29d9ae8e507eadf8da914f8314c9d2e56608682d7689628fb3bab0d041",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/91c8719623e3.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:queue-master:network_delay:e7e33d0b1ec5",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "queue-master",
+      "selector": {
+        "name": "queue-master"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "74b83e2cc818e46e74226804a48b7ac804885fb39ad87bfaee5e885c392d45d3",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/e7e33d0b1ec5.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:queue-master:network_loss:51817d20d152",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "queue-master",
+      "selector": {
+        "name": "queue-master"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "1ed8ee4ee57d1031a640411ac88542069b282ad4fd0258bbc5f3ced8bcb124b3",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/51817d20d152.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:queue-master:pod_kill:a8f420e9ead5",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "queue-master",
+      "selector": {
+        "name": "queue-master"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "b8831da9465367c310070a31688d1bc2d05a6543bae6f1711c93d9cc92d4375c",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/a8f420e9ead5.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:rabbitmq:container_cpu_stress:99345ca4a42f",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "rabbitmq",
+      "selector": {
+        "name": "rabbitmq"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "4ec15957c7fa1b3c6c90a744b33bb1a0a6c58921b3551b1f7b915f683d9cbeee",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/99345ca4a42f.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:rabbitmq:network_delay:4e32ba677b04",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "rabbitmq",
+      "selector": {
+        "name": "rabbitmq"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "4b0e693efb24ce5662c4b307f1a039d5a4ce3f68653a7131728147ea955d6fd4",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/4e32ba677b04.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:rabbitmq:network_delay:73e7dc475cf4",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "rabbitmq",
+      "selector": {
+        "name": "rabbitmq"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "b6a552d7c39b5dcf922b7f028ee691157eeb59cbe858735b89425f1513248c16",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/73e7dc475cf4.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:rabbitmq:network_loss:08f95d15068c",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "rabbitmq",
+      "selector": {
+        "name": "rabbitmq"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "ba8200d9f66a0f76899f827671607c72683c430faed29262553821f9c1741682",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/08f95d15068c.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:rabbitmq:pod_kill:db2423b9fa99",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "rabbitmq",
+      "selector": {
+        "name": "rabbitmq"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "3cfb371e9769d55eb6166e403d146f76b5941cef6251cc68ee3e29dfa1dcf98d",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/db2423b9fa99.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:session-db:container_cpu_stress:b95e08263e44",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "session-db",
+      "selector": {
+        "name": "session-db"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "3df3dd044b150e9cb8bf1e6044b70b54da49733558f64adbb08a9e92172848a2",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/b95e08263e44.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:session-db:network_delay:375104079aff",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "session-db",
+      "selector": {
+        "name": "session-db"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "a65cbb073e856748766b335997058a4d90e8e8a1153615017fd964899e1f7821",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/375104079aff.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:session-db:network_delay:6b8d3c6b80b5",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "session-db",
+      "selector": {
+        "name": "session-db"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "837cef6b29f0dd5f404bece684c6a2472d076912820127adeb030e9d6b75bb86",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/6b8d3c6b80b5.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:session-db:network_loss:50cf6823733c",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "session-db",
+      "selector": {
+        "name": "session-db"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "e83ebc130b9eddd667e1378e41d088fc0ae87feb6443a5969c271aeb4e2ffd20",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/50cf6823733c.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:session-db:pod_kill:1c06e21d1df5",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "session-db",
+      "selector": {
+        "name": "session-db"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "87d6d3c76e8d1f519d4c3d06b9dbcb2a449535568b02d84e71af045a581ec3f4",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/1c06e21d1df5.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:shipping:container_cpu_stress:87987d27729d",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "shipping",
+      "selector": {
+        "name": "shipping"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "a5b960e66441b6d6a9517ef78652dfc56d82ba44d2d00b78ca8f407e29c188d8",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/87987d27729d.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:shipping:network_delay:6e79f39583cc",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "shipping",
+      "selector": {
+        "name": "shipping"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "4afe784686f54eb3efc519387e27356a0f54d79465b41d6f5898865cae1622b6",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/6e79f39583cc.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:shipping:network_delay:edc1bdc2fa85",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "shipping",
+      "selector": {
+        "name": "shipping"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "8aaa09c4c3ba41406f6af93960dbf85dd346fc4917945503bebd8e8261e05cbc",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/edc1bdc2fa85.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:shipping:network_loss:494ae629b7b0",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "shipping",
+      "selector": {
+        "name": "shipping"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "2e97bb289e7608b1bc731e36e47faf1381cb6eb8283607b08fc7a1bf0d93856d",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/494ae629b7b0.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:shipping:pod_kill:ad493adc2da9",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "shipping",
+      "selector": {
+        "name": "shipping"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "8212b4f9772a848ccd7e6d347355be9972f6674ddf29b632614d263abeb10605",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/ad493adc2da9.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:user-db:container_cpu_stress:98a0e895bf5f",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "user-db",
+      "selector": {
+        "name": "user-db"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "d3e847b5a3a8aad3e1bc584998ea81ad3bea44963cf9feb50c2d2685566bb0f9",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/98a0e895bf5f.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:user-db:network_delay:1f5d65819e19",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "user-db",
+      "selector": {
+        "name": "user-db"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "97245cb40aea3d9ec98ae38b3734bc5aeea0ddee33b7b570c1d4a351c86bfd88",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/1f5d65819e19.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:user-db:network_delay:6a7a41f8410e",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "user-db",
+      "selector": {
+        "name": "user-db"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "a1919c03f4374923056ff7d7b0276390e207c5d7a0d5c299010045659cc45c65",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/6a7a41f8410e.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:user-db:network_loss:62b192b0d8a2",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "user-db",
+      "selector": {
+        "name": "user-db"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "58fdc903c3931ba231a0b729b5b419f336fda3645d0020bbcaef6182b8ab5013",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/62b192b0d8a2.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:user-db:pod_kill:175d9305103e",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "user-db",
+      "selector": {
+        "name": "user-db"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "ec9370c92c1f6b685baca29dd04a7d26716050c435d1b4ec080d34892e129fdb",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/175d9305103e.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:user:container_cpu_stress:8a398a427ee8",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "user",
+      "selector": {
+        "name": "user"
+      },
+      "fault_family": "container_cpu_stress",
+      "parameters": {
+        "workers": 1,
+        "load": 80,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "b3d0d6ac82e57399b9fb3c7f30b0b2d692ba6ba0ed6e13593f143c4e8e23b083",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/8a398a427ee8.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:user:network_delay:816cea1fda02",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "user",
+      "selector": {
+        "name": "user"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "500ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "0fcb8e1aac69dcf51a5298ae07d28e1a22933524f7d937047e59cd8eb8add7b7",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/816cea1fda02.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:user:network_delay:c396559b9e08",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "user",
+      "selector": {
+        "name": "user"
+      },
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "4e9bab5026c46c30982c1b0df512fd079fb964686b7f9551a06822afd3fb6873",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/c396559b9e08.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:user:network_loss:1d9481ce1867",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "user",
+      "selector": {
+        "name": "user"
+      },
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "92c7d6dbcf0926289cc20ff5ef794fb402f2138af563caa5db7de4a69c74adf9",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/1d9481ce1867.yaml"
+    },
+    {
+      "candidate_id": "sock-shop:user:pod_kill:23e0eac11ff8",
+      "project_id": "sock-shop",
+      "namespace": "chaosatlas-sock-shop",
+      "target": "user",
+      "selector": {
+        "name": "user"
+      },
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "business_oracle": "front-end golden journey: front page, catalogue, login, orders",
+      "yaml_sha256": "a101a0653dac8abee87777d2f256453d8b6b75031e7f6db77301a4b553a42a47",
+      "generation_rule": "same-pool-fair-candidates-v1",
+      "yaml_path": "candidate_pools/sock-shop/mutations/23e0eac11ff8.yaml"
+    }
+  ],
+  "selection_budget": 4,
+  "replicates_per_candidate": 2,
+  "knowledge_view": {
+    "schema_version": "same-pool-chaoseater-adapter-view-v1",
+    "style": "chaoseater_adapter",
+    "instruction": "rank candidates using steady-state disruption hypotheses and experiment feasibility; do not use ChaosAtlas knowledge"
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

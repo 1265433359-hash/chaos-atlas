@@ -1,0 +1,24 @@
+{
+  "selected_candidates": [
+    {
+      "candidate_id": "opentelemetry-demo:checkout:pod_kill:1c4a778bb13b",
+      "rank": 1,
+      "reason": "Checkout is the direct target of the business oracle; killing its pod will directly disrupt PlaceOrder."
+    },
+    {
+      "candidate_id": "opentelemetry-demo:checkout:network_delay:83c46c575d33",
+      "rank": 2,
+      "reason": "High latency on checkout's network can cause timeouts in PlaceOrder, exposing lack of timeout handling."
+    },
+    {
+      "candidate_id": "opentelemetry-demo:cart:pod_kill:89665c860c51",
+      "rank": 3,
+      "reason": "Cart is a synchronous dependency for checkout; killing it may break PlaceOrder if not resilient."
+    },
+    {
+      "candidate_id": "opentelemetry-demo:cart:network_delay:4f36da0b8997",
+      "rank": 4,
+      "reason": "High latency on cart can propagate to checkout, potentially causing PlaceOrder to fail or slow down."
+    }
+  ]
+}

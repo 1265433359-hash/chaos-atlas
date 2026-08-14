@@ -1,0 +1,53 @@
+{
+  "schema_version": "chaosatlas-same-pool-selection-result-v1",
+  "project_id": "online-boutique",
+  "seed": 1002,
+  "method_id": "ChaosEater-adapter",
+  "candidate_pool_sha256": "da59cdddf5bd8d1377fbddafe53478368153efb4b822234fee62ca45175f12db",
+  "request_sha256": "1b962daeee360e9cf72775b4c537f1c10a0a2000d936bc2c1ddf919dd8deefa6",
+  "model": "deepseek-v4-flash",
+  "model_metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 2852,
+    "prompt_tokens": 5423,
+    "completion_tokens": 285,
+    "total_tokens": 5708,
+    "finish_reason": "stop",
+    "message_fields": [
+      "content",
+      "role"
+    ],
+    "reasoning_content_chars": 0
+  },
+  "raw_sha256": "63b2295c215178a35ff3d6422a7cb1d85632b2c27aefa265d14ae2b0edda28dc",
+  "selection": {
+    "selected_candidates": [
+      {
+        "candidate_id": "online-boutique:checkoutservice:pod_kill:eb62843849ee",
+        "rank": 1,
+        "reason": "Directly disrupts the checkout service, which is the core of the PlaceOrder oracle; pod kill causes immediate failure or timeout, exposing lack of resilience."
+      },
+      {
+        "candidate_id": "online-boutique:cartservice:network_delay:12e6034ed2a2",
+        "rank": 2,
+        "reason": "Cart service is a critical dependency for checkout; 2000ms delay likely causes timeout in PlaceOrder, revealing missing timeouts or retries."
+      },
+      {
+        "candidate_id": "online-boutique:checkoutservice:network_delay:7f958457853a",
+        "rank": 3,
+        "reason": "High latency on checkout service directly impacts PlaceOrder response time, potentially causing user-visible failure or timeout."
+      },
+      {
+        "candidate_id": "online-boutique:cartservice:pod_kill:3a22d06bf148",
+        "rank": 4,
+        "reason": "Killing cart service breaks cart retrieval during checkout, likely causing PlaceOrder to fail; tests dependency resilience."
+      }
+    ]
+  },
+  "status": "completed",
+  "errors": [],
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

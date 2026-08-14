@@ -1,0 +1,53 @@
+{
+  "schema_version": "chaosatlas-same-pool-selection-result-v1",
+  "project_id": "sock-shop",
+  "seed": 1002,
+  "method_id": "ChaosAtlas-full",
+  "candidate_pool_sha256": "dc6a8a2d6a5dbcaba47700103bfc27bc056b05c0df4929a69e0099d69afce415",
+  "request_sha256": "8abf1b2602c70bbf8b0ac474c96ea408d1829e187b4795536f95b5ee87f34646",
+  "model": "deepseek-v4-flash",
+  "model_metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 2882,
+    "prompt_tokens": 6717,
+    "completion_tokens": 270,
+    "total_tokens": 6987,
+    "finish_reason": "stop",
+    "message_fields": [
+      "content",
+      "role"
+    ],
+    "reasoning_content_chars": 0
+  },
+  "raw_sha256": "7e69d4f87a416508d93db98743899587832c915205d3e25384df43508014c346",
+  "selection": {
+    "selected_candidates": [
+      {
+        "candidate_id": "sock-shop:front-end:pod_kill:8dbdf50509ea",
+        "rank": 1,
+        "reason": "Front-end is the entry point for the golden journey; killing it directly breaks all user-facing flows."
+      },
+      {
+        "candidate_id": "sock-shop:catalogue:network_delay:a65916f4b46f",
+        "rank": 2,
+        "reason": "Catalogue is a synchronous dependency for the front page and catalogue browsing; high latency can cause timeouts and degrade the journey."
+      },
+      {
+        "candidate_id": "sock-shop:user:network_delay:c396559b9e08",
+        "rank": 3,
+        "reason": "User service is critical for login; adding 2000ms delay may cause login failures or timeouts, impacting the golden journey."
+      },
+      {
+        "candidate_id": "sock-shop:orders:pod_kill:6b9801f1e544",
+        "rank": 4,
+        "reason": "Orders service is essential for order placement; killing it directly prevents order completion, a key business step."
+      }
+    ]
+  },
+  "status": "completed",
+  "errors": [],
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

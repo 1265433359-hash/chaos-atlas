@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: atlas-fair-online-boutique-f8aa6135d29f
+  namespace: chaosatlas-online-boutique
+  labels:
+    chaosatlas.dev/project: online-boutique
+    chaosatlas.dev/generator: same-pool-fair-candidates-v1
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-online-boutique
+    labelSelectors:
+      app: adservice

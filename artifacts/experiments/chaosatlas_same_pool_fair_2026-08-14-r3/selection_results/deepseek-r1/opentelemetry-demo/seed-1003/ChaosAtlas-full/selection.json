@@ -1,0 +1,53 @@
+{
+  "schema_version": "chaosatlas-same-pool-selection-result-v1",
+  "project_id": "opentelemetry-demo",
+  "seed": 1003,
+  "method_id": "ChaosAtlas-full",
+  "candidate_pool_sha256": "b9b6e043f6ad6ba2f98a837c6303348d880f30aa563a4a1866123d4154b9b5b8",
+  "request_sha256": "daedb2fe0573dfba5ffe73a31cdba2b34233be1eb3bf2325a51c14e7c170d6f2",
+  "model": "deepseek-v4-flash",
+  "model_metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 2506,
+    "prompt_tokens": 5346,
+    "completion_tokens": 257,
+    "total_tokens": 5603,
+    "finish_reason": "stop",
+    "message_fields": [
+      "content",
+      "role"
+    ],
+    "reasoning_content_chars": 0
+  },
+  "raw_sha256": "62fc9f89118df0df8c9a2ad84863c08c3e23840c0104d90ac3db5b854527018e",
+  "selection": {
+    "selected_candidates": [
+      {
+        "candidate_id": "opentelemetry-demo:checkout:pod_kill:1c4a778bb13b",
+        "rank": 1,
+        "reason": "Checkout is the direct target of the business oracle; killing it will directly break PlaceOrder."
+      },
+      {
+        "candidate_id": "opentelemetry-demo:cart:pod_kill:89665c860c51",
+        "rank": 2,
+        "reason": "Cart is a synchronous dependency of checkout; killing it will likely cause PlaceOrder to fail."
+      },
+      {
+        "candidate_id": "opentelemetry-demo:payment:network_delay:1717916703f5",
+        "rank": 3,
+        "reason": "Payment is a synchronous downstream call; high latency may cause timeout and fail PlaceOrder."
+      },
+      {
+        "candidate_id": "opentelemetry-demo:checkout:network_delay:83c46c575d33",
+        "rank": 4,
+        "reason": "Injecting high latency into checkout itself will directly impact PlaceOrder response time."
+      }
+    ]
+  },
+  "status": "completed",
+  "errors": [],
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

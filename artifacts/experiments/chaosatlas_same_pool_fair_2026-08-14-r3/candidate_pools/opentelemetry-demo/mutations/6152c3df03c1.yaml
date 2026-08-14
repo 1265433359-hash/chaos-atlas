@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: atlas-fair-opentelemetry-demo-b78a3504d99f
+  namespace: chaosatlas-otel
+  labels:
+    chaosatlas.dev/project: opentelemetry-demo
+    chaosatlas.dev/generator: same-pool-fair-candidates-v1
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-otel
+    labelSelectors:
+      app: currency
+  duration: 30s
+  direction: to
+  action: loss
+  loss:
+    loss: '100'
+    correlation: '100'

@@ -34,6 +34,19 @@ from run_grpc_chaos_experiment import run_client  # noqa: E402
 NAMESPACE = "chaosatlas-otel"
 CLIENT = Path("artifacts/opentelemetry-demo/otel_client.py")
 CHAOS_RESOURCES = ("podchaos", "networkchaos", "stresschaos")
+OTEL_APPS = {
+    "cart",
+    "checkout",
+    "currency",
+    "email",
+    "flagd",
+    "payment",
+    "postgres",
+    "product-catalog",
+    "quote",
+    "shipping",
+    "valkey",
+}
 
 
 def consecutive_successes(samples: list[dict[str, Any]]) -> int:
@@ -62,8 +75,8 @@ def validate_otel_mutation(document: dict[str, Any]) -> dict[str, Any]:
         errors.append("metadata namespace is not chaosatlas-otel")
     if selector.get("namespaces") != [NAMESPACE]:
         errors.append("selector namespace is not exact")
-    if labels.get("app") not in {"checkout", "cart"} or set(labels) != {"app"}:
-        errors.append("selector must target checkout or cart app")
+    if labels.get("app") not in OTEL_APPS or set(labels) != {"app"}:
+        errors.append("selector must target a frozen OTel app")
     if spec.get("mode") != "one":
         errors.append("mode must be one")
     if document.get("kind") == "PodChaos" and spec.get("action") != "pod-kill":

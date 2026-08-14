@@ -1,0 +1,41 @@
+{
+  "schema_version": "chaosatlas-same-pool-fair-freeze-v1",
+  "projects": [
+    "online-boutique",
+    "opentelemetry-demo",
+    "sock-shop"
+  ],
+  "methods": [
+    "ChaosAtlas-full",
+    "ChaosAtlas-ablation",
+    "ChaosEater-adapter"
+  ],
+  "seeds": [
+    1001,
+    1002,
+    1003
+  ],
+  "generation_rule": "same-pool-fair-candidates-v1",
+  "records": [
+    {
+      "project_id": "online-boutique",
+      "candidate_count": 55,
+      "candidate_pool_sha256": "da59cdddf5bd8d1377fbddafe53478368153efb4b822234fee62ca45175f12db"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_count": 55,
+      "candidate_pool_sha256": "b9b6e043f6ad6ba2f98a837c6303348d880f30aa563a4a1866123d4154b9b5b8"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_count": 70,
+      "candidate_pool_sha256": "dc6a8a2d6a5dbcaba47700103bfc27bc056b05c0df4929a69e0099d69afce415"
+    }
+  ],
+  "pool_sha256": "bf6e65bcc45185a0dcf39828f9da378b3d308b2ddd72fe4676e8bd9718294458",
+  "model_calls": false,
+  "runtime_started": false,
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

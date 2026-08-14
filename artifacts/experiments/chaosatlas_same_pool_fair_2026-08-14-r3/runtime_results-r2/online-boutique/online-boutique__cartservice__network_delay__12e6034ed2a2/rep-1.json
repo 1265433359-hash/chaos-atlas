@@ -1,0 +1,878 @@
+{
+  "schema_version": "unified-lifecycle-v1",
+  "project_id": "online-boutique",
+  "namespace": "chaosatlas-online-boutique",
+  "arm": "same-pool-fair",
+  "seed": 0,
+  "mutation_id": "online-boutique:cartservice:network_delay:12e6034ed2a2",
+  "replicate": 1,
+  "mutation": {
+    "path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/12e6034ed2a2.yaml",
+    "sha256": "9e724b55980d694a51d7a1deb9f813f54c19613418aba031230f572d07543eea"
+  },
+  "baseline": {
+    "pass": true,
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 4203.0,
+      "stdout": "[0] ok oid=36eb7d62-97c6-11f1-8cb7-76e4b320e676 tracking=KC-44343-228622738 (769.9ms)\n[1] ok oid=37aeab8f-97c6-11f1-8cb7-76e4b320e676 tracking=WO-44743-226215685 (14.3ms)\n[2] ok oid=37fecc9d-97c6-11f1-8cb7-76e4b320e676 tracking=KR-44210-225194377 (15.6ms)\n[3] ok oid=384efcd4-97c6-11f1-8cb7-76e4b320e676 tracking=GE-44623-222653834 (15.1ms)\n[4] ok oid=389f44b4-97c6-11f1-8cb7-76e4b320e676 tracking=FO-44695-222914456 (14.8ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 769.9,
+          "result": "ok oid=36eb7d62-97c6-11f1-8cb7-76e4b320e676 tracking=KC-44343-228622738",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 14.3,
+          "result": "ok oid=37aeab8f-97c6-11f1-8cb7-76e4b320e676 tracking=WO-44743-226215685",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "OK",
+          "latency_ms": 15.6,
+          "result": "ok oid=37fecc9d-97c6-11f1-8cb7-76e4b320e676 tracking=KR-44210-225194377",
+          "error": null
+        },
+        {
+          "sample": 4,
+          "grpc_status": "OK",
+          "latency_ms": 15.1,
+          "result": "ok oid=384efcd4-97c6-11f1-8cb7-76e4b320e676 tracking=GE-44623-222653834",
+          "error": null
+        },
+        {
+          "sample": 5,
+          "grpc_status": "OK",
+          "latency_ms": 14.8,
+          "result": "ok oid=389f44b4-97c6-11f1-8cb7-76e4b320e676 tracking=FO-44695-222914456",
+          "error": null
+        }
+      ]
+    },
+    "successes_required": 5
+  },
+  "injection": {
+    "applied": true,
+    "injected": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "networkchaos.chaos-mesh.org/atlas-fair-online-boutique-d5b82b2f2c63 created",
+      "stderr": ""
+    },
+    "lifecycle": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-14T09:55:04Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-online-boutique/cartservice-5565d6f5db-bznwd",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-14T09:55:04Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    }
+  },
+  "observation": {
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 35594.0,
+      "stdout": "[0] ok oid=3bd2b392-97c6-11f1-8cb7-76e4b320e676 tracking=OE-44456-223780876 (8017.7ms)\n[1] ok oid=434ab3c1-97c6-11f1-8cb7-76e4b320e676 tracking=BQ-44364-229195636 (8017.0ms)\n[2] rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = error reading from server: read tcp 10.244.1.218:59550->10.111.26.238:7070: read: connection reset by peer (2871.0ms)\n[3] cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n>)\n[4] cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 8017.7,
+          "result": "ok oid=3bd2b392-97c6-11f1-8cb7-76e4b320e676 tracking=OE-44456-223780876",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 8017.0,
+          "result": "ok oid=434ab3c1-97c6-11f1-8cb7-76e4b320e676 tracking=BQ-44364-229195636",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 2871.0,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = error reading from server: read tcp 10.244.1.218:59550->10.111.26.238:7070: read: connection reset by peer",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = error reading from server: read tcp 10.244.1.218:59550->10.111.26.238:7070: read: connection reset by peer"
+        },
+        {
+          "sample": 4,
+          "grpc_status": "CART_ADD_FAILED",
+          "latency_ms": null,
+          "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n>)",
+          "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: End of TCP stream\"\n>)"
+        },
+        {
+          "sample": 5,
+          "grpc_status": "CART_ADD_FAILED",
+          "latency_ms": null,
+          "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)",
+          "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)"
+        }
+      ]
+    },
+    "classification": "weakness_observed"
+  },
+  "recovery": {
+    "recovered": true,
+    "resource_recovered": true,
+    "state": {
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-14T09:55:04Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-08-14T09:55:34Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-online-boutique/cartservice-5565d6f5db-bznwd",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-14T09:55:04Z"
+      ],
+      "recovery_timestamps": [
+        "2026-08-14T09:55:34Z"
+      ],
+      "desired_phase": "Stop"
+    },
+    "workload": {
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "CART_ADD_FAILED",
+          "latency_ms": null,
+          "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)",
+          "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)"
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 9.7,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 8.4,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 8.2,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 7.5,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 7.6,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 20.3,
+          "result": "ok oid=5e7d29e7-97c6-11f1-8cb7-76e4b320e676 tracking=AK-44893-220834344",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.5,
+          "result": "ok oid=60a753d2-97c6-11f1-8cb7-76e4b320e676 tracking=EL-44452-224673831",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.3,
+          "result": "ok oid=62d731dc-97c6-11f1-8cb7-76e4b320e676 tracking=XA-44083-222265785",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.0,
+          "result": "ok oid=6500c1a8-97c6-11f1-8cb7-76e4b320e676 tracking=VU-44237-223924870",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.2,
+          "result": "ok oid=672a112f-97c6-11f1-8cb7-76e4b320e676 tracking=YR-44206-226617465",
+          "error": null
+        }
+      ]
+    },
+    "business": {
+      "recovered": true,
+      "samples": [
+        {
+          "sample": 1,
+          "grpc_status": "CART_ADD_FAILED",
+          "latency_ms": null,
+          "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)",
+          "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)"
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 9.7,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 8.4,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 8.2,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 7.5,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "INTERNAL",
+          "latency_ms": 7.6,
+          "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+          "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 20.3,
+          "result": "ok oid=5e7d29e7-97c6-11f1-8cb7-76e4b320e676 tracking=AK-44893-220834344",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.5,
+          "result": "ok oid=60a753d2-97c6-11f1-8cb7-76e4b320e676 tracking=EL-44452-224673831",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.3,
+          "result": "ok oid=62d731dc-97c6-11f1-8cb7-76e4b320e676 tracking=XA-44083-222265785",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.0,
+          "result": "ok oid=6500c1a8-97c6-11f1-8cb7-76e4b320e676 tracking=VU-44237-223924870",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 15.2,
+          "result": "ok oid=672a112f-97c6-11f1-8cb7-76e4b320e676 tracking=YR-44206-226617465",
+          "error": null
+        }
+      ],
+      "workloads": [
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 2609.0,
+          "stdout": "[0] cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "CART_ADD_FAILED",
+              "latency_ms": null,
+              "result": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)",
+              "error": "cart_add_failed (<_InactiveRpcError of RPC that terminated with:\n\tstatus = StatusCode.UNAVAILABLE\n\tdetails = \"failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n\tdebug_error_string = \"UNAVAILABLE:failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:17070: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)\"\n>)"
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 1516.0,
+          "stdout": "[0] rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\" (9.7ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "INTERNAL",
+              "latency_ms": 9.7,
+              "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+              "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\" (8.4ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "INTERNAL",
+              "latency_ms": 8.4,
+              "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+              "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 672.0,
+          "stdout": "[0] rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\" (8.2ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "INTERNAL",
+              "latency_ms": 8.2,
+              "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+              "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\" (7.5ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "INTERNAL",
+              "latency_ms": 7.5,
+              "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+              "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\" (7.6ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "INTERNAL",
+              "latency_ms": 7.6,
+              "result": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\"",
+              "error": "rpc_error code=INTERNAL details=cart failure: failed to get user cart during checkout: rpc error: code = Unavailable desc = connection error: desc = \"transport: Error while dialing: dial tcp 10.111.26.238:7070: connect: connection refused\""
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] ok oid=5e7d29e7-97c6-11f1-8cb7-76e4b320e676 tracking=AK-44893-220834344 (20.3ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 20.3,
+              "result": "ok oid=5e7d29e7-97c6-11f1-8cb7-76e4b320e676 tracking=AK-44893-220834344",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] ok oid=60a753d2-97c6-11f1-8cb7-76e4b320e676 tracking=EL-44452-224673831 (15.5ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 15.5,
+              "result": "ok oid=60a753d2-97c6-11f1-8cb7-76e4b320e676 tracking=EL-44452-224673831",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 672.0,
+          "stdout": "[0] ok oid=62d731dc-97c6-11f1-8cb7-76e4b320e676 tracking=XA-44083-222265785 (15.3ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 15.3,
+              "result": "ok oid=62d731dc-97c6-11f1-8cb7-76e4b320e676 tracking=XA-44083-222265785",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] ok oid=6500c1a8-97c6-11f1-8cb7-76e4b320e676 tracking=VU-44237-223924870 (15.0ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 15.0,
+              "result": "ok oid=6500c1a8-97c6-11f1-8cb7-76e4b320e676 tracking=VU-44237-223924870",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] ok oid=672a112f-97c6-11f1-8cb7-76e4b320e676 tracking=YR-44206-226617465 (15.2ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 15.2,
+              "result": "ok oid=672a112f-97c6-11f1-8cb7-76e4b320e676 tracking=YR-44206-226617465",
+              "error": null
+            }
+          ]
+        }
+      ],
+      "consecutive_successes": 5,
+      "successes_required": 5,
+      "elapsed_seconds": 40.672,
+      "port_forward_reconnects": 1
+    }
+  },
+  "cleanup": {
+    "delete_command_ok": true,
+    "delete_output": "networkchaos.chaos-mesh.org \"atlas-fair-online-boutique-d5b82b2f2c63\" deleted from chaosatlas-online-boutique namespace",
+    "resource_absent_after_delete": true,
+    "absent_confirmed": true,
+    "verify_status": "absent",
+    "verify_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-fair-online-boutique-d5b82b2f2c63\" not found",
+    "delete_failed": false,
+    "residual_resources": [],
+    "global_scan_errors": []
+  },
+  "washout": {
+    "stable": true,
+    "samples": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.7,
+        "result": "ok oid=6789abec-97c6-11f1-8cb7-76e4b320e676 tracking=OL-44843-227634626",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 16.2,
+        "result": "ok oid=69b3220c-97c6-11f1-8cb7-76e4b320e676 tracking=XW-44279-220846675",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.9,
+        "result": "ok oid=6bdc2091-97c6-11f1-8cb7-76e4b320e676 tracking=MQ-44631-220594131",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 59.6,
+        "result": "ok oid=6e0c289e-97c6-11f1-8cb7-76e4b320e676 tracking=KU-44825-220360578",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.9,
+        "result": "ok oid=7035ab93-97c6-11f1-8cb7-76e4b320e676 tracking=VC-44819-220379341",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 58.6,
+        "result": "ok oid=726c28ca-97c6-11f1-8cb7-76e4b320e676 tracking=QL-44197-225148461",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.7,
+        "result": "ok oid=74958d0d-97c6-11f1-8cb7-76e4b320e676 tracking=MN-44125-223563347",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.7,
+        "result": "ok oid=76c58bbb-97c6-11f1-8cb7-76e4b320e676 tracking=IA-44326-225563272",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.6,
+        "result": "ok oid=78f54df5-97c6-11f1-8cb7-76e4b320e676 tracking=KM-44849-223920150",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.5,
+        "result": "ok oid=7b1f2165-97c6-11f1-8cb7-76e4b320e676 tracking=LS-44388-222465564",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.7,
+        "result": "ok oid=7d4878c5-97c6-11f1-8cb7-76e4b320e676 tracking=HS-44618-227834405",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.8,
+        "result": "ok oid=7f716495-97c6-11f1-8cb7-76e4b320e676 tracking=TV-44152-224292540",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 63.9,
+        "result": "ok oid=81a20622-97c6-11f1-8cb7-76e4b320e676 tracking=DG-44933-227835085",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.0,
+        "result": "ok oid=83cc1dd6-97c6-11f1-8cb7-76e4b320e676 tracking=AN-44562-223721285",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 58.6,
+        "result": "ok oid=86029d08-97c6-11f1-8cb7-76e4b320e676 tracking=WU-44038-229012813",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.7,
+        "result": "ok oid=88324dad-97c6-11f1-8cb7-76e4b320e676 tracking=RN-44313-222486805",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 61.7,
+        "result": "ok oid=8a629b1c-97c6-11f1-8cb7-76e4b320e676 tracking=KD-44108-223014248",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.7,
+        "result": "ok oid=8c8bb8d2-97c6-11f1-8cb7-76e4b320e676 tracking=WQ-44076-229018338",
+        "error": null
+      }
+    ],
+    "elapsed_seconds": 62.719,
+    "successes_required": 10
+  },
+  "diagnostics": {
+    "status": "captured",
+    "files": [
+      {
+        "path": "artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/runtime_results-r2/online-boutique/online-boutique__cartservice__network_delay__12e6034ed2a2/rep-1.diagnostics/events.log",
+        "sha256": "2512ac8e021d50493609be4d5aab5b4f14a890d5fd37a059f03ab9725cf258c3",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/runtime_results-r2/online-boutique/online-boutique__cartservice__network_delay__12e6034ed2a2/rep-1.diagnostics/checkoutservice.log",
+        "sha256": "b55da64166b0d732d87df862238af301e3f62ed3f817eb3ff745fde3afa7b2e6",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/runtime_results-r2/online-boutique/online-boutique__cartservice__network_delay__12e6034ed2a2/rep-1.diagnostics/cartservice.log",
+        "sha256": "a9bbe9ee200b26b824caf255c7fc3e1c3ddadd795551b5b5c8818fefdf9b4b61",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/runtime_results-r2/online-boutique/online-boutique__cartservice__network_delay__12e6034ed2a2/rep-1.diagnostics/target.log",
+        "sha256": "a9bbe9ee200b26b824caf255c7fc3e1c3ddadd795551b5b5c8818fefdf9b4b61",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/runtime_results-r2/online-boutique/online-boutique__cartservice__network_delay__12e6034ed2a2/rep-1.diagnostics/trace-unavailable.json",
+        "sha256": "e5aedb8d45c3b788ef05d1c51f229fa7dc1a0bb9a53d4bf3e869f0058b35fb77",
+        "return_code": "0"
+      }
+    ]
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "status": "completed",
+  "errors": [],
+  "started_at": "2026-08-14T09:54:58.098315+00:00",
+  "preflight": {
+    "checked_at": "2026-08-14T09:54:58.317221+00:00",
+    "mutation": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/12e6034ed2a2.yaml",
+    "kind": "NetworkChaos",
+    "namespace": "chaosatlas-online-boutique",
+    "name": "atlas-fair-online-boutique-d5b82b2f2c63",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-online-boutique"
+      ],
+      "labelSelectors": {
+        "app": "cartservice"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "chaosatlas-online-boutique",
+          "chaosatlas-otel",
+          "chaosatlas-sock-shop",
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "sock-shop-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "selector_labels_ok": true,
+        "requested_namespaces": [
+          "chaosatlas-online-boutique"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "chaosatlas-online-boutique",
+          "name": "cartservice-5565d6f5db-bznwd",
+          "uid": "c6a3c8b2-3a64-4f28-997b-4be5d03d9b2f",
+          "terminating": false,
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            7070
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "mutation_name_status": "available",
+      "mutation_name_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-fair-online-boutique-d5b82b2f2c63\" not found",
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"atlas-fair-online-boutique-d5b82b2f2c63\" not found\n"
+  },
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-14T09:57:25.041029+00:00",
+  "eligibility": {
+    "eligible": true,
+    "reasons": []
+  }
+}

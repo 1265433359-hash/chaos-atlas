@@ -1,0 +1,1201 @@
+{
+  "schema_version": "chaosatlas-same-pool-runtime-plan-v1",
+  "projects": [
+    "online-boutique",
+    "opentelemetry-demo",
+    "sock-shop"
+  ],
+  "methods": [
+    "ChaosAtlas-full",
+    "ChaosAtlas-ablation",
+    "ChaosEater-adapter"
+  ],
+  "total_unique_candidates": 18,
+  "total_runtime_units": 36,
+  "candidates": [
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:cartservice:network_delay:12e6034ed2a2",
+      "target": "cartservice",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/12e6034ed2a2.yaml",
+      "yaml_sha256": "9e724b55980d694a51d7a1deb9f813f54c19613418aba031230f572d07543eea",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 2,
+          "reason": "High latency on cartservice, a critical dependency for checkout, likely causing timeouts."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 4,
+          "reason": "Adding 2000ms latency to cart service will slow down checkout's cart retrieval, potentially causing timeouts and order failures, exposing weaknesses in the checkout path."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 4,
+          "reason": "High latency on cartservice delays cart access during checkout, potentially causing timeouts and failed orders."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 4,
+          "reason": "High latency on cartservice will delay checkoutservice's synchronous call, impacting PlaceOrder."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 4,
+          "reason": "Adding 2s delay to cart service during checkout can exceed timeouts, impacting order completion."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 4,
+          "reason": "Adding 2s delay to cartservice can cause checkout to time out, impacting PlaceOrder."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 2,
+          "reason": "Cart service is a critical dependency for checkout; high latency can cause timeouts and failed order placement."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 2,
+          "reason": "Cart service is a critical dependency for checkout; 2000ms delay likely causes timeout in PlaceOrder, revealing missing timeouts or retries."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 4,
+          "reason": "2000ms latency on cart service delays checkout's cart retrieval, likely causing timeouts and impacting PlaceOrder."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:cartservice:pod_kill:3a22d06bf148",
+      "target": "cartservice",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/3a22d06bf148.yaml",
+      "yaml_sha256": "45e2ba6d58dd785facade3e3fd5b50423ac8175149975b9be59cf3c83b807676",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 4,
+          "reason": "Killing cartservice disrupts cart retrieval, a prerequisite for checkout, causing failures."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 3,
+          "reason": "Cart service is a dependency for checkout. Killing it will prevent cart retrieval, causing PlaceOrder to fail, thus directly impacting the business operation."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 3,
+          "reason": "Cartservice is a dependency for checkout; killing it prevents cart retrieval, causing checkout failure."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 2,
+          "reason": "Cartservice is synchronously called by checkoutservice; killing it will cause PlaceOrder to fail."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 2,
+          "reason": "Cart service is synchronously called during checkout; killing it blocks order placement."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 3,
+          "reason": "Cartservice is synchronously called by checkoutservice; killing it will break cart retrieval during checkout."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 4,
+          "reason": "Killing cart service breaks cart retrieval during checkout, leading to failed PlaceOrder."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 4,
+          "reason": "Killing cart service breaks cart retrieval during checkout, likely causing PlaceOrder to fail; tests dependency resilience."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 3,
+          "reason": "Cart service is a dependency for checkout; killing it prevents cart retrieval, breaking PlaceOrder."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:checkoutservice:network_delay:7f958457853a",
+      "target": "checkoutservice",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/7f958457853a.yaml",
+      "yaml_sha256": "68e41cb3e62b13e115c3ddc481791936dfe4e0821775a86609a143d4cd804e52",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 3,
+          "reason": "High latency on checkoutservice itself, directly impacting PlaceOrder response time."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 2,
+          "reason": "Introduces 2000ms latency to checkout service, which is critical for PlaceOrder. This will likely cause timeouts or significant slowdowns, exposing resilience issues in the checkout flow."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 2,
+          "reason": "High latency on checkoutservice can cause timeouts in PlaceOrder, directly impacting the business operation."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 3,
+          "reason": "High latency on checkoutservice will directly impact PlaceOrder response time, potentially causing timeouts."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 3,
+          "reason": "High latency on checkout service delays the critical path, likely causing timeouts and failed orders."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 2,
+          "reason": "High latency on checkoutservice's synchronous downstream calls can cause timeouts and fail PlaceOrder."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 3,
+          "reason": "Introduces 2s delay on checkout service, likely exceeding client timeouts and causing order failure."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 3,
+          "reason": "High latency on checkout service directly impacts PlaceOrder response time, potentially causing user-visible failure or timeout."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 2,
+          "reason": "Introduces 2000ms latency to checkout, likely causing timeouts in PlaceOrder. High impact on the critical path."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:checkoutservice:pod_kill:eb62843849ee",
+      "target": "checkoutservice",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/eb62843849ee.yaml",
+      "yaml_sha256": "5a0208d77d2cbceb14559017e90e1eb591a133a696fcf7e632ec2df1f4f465fd",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 1,
+          "reason": "Directly kills checkoutservice, the service handling PlaceOrder, causing immediate failure."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 1,
+          "reason": "Directly targets the checkout service, which is the entry point for the PlaceOrder operation. A pod kill will cause immediate failure or delay in order processing, directly impacting the business oracle."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 1,
+          "reason": "Directly targets checkoutservice, the service invoked by PlaceOrder; pod kill causes immediate failure of the checkout call."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 1,
+          "reason": "Checkoutservice is the direct target of the business oracle; killing it will directly break PlaceOrder."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 1,
+          "reason": "Directly kills the checkout service, which is the entry point for PlaceOrder; single replica means immediate failure."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 1,
+          "reason": "Checkoutservice is the direct target of the business oracle; killing its single replica will directly fail PlaceOrder."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 1,
+          "reason": "Directly disrupts the checkout service, which is the entry point for PlaceOrder, causing immediate failure or timeout."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 1,
+          "reason": "Directly disrupts the checkout service, which is the core of the PlaceOrder oracle; pod kill causes immediate failure or timeout, exposing lack of resilience."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 1,
+          "reason": "Directly disrupts the checkout service, which is the core of the business oracle. A pod kill causes immediate unavailability, likely failing PlaceOrder."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:cart:network_delay:4f36da0b8997",
+      "target": "cart",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/4f36da0b8997.yaml",
+      "yaml_sha256": "06bad4e35a5faf49d76c21b1a4b774de35522f1613b11cf9fcd402873cb0f384",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 4,
+          "reason": "Cart is a dependency for checkout; introducing 2000ms delay may cause cascading timeouts, affecting PlaceOrder indirectly but significantly."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 3,
+          "reason": "High latency on cart, a critical dependency for checkout, may cause checkout to time out or fail."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 4,
+          "reason": "High latency on cart can propagate to checkout, potentially causing PlaceOrder to fail or slow down."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 4,
+          "reason": "Cart is a critical dependency for checkout. Adding 2000ms latency to cart may cause cascading delays in PlaceOrder, revealing performance bottlenecks and lack of resilience."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 2,
+          "reason": "High latency on cart, a critical dependency for checkout, likely causes timeout and order failure."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 3,
+          "reason": "Cart is upstream of checkout; high latency may cause cascading failures."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:cart:pod_kill:89665c860c51",
+      "target": "cart",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/89665c860c51.yaml",
+      "yaml_sha256": "dbd64a6b5d52bde63a4d4de6cf3c9bb561334cc4f59daa6e365f776ff98a13ea",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 4,
+          "reason": "Killing cart disrupts a critical dependency for checkout, likely causing PlaceOrder to fail."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 2,
+          "reason": "Cart is a synchronous dependency of checkout; killing it will likely cause PlaceOrder to fail."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 3,
+          "reason": "Cart is a synchronous dependency for checkout; killing it may break PlaceOrder if not resilient."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 2,
+          "reason": "Cart is a synchronous dependency of checkout; killing it will likely cause PlaceOrder to fail."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 4,
+          "reason": "Killing cart disrupts a key dependency, potentially causing checkout to fail if cart is unavailable."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:checkout:network_delay:83c46c575d33",
+      "target": "checkout",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/83c46c575d33.yaml",
+      "yaml_sha256": "cd3b948d126c8a3f358a3a3f257672c2d8401b0f4d026630fc824f948fadab66",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 3,
+          "reason": "High latency (2000ms) on checkout may cause timeouts in PlaceOrder, exposing resilience issues."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 3,
+          "reason": "High latency (2000ms) on checkout will likely cause timeouts in PlaceOrder, exposing resilience issues in handling slow responses."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 4,
+          "reason": "Direct delay on checkout may exceed timeouts and impact PlaceOrder."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 2,
+          "reason": "High latency on checkout's network can cause timeouts in PlaceOrder, exposing lack of timeout handling."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 4,
+          "reason": "Injecting high latency into checkout itself will directly impact PlaceOrder response time."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 3,
+          "reason": "2000ms latency on checkout will likely cause timeouts in PlaceOrder, exposing timeout handling and user-facing impact. High relevance to the business oracle."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 3,
+          "reason": "High latency on checkout itself, directly impacting PlaceOrder response time and success."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 1,
+          "reason": "Directly targets checkout service with high latency, likely to cause timeouts in PlaceOrder."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:checkout:network_loss:75b4523f3167",
+      "target": "checkout",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss": 100,
+        "duration": "30s"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/75b4523f3167.yaml",
+      "yaml_sha256": "d8f88b163e36538ef75259857a257e4d3b5d953761ae15f6df4fb60b90042878",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 2,
+          "reason": "100% packet loss on checkout isolates it from dependencies, likely causing timeouts or failures in PlaceOrder."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 2,
+          "reason": "100% network loss on checkout will prevent any communication, causing PlaceOrder to fail. This is a severe fault that directly affects the business operation."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 2,
+          "reason": "100% packet loss on checkout isolates it from dependencies, likely causing timeouts or failure in PlaceOrder."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 2,
+          "reason": "100% network loss on checkout will block all incoming requests, directly causing PlaceOrder to fail. This is a high-impact, easy-to-observe failure."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:checkout:pod_kill:1c4a778bb13b",
+      "target": "checkout",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/1c4a778bb13b.yaml",
+      "yaml_sha256": "f285ae0ca05d79ba471fe1df1becdb0037bbc86da388cf634a65f9c4aeaf9fc8",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 1,
+          "reason": "Directly kills the checkout service, which is the entry point for the PlaceOrder operation, causing immediate failure."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 1,
+          "reason": "Directly targets the checkout service, which is the entry point for the PlaceOrder operation. A pod kill will cause immediate failure or timeout, directly impacting the business oracle."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 1,
+          "reason": "Directly kills the checkout service, which is the entry point for the PlaceOrder operation, likely causing immediate failure."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 1,
+          "reason": "Checkout is the direct target of the business oracle; killing it will directly break PlaceOrder."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 1,
+          "reason": "Checkout is the direct target of the business oracle; killing its pod will directly disrupt PlaceOrder."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 1,
+          "reason": "Checkout is the direct target of the business oracle; killing it will directly break PlaceOrder."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 1,
+          "reason": "Directly disrupts the checkout service, which is the target of the business oracle. A pod kill will cause immediate unavailability and likely fail PlaceOrder, exposing lack of resilience."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 1,
+          "reason": "Directly disrupts checkout service, causing immediate failure of PlaceOrder."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 2,
+          "reason": "Killing checkout pod disrupts the critical path, exposing lack of failover."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:payment:network_delay:1717916703f5",
+      "target": "payment",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/1717916703f5.yaml",
+      "yaml_sha256": "d428b6c9ad63b109dff4efacf4b838d5c5bf04932c08269dc9a86818014860cb",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 4,
+          "reason": "Payment is essential for order completion; 2s delay may cause checkout to fail or timeout."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 3,
+          "reason": "Payment is a synchronous downstream call; high latency may cause timeout and order failure."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 3,
+          "reason": "Payment is a synchronous downstream call; high latency may cause timeout and fail PlaceOrder."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 4,
+          "reason": "Payment is a dependency of checkout; high latency can cause checkout failure."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:carts:network_delay:4f53bb8524d3",
+      "target": "carts",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/4f53bb8524d3.yaml",
+      "yaml_sha256": "2661b7adab0f2c9add136e5e6e09dcc5d577940232a6b1011df141cf37e31a9d",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 4,
+          "reason": "Carts service is needed for adding items; 2000ms delay may break the add-to-cart flow."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:catalogue:network_delay:a65916f4b46f",
+      "target": "catalogue",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/a65916f4b46f.yaml",
+      "yaml_sha256": "8449b130362e0e413aad78572ad83822f3edea74de852a63f57a52ab55806323",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 2,
+          "reason": "Catalogue is critical for browsing products; 2000ms delay severely impacts page load and user experience."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 2,
+          "reason": "Catalogue is essential for browsing products; high latency directly impacts page load and user experience."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 2,
+          "reason": "Catalogue is essential for browsing products; high latency directly impacts page load and user experience."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 2,
+          "reason": "Catalogue is a synchronous dependency for the front page and catalogue browsing; high latency can cause timeouts and degrade the journey."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 2,
+          "reason": "Catalogue is critical for browsing; 2000ms delay on catalogue service will cause timeouts and page load failures, impacting the front page and catalogue steps."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 2,
+          "reason": "Catalogue is critical for browsing; 2000ms delay will cause timeouts and degrade the front page and catalogue experience."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 2,
+          "reason": "Catalogue is critical for browsing; 2000ms delay on catalogue service will severely degrade page load times, impacting user experience and potentially causing timeouts."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:catalogue:pod_kill:cef7cc04e4bf",
+      "target": "catalogue",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/cef7cc04e4bf.yaml",
+      "yaml_sha256": "34a7adaa3f438d98928fbefa82a66170e2ae0df38c3276a1da85eb57292b8d21",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 2,
+          "reason": "Catalogue is essential for browsing products; a single replica kill makes the catalogue unavailable, blocking the journey."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 2,
+          "reason": "Catalogue is essential for browsing products; a single replica kill causes immediate unavailability of the catalogue page."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:front-end:pod_kill:8dbdf50509ea",
+      "target": "front-end",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/8dbdf50509ea.yaml",
+      "yaml_sha256": "6ff3697b1836c6fe8a37cf296f66ae5db86ade9979210bcea779c904518d10ea",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 1,
+          "reason": "Front-end is the entry point for the golden journey; killing it directly disrupts all user interactions."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 1,
+          "reason": "Front-end is the entry point for the golden journey; killing it directly disrupts all user interactions."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 1,
+          "reason": "Front-end is the entry point for the golden journey; killing it directly disrupts all user interactions."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 1,
+          "reason": "Front-end is the entry point for the golden journey; killing it directly breaks all user-facing flows."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 1,
+          "reason": "Front-end is the entry point for the golden journey; killing it directly breaks all user-facing flows."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 1,
+          "reason": "Front-end is the entry point for the golden journey; killing it directly breaks all user-facing flows."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 1,
+          "reason": "Front-end is the entry point for the golden journey; killing it directly disrupts all user-facing flows, exposing lack of HA or failover."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 1,
+          "reason": "Front-end is the entry point for the golden journey; killing it directly disrupts all user interactions, exposing lack of HA or failover."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 1,
+          "reason": "Directly disrupts the entry point of the golden journey; pod kill causes immediate unavailability of the entire front-end, exposing lack of redundancy or failover."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:orders:network_delay:e37a698052ff",
+      "target": "orders",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/e37a698052ff.yaml",
+      "yaml_sha256": "2dc614bc627739026edeb1cb834782e9856d7948f283c37bca2694aa9366d71a",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1001,
+          "rank": 3,
+          "reason": "Orders are essential for the journey; high latency can cause timeouts and failed order placement."
+        },
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 4,
+          "reason": "Orders service is central to order placement; high latency can break the checkout process."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 4,
+          "reason": "Orders service is essential for order placement; 2000ms delay will cause order submission to be slow or fail, impacting the final step of the journey."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:orders:pod_kill:6b9801f1e544",
+      "target": "orders",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/6b9801f1e544.yaml",
+      "yaml_sha256": "635c9eadcbcdb4ca4d4f78d9f4ed8b1560b67dc9cc875e28904d0633c7261be1",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 4,
+          "reason": "Orders service is central to the order placement step; killing it breaks the core business transaction."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 4,
+          "reason": "Orders service is critical for placing orders; a kill disrupts the order placement step, impacting the business."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 4,
+          "reason": "Orders service is essential for order placement; killing it directly prevents order completion, a key business step."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 4,
+          "reason": "Orders service is required for placing orders; a kill disrupts the order placement step, directly impacting business."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 4,
+          "reason": "Orders service is central to order placement; killing it will prevent order submission, directly impacting the orders step of the golden journey."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 4,
+          "reason": "Orders service is critical for order placement; killing it will break the orders step, revealing lack of resilience."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:user:network_delay:c396559b9e08",
+      "target": "user",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency": "2000ms",
+        "duration": "30s"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/c396559b9e08.yaml",
+      "yaml_sha256": "4e9bab5026c46c30982c1b0df512fd079fb964686b7f9551a06822afd3fb6873",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1002,
+          "rank": 3,
+          "reason": "User service is critical for login; high latency can cause login failures or timeouts."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1002,
+          "rank": 3,
+          "reason": "User service is critical for login; adding 2000ms delay may cause login failures or timeouts, impacting the golden journey."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1001,
+          "rank": 3,
+          "reason": "User service is essential for login; 2000ms delay will slow authentication, potentially causing login timeouts and breaking the login step."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1002,
+          "rank": 3,
+          "reason": "User service is essential for login; 2000ms delay will slow authentication, impacting the login step of the journey."
+        },
+        {
+          "method_id": "ChaosEater-adapter",
+          "seed": 1003,
+          "rank": 3,
+          "reason": "Login depends on user service; 2000ms delay will make login sluggish or fail, directly blocking a key step in the golden journey."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:user:pod_kill:23e0eac11ff8",
+      "target": "user",
+      "fault_family": "pod_kill",
+      "parameters": {
+        "mode": "one"
+      },
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/23e0eac11ff8.yaml",
+      "yaml_sha256": "a101a0653dac8abee87777d2f256453d8b6b75031e7f6db77301a4b553a42a47",
+      "selected_by": [
+        {
+          "method_id": "ChaosAtlas-ablation",
+          "seed": 1003,
+          "rank": 3,
+          "reason": "User service is critical for login; failure prevents authentication and blocks order placement."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1001,
+          "rank": 3,
+          "reason": "User service is needed for login; killing it prevents authentication, halting the journey."
+        },
+        {
+          "method_id": "ChaosAtlas-full",
+          "seed": 1003,
+          "rank": 3,
+          "reason": "User service is critical for login; killing it prevents authentication, blocking the login step of the journey."
+        }
+      ],
+      "replicates": [
+        1,
+        2
+      ]
+    }
+  ],
+  "units": [
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:cartservice:network_delay:12e6034ed2a2",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/12e6034ed2a2.yaml"
+    },
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:cartservice:network_delay:12e6034ed2a2",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/12e6034ed2a2.yaml"
+    },
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:cartservice:pod_kill:3a22d06bf148",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/3a22d06bf148.yaml"
+    },
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:cartservice:pod_kill:3a22d06bf148",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/3a22d06bf148.yaml"
+    },
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:checkoutservice:network_delay:7f958457853a",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/7f958457853a.yaml"
+    },
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:checkoutservice:network_delay:7f958457853a",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/7f958457853a.yaml"
+    },
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:checkoutservice:pod_kill:eb62843849ee",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/eb62843849ee.yaml"
+    },
+    {
+      "project_id": "online-boutique",
+      "candidate_id": "online-boutique:checkoutservice:pod_kill:eb62843849ee",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/eb62843849ee.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:cart:network_delay:4f36da0b8997",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/4f36da0b8997.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:cart:network_delay:4f36da0b8997",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/4f36da0b8997.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:cart:pod_kill:89665c860c51",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/89665c860c51.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:cart:pod_kill:89665c860c51",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/89665c860c51.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:checkout:network_delay:83c46c575d33",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/83c46c575d33.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:checkout:network_delay:83c46c575d33",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/83c46c575d33.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:checkout:network_loss:75b4523f3167",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/75b4523f3167.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:checkout:network_loss:75b4523f3167",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/75b4523f3167.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:checkout:pod_kill:1c4a778bb13b",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/1c4a778bb13b.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:checkout:pod_kill:1c4a778bb13b",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/1c4a778bb13b.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:payment:network_delay:1717916703f5",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/1717916703f5.yaml"
+    },
+    {
+      "project_id": "opentelemetry-demo",
+      "candidate_id": "opentelemetry-demo:payment:network_delay:1717916703f5",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/opentelemetry-demo/mutations/1717916703f5.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:carts:network_delay:4f53bb8524d3",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/4f53bb8524d3.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:carts:network_delay:4f53bb8524d3",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/4f53bb8524d3.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:catalogue:network_delay:a65916f4b46f",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/a65916f4b46f.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:catalogue:network_delay:a65916f4b46f",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/a65916f4b46f.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:catalogue:pod_kill:cef7cc04e4bf",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/cef7cc04e4bf.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:catalogue:pod_kill:cef7cc04e4bf",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/cef7cc04e4bf.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:front-end:pod_kill:8dbdf50509ea",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/8dbdf50509ea.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:front-end:pod_kill:8dbdf50509ea",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/8dbdf50509ea.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:orders:network_delay:e37a698052ff",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/e37a698052ff.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:orders:network_delay:e37a698052ff",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/e37a698052ff.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:orders:pod_kill:6b9801f1e544",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/6b9801f1e544.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:orders:pod_kill:6b9801f1e544",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/6b9801f1e544.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:user:network_delay:c396559b9e08",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/c396559b9e08.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:user:network_delay:c396559b9e08",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/c396559b9e08.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:user:pod_kill:23e0eac11ff8",
+      "replicate": 1,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/23e0eac11ff8.yaml"
+    },
+    {
+      "project_id": "sock-shop",
+      "candidate_id": "sock-shop:user:pod_kill:23e0eac11ff8",
+      "replicate": 2,
+      "mutation_path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/sock-shop/mutations/23e0eac11ff8.yaml"
+    }
+  ],
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: atlas-fair-sock-shop-cb67ab413b82
+  namespace: chaosatlas-sock-shop
+  labels:
+    chaosatlas.dev/project: sock-shop
+    chaosatlas.dev/generator: same-pool-fair-candidates-v1
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: user-db

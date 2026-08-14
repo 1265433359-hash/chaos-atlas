@@ -1,0 +1,53 @@
+{
+  "schema_version": "chaosatlas-same-pool-selection-result-v1",
+  "project_id": "sock-shop",
+  "seed": 1001,
+  "method_id": "ChaosEater-adapter",
+  "candidate_pool_sha256": "dc6a8a2d6a5dbcaba47700103bfc27bc056b05c0df4929a69e0099d69afce415",
+  "request_sha256": "36a31e903c575518f136221c8ba1634c48f77969c28ba1010837ae02735ae829",
+  "model": "deepseek-v4-flash",
+  "model_metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 2766,
+    "prompt_tokens": 6682,
+    "completion_tokens": 292,
+    "total_tokens": 6974,
+    "finish_reason": "stop",
+    "message_fields": [
+      "content",
+      "role"
+    ],
+    "reasoning_content_chars": 0
+  },
+  "raw_sha256": "e4a81556caa5acf2acc67877983e8ddb393f855c90eb8876598d6d297539e11b",
+  "selection": {
+    "selected_candidates": [
+      {
+        "candidate_id": "sock-shop:front-end:pod_kill:8dbdf50509ea",
+        "rank": 1,
+        "reason": "Front-end is the entry point for the golden journey; killing it directly disrupts all user-facing flows, exposing lack of HA or failover."
+      },
+      {
+        "candidate_id": "sock-shop:catalogue:network_delay:a65916f4b46f",
+        "rank": 2,
+        "reason": "Catalogue is critical for browsing; 2000ms delay on catalogue service will cause timeouts and page load failures, impacting the front page and catalogue steps."
+      },
+      {
+        "candidate_id": "sock-shop:user:network_delay:c396559b9e08",
+        "rank": 3,
+        "reason": "User service is essential for login; 2000ms delay will slow authentication, potentially causing login timeouts and breaking the login step."
+      },
+      {
+        "candidate_id": "sock-shop:orders:pod_kill:6b9801f1e544",
+        "rank": 4,
+        "reason": "Orders service is central to order placement; killing it will prevent order submission, directly impacting the orders step of the golden journey."
+      }
+    ]
+  },
+  "status": "completed",
+  "errors": [],
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

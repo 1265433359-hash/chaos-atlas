@@ -1,0 +1,20 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: atlas-fair-sock-shop-f8d5401f1c78
+  namespace: chaosatlas-sock-shop
+  labels:
+    chaosatlas.dev/project: sock-shop
+    chaosatlas.dev/generator: same-pool-fair-candidates-v1
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: orders
+  stressors:
+    cpu:
+      workers: 1
+      load: 80
+  duration: 30s

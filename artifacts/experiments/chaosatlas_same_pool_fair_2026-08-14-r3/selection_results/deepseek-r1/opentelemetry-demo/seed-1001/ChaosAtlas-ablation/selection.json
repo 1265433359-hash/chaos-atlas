@@ -1,0 +1,53 @@
+{
+  "schema_version": "chaosatlas-same-pool-selection-result-v1",
+  "project_id": "opentelemetry-demo",
+  "seed": 1001,
+  "method_id": "ChaosAtlas-ablation",
+  "candidate_pool_sha256": "b9b6e043f6ad6ba2f98a837c6303348d880f30aa563a4a1866123d4154b9b5b8",
+  "request_sha256": "c998943ad117b0d67c06c0e1c68c71515f199d6f6cac9932b7ee61e107c492b3",
+  "model": "deepseek-v4-flash",
+  "model_metadata": {
+    "backend": "openai-compatible",
+    "model": "deepseek-v4-flash",
+    "endpoint": "https://api.deepseek.com/v1",
+    "generation_time_ms": 2287,
+    "prompt_tokens": 5255,
+    "completion_tokens": 271,
+    "total_tokens": 5526,
+    "finish_reason": "stop",
+    "message_fields": [
+      "content",
+      "role"
+    ],
+    "reasoning_content_chars": 0
+  },
+  "raw_sha256": "4a94be490d4f230268b8ff418382f9265be6a853c1c217da38ebe25870149be8",
+  "selection": {
+    "selected_candidates": [
+      {
+        "candidate_id": "opentelemetry-demo:checkout:pod_kill:1c4a778bb13b",
+        "rank": 1,
+        "reason": "Directly kills the checkout service, which is the entry point for the PlaceOrder operation, causing immediate failure."
+      },
+      {
+        "candidate_id": "opentelemetry-demo:checkout:network_loss:75b4523f3167",
+        "rank": 2,
+        "reason": "100% packet loss on checkout isolates it from dependencies, likely causing timeouts or failures in PlaceOrder."
+      },
+      {
+        "candidate_id": "opentelemetry-demo:checkout:network_delay:83c46c575d33",
+        "rank": 3,
+        "reason": "High latency (2000ms) on checkout may cause timeouts in PlaceOrder, exposing resilience issues."
+      },
+      {
+        "candidate_id": "opentelemetry-demo:cart:pod_kill:89665c860c51",
+        "rank": 4,
+        "reason": "Killing cart disrupts a critical dependency for checkout, likely causing PlaceOrder to fail."
+      }
+    ]
+  },
+  "status": "completed",
+  "errors": [],
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

@@ -1,0 +1,24 @@
+{
+  "selected_candidates": [
+    {
+      "candidate_id": "online-boutique:checkoutservice:pod_kill:eb62843849ee",
+      "rank": 1,
+      "reason": "Directly disrupts the checkout service, which is the entry point for PlaceOrder, causing immediate failure or timeout."
+    },
+    {
+      "candidate_id": "online-boutique:cartservice:network_delay:12e6034ed2a2",
+      "rank": 2,
+      "reason": "Cart service is a critical dependency for checkout; high latency can cause timeouts and failed order placement."
+    },
+    {
+      "candidate_id": "online-boutique:checkoutservice:network_delay:7f958457853a",
+      "rank": 3,
+      "reason": "Introduces 2s delay on checkout service, likely exceeding client timeouts and causing order failure."
+    },
+    {
+      "candidate_id": "online-boutique:cartservice:pod_kill:3a22d06bf148",
+      "rank": 4,
+      "reason": "Killing cart service breaks cart retrieval during checkout, leading to failed PlaceOrder."
+    }
+  ]
+}

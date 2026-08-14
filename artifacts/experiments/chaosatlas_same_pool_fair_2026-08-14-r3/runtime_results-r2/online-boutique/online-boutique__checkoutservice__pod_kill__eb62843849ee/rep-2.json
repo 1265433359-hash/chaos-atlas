@@ -1,0 +1,679 @@
+{
+  "schema_version": "unified-lifecycle-v1",
+  "project_id": "online-boutique",
+  "namespace": "chaosatlas-online-boutique",
+  "arm": "same-pool-fair",
+  "seed": 0,
+  "mutation_id": "online-boutique:checkoutservice:pod_kill:eb62843849ee",
+  "replicate": 2,
+  "mutation": {
+    "path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/eb62843849ee.yaml",
+    "sha256": "5a0208d77d2cbceb14559017e90e1eb591a133a696fcf7e632ec2df1f4f465fd"
+  },
+  "baseline": {
+    "pass": true,
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 2719.0,
+      "stdout": "[0] ok oid=351933c8-97c8-11f1-991c-16384146fc5c tracking=QQ-44329-221681367 (14.2ms)\n[1] ok oid=356922f7-97c8-11f1-991c-16384146fc5c tracking=YM-44903-220630343 (13.9ms)\n[2] ok oid=35b90870-97c8-11f1-991c-16384146fc5c tracking=OQ-44467-224031492 (13.5ms)\n[3] ok oid=3608fd50-97c8-11f1-991c-16384146fc5c tracking=KK-44438-224430577 (13.0ms)\n[4] ok oid=3658d8f7-97c8-11f1-991c-16384146fc5c tracking=RS-44851-222887320 (13.2ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 14.2,
+          "result": "ok oid=351933c8-97c8-11f1-991c-16384146fc5c tracking=QQ-44329-221681367",
+          "error": null
+        },
+        {
+          "sample": 2,
+          "grpc_status": "OK",
+          "latency_ms": 13.9,
+          "result": "ok oid=356922f7-97c8-11f1-991c-16384146fc5c tracking=YM-44903-220630343",
+          "error": null
+        },
+        {
+          "sample": 3,
+          "grpc_status": "OK",
+          "latency_ms": 13.5,
+          "result": "ok oid=35b90870-97c8-11f1-991c-16384146fc5c tracking=OQ-44467-224031492",
+          "error": null
+        },
+        {
+          "sample": 4,
+          "grpc_status": "OK",
+          "latency_ms": 13.0,
+          "result": "ok oid=3608fd50-97c8-11f1-991c-16384146fc5c tracking=KK-44438-224430577",
+          "error": null
+        },
+        {
+          "sample": 5,
+          "grpc_status": "OK",
+          "latency_ms": 13.2,
+          "result": "ok oid=3658d8f7-97c8-11f1-991c-16384146fc5c tracking=RS-44851-222887320",
+          "error": null
+        }
+      ]
+    },
+    "successes_required": 5
+  },
+  "injection": {
+    "applied": true,
+    "injected": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "podchaos.chaos-mesh.org/atlas-fair-online-boutique-5f7402758b5c created",
+      "stderr": ""
+    },
+    "lifecycle": {
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-14T10:09:19Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-online-boutique/checkoutservice-777ccb964b-b44b7",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-08-14T10:09:19Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    }
+  },
+  "observation": {
+    "workload": {
+      "command": [
+        "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "artifacts\\online-boutique\\ob_client.py",
+        "127.0.0.1:15050",
+        "127.0.0.1:17070",
+        "5"
+      ],
+      "return_code": 0,
+      "elapsed_ms": 10766.0,
+      "stdout": "[0] rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: End of TCP stream (8.6ms)\n[1] rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061) (2018.7ms)\n[2] rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061) (2038.7ms)\n[3] rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061) (2027.6ms)\n[4] rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061) (2013.6ms)\n",
+      "stderr": "",
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "UNAVAILABLE",
+          "latency_ms": 8.6,
+          "result": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: End of TCP stream",
+          "error": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: End of TCP stream"
+        },
+        {
+          "sample": 2,
+          "grpc_status": "UNAVAILABLE",
+          "latency_ms": 2018.7,
+          "result": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)",
+          "error": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)"
+        },
+        {
+          "sample": 3,
+          "grpc_status": "UNAVAILABLE",
+          "latency_ms": 2038.7,
+          "result": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)",
+          "error": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)"
+        },
+        {
+          "sample": 4,
+          "grpc_status": "UNAVAILABLE",
+          "latency_ms": 2027.6,
+          "result": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)",
+          "error": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)"
+        },
+        {
+          "sample": 5,
+          "grpc_status": "UNAVAILABLE",
+          "latency_ms": 2013.6,
+          "result": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)",
+          "error": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)"
+        }
+      ]
+    },
+    "classification": "weakness_observed"
+  },
+  "recovery": {
+    "recovered": true,
+    "resource_recovered": true,
+    "state": {
+      "selector": "app=checkoutservice",
+      "pod_count": 1,
+      "active_pod_count": 1,
+      "ready_pods": [
+        "checkoutservice-777ccb964b-426g4"
+      ],
+      "ready_uids": [
+        "347123fa-716a-4272-b45d-1bad56e0e2f3"
+      ],
+      "expected_pod_count": 1,
+      "pre_kill_uids": [
+        "9937c684-1e50-42ee-b595-bc8bb4eabc1f"
+      ],
+      "stable_checks": 2
+    },
+    "workload": {
+      "observations": [
+        {
+          "sample": 1,
+          "grpc_status": "UNAVAILABLE",
+          "latency_ms": 2034.9,
+          "result": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)",
+          "error": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)"
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 588.7,
+          "result": "ok oid=42b6aa50-97c8-11f1-bde7-2a5031835035 tracking=OI-44136-223124829",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 14.0,
+          "result": "ok oid=453754ca-97c8-11f1-bde7-2a5031835035 tracking=QK-44713-228027065",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 14.6,
+          "result": "ok oid=47668e64-97c8-11f1-bde7-2a5031835035 tracking=KP-44343-220834050",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 14.2,
+          "result": "ok oid=498f8c21-97c8-11f1-bde7-2a5031835035 tracking=YD-44119-226508462",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 17.5,
+          "result": "ok oid=4bc49185-97c8-11f1-bde7-2a5031835035 tracking=SA-44637-224382560",
+          "error": null
+        }
+      ]
+    },
+    "business": {
+      "recovered": true,
+      "samples": [
+        {
+          "sample": 1,
+          "grpc_status": "UNAVAILABLE",
+          "latency_ms": 2034.9,
+          "result": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)",
+          "error": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)"
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 588.7,
+          "result": "ok oid=42b6aa50-97c8-11f1-bde7-2a5031835035 tracking=OI-44136-223124829",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 14.0,
+          "result": "ok oid=453754ca-97c8-11f1-bde7-2a5031835035 tracking=QK-44713-228027065",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 14.6,
+          "result": "ok oid=47668e64-97c8-11f1-bde7-2a5031835035 tracking=KP-44343-220834050",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 14.2,
+          "result": "ok oid=498f8c21-97c8-11f1-bde7-2a5031835035 tracking=YD-44119-226508462",
+          "error": null
+        },
+        {
+          "sample": 1,
+          "grpc_status": "OK",
+          "latency_ms": 17.5,
+          "result": "ok oid=4bc49185-97c8-11f1-bde7-2a5031835035 tracking=SA-44637-224382560",
+          "error": null
+        }
+      ],
+      "workloads": [
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 2641.0,
+          "stdout": "[0] rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061) (2034.9ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "UNAVAILABLE",
+              "latency_ms": 2034.9,
+              "result": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)",
+              "error": "rpc_error code=UNAVAILABLE details=failed to connect to all addresses; last error: UNAVAILABLE: ipv4:127.0.0.1:15050: WSAGetOverlappedResult: Connection refused (No connection could be made because the target machine actively refused it.\n\n -- 10061)"
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 1203.0,
+          "stdout": "[0] ok oid=42b6aa50-97c8-11f1-bde7-2a5031835035 tracking=OI-44136-223124829 (588.7ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 588.7,
+              "result": "ok oid=42b6aa50-97c8-11f1-bde7-2a5031835035 tracking=OI-44136-223124829",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 625.0,
+          "stdout": "[0] ok oid=453754ca-97c8-11f1-bde7-2a5031835035 tracking=QK-44713-228027065 (14.0ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 14.0,
+              "result": "ok oid=453754ca-97c8-11f1-bde7-2a5031835035 tracking=QK-44713-228027065",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 672.0,
+          "stdout": "[0] ok oid=47668e64-97c8-11f1-bde7-2a5031835035 tracking=KP-44343-220834050 (14.6ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 14.6,
+              "result": "ok oid=47668e64-97c8-11f1-bde7-2a5031835035 tracking=KP-44343-220834050",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 610.0,
+          "stdout": "[0] ok oid=498f8c21-97c8-11f1-bde7-2a5031835035 tracking=YD-44119-226508462 (14.2ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 14.2,
+              "result": "ok oid=498f8c21-97c8-11f1-bde7-2a5031835035 tracking=YD-44119-226508462",
+              "error": null
+            }
+          ]
+        },
+        {
+          "command": [
+            "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+            "artifacts\\online-boutique\\ob_client.py",
+            "127.0.0.1:15050",
+            "127.0.0.1:17070",
+            "1"
+          ],
+          "return_code": 0,
+          "elapsed_ms": 703.0,
+          "stdout": "[0] ok oid=4bc49185-97c8-11f1-bde7-2a5031835035 tracking=SA-44637-224382560 (17.5ms)\n",
+          "stderr": "",
+          "observations": [
+            {
+              "sample": 1,
+              "grpc_status": "OK",
+              "latency_ms": 17.5,
+              "result": "ok oid=4bc49185-97c8-11f1-bde7-2a5031835035 tracking=SA-44637-224382560",
+              "error": null
+            }
+          ]
+        }
+      ],
+      "consecutive_successes": 5,
+      "successes_required": 5,
+      "elapsed_seconds": 22.235,
+      "port_forward_reconnects": 1
+    }
+  },
+  "cleanup": {
+    "delete_command_ok": true,
+    "delete_output": "podchaos.chaos-mesh.org \"atlas-fair-online-boutique-5f7402758b5c\" deleted from chaosatlas-online-boutique namespace",
+    "resource_absent_after_delete": true,
+    "absent_confirmed": true,
+    "verify_status": "absent",
+    "verify_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"atlas-fair-online-boutique-5f7402758b5c\" not found",
+    "delete_failed": false,
+    "residual_resources": [],
+    "global_scan_errors": []
+  },
+  "washout": {
+    "stable": true,
+    "samples": [
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.5,
+        "result": "ok oid=4c238ca1-97c8-11f1-bde7-2a5031835035 tracking=JS-44802-227321828",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.2,
+        "result": "ok oid=4e54345a-97c8-11f1-bde7-2a5031835035 tracking=FF-44521-229724382",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.1,
+        "result": "ok oid=5083c375-97c8-11f1-bde7-2a5031835035 tracking=HW-44264-226856295",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.5,
+        "result": "ok oid=52b385d1-97c8-11f1-bde7-2a5031835035 tracking=BN-44248-228114298",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.7,
+        "result": "ok oid=54e3ea2f-97c8-11f1-bde7-2a5031835035 tracking=TB-44537-220634543",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.8,
+        "result": "ok oid=570cdd53-97c8-11f1-bde7-2a5031835035 tracking=WB-44478-221187436",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.9,
+        "result": "ok oid=593c8d28-97c8-11f1-bde7-2a5031835035 tracking=WP-44215-223940119",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.0,
+        "result": "ok oid=5b65be30-97c8-11f1-bde7-2a5031835035 tracking=GT-44797-227879346",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.6,
+        "result": "ok oid=5d8f7876-97c8-11f1-bde7-2a5031835035 tracking=NA-44788-228686595",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.0,
+        "result": "ok oid=5fb85b93-97c8-11f1-bde7-2a5031835035 tracking=XF-44816-226776117",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 58.7,
+        "result": "ok oid=61eee3ef-97c8-11f1-bde7-2a5031835035 tracking=RE-44700-220184720",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.1,
+        "result": "ok oid=641fc6da-97c8-11f1-bde7-2a5031835035 tracking=IB-44673-226323331",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.1,
+        "result": "ok oid=66492418-97c8-11f1-bde7-2a5031835035 tracking=MS-44527-225445009",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.5,
+        "result": "ok oid=687876bb-97c8-11f1-bde7-2a5031835035 tracking=KU-44933-225450702",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.9,
+        "result": "ok oid=6aa84700-97c8-11f1-bde7-2a5031835035 tracking=BA-44721-222671726",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 15.7,
+        "result": "ok oid=6cd80b99-97c8-11f1-bde7-2a5031835035 tracking=XD-44704-229966631",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.7,
+        "result": "ok oid=6f079d83-97c8-11f1-bde7-2a5031835035 tracking=KM-44771-227115105",
+        "error": null
+      },
+      {
+        "sample": 1,
+        "grpc_status": "OK",
+        "latency_ms": 14.5,
+        "result": "ok oid=71370a6d-97c8-11f1-bde7-2a5031835035 tracking=SP-44160-227901224",
+        "error": null
+      }
+    ],
+    "elapsed_seconds": 62.828,
+    "successes_required": 10
+  },
+  "diagnostics": {
+    "status": "captured",
+    "files": [
+      {
+        "path": "artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/runtime_results-r2/online-boutique/online-boutique__checkoutservice__pod_kill__eb62843849ee/rep-2.diagnostics/events.log",
+        "sha256": "1936f181b2f3a9faf3a7547b91fe6214a926c4f4bd90927d64c373c46c2a016f",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/runtime_results-r2/online-boutique/online-boutique__checkoutservice__pod_kill__eb62843849ee/rep-2.diagnostics/checkoutservice.log",
+        "sha256": "ea689c29b7936d88aae9367f6adee47a5868d6917e5185536a092c4545ffe952",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/runtime_results-r2/online-boutique/online-boutique__checkoutservice__pod_kill__eb62843849ee/rep-2.diagnostics/cartservice.log",
+        "sha256": "704e509d8f9870210e4630f03551033fa48f33772570452933471723e1dbbad6",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/runtime_results-r2/online-boutique/online-boutique__checkoutservice__pod_kill__eb62843849ee/rep-2.diagnostics/target.log",
+        "sha256": "ea689c29b7936d88aae9367f6adee47a5868d6917e5185536a092c4545ffe952",
+        "return_code": "0"
+      },
+      {
+        "path": "artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/runtime_results-r2/online-boutique/online-boutique__checkoutservice__pod_kill__eb62843849ee/rep-2.diagnostics/trace-unavailable.json",
+        "sha256": "e5aedb8d45c3b788ef05d1c51f229fa7dc1a0bb9a53d4bf3e869f0058b35fb77",
+        "return_code": "0"
+      }
+    ]
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "status": "completed",
+  "errors": [],
+  "started_at": "2026-08-14T10:09:14.714058+00:00",
+  "preflight": {
+    "checked_at": "2026-08-14T10:09:14.970899+00:00",
+    "mutation": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_same_pool_fair_2026-08-14-r3/candidate_pools/online-boutique/mutations/eb62843849ee.yaml",
+    "kind": "PodChaos",
+    "namespace": "chaosatlas-online-boutique",
+    "name": "atlas-fair-online-boutique-5f7402758b5c",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-online-boutique"
+      ],
+      "labelSelectors": {
+        "app": "checkoutservice"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "train-ticket-lab",
+        "allowed_namespaces": [
+          "chaosatlas-online-boutique",
+          "chaosatlas-otel",
+          "chaosatlas-sock-shop",
+          "online-boutique-lab",
+          "otel-demo-lab",
+          "sock-shop-lab",
+          "train-ticket-lab"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "selector_labels_ok": true,
+        "requested_namespaces": [
+          "chaosatlas-online-boutique"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "chaosatlas-online-boutique",
+          "name": "checkoutservice-777ccb964b-b44b7",
+          "uid": "9937c684-1e50-42ee-b595-bc8bb4eabc1f",
+          "terminating": false,
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            5050
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "mutation_name_status": "available",
+      "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"atlas-fair-online-boutique-5f7402758b5c\" not found",
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"atlas-fair-online-boutique-5f7402758b5c\" not found\n"
+  },
+  "port_forwards": [
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "return_code": 1,
+      "stopped_by_runner": true,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "finished_at": "2026-08-14T10:10:58.228436+00:00",
+  "eligibility": {
+    "eligible": true,
+    "reasons": []
+  }
+}
