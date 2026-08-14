@@ -392,9 +392,121 @@
 - Added a formal post-cleanup washout gate: observe at least 60 seconds and require the final 10 business-oracle samples to be consecutive HTTP 200 before the next mutation.
 # 2026-08-13 P02 R3 evidence completion
 
+# 2026-08-13 Active method scope reset
+
+- User decision: defer ChaosEater experiments and later unified comparison.
+- Active next-project work is limited to `ChaosAtlas-KB-open` (complete method)
+  and `ChaosAtlas-noKB-open` (complete-method ablation).
+- Historical ChaosEater artifacts are retained but frozen as method-owned audit
+  data. They are excluded from active ledgers, mutation selection, current
+  project-clustered statistics, and ChaosAtlas knowledge feedback.
+- Updated the main priority and open-discovery protocol with mandatory
+  contamination controls: byte-identical common inputs, separate method-owned
+  outputs, no same-project or future-project feedback, no runtime feedback into
+  noKB, residual-Chaos checks, cleanup/washout gates, source/image/topology hash
+  checks, and independent oracle evaluation.
+- Updated `tools/main_experiment_orchestrator.py` so the default ledger emits
+  only the two active arms. ChaosEater requires the explicit
+  `--include-chaoseater` flag for a future unified comparison.
+- Added `tools/tests/test_main_experiment_orchestrator.py`; focused scope
+  regression passes.
+
+# 2026-08-13 Project summary and archive
+
+- Verified the current Sock Shop evidence: `ChaosAtlas-full` and
+  `ChaosAtlas-ablation` are completed; `ChaosEater-full` remains
+  `environment_blocked`; human review remains pending and the KB was not updated.
+- Confirmed the Sock Shop two arms used the same front-end PodKill mutation, so
+  the run is descriptive and cannot support a method superiority claim.
+- Added `docs/CHAOSATLAS_PROJECT_ARCHIVE_2026-08-13.md` and
+  `artifacts/experiments/CHAOSATLAS_ARCHIVE_INDEX_2026-08-13.json`.
+- Updated `README.md`, `docs/PROJECT_SUMMARY.md`, and
+  `docs/EXPERIMENT_CATALOG.md` to distinguish current two-arm evidence from
+  historical ChaosEater comparison material.
+- Recorded the next active queue as Online Boutique, OpenTelemetry Demo,
+  Train Ticket, and TeaStore; only `ChaosAtlas-full` and `ChaosAtlas-ablation`
+  are in scope. Sock Shop remains archived and P08/P03/P06 remain in the frozen
+  ten-project ledger.
+
 # 2026-08-13 P08/P09 continuation
 
+# 2026-08-13 Follow-up four-project queue
+
+- Added the offline-only queue manifest at
+  `artifacts/experiments/chaosatlas_followup_four_projects_2026-08-13/`.
+- The queue contains Online Boutique, OpenTelemetry Demo, Train Ticket, and
+  TeaStore, and only `ChaosAtlas-full` plus `ChaosAtlas-ablation`.
+- Online Boutique, OpenTelemetry Demo, and Train Ticket have reusable runtime
+  assets but require fresh manifests, baselines, and namespace-first dry-runs.
+- TeaStore has only static intake evidence in this workspace; exact source
+  restoration, profile rendering, bring-up, and baseline gates remain pending.
+- No model call, credential read, deployment, or Chaos Mesh mutation occurred.
+- Full-suite verification with a repository-local basetemp reached 394 passed and
+  4 failures before the P03 test-contract update: two historical hash-drift
+  failures and two stale P03 assertions. The P03 assertions are now updated;
+  the historical hash drift remains explicitly unresolved.
+
+# 2026-08-13 Archive consistency repair
+
+- Corrected the archive index to record P03/P06 as
+  `static_profile_passed_server_dry_run_pending`, matching their `r6` static
+  profile and pending authorized-cluster-session evidence.
+- Added the missing `status` field to every archive-index follow-up queue entry.
+- Hardened `tools/prepare_project_gates.py` so source completeness requires both
+  deployment assets and required application files.
+- Added a regression test that fails when a required file such as P03
+  `manage.py` is missing, then passes after the gate fix.
+- Focused archive/gate regression: 18 passed. Contamination audit: 120 bundles
+  and 30 KB/noKB pairs valid. Full repository regression: 397 passed and 2
+  pre-existing historical knowledge-ablation hash-drift failures; those
+  artifacts were not modified.
+- Archive remains human-review pending and knowledge-base updates remain false.
+- The next active work is offline preparation for Online Boutique, followed by
+  OpenTelemetry Demo, Train Ticket, and TeaStore. Runtime mutation remains
+  blocked until each project has a fresh manifest, authorized namespace-first
+  dry-run, independent oracle baseline, and cleanup/washout contract.
+
+# 2026-08-13 Online Boutique fresh manifest
+
+- Added `tools/prepare_followup_online_boutique.py` with fail-closed offline
+  checks for source namespace, loadgenerator exclusion, frontend health probe,
+  checkout entrypoint, target namespace rewrite, and no-overwrite output.
+- Added four regression tests. The first generated profile exposed a Windows
+  text-newline hash mismatch; `online-boutique-r1` is retained as failed
+  preparation evidence, and `online-boutique-r2` was regenerated with byte-level
+  manifest writes.
+- `online-boutique-r2` static gate passed. The recorded manifest SHA-256
+  matches the file on disk:
+  `c7f24acb22a13a19bf942b59c4227eedc8ea2c70b7feda82088bcf60fe82c38c`.
+- The fresh profile contains 11 Deployments in
+  `chaosatlas-online-boutique`, excludes `loadgenerator`, and records the
+  `AddItem_then_PlaceOrder` plus `frontend /_healthz` oracle contracts.
+- Image digest resolution, authorized namespace-first dry-run, baseline
+  windows, and runtime injection remain pending. No namespace was created or
+  mutated in this step.
+
 # 2026-08-13 P08/P09 source and profile continuation
+
+- 2026-08-14 Git upload preparation: checked branch state and found local
+  HEAD `f4242b9` ahead of origin by 5 commits, with many additional tracked
+  modifications and untracked experiment outputs.
+- Rebuilt the three-project Word report with improved landscape layout,
+  table styling, and a UTF-8 Markdown source file:
+  `docs/ChaosAtlas_three_project_experiment_report_2026-08-14.docx` and
+  `.md`.
+- Added `docs/CHAOSATLAS_UPLOAD_PREP_2026-08-14.md` and linked it from
+  `docs/ARCHIVE_MAP.md`.
+- Added `/.tmp-*/` to `.gitignore` so local verification directories do not
+  pollute upload candidates. No `git add .` was used.
+- Word report structural QA passed; LibreOffice PNG rendering remains
+  unavailable and the Word PDF fallback timed out, so visual render QA is not
+  claimed.
+- Upload-prep focused regression passed: 118 tests passed with a single
+  existing `.pytest_cache` permission warning. Staged sensitive scan passed:
+  70 staged files, 0 strict high-risk secret matches; the earlier broad scan
+  only flagged `tokens=MAX_OUTPUT_TOKENS` as a code-variable false positive.
+- Created local commit `Archive project upload preparation`; branch is now
+  ahead of origin by 6 commits. Push was not executed.
 
 - Restored P09 commit `cd0e88c680dec24dcd423b880302104f13d28462` into the new
   ignored path `sources_restored_r2/P09`; tree SHA `f0344ffb...91aca9`, 13,455
@@ -440,3 +552,114 @@
 - Final regression passed: 309 tests and 5 subtests. R2 compatibility and the pending-review/no-KB-write boundary were checked separately and passed.
 - Sensitive-pattern scan found no credential material in the intended P02 R3 change set.
 - Committed the P02 R3 evidence chain as `727c9a5` and pushed it to `remediation/2026-08-09-review`; the pre-existing selection-only manifest timestamp change remained unstaged.
+
+# 2026-08-13 P09 two-arm runtime continuation
+
+- Rechecked P09 on teacher Minikube: context `minikube`, namespace
+  `chaosatlas-p09` healthy, and the global
+  `podchaos,networkchaos,stresschaos` audit returned no resources.
+- Audited the open-discovery boundary: only `seed-1001` and `seed-1002`
+  ChaosAtlas KB/noKB bundles are eligible; all ChaosEater directories and the
+  truncated `seed-1003` noKB result remain excluded.
+- Materialized the first fresh P09 two-arm input under
+  `runtime_results/P09/teacher-minikube-two-arm-r2`; five mutations per active
+  arm compiled and non-profile targets were fail-closed. Mutation hashes
+  matched provenance and all ten server-side dry-runs passed.
+- Tightened the P09 residual audit to use a global read-only `kubectl get ... -A`
+  query and added regression coverage.
+- The first full-arm runtime attempt failed before Kubernetes import with
+  `ModuleNotFoundError: tools` because the runner was invoked as a direct
+  script. No report was written, no mutation was applied, P09 remained healthy,
+  and the global Chaos audit stayed empty.
+- Added direct-script invocation coverage and fixed the runner to bootstrap the
+  repository import path. Focused P09 regression now passes (`33 passed`) using
+  a repository-local pytest basetemp because the default Windows pytest temp
+  directory is inaccessible.
+- The r2 directory is intentionally retained as failed-attempt evidence and
+  will not be overwritten. The next runtime attempt uses a new
+  `teacher-minikube-two-arm-r3` directory.
+- The first r3 runtime invocation also stopped before Kubernetes mutation:
+  `run_p09_chaos.py` does not accept `--washout-seconds`. The command exited
+  during argument parsing, the new r3 directory is retained, and the cluster
+  remained healthy with no global Chaos resources. The next attempt uses a new
+  r4 directory and the runner's supported ten-success washout contract.
+
+# 2026-08-13 Four-project offline preparation continuation
+
+- Re-ran the Train Ticket preparation test after implementation: 3/3 passed,
+  then added a regression for the image provenance sidecar. The required red
+  test failed because `image-provenance.json` was absent; the minimal writer
+  change made the test green at 4/4.
+- Generated the non-empty-safe fresh profile
+  `runtime_profiles/train-ticket-r2`; its manifest SHA-256 is
+  `6429e77cd4d536ed28082e84693f1487f45556b2729a574b2aa528040d43cdc9`,
+  matching the recorded value. Namespace rewrite and resource deduplication
+  passed.
+- Train Ticket remains statically blocked by missing `nacos`, `rabbitmq`,
+  `train-ticket-db`, `ts-order-mysql`, and `ts-station-mysql` dependency
+  definitions, plus unresolved immutable provenance for six images. No
+  dependency values or credentials were read.
+- Updated the four-project queue and archive status. Online Boutique
+  `runtime_profiles/online-boutique-r3` is the only profile eligible for an
+  authorized Namespace-first dry-run; its digest-pinned manifest hash is
+  `f0e1be74107db90602b4ad562bf22f5b554e0bf77fa812a0f9faa80440ab2d3f`.
+- OpenTelemetry Demo `r1` remains blocked only by missing immutable image
+  provenance; TeaStore remains blocked because the exact source snapshot is
+  absent from this workspace. Runtime deployment and Chaos injection were not
+  performed for any of the four queued projects.
+# 2026-08-14 三项目两臂续跑
+
+- 接管 HEAD `84a751b` 的脏工作树，保留所有已有用户/历史变更。
+- 集群核验：context=minikube，node Ready，Online Boutique 11 个 deployment 均 1/1，全局 Chaos 资源为空。
+- 根因定位：Online Boutique runner 的即时固定批次恢复门槛会误判清理后的短暂恢复窗口。
+- 正在按 TDD 增加“连续成功恢复轮询且保留失败样本”的回归测试。
+- RED 已验证：新测试因 `collect_sustained_successes` 尚不存在而在收集阶段失败。
+- 已实现有界恢复轮询：失败会重置连续成功计数，全部样本保留在 `recovery.business`，默认 180 秒内要求连续 5 次成功。
+- `formal-r4-runtime-r2` 完成 7 个 eligible 单元后在 full H4 rep-2 停止；cleanup/global scan 均无残留。
+- 诊断确认 cartservice 重启导致本地 port-forward 永久退出；修复 runner 在明确本地转发断连时重建 checkout/cart 两条转发，并修复多行 cart failure 解析。
+- 相关回归：`37 passed, 5 subtests passed`。下一正式批次使用全新 `formal-r4-runtime-r3`，不混用旧 runner 结果。
+- `formal-r4-runtime-r3` 的 full 8/8 eligible；ablation h1 rep-1 因 checkout port-forward 随 PodKill 退出而停止，cleanup/global scan 清洁。
+- 已推广观测通道恢复到 checkout/cart 两端，并修复多行 RPC 错误解析；相关回归更新为 `38 passed, 5 subtests passed`。
+- `formal-r4-runtime-r4` 已完成 Online Boutique 16/16：所有报告均为 `completed` 且 runner 判定 eligible；full 的 8 个单元均为 `no_business_impact_observed`，ablation 的 checkout/cart/productcatalog PodKill 各 2/2 为 `weakness_observed`，frontend PodKill 2/2 未观察到业务影响。最终独立字段与诊断哈希复核正在进行。
+- Online Boutique 收尾只读集群检查：Minikube node Ready、11 个业务 Pod Running、全局 PodChaos/NetworkChaos/StressChaos 空。
+- OTel 首次公开 registry digest 查询失败：GHCR repository 字符串使用 `Substring(7)` 留下前导 `/`，服务返回 `NAME_INVALID`。未写入 provenance、未部署、未调用模型；下一次使用正确的 `Substring(8)`。
+## 2026-08-14 三项目两臂正式实验续跑
+- 已接管运行中的 OTel 批次 cell 492，未中断、未重跑已完成单元。
+- 已核对 HEAD `84a751b`、当前分支 `remediation/2026-08-09-review`；工作树存在大量前置变更，后续只选择性暂存本次范围。
+- 已核对 Minikube 节点 Ready、Chaos Mesh 控制器 Ready/restarts=40；最近进度 21/48。
+- 全局 Chaos 扫描只看到当前 OTel runner 正在执行的预期 NetworkChaos，等待 runner 自行恢复和清理。
+- 只读预检确认沙箱 `PATH` 中无 `python`；未安装或修改环境，后续将使用已存在的本机 Python。
+- 为 Sock Shop 部署 gate 新增纯函数 `sock_shop_cluster_facts`：先观察 2 个测试因缺失函数失败，再实现并验证 `5 passed`。该函数只规范化健康、双基线、rehearsal、cleanup、全局残留和 washout 证据，不访问集群。
+- 收紧 Sock Shop 批次：新增测试先因缺少 completed-only 查找函数失败；实现后 `3 passed`。现在每个 handoff 必须恰好 4 个选择、每个 mutation 文件必须存在，且跨新目录只复用 `status=completed` 的旧报告。
+- 新增 `run_sock_shop_deployment_gate.py`，绑定 server-side dry-run、动态 Deployment 健康、双基线、payment PodKill rehearsal、cleanup/global residual、washout 和 runtime profile。两次定位导入上下文后，Sock Shop gate/runner/profile/batch 组合测试 `13 passed`。
+- OTel 最近进度 26/48；节点与 Chaos Mesh 控制器稳定，扫描时全局无 Chaos 残留。
+- 修正 Sock Shop runner 目标集与冻结拓扑不一致：14 个 Deployment 全部可被精确 selector 选择，未放宽 namespace/mode/kind；组合测试 `14 passed`。
+- 收紧 DeepSeek 发现完整性：只有每次 handoff 恰好选择 4 个且编译器生成 4 个 mutation 才算 valid。发现/编译器/Sock Shop 协议组合测试 `30 passed`。
+- 修复跨根验收器：同一实验键优先 completed 报告，核对 mutation 与诊断文件实际 SHA-256，要求 diagnostics captured 和 global scan errors 为空；测试 `2 passed`。
+- OTel 最近进度 35/48；十分钟内推进 9 个单元，控制器 restarts=40，全局无 Chaos 残留。
+- 新增离线两臂汇总器，按 discovery intent 和 completed 报告统计每个 hypothesis 的重复一致性，仅陈述业务 oracle 观测并固定机制推断禁区；与验收器测试 `3 passed`。
+- OTel 原始批次自然完成 48/48；全局无 Chaos 残留，控制器 Ready/restarts=40。严格验收 passed：full 24、ablation 24，weakness 22、no-business-impact 26，所有 mutation/diagnostic SHA 匹配。
+- 已缩容完成的 OTel namespace 并记录原副本数；新 Sock Shop 14 个 Deployment 已部署。runtime gate 在注入前因两次基线非全成功而 fail-closed，未执行 rehearsal/DeepSeek。
+- 诊断 Sock Shop baseline：14/14 Deployment Ready、全局 Chaos 扫描为空；失败稳定集中在 `/orders`。
+- 只读探测确认匿名 `/orders` 为 500 `User not logged in`，直连 orders 为 Mongo error 352；定位为错误 oracle 加无版本 Mongo 漂移。
+- 按 TDD 修复认证订单 journey 和 Mongo 兼容性 gate：红测试确认旧行为，最终 `6 passed`。下一步生成 `input-bundles-r2` 并执行 server-side dry-run。
+# 2026-08-14 ChaosAtlas-full-v2 projection 重建
+
+- 按 TDD 重建 `tools/build_full_v2_projection.py`：正式 schema 改为 `test_node_rules`、`call_chain_rules`、`fault_applicability_rules`、`outcome_taxonomy`、`negative_evidence`、`historical_fault_pattern_support` 和 `evidence_boundaries`。
+- V2 正向规则只使用 runtime validated cards；pending/static/platform-blocked 仅进入负证据或边界。历史 YAML 目录只作为静态排序先验，不复制 raw YAML、路径、项目名、服务名或 mutation 信息。
+- 生成的正式投影位于 `artifacts/experiments/chaosatlas_full_v2_projection_2026-08-14-r3/full-v2-projection.json`；canonical projection SHA-256 为 `fe1438cbd39c295be80ca97703c6e3c8ecdd1af9486690cdb53f2f73a60a83d3`，文件 SHA-256 为 `89bdcf42150f54cf2efea4ebf396293bb398716df9b65f6cd749a4d35fdb7b2b`。
+- r3 统计：17 张知识卡输入、15 张运行时正证据、2 张非运行时边界证据、7 条测试节点规则、11 条调用链规则、6 条故障适用规则、8 类结果、7 类历史故障模式先验。敏感/项目污染扫描通过。
+- Focused regression passed: `8 passed` for `tools/tests/test_build_full_v2_projection.py` with only the existing Windows `.pytest_cache` permission warning。
+# 2026-08-14 ChaosAtlas-native-full Sock Shop runtime
+
+- User clarified the target method: use the native project knowledge directly, without generalized V2 projection or leave-one-project-out mapping.
+- Native input manifest: `artifacts/experiments/chaosatlas_native_full_2026-08-14-r1/inputs/manifest.json`; `projection_used=false`, `pollution_intentionally_not_excluded=true`, `human_review=pending`, `knowledge_base_updated=false`.
+- DeepSeek discovery completed before runtime: 3 seeds, 4 selected hypotheses and 4 compiled mutations per seed.
+- The first runtime launcher failed before Kubernetes because Windows exposes both `Path` and `PATH`; PowerShell `Start-Process -Environment` builds a case-insensitive dictionary and raised a duplicate-key error. The failed launcher was not retried.
+- A materially different launcher using the existing fixed Python interpreter and inherited environment started successfully. Offline batch integrity confirmed 24/24 units and 0 missing mutations.
+- Runtime batch output: `artifacts/experiments/chaosatlas_native_full_2026-08-14-r1/runtime-results-r1`.
+- Current progress: 5/24 completed, all five reports `status=completed`, all five classifications `no_business_impact_observed`; the sixth unit is running.
+- Live cluster checks during the batch: Sock Shop Pods healthy and `kubectl get podchaos,networkchaos,stresschaos -A` returned no residual resources at each sampled checkpoint.
+- Runtime batch completed 24/24. Independent verification passed with 24 reports, 16 `no_business_impact_observed`, and 8 `weakness_observed`.
+- The eight weak reports are seed-1003 H2/H4/H6/H8, each reproduced twice. All lifecycle, cleanup, washout, diagnostics, and SHA-256 checks passed; final global Chaos scan was empty.
+- Weakness RCA is recorded in `artifacts/experiments/chaosatlas_native_full_2026-08-14-r1/native-full-rca-review.md`. It confirms business impact and bounded database-connectivity log evidence, while keeping Zipkin-unavailable and mechanism inference boundaries explicit.

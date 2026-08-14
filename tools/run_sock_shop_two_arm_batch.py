@@ -40,11 +40,17 @@ def find_completed_report(prior_roots: Iterable[Path], method: str, seed: int, h
     return None
 
 
-def runtime_units(discovery_root: Path, runtime_root: Path, prior_runtime_root: Path | Iterable[Path] | None = None) -> list[dict[str, Any]]:
+def runtime_units(
+    discovery_root: Path,
+    runtime_root: Path,
+    prior_runtime_root: Path | Iterable[Path] | None = None,
+    *,
+    methods: tuple[str, ...] = METHODS,
+) -> list[dict[str, Any]]:
     units: list[dict[str, Any]] = []
     prior_roots = _prior_roots(prior_runtime_root)
     for seed in SEEDS:
-        for method in METHODS:
+        for method in methods:
             directory = Path(discovery_root) / f"seed-{seed}" / method.lower()
             handoff = json.loads((directory / "handoff.json").read_text(encoding="utf-8"))
             if handoff.get("status") != "handoff_ready":
@@ -61,8 +67,15 @@ def runtime_units(discovery_root: Path, runtime_root: Path, prior_runtime_root: 
     return units
 
 
-def run_batch(discovery_root: Path, runtime_root: Path, progress_path: Path, prior_runtime_root: Path | Iterable[Path] | None = None) -> dict[str, Any]:
-    units = runtime_units(discovery_root, runtime_root, prior_runtime_root)
+def run_batch(
+    discovery_root: Path,
+    runtime_root: Path,
+    progress_path: Path,
+    prior_runtime_root: Path | Iterable[Path] | None = None,
+    *,
+    methods: tuple[str, ...] = METHODS,
+) -> dict[str, Any]:
+    units = runtime_units(discovery_root, runtime_root, prior_runtime_root, methods=methods)
     rows: list[dict[str, Any]] = []
     stopped = False
     for index, unit in enumerate(units, 1):
@@ -85,7 +98,7 @@ def run_batch(discovery_root: Path, runtime_root: Path, progress_path: Path, pri
             row["source_report"] = str(prior_report).replace("\\", "/")
         rows.append(row)
         stopped = value.get("status") != "completed"
-        result = {"schema_version": "sock-shop-two-arm-batch-v1", "status": "stopped_on_failure" if stopped else ("completed" if len(rows) == len(units) else "in_progress"), "completed_units": sum(row["status"] == "completed" for row in rows), "total_units": len(units), "rows": rows, "human_review": "pending", "knowledge_base_updated": False}
+        result = {"schema_version": "sock-shop-two-arm-batch-v1", "methods": list(methods), "status": "stopped_on_failure" if stopped else ("completed" if len(rows) == len(units) else "in_progress"), "completed_units": sum(row["status"] == "completed" for row in rows), "total_units": len(units), "rows": rows, "human_review": "pending", "knowledge_base_updated": False}
         progress_path.parent.mkdir(parents=True, exist_ok=True)
         progress_path.write_text(json.dumps(result, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
         if stopped:
@@ -99,8 +112,9 @@ def main() -> int:
     parser.add_argument("--runtime-root", type=Path, required=True)
     parser.add_argument("--progress", type=Path, required=True)
     parser.add_argument("--prior-runtime-root", type=Path, action="append")
+    parser.add_argument("--method", action="append")
     args = parser.parse_args()
-    result = run_batch(args.discovery_root, args.runtime_root, args.progress, args.prior_runtime_root)
+    result = run_batch(args.discovery_root, args.runtime_root, args.progress, args.prior_runtime_root, methods=tuple(args.method or METHODS))
     print(json.dumps({key: result[key] for key in ("status", "completed_units", "total_units")}))
     return 0 if result["status"] == "completed" else 2
 

@@ -107,11 +107,11 @@ def test_runner_rejects_non_p09_or_wrong_selector(tmp_path: Path) -> None:
         runner.validate_mutation(mutation)
 
 
-def test_runner_residual_check_is_namespace_local() -> None:
+def test_runner_residual_check_is_global() -> None:
     with patch.object(runner, "kubectl_json", return_value=({"items": []}, None)) as call:
         assert runner.residual_chaos() == []
     call.assert_called_once_with(
-        ["get", "podchaos,networkchaos,stresschaos", "-n", "chaosatlas-p09"]
+        ["get", "podchaos,networkchaos,stresschaos", "-A"]
     )
 
 

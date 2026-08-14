@@ -1,4 +1,4 @@
-"""Read-only runtime applicability gate for Train Ticket chaos mutations."""
+"""Read-only runtime applicability gate for isolated project chaos mutations."""
 
 from __future__ import annotations
 
@@ -28,8 +28,19 @@ RESOURCE_BY_KIND = {
 # Runtime injection is intentionally scoped to isolated lab namespaces. This is
 # a policy boundary, not a generator convention: hand-written YAML must receive
 # the same decision as generated candidates.
+# Keep both historical lab namespaces and the current revisioned runtime
+# namespace explicitly listed. This remains a closed allowlist: no arbitrary
+# namespace can pass the runtime injection gate.
 ALLOWED_NAMESPACE = "train-ticket-lab"
-ALLOWED_NAMESPACES = {"train-ticket-lab", "online-boutique-lab", "otel-demo-lab", "sock-shop-lab"}
+ALLOWED_NAMESPACES = {
+    "train-ticket-lab",
+    "online-boutique-lab",
+    "otel-demo-lab",
+    "sock-shop-lab",
+    "chaosatlas-online-boutique",
+    "chaosatlas-otel",
+    "chaosatlas-sock-shop",
+}
 ALLOWED_MODES = {"one"}
 
 

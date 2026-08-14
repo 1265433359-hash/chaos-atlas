@@ -1,0 +1,196 @@
+{
+  "schema_version": "chaosatlas-project-archive-v1",
+  "archive_date": "2026-08-13",
+  "branch": "remediation/2026-08-09-review",
+  "head": "84a751b",
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "active_methods": [
+    "ChaosAtlas-full",
+    "ChaosAtlas-ablation"
+  ],
+  "deferred_methods": [
+    "ChaosEater-full",
+    "ChaosEater-official",
+    "ChaosEater-adapter-open"
+  ],
+  "follow_up_queue": {
+    "status": "offline_preparation_only",
+    "active_methods": [
+      "ChaosAtlas-full",
+      "ChaosAtlas-ablation"
+    ],
+    "manifest": "artifacts/experiments/chaosatlas_followup_four_projects_2026-08-13/queue_manifest.json",
+    "projects": [
+      "online-boutique",
+      "opentelemetry-demo",
+      "train-ticket",
+      "teastore"
+    ],
+    "runtime_started": false
+  },
+  "projects": {
+    "train-ticket": {
+      "status": "runtime_evidence_archived",
+      "evidence_level": "validated_runtime",
+      "canonical_entry": "docs/PROJECT_SUMMARY.md"
+    },
+    "online-boutique": {
+      "status": "runtime_and_statistical_evidence_archived",
+      "evidence_level": "validated_runtime",
+      "canonical_entry": "docs/EXPERIMENT_CATALOG.md"
+    },
+    "opentelemetry-demo": {
+      "status": "runtime_evidence_archived",
+      "evidence_level": "validated_runtime",
+      "canonical_entry": "docs/EXPERIMENT_CATALOG.md"
+    },
+    "P02": {
+      "status": "r3_evidence_archived_pending_review",
+      "evidence_level": "runtime_observed",
+      "formal_runs": 15,
+      "canonical_entry": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P02"
+    },
+    "SockShop": {
+      "status": "two_active_arms_completed_one_arm_blocked",
+      "evidence_level": "runtime_observed",
+      "methods": {
+        "ChaosAtlas-full": {
+          "status": "completed",
+          "report": "artifacts/experiments/chaosatlas_sockshop_three_method/runtime_results/sock-shop/teacher-minikube-three-method-r1/chaosatlas-full.json"
+        },
+        "ChaosAtlas-ablation": {
+          "status": "completed",
+          "report": "artifacts/experiments/chaosatlas_sockshop_three_method/runtime_results/sock-shop/teacher-minikube-three-method-r1/chaosatlas-ablation.json"
+        },
+        "ChaosEater-full": {
+          "status": "environment_blocked",
+          "comparison_eligible": false,
+          "reason": "skaffold executable and official k8sapi image unavailable; historical output cannot substitute"
+        }
+      },
+      "mutation": {
+        "id": "sockshop-front-end-pod-kill",
+        "sha256": "6bd9c2908e3226aee36ffd47d204df59250973e7238b8e06bc215c1179dd8eaa"
+      },
+      "observed_outcome": {
+        "business_weakness_confirmed": false,
+        "specific_root_cause_supported": false,
+        "root_cause_inference_forbidden": [
+          "Eureka",
+          "cache",
+          "registration",
+          "unobserved service-discovery mechanisms"
+        ]
+      },
+      "review": "pending",
+      "knowledge_base_updated": false
+    },
+    "P08": {
+      "status": "historical_dual_arm_pilot_archived",
+      "evidence_level": "runtime_observed",
+      "methods": [
+        "ChaosAtlas-KB",
+        "ChaosAtlas-noKB"
+      ],
+      "result": "both health-oracle PodKill runs completed, recovered, cleaned up, and left no residual Chaos resources",
+      "review": "pending",
+      "knowledge_base_updated": false,
+      "canonical_entry": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P08/teacher-minikube-dual-r1"
+    },
+    "P09": {
+      "status": "two_active_arms_completed_pending_review",
+      "evidence_level": "runtime_observed",
+      "runtime_apply_allowed": true,
+      "profile": "artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P09-r5",
+      "runtime_evidence": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P09/teacher-minikube-two-arm-r4",
+      "review_report": "artifacts/experiments/chaosatlas_10_projects/runtime_results/P09/teacher-minikube-two-arm-r4/P09_TWO_ARM_REVIEW.json",
+      "formal_runs": {
+        "ChaosAtlas-full": 5,
+        "ChaosAtlas-ablation": 5,
+        "completed": 10
+      },
+      "open_discovery": {
+        "transport_success_is_not_business_evidence": true,
+        "execution_ready_hypotheses": 5,
+        "review": "pending"
+      },
+      "observed_scope": "P09 /health only; API PodKill interruption/recovery and Redis worker connection symptoms",
+      "business_weakness_confirmed": false,
+      "specific_root_cause_supported": false,
+      "next_action": "Proceed to P08 gate remediation, then P03/P06 authorized server-side dry-run"
+    },
+    "P03": {
+      "status": "static_profile_passed_server_dry_run_pending",
+      "evidence_level": "static_gate",
+      "reason": "P03-r6 static profile passed; authorized server-side dry-run is still pending",
+      "next_action": "run namespace-first server-side dry-run in an authorized chaosatlas-p03 session"
+    },
+    "P06": {
+      "status": "static_profile_passed_server_dry_run_pending",
+      "evidence_level": "static_gate",
+      "reason": "P06-r6 static profile passed; authorized server-side dry-run is still pending",
+      "next_action": "run namespace-first server-side dry-run in an authorized chaosatlas-p06 session"
+    }
+  },
+  "next_project_queue": [
+    {
+      "order": 1,
+      "project_id": "online-boutique",
+      "status": "fresh_manifest_ready_digest_and_dry_run_pending",
+      "namespace": "chaosatlas-online-boutique",
+      "gate": "fresh_manifest_ready_digest_and_dry_run_pending",
+      "active_methods": [
+        "ChaosAtlas-full",
+        "ChaosAtlas-ablation"
+      ],
+      "fresh_manifest": "artifacts/experiments/chaosatlas_followup_four_projects_2026-08-13/runtime_profiles/online-boutique-r2",
+      "next_action": "Resolve immutable image digests, then run namespace-first server-side dry-run only after chaosatlas-online-boutique authorization"
+    },
+    {
+      "order": 2,
+      "project_id": "opentelemetry-demo",
+      "status": "replay_ready_fresh_manifest_pending",
+      "namespace": "chaosatlas-otel",
+      "gate": "replay_ready_fresh_manifest_pending",
+      "active_methods": [
+        "ChaosAtlas-full",
+        "ChaosAtlas-ablation"
+      ],
+      "next_action": "Freeze a fresh sanitized Kubernetes profile, revalidate PlaceOrder and trace contracts, and run namespace-first dry-run"
+    },
+    {
+      "order": 3,
+      "project_id": "train-ticket",
+      "status": "replay_ready_fresh_manifest_pending",
+      "namespace": "chaosatlas-train-ticket",
+      "gate": "replay_ready_fresh_manifest_pending",
+      "active_methods": [
+        "ChaosAtlas-full",
+        "ChaosAtlas-ablation"
+      ],
+      "next_action": "Reuse Station dual oracles and runner only after a fresh namespace, manifest, and baseline gate"
+    },
+    {
+      "order": 4,
+      "project_id": "teastore",
+      "status": "static_ready_runtime_bringup_pending",
+      "namespace": "chaosatlas-teastore",
+      "gate": "static_ready_runtime_bringup_pending",
+      "active_methods": [
+        "ChaosAtlas-full",
+        "ChaosAtlas-ablation"
+      ],
+      "next_action": "Restore the fixed source, recompute local hashes, render the Helm/Ribbon profile, and pass bring-up and baseline gates"
+    }
+  ],
+  "safety": {
+    "api_keys_read": false,
+    "model_calls_made": false,
+    "docker_changed": false,
+    "minikube_changed": false,
+    "chaos_mesh_changed": false,
+    "pending_reviews_written_to_knowledge_base": false,
+    "unrelated_untracked_files_staged": false
+  }
+}

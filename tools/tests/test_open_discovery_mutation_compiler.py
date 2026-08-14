@@ -61,6 +61,13 @@ def test_network_loss_dependency_edge_targets_source_and_records_destination() -
     assert doc["kind"] == "NetworkChaos"
     assert doc["spec"]["loss"]["loss"] == "25"
     assert doc["spec"]["selector"]["labelSelectors"] == {"app": "api"}
+    assert doc["spec"]["target"] == {
+        "mode": "all",
+        "selector": {
+            "namespaces": ["chaosatlas-p02"],
+            "labelSelectors": {"app": "db"},
+        },
+    }
     assert provenance["resolved_destination"]["name"] == "db"
 
 

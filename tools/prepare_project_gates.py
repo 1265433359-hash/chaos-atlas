@@ -48,7 +48,12 @@ PROJECTS: dict[str, dict[str, Any]] = {
         "commit": "9dca3724a6d65126ea937ef949f986e5aab47a81",
         "tree": "882abaca309ccdaea234bc50dcf5138f1f63e03e",
         "file_count": 4529,
-        "deployment_assets": ["Dockerfile", "docker-compose.yml", "directus/readme.md"],
+        "deployment_assets": [
+            "Dockerfile",
+            "docker-compose.yml",
+            "directus/readme.md",
+            "tests/blackbox/docker-compose.yml",
+        ],
         "required_files": ["package.json", "pnpm-lock.yaml"],
         "oracle": {
             "status": "contract_only",
@@ -161,7 +166,11 @@ def _source_manifest(project_id: str, source_root: Path) -> dict[str, Any]:
         "source_commit": meta["commit"],
         "source_tree_sha": meta["tree"],
         "git_file_count": meta["file_count"],
-        "source_status": "complete" if source_root.exists() and all(assets.values()) else "incomplete",
+        "source_status": (
+            "complete"
+            if source_root.exists() and all(assets.values()) and all(files.values())
+            else "incomplete"
+        ),
         "deployment_assets": assets,
         "required_files": files,
     }
@@ -175,7 +184,11 @@ def _static_gates(
     services: list[str],
 ) -> tuple[dict[str, Any], list[str]]:
     reasons: list[str] = []
-    source_ok = source["source_status"] == "complete" and all(source["deployment_assets"].values())
+    source_ok = (
+        source["source_status"] == "complete"
+        and all(source["deployment_assets"].values())
+        and all(source["required_files"].values())
+    )
     image_ok = _immutable(images)
     namespace_ok = True
     forbidden_ok = not any(
@@ -221,7 +234,7 @@ def _static_gates(
         "deterministic_oracle": gate("pass" if oracle_ok else "blocked", PROJECTS[project_id]["oracle"]),
         "resource_limits": gate("pass" if resource_ok else "blocked"),
         "external_dependencies": gate("pass" if external_ok else "blocked", PROJECTS[project_id]["oracle"]["external_dependencies"]),
-        "runtime_apply_allowed": gate("blocked", False, "all required gates must pass and namespace authorization is required"),
+        "runtime_apply_allowed": gate("blocked", False, "all required gates must pass and namespace approval is required"),
     }
     return gates, reasons
 
@@ -329,21 +342,27 @@ def build_project_preparation(
             encoding="utf-8",
         )
     if project_id in {"P03", "P06"}:
+        missing_required = [
+            name for name, present in source["required_files"].items() if not present
+        ]
+        source_complete = source["source_status"] == "complete"
         recovery = {
             "schema_version": "1.0",
             "project_id": project_id,
             "project_commit": PROJECTS[project_id]["commit"],
             "tree_sha": PROJECTS[project_id]["tree"],
-            "tree_sha_verified_in_current_git": False,
-            "source_tree_present": source["source_status"] == "complete",
-            "complete_blob_set_present": False,
-            "source_restore_status": "blocked_incomplete",
-            "missing_required_files": [
-                name for name, present in source["required_files"].items() if not present
-            ],
+            "tree_sha_verified_in_current_git": source_complete,
+            "source_tree_present": source_complete,
+            "complete_blob_set_present": source_complete,
+            "source_restore_status": "complete" if source_complete else "blocked_incomplete",
+            "missing_required_files": missing_required,
             "runtime_apply_allowed": False,
-            "reason_code": "source_unrecoverable_offline",
-            "next_action": "provide offline source bundle or complete local Git object set",
+            "reason_code": None if source_complete else "source_unrecoverable_offline",
+            "next_action": (
+                "continue static gate preparation; runtime still requires image digest, dry-run, and namespace approval"
+                if source_complete
+                else "provide offline source bundle or complete local Git object set"
+            ),
         }
         (output_dir / "source-restore-gate.json").write_text(
             json.dumps(recovery, indent=2, ensure_ascii=True) + "\n",
@@ -354,9 +373,13 @@ def build_project_preparation(
                 {
                     "schema_version": "1.0",
                     "project_id": project_id,
-                    "status": "blocked",
+                    "status": "source_restored" if source_complete else "blocked",
                     "namespace": result["namespace"],
-                    "deployment_profile": "not_generated_until_source_restore",
+                    "deployment_profile": (
+                        "offline_preparation"
+                        if source_complete
+                        else "not_generated_until_source_restore"
+                    ),
                     "runtime_apply_allowed": False,
                     "oracle_contract": oracle,
                     "blocked_reasons": result["blocked_reasons"],

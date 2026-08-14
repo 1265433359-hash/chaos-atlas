@@ -1,6 +1,20 @@
 # ChaosAtlas Open Discovery Protocol v2
 
-Status: offline design freeze candidate. No DeepSeek request is authorized.
+Status: active-scope revision, offline only. No DeepSeek request is authorized.
+
+## Current active scope
+
+The active experiment contains exactly two arms:
+
+- `ChaosAtlas-KB-open`: the complete ChaosAtlas method.
+- `ChaosAtlas-noKB-open`: the complete-method ablation with the knowledge view
+  and runtime feedback removed.
+
+ChaosEater is deferred. Historical ChaosEater artifacts are retained as
+method-owned audit data, but are excluded from active execution, current
+statistics, current mutation selection, and all ChaosAtlas knowledge feedback.
+Re-enabling ChaosEater requires a new explicit protocol revision and a fresh
+contamination audit.
 
 ## Formal knowledge-ablation boundary
 
@@ -13,7 +27,8 @@ The KB/noKB contrast has two distinct phases and they must not be pooled:
    `P01 -> ... -> P10`. After a project is closed, only a human-reviewed,
    abstracted feedback projection may enter a later KB. The current project's
    runtime result never enters its own input. The noKB arm never receives any
-   feedback projection, and ChaosEater never receives ChaosAtlas cards.
+   feedback projection, and deferred ChaosEater artifacts never enter either
+   active arm.
 
 The audit card may retain evidence, oracle labels, classification, RCA, and
 mutation paths, but the prompt-facing projection may contain only provenance
@@ -70,21 +85,9 @@ It must not be described as end-to-end issue discovery.
   and project knowledge views.
 - `ChaosAtlas-noKB-open`: byte-identical project/common input and prompt skeleton,
   with all knowledge views removed.
-- `ChaosEater-official`: the deployed upstream ChaosEater end-to-end cycle
-  (preprocess -> hypothesis -> experiment -> analysis -> improvement), using
-  its native Skaffold/Kubernetes input. This is the primary external baseline
-  when the project passes the official bring-up gate.
-- `ChaosEater-open`: an open prompt-level reproduction of the
-  FaultScenarioAgent without the candidate-pool restriction. It is a
-  supplementary diagnostic arm and must not be reported as the official
-  end-to-end baseline.
-- `ChaosEater-adapter-open`: supplementary adapter using the extracted
-  FaultScenarioAgent prompt/parser. It is never renamed to official ChaosEater.
-
-If `ChaosEater-official` is unavailable, the project is reported as
-`environment_blocked` for the official-baseline comparison; neither open prompt
-arm nor adapter may replace it. `ChaosEater-adapter-open` is a separate
-supplementary result.
+- ChaosEater arms are deferred and are not part of the current paired design.
+  Existing official, open, and adapter artifacts remain frozen historical
+  records only.
 
 ## Paired design
 
@@ -92,7 +95,7 @@ supplementary result.
 - Seeds: 1001, 1002, 1003.
 - Maximum hypotheses per call: 8.
 - Pilot: P02 and P07, 18 calls for Track A and 18 calls for Track B.
-- Formal: 10 projects x 3 arms x 3 seeds = 90 calls per track.
+- Formal active scope: 10 projects x 2 arms x 3 seeds = 60 calls per track.
 - Track A and Track B results are analyzed separately; no candidate is treated as
   an independent project sample.
 
@@ -115,7 +118,31 @@ projects. Report paired KB-minus-noKB differences per project, then summarize
 the distribution across projects. Keep valid-output rate, compiler rate,
 confirmed-weakness yield, protected-target yield, method-invalid rate,
 environment-blocked rate, call-chain coverage/depth, runtime success, and token
-cost as separate endpoints.
+   cost as separate endpoints.
+
+## Contamination controls
+
+The following gates are mandatory before a method output can be executed or
+counted:
+
+1. The complete method and ablation receive byte-identical common project input,
+   topology, runtime contract, source commit, image provenance, and oracle
+   definition.
+2. The ablation receives no knowledge view, project feedback, runtime result,
+   oracle label, mutation path, classification, or prior-method output.
+3. The complete method receives only a pre-experiment knowledge view or a
+   reviewed abstraction from an earlier project. Same-project and future-project
+   feedback are rejected.
+4. Each method has a distinct output/evidence directory and method-owned run
+   manifest. No result file may be reused across methods.
+5. Before and after each run, the runner checks namespace identity, residual
+   Chaos resources, source/topology/image hashes, oracle stability, cleanup,
+   washout, and namespace stability.
+6. Environment blocks, invalid injections, and cleanup failures are recorded
+   separately from method outcomes and excluded from method-quality metrics.
+7. The deferred ChaosEater corpus is read-only historical evidence and cannot
+   influence candidate selection, execution, evaluation labels, current
+   statistics, or KB projection.
 
 ## Result classification and feedback
 

@@ -1,5 +1,14 @@
 # Findings
 
+## Git upload preparation pass (2026-08-14)
+- Current branch is `remediation/2026-08-09-review`, local HEAD `f4242b9`, ahead of `origin/remediation/2026-08-09-review` by 5 commits.
+- The worktree had 176 visible status entries before cleanup: 26 tracked modifications and 150 untracked entries. The untracked set included many `.tmp-*` verification directories, so upload preparation must not use `git add .`.
+- Added `/.tmp-*/` to `.gitignore` to keep local verification directories out of the upload candidate set.
+- Created `docs/CHAOSATLAS_UPLOAD_PREP_2026-08-14.md` as the current upload-preparation checklist and linked it from `docs/ARCHIVE_MAP.md`.
+- The three-project Word report is now paired with a UTF-8 Markdown source file: `docs/ChaosAtlas_three_project_experiment_report_2026-08-14.docx` and `.md`.
+- Word report structural QA passed: DOCX opened with `python-docx`, Chinese text survived (`cjk_count > 3000`), no question-mark replacement occurred, required percentages and review-boundary strings were present, and no obvious secret/token patterns were found. Visual PNG rendering remains unavailable because LibreOffice is not installed and the Microsoft Word PDF fallback timed out.
+- Upload boundary: runtime logs, model-selection payloads, and large experiment directories require final selective inclusion and sensitive scan before push. Keep `human_review=pending` and `knowledge_base_updated=false`.
+
 ## Project archive pass (2026-08-10)
 - The repository already contains substantial experiment evidence for three case-study systems: `train-ticket`, `online-boutique`, and `otel-demo`.
 - Existing top-level planning files are UTF-8; PowerShell's default reader displayed mojibake, so new documentation must be written and checked explicitly as UTF-8.
@@ -278,3 +287,69 @@ Artifact checks found nine classification-index mismatches rather than three; al
 - Root-cause evidence is bounded to experiment-time logs, namespace events, and Zipkin traces. Missing or empty diagnostics keep the mechanism pending and do not invalidate cleanup or fabricate causality.
 - KB and noKB mutations for P02 seed-1001 are byte-identical, and the adapter mutation is a subset. Even a clean R3 sequence cannot turn shared-mutation runtime timing into evidence of method superiority or a KB effect.
 - Review output remains pending and separate from knowledge feedback. No P02 result can enter P02 itself; only explicit human-reviewed abstractions may enter later projects.
+
+## Four-project offline preparation finding (2026-08-13)
+
+- Online Boutique `r3` is internally consistent: the recorded and actual
+  manifest SHA-256 match, all namespace fields are local to
+  `chaosatlas-online-boutique`, and the 11 workload images have recorded
+  local RepoDigest provenance. This is preparation evidence only; dry-run,
+  baseline, and runtime gates are still pending.
+- OpenTelemetry Demo `r1` is namespace-local and sanitized, with materialized
+  `postgres-init` and `flagd-config` ConfigMaps and a recorded unavailable
+  trace backend. Its 12 images remain mutable, so runtime is blocked.
+- Train Ticket `r2` deduplicates the four source YAML inputs and rewrites all
+  namespaced resources to `chaosatlas-train-ticket`. Its dependency contract
+  observes references to `nacos`, `rabbitmq`, `train-ticket-db`,
+  `ts-order-mysql`, and `ts-station-mysql`, but no definitions are present.
+  Its six image references remain mutable. The profile records both facts and
+  keeps runtime apply disabled.
+- TeaStore has only historical static intake in this workspace. Its exact
+  fixed source snapshot is absent, so no fresh manifest or runtime bring-up
+  may be claimed.
+- These profiles are source/project-context preparation artifacts. No old
+  candidate pool, runtime result, RCA, pending review, or knowledge-base
+  update was used as an active method input. `human_review` remains
+  `pending`.
+# 2026-08-14 三项目两臂续跑发现
+
+- Online Boutique 集群当前 Node Ready、11/11 deployment Ready、全局 PodChaos/NetworkChaos/StressChaos 无残留。
+- full H1 的早期诊断批次不作为正式结论；干净正式批次 `formal-r4-runtime-r4` 中 checkoutservice 500ms NetworkChaos 为 2/2 `no_business_impact_observed`。
+- full H2 replicate 1 在注入期间 5/5 成功，但清理后第 5 次请求出现 gRPC INTERNAL；paymentservice 与 checkoutservice 随后重启。
+- 当前运行器只执行固定 5 次即时恢复请求，任一失败就终止，无法表达“短暂失败后在超时内达到连续成功”的恢复协议。修复前不重复运行该失败命令。
+- 机制边界：现有证据只支持注入后的探针/重启和一次支付失败，不支持猜测缓存、注册或内部重试机制。
+- `formal-r4-runtime-r2` 在 full H4 rep-2 停止：恢复 33 次均因本地 `127.0.0.1:17070` 拒绝连接而失败；集群中的 cartservice 已 Ready，事件证明其容器被 liveness probe 重启。
+- 根因是 `kubectl port-forward svc/cartservice` 随目标容器重启退出且 runner 未重建，属于观测通道故障；不是可归因的业务恢复失败。
+- gRPC 输出解析器还要求单行尾部 latency，导致多行 `cart_add_failed` 被降级为 `CLIENT_PROCESS_ERROR`。两处均已按 TDD 修复。
+- `formal-r4-runtime-r3` 完成 full 8/8 后，在 ablation h1 checkoutservice PodKill 停止；新 Pod 已 Ready，但本地 checkout 转发 `127.0.0.1:15050` 拒绝连接，32 次恢复采样均无法到达业务 oracle。
+- 解析器现按完整 sample block 解析多行 `rpc_error`/`cart_add_failed`；重连判定覆盖冻结的两个本地 oracle 端口 `15050`、`17070`，且仅接受明确 connection-refused/TCP-end 证据。
+- Online Boutique 干净正式批次 `formal-r4-runtime-r4` 完成 16/16。可确认的是观测到的业务结果，不据此猜测内部缓存、重试或注册机制：full 的 500ms/30s NetworkChaos 对 checkout/payment/shipping/cart 在 2 次重复中均未造成 oracle 失败；ablation 的 checkout/cart/productcatalog PodKill 在 2 次重复中均造成 oracle 失败，frontend PodKill 2 次均未造成该 oracle 失败。
+- OTel provenance gate 仍未关闭；首次 registry 元数据查询的失败发生在本地 repository 名解析（前导 `/`），不是 registry 对目标 tag 的否定证据。
+## 2026-08-14 三项目两臂续跑发现
+- 接管时 OTel 正式批次 `runtime_results-r3` 仍在运行；最近进度 21/48，前 21 个单元均 `status=completed`。
+- 当前活动资源为 `chaosatlas-otel` 中一个预期的 30 秒 NetworkChaos；Chaos Mesh 控制器 Ready，restart count 40，最近一次重启约 43 分钟前。
+- Minikube 节点 Ready。沙箱内读取用户 kubeconfig 被拒绝，改用用户授权的本机 `kubectl` 执行权限；这不是集群故障。
+- OTel 当前初步分类包含可重复 weakness 和 no-business-impact 两类；正式结论必须等待 48/48 验收及诊断分析。
+- 现有 OTel RCA/三项目状态文件仍是早期 2/48 环境阻断版本，正式批次完成后必须重写，不能作为当前最终结论。
+- Sock Shop 可复用 `evaluate_runtime_profile`；新增的证据转换明确要求 13/13 deployment Ready（以实际部署数为准）、两次全成功 baseline、completed recovery rehearsal、无 cleanup/residual 错误和稳定 washout。
+- Sock Shop 原批次会静默接受少于 4 个候选并执行不足 48 单元，且没有安全续跑语义；已在正式运行前修复为 fail-closed 和 completed-only 复用。
+- Sock Shop 原 runner 白名单只有 8 个业务工作负载，而冻结拓扑有 14 个 Deployment；这会错误拒绝 RabbitMQ、数据库和 session-db 等合法模型目标。已对齐到冻结拓扑全量目标。
+- OTel 已完成部分显示：checkout/cart PodKill 多次产生业务弱点；500ms network delay 多数维持业务成功；50% loss 至少有一组结果不一致，最终只能逐次陈述，不能推断具体内部机制。
+- 原跨根验收器会让先列出的旧失败报告遮蔽同键的新 completed 报告，且未核对 mutation SHA；已修复，避免 OTel r2 历史 H4 环境失败污染 r3 正式验收。
+- Sock Shop `runtime-gate-r1` 的失败已定位到冻结输入而非 Chaos：匿名 `GET /orders` 固定返回 `User not logged in`；直连 orders 服务又因旧 Mongo 客户端对 MongoDB 8.2 发出已移除的 `OP_QUERY count` 而返回错误码 352。
+- 上游清单对 `carts-db`/`orders-db` 使用无版本 `mongo`，原冻结过程把它解析为运行当日 latest digest，造成应用与数据库协议不兼容。已验证 `mongo:4.4.29` linux/amd64 digest `sha256:6189a342f8da4568b4b111c378a890b1fe186b1bc133742bff8811fe63d2e01e`，并在准备期加入 fail-closed 兼容性约束。
+- 前端源码证明订单读路径需要登录 cookie，成功响应码由前端明确设置为 201。新 oracle 为 home -> catalogue -> demo Basic login -> authenticated orders，单次 journey 使用隔离 cookie jar；不把静态 HTML 当作完整业务成功。
+# Native runtime launcher finding (2026-08-14)
+
+- The prior `Start-Process` attempt failed before the experiment because the Windows environment contains both `Path` and `PATH`. `Start-Process -Environment` uses a case-insensitive environment dictionary, so the duplicate keys produce `已添加项。字典中的关键字:“Path”所添加的关键字:“PATH”`.
+- This is a launcher/environment-bound failure, not evidence against the runner or Minikube. The reproducible workaround is to invoke the existing fixed Python executable directly while inheriting the environment, without constructing an `-Environment` dictionary.
+- The native runtime batch then started successfully. Its first five completed reports passed baseline, injection, recovery, cleanup, and residual gates; no knowledge-base write occurred.
+
+# ChaosAtlas-native-full Sock Shop finding (2026-08-14)
+
+- Direct native knowledge use completed 24/24 runtime units. The independent verifier passed: 16 units had no observed business impact and 8 units showed a reproducible business weakness.
+- The eight weaknesses are seed-1003 H2/H4/H6/H8, each reproduced 2/2 under 100% outbound packet loss for 30 seconds. Failures were real Sock Shop oracle failures: HTTP 500 and/or timeout.
+- Logs provide bounded support for downstream database connectivity failures: `catalogue-db:3306`, `carts-db:27017`, and `orders-db:27017` appear in the corresponding target diagnostics. This does not prove a particular retry, cache, discovery, registration, or circuit-breaker mechanism.
+- Sock Shop has no usable Zipkin backend in the frozen topology. Every report records `zipkin-unavailable.json`; no trace-based call-chain claim is made.
+- The result is an intentional native-full capability upper bound with project-specific knowledge and allowed pollution. It must not be presented as a fair comparison against full-v1, ablation, or V2-LOO.
+- The formal RCA review remains `human_review=pending`, and no knowledge-base update was performed.

@@ -22,6 +22,8 @@
 | `docs/CHAOSATLAS_PROJECT_ARCHIVE_2026-08-13.md` | 2026-08-13 project-stage archive | Broad project status, P09/P02/Sock Shop history, queue and evidence boundaries |
 | `docs/CHAOSATLAS_STAGE_SUMMARY_2026-08-14.md` | 2026-08-14 project-stage summary | Current method scope, real-project evidence, ten-project boundary, paper narrative, and next-stage tasks |
 | `docs/CHAOSATLAS_REAL_PROJECT_REVIEW_2026-08-14.md` | Online Boutique, OpenTelemetry Demo, Sock Shop | Native-full vs ablation end-to-end capability and same-candidate-pool selection capability; includes `[CONFIRMED]`, `[PENDING]`, `[BOUNDARY]`, `[DO-NOT-CLAIM]` labels |
+| `docs/ChaosAtlas_three_project_experiment_report_2026-08-14.docx` | Word report for the two key three-project comparisons | Human-facing report explaining project choice, original full-vs-ablation workflow, same-pool selection workflow, results, percentages, and interpretation boundaries |
+| `docs/CHAOSATLAS_UPLOAD_PREP_2026-08-14.md` | Git upload preparation checklist | Current local commit state, included/excluded paths, verification commands, sensitive-data boundary, and push readiness |
 
 ## Required Provenance
 

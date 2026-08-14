@@ -12,8 +12,10 @@ from pathlib import Path
 from typing import Any
 
 try:
+    from tools.contamination_audit import audit_repository
     from tools.feedback_protocol import validate_ablation_pair, validate_knowledge_card_boundary
 except ModuleNotFoundError:
+    from contamination_audit import audit_repository
     from feedback_protocol import validate_ablation_pair, validate_knowledge_card_boundary
 
 
@@ -50,7 +52,10 @@ def validate_inputs(root: Path = EXPERIMENT) -> dict[str, Any]:
             checked_pairs += 1
             if not result["valid"]:
                 errors.append({"scope": str(kb_path), "errors": result["errors"]})
-    return {"valid": not errors, "checked_ablation_pairs": checked_pairs, "errors": errors}
+    contamination = audit_repository(root)
+    if contamination["status"] != "pass":
+        errors.append({"scope": "contamination_audit", "errors": sorted({error for record in contamination["records"] for error in record.get("errors", [])})})
+    return {"valid": not errors, "checked_ablation_pairs": checked_pairs, "errors": errors, "contamination_audit": contamination}
 
 
 def validate_feedback_manifest(manifest: dict[str, Any], common_input: dict[str, Any] | None = None) -> dict[str, Any]:

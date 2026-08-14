@@ -247,6 +247,11 @@ def compile_mutation(
             if isinstance(loss, bool) or not isinstance(loss, int) or not 1 <= loss <= 100:
                 raise MutationCompileError("loss_percent must be an integer in [1, 100]")
             network = {"action": "loss", "loss": {"loss": str(loss), "correlation": "100"}, "duration": duration, "direction": "to"}
+        if destination_workload is not None:
+            network["target"] = {
+                "mode": "all",
+                "selector": _selector(namespace, destination_workload),
+            }
         document = {"apiVersion": "chaos-mesh.org/v1alpha1", "kind": "NetworkChaos", "metadata": metadata, "spec": {**spec, **network}}
     else:
         if target_kind == "dependency_edge":

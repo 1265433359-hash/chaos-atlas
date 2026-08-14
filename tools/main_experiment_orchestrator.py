@@ -26,6 +26,20 @@ EXPERIMENT = ROOT / "artifacts/experiments/chaosatlas_10_projects"
 PROJECTS = [f"P{index:02d}" for index in range(1, 11)]
 SEEDS = [1001, 1002, 1003]
 ATLAS_ARMS = ["ChaosAtlas-KB-open", "ChaosAtlas-noKB-open"]
+CHAOSEATER_ARM = "ChaosEater-official"
+ACTIVE_LEDGER = EXPERIMENT / "active_atlas_experiment_ledger.json"
+
+
+def active_experiment_arms(include_chaoseater: bool = False) -> list[str]:
+    """Return the methods allowed in the current experiment scope.
+
+    ChaosEater remains available for a later unified comparison, but it must
+    never re-enter the active ledger accidentally.
+    """
+    arms = list(ATLAS_ARMS)
+    if include_chaoseater:
+        arms.append(CHAOSEATER_ARM)
+    return arms
 
 
 def read_json(path: Path) -> dict[str, Any]:
@@ -101,7 +115,12 @@ def runtime_gate(project_id: str, matrix: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def build_run_rows(project_id: str, gate: dict[str, Any], ce_gate: dict[str, Any]) -> list[dict[str, Any]]:
+def build_run_rows(
+    project_id: str,
+    gate: dict[str, Any],
+    ce_gate: dict[str, Any],
+    include_chaoseater: bool = False,
+) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for seed in SEEDS:
         for arm in ATLAS_ARMS:
@@ -128,35 +147,41 @@ def build_run_rows(project_id: str, gate: dict[str, Any], ce_gate: dict[str, Any
                 "mutation_applied": False,
                 "evidence_status": "not_started",
             })
-        official_status = (
-            "ready_for_explicit_llm_consent"
-            if gate["execution_ready"] and ce_gate["status"] == "pass_static"
-            else "official_input_blocked"
-            if ce_gate["status"] != "pass_static"
-            else "static_only_runtime_blocked"
-        )
-        rows.append({
-            "project_id": project_id,
-            "seed": seed,
-            "arm": "ChaosEater-official",
-            "input": str((EXPERIMENT / "sources" / project_id).relative_to(ROOT)).replace("\\", "/"),
-            "input_sha256": None,
-            "status": official_status,
-            "static_input_status": ce_gate["status"],
-            "runtime_status": gate["status"],
-            "reason": None if gate["execution_ready"] and ce_gate["status"] == "pass_static" else (ce_gate["reason"] or gate["blocker"]),
-            "llm_called": False,
-            "mutation_applied": False,
-            "evidence_status": "not_started",
-            "improvement_isolated": True,
-        })
+        if include_chaoseater:
+            official_status = (
+                "ready_for_explicit_llm_consent"
+                if gate["execution_ready"] and ce_gate["status"] == "pass_static"
+                else "official_input_blocked"
+                if ce_gate["status"] != "pass_static"
+                else "static_only_runtime_blocked"
+            )
+            rows.append({
+                "project_id": project_id,
+                "seed": seed,
+                "arm": CHAOSEATER_ARM,
+                "input": str((EXPERIMENT / "sources" / project_id).relative_to(ROOT)).replace("\\", "/"),
+                "input_sha256": None,
+                "status": official_status,
+                "static_input_status": ce_gate["status"],
+                "runtime_status": gate["status"],
+                "reason": None if gate["execution_ready"] and ce_gate["status"] == "pass_static" else (ce_gate["reason"] or gate["blocker"]),
+                "llm_called": False,
+                "mutation_applied": False,
+                "evidence_status": "not_started",
+                "improvement_isolated": True,
+            })
     return rows
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=EXPERIMENT / "main_experiment_ledger.json")
+    parser.add_argument("--output", type=Path, default=ACTIVE_LEDGER)
     parser.add_argument("--write-runtime-maps", action="store_true", help="write static runtime maps for eligible projects")
+    parser.add_argument(
+        "--include-chaoseater",
+        action="store_true",
+        help="explicitly unfreeze the deferred ChaosEater arm for a later unified comparison",
+    )
     args = parser.parse_args()
 
     matrix = read_json(EXPERIMENT / "runtime_gate_matrix.json")
@@ -176,7 +201,7 @@ def main() -> int:
             map_path = EXPERIMENT / "runtime_profiles" / project_id / "runtime-map.json"
             map_path.write_text(json.dumps(runtime_map, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
             projects[project_id]["runtime_map"] = str(map_path.relative_to(ROOT)).replace("\\", "/")
-        rows.extend(build_run_rows(project_id, gate, ce_gate))
+        rows.extend(build_run_rows(project_id, gate, ce_gate, include_chaoseater=args.include_chaoseater))
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     ledger = {
@@ -184,12 +209,22 @@ def main() -> int:
         "kind": "chaosatlas_open_discovery_main_experiment_ledger",
         "created_at": datetime.now(timezone.utc).isoformat(),
         "protocol": "artifacts/experiments/chaosatlas_10_projects/protocol_v2_open_discovery.md",
-        "primary_arms": [*ATLAS_ARMS, "ChaosEater-official"],
+        "primary_arms": active_experiment_arms(include_chaoseater=args.include_chaoseater),
+        "deferred_arms": [] if args.include_chaoseater else [CHAOSEATER_ARM],
         "projects": projects,
         "runs": rows,
         "offline_only": True,
         "deepseek": {"model": "deepseek-v4-flash", "key_read": False, "requests_sent": 0, "consent": False},
         "runtime": {"cluster": "chaos-kind", "namespace_isolation_required": True, "mutation_applied": False},
+        "method_scope_policy": (
+            "Active scope is the complete ChaosAtlas method plus its noKB ablation. "
+            "Historical ChaosEater artifacts are frozen and excluded from active runs, "
+            "statistics, knowledge feedback, and method-result eligibility."
+            if not args.include_chaoseater
+            else
+            "ChaosEater was explicitly unfrozen for a separate unified comparison; "
+            "its outputs remain method-owned and cannot enter ChaosAtlas knowledge feedback."
+        ),
         "improvement_policy": "ChaosEater improvement/reconfiguration outputs are recorded separately and excluded from first-discovery yield.",
         "secondary_candidate_pool_track": "parked_until_primary_track_review",
     }

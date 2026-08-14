@@ -1,0 +1,598 @@
+{
+  "schema_version": "chaosatlas-generic-knowledge-projection-v2",
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "source_scope": "cross_project_generic_only",
+  "test_node_rules": [
+    {
+      "when": {
+        "target_role": "workload",
+        "direction": "unspecified",
+        "mode": "one",
+        "duration_class": "bounded_duration"
+      },
+      "fault": "container_cpu_stress",
+      "evidence": "runtime_observed",
+      "runtime_support_count": 3
+    },
+    {
+      "when": {
+        "target_role": "component",
+        "direction": "to",
+        "mode": "all",
+        "duration_class": "bounded_duration"
+      },
+      "fault": "network_delay",
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "when": {
+        "target_role": "synchronous_downstream_call",
+        "direction": "to",
+        "mode": "all",
+        "duration_class": "bounded_duration"
+      },
+      "fault": "network_delay",
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "when": {
+        "target_role": "workload",
+        "direction": "to",
+        "mode": "all",
+        "duration_class": "bounded_duration"
+      },
+      "fault": "network_delay",
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "when": {
+        "target_role": "workload",
+        "direction": "to",
+        "mode": "one",
+        "duration_class": "bounded_duration"
+      },
+      "fault": "network_delay",
+      "evidence": "runtime_observed",
+      "runtime_support_count": 4
+    },
+    {
+      "when": {
+        "target_role": "synchronous_downstream_call",
+        "direction": "to",
+        "mode": "all",
+        "duration_class": "bounded_duration"
+      },
+      "fault": "network_delay_or_loss",
+      "evidence": "runtime_observed",
+      "runtime_support_count": 4
+    },
+    {
+      "when": {
+        "target_role": "workload",
+        "direction": "to",
+        "mode": "one",
+        "duration_class": "bounded_duration"
+      },
+      "fault": "network_delay_or_loss",
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    }
+  ],
+  "call_chain_rules": [
+    {
+      "path": [
+        "test_node",
+        "component",
+        "business_execution",
+        "observation",
+        "recovery"
+      ],
+      "properties": {
+        "critical_path": false,
+        "sync_boundary": false,
+        "async_boundary": false,
+        "stateful_dependency": false,
+        "fanout": "single_or_repeated",
+        "target_position": "workload"
+      },
+      "observed_outcomes": [
+        "observation_incomplete"
+      ],
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "path": [
+        "test_node",
+        "component",
+        "recovery",
+        "synchronous_downstream_call"
+      ],
+      "properties": {
+        "critical_path": false,
+        "sync_boundary": true,
+        "async_boundary": false,
+        "stateful_dependency": false,
+        "fanout": "single_or_repeated",
+        "target_position": "component"
+      },
+      "observed_outcomes": [
+        "cascade_failure",
+        "latency_degradation",
+        "transport_failure"
+      ],
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "path": [
+        "test_node",
+        "synchronous_downstream_call"
+      ],
+      "properties": {
+        "critical_path": false,
+        "sync_boundary": true,
+        "async_boundary": false,
+        "stateful_dependency": false,
+        "fanout": "single_or_repeated",
+        "target_position": "synchronous_downstream_call"
+      },
+      "observed_outcomes": [
+        "latency_degradation"
+      ],
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "path": [
+        "test_node",
+        "synchronous_downstream_call",
+        "business_outcome"
+      ],
+      "properties": {
+        "critical_path": true,
+        "sync_boundary": true,
+        "async_boundary": false,
+        "stateful_dependency": false,
+        "fanout": "single_or_repeated",
+        "target_position": "synchronous_downstream_call"
+      },
+      "observed_outcomes": [
+        "business_response_preserved",
+        "cascade_failure",
+        "client_timeout",
+        "latency_degradation"
+      ],
+      "evidence": "runtime_observed",
+      "runtime_support_count": 3
+    },
+    {
+      "path": [
+        "test_node",
+        "synchronous_downstream_call",
+        "component",
+        "business_outcome"
+      ],
+      "properties": {
+        "critical_path": true,
+        "sync_boundary": true,
+        "async_boundary": false,
+        "stateful_dependency": false,
+        "fanout": "single_or_repeated",
+        "target_position": "synchronous_downstream_call"
+      },
+      "observed_outcomes": [
+        "cascade_failure",
+        "client_timeout"
+      ],
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "path": [
+        "test_node",
+        "workload",
+        "component",
+        "business_outcome"
+      ],
+      "properties": {
+        "critical_path": true,
+        "sync_boundary": false,
+        "async_boundary": false,
+        "stateful_dependency": false,
+        "fanout": "single_or_repeated",
+        "target_position": "workload"
+      },
+      "observed_outcomes": [
+        "grpc_error"
+      ],
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "path": [
+        "test_node",
+        "workload",
+        "component",
+        "controller_path",
+        "component",
+        "synchronous_downstream_call",
+        "business_outcome",
+        "observation"
+      ],
+      "properties": {
+        "critical_path": true,
+        "sync_boundary": true,
+        "async_boundary": false,
+        "stateful_dependency": false,
+        "fanout": "single_or_repeated",
+        "target_position": "workload"
+      },
+      "observed_outcomes": [
+        "business_response_preserved",
+        "latency_degradation"
+      ],
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "path": [
+        "test_node",
+        "workload",
+        "controller_path",
+        "business_execution",
+        "component",
+        "business_outcome",
+        "observation"
+      ],
+      "properties": {
+        "critical_path": true,
+        "sync_boundary": false,
+        "async_boundary": false,
+        "stateful_dependency": false,
+        "fanout": "single_or_repeated",
+        "target_position": "workload"
+      },
+      "observed_outcomes": [
+        "business_response_preserved",
+        "latency_degradation"
+      ],
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "path": [
+        "test_node",
+        "workload",
+        "controller_path",
+        "business_execution",
+        "dependency_edge",
+        "business_outcome",
+        "observation"
+      ],
+      "properties": {
+        "critical_path": true,
+        "sync_boundary": false,
+        "async_boundary": false,
+        "stateful_dependency": false,
+        "fanout": "single_or_repeated",
+        "target_position": "workload"
+      },
+      "observed_outcomes": [
+        "client_timeout",
+        "latency_degradation",
+        "server_completion_after_client_timeout"
+      ],
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "path": [
+        "test_node",
+        "workload",
+        "controller_path",
+        "business_execution",
+        "synchronous_downstream_call",
+        "business_outcome",
+        "observation"
+      ],
+      "properties": {
+        "critical_path": true,
+        "sync_boundary": true,
+        "async_boundary": false,
+        "stateful_dependency": false,
+        "fanout": "single_or_repeated",
+        "target_position": "workload"
+      },
+      "observed_outcomes": [
+        "business_response_preserved",
+        "latency_degradation"
+      ],
+      "evidence": "runtime_observed",
+      "runtime_support_count": 1
+    },
+    {
+      "path": [
+        "test_node",
+        "workload",
+        "synchronous_downstream_call",
+        "business_outcome"
+      ],
+      "properties": {
+        "critical_path": true,
+        "sync_boundary": true,
+        "async_boundary": false,
+        "stateful_dependency": false,
+        "fanout": "single_or_repeated",
+        "target_position": "workload"
+      },
+      "observed_outcomes": [
+        "business_response_preserved",
+        "grpc_error",
+        "latency_degradation"
+      ],
+      "evidence": "runtime_observed",
+      "runtime_support_count": 3
+    }
+  ],
+  "fault_applicability_rules": [
+    {
+      "fault": "container_cpu_stress",
+      "applies_to": "workload",
+      "conditions": {
+        "direction": "unspecified",
+        "timeout_evidence": "unknown_or_absent_unless_card_proves_boundary",
+        "retry_evidence": "unknown"
+      },
+      "expected_surfaces": [
+        "business_response_preserved",
+        "latency_degradation",
+        "observation_incomplete"
+      ],
+      "validation": "validate_business_oracle_latency_boundary_cleanup_and_washout",
+      "runtime_support_count": 3
+    },
+    {
+      "fault": "network_delay",
+      "applies_to": "component",
+      "conditions": {
+        "direction": "to",
+        "timeout_evidence": "unknown_or_absent_unless_card_proves_boundary",
+        "retry_evidence": "unknown"
+      },
+      "expected_surfaces": [
+        "cascade_failure",
+        "latency_degradation",
+        "transport_failure"
+      ],
+      "validation": "validate_business_oracle_latency_boundary_cleanup_and_washout",
+      "runtime_support_count": 1
+    },
+    {
+      "fault": "network_delay",
+      "applies_to": "synchronous_downstream_call",
+      "conditions": {
+        "direction": "to",
+        "timeout_evidence": "unknown_or_absent_unless_card_proves_boundary",
+        "retry_evidence": "unknown"
+      },
+      "expected_surfaces": [
+        "latency_degradation"
+      ],
+      "validation": "validate_business_oracle_latency_boundary_cleanup_and_washout",
+      "runtime_support_count": 1
+    },
+    {
+      "fault": "network_delay",
+      "applies_to": "workload",
+      "conditions": {
+        "direction": "to",
+        "timeout_evidence": "unknown_or_absent_unless_card_proves_boundary",
+        "retry_evidence": "unknown"
+      },
+      "expected_surfaces": [
+        "business_response_preserved",
+        "client_timeout",
+        "grpc_error",
+        "latency_degradation",
+        "server_completion_after_client_timeout"
+      ],
+      "validation": "validate_business_oracle_latency_boundary_cleanup_and_washout",
+      "runtime_support_count": 5
+    },
+    {
+      "fault": "network_delay_or_loss",
+      "applies_to": "synchronous_downstream_call",
+      "conditions": {
+        "direction": "to",
+        "timeout_evidence": "unknown_or_absent_unless_card_proves_boundary",
+        "retry_evidence": "unknown"
+      },
+      "expected_surfaces": [
+        "business_response_preserved",
+        "cascade_failure",
+        "client_timeout",
+        "latency_degradation"
+      ],
+      "validation": "validate_business_oracle_latency_boundary_cleanup_and_washout",
+      "runtime_support_count": 4
+    },
+    {
+      "fault": "network_delay_or_loss",
+      "applies_to": "workload",
+      "conditions": {
+        "direction": "to",
+        "timeout_evidence": "unknown_or_absent_unless_card_proves_boundary",
+        "retry_evidence": "unknown"
+      },
+      "expected_surfaces": [
+        "grpc_error"
+      ],
+      "validation": "validate_business_oracle_latency_boundary_cleanup_and_washout",
+      "runtime_support_count": 1
+    }
+  ],
+  "outcome_taxonomy": [
+    {
+      "outcome": "business_response_preserved",
+      "runtime_support_count": 5,
+      "meaning": "business contract remained successful while another surface may have changed"
+    },
+    {
+      "outcome": "cascade_failure",
+      "runtime_support_count": 3,
+      "meaning": "business failure propagated across the observed path"
+    },
+    {
+      "outcome": "client_timeout",
+      "runtime_support_count": 3,
+      "meaning": "client-side caller stopped waiting before normal completion"
+    },
+    {
+      "outcome": "grpc_error",
+      "runtime_support_count": 3,
+      "meaning": "gRPC or RPC surface returned an error"
+    },
+    {
+      "outcome": "latency_degradation",
+      "runtime_support_count": 10,
+      "meaning": "latency increased relative to baseline or configured observation budget"
+    },
+    {
+      "outcome": "observation_incomplete",
+      "runtime_support_count": 1,
+      "meaning": "evidence was insufficient for a more specific class"
+    },
+    {
+      "outcome": "server_completion_after_client_timeout",
+      "runtime_support_count": 1,
+      "meaning": "server-side completion was observed after caller timeout"
+    },
+    {
+      "outcome": "transport_failure",
+      "runtime_support_count": 1,
+      "meaning": "transport connection failed or reset"
+    }
+  ],
+  "negative_evidence": [
+    {
+      "evidence_state": "runtime_injection_blocked",
+      "outcome": "platform_blocked",
+      "outcomes": [
+        "platform_blocked"
+      ],
+      "usage": "boundary_only_not_positive_runtime_rule"
+    },
+    {
+      "evidence_state": "static_only",
+      "outcome": "observation_incomplete",
+      "outcomes": [
+        "observation_incomplete"
+      ],
+      "usage": "boundary_only_not_positive_runtime_rule"
+    }
+  ],
+  "historical_fault_pattern_support": [
+    {
+      "fault_family": "container_cpu_stress",
+      "document_count": 230,
+      "chaos_kind_counts": {
+        "StressChaos": 230
+      },
+      "evidence": "static_corpus_pattern_only",
+      "usage_boundary": "ranking_prior_only_not_runtime_proof"
+    },
+    {
+      "fault_family": "pod_kill",
+      "document_count": 220,
+      "chaos_kind_counts": {
+        "PodChaos": 220
+      },
+      "evidence": "static_corpus_pattern_only",
+      "usage_boundary": "ranking_prior_only_not_runtime_proof"
+    },
+    {
+      "fault_family": "network_delay",
+      "document_count": 213,
+      "chaos_kind_counts": {
+        "NetworkChaos": 213
+      },
+      "evidence": "static_corpus_pattern_only",
+      "usage_boundary": "ranking_prior_only_not_runtime_proof"
+    },
+    {
+      "fault_family": "container_memory_stress",
+      "document_count": 142,
+      "chaos_kind_counts": {
+        "StressChaos": 142
+      },
+      "evidence": "static_corpus_pattern_only",
+      "usage_boundary": "ranking_prior_only_not_runtime_proof"
+    },
+    {
+      "fault_family": "time_offset",
+      "document_count": 119,
+      "chaos_kind_counts": {
+        "TimeChaos": 119
+      },
+      "evidence": "static_corpus_pattern_only",
+      "usage_boundary": "ranking_prior_only_not_runtime_proof"
+    },
+    {
+      "fault_family": "http_response_fault",
+      "document_count": 65,
+      "chaos_kind_counts": {
+        "HTTPChaos": 65
+      },
+      "evidence": "static_corpus_pattern_only",
+      "usage_boundary": "ranking_prior_only_not_runtime_proof"
+    },
+    {
+      "fault_family": "network_loss",
+      "document_count": 57,
+      "chaos_kind_counts": {
+        "NetworkChaos": 57
+      },
+      "evidence": "static_corpus_pattern_only",
+      "usage_boundary": "ranking_prior_only_not_runtime_proof"
+    }
+  ],
+  "evidence_boundaries": [
+    "runtime_observed evidence supports the observed business or latency outcome only",
+    "static call-chain position is not proof that a request executed on every path",
+    "an observed outcome does not prove an internal timeout, retry, cache, discovery, or registration mechanism",
+    "target-project history, pending review, and unverified candidates are excluded",
+    "static corpus frequency is a ranking prior only and cannot create positive runtime rules"
+  ],
+  "provenance": {
+    "source_card_count": 17,
+    "runtime_validated_card_count": 15,
+    "non_runtime_card_count": 2,
+    "source_hashes": [
+      "028112505646a8c828ceafb4c9eb54944a22260b37f3015b2eb00e0ae96af342",
+      "3f24cadff6fda08436eb5c3a9c7f249c8b8d00233ea8355772205b1adfd78c36",
+      "497b3d7ec586b997e34a5d795dea4d1e3b856d72da70b7805fe86a6f62f5864c",
+      "5a9e50e4eca46cd3351b1d7a9753f1dc5d73bbdfd8725f94bb59f0d67895461a",
+      "739c86c08e7a9a45916808d7713da3b196b83d4554a0e02ad7f4a00db70427b1",
+      "8e4a127291f08e3c4d4e5ec3b617018fe2f026eb44f199926c6c147f2bfc35cf",
+      "906051f2c8488ed5c615cfb08074154003669575539e39031df5061c7a98e70e",
+      "94b923463cfcf08cf0cd6789951f617a23cf9c88fbbdecd4e1eb96c80d83b9fa",
+      "9c9649d0a4be5153d65fe3ae8615013157aa4e6ff0adeb5c89d12a5ac182ace8",
+      "a9e186b5c71c2e4c3f2f1e0a89956f416a73c5d1f0cf9f4e18b5a0aea2518457",
+      "aaeed508ee4aa8f2ec5bb6e3b3ba9c9d9c364e1a9fe86b8495ad9ccbfc0390f7",
+      "b133e605cd1806f9d7bdc0cf805a64e1926498d67e4377bd930d035220aa09d9",
+      "c0cb830b997270ef80bc42ccfb44df4f4d49d8c0354d48557dd8866b809875e4",
+      "c2b3cbfaaceb9e356350537191cd3f0aed2f5f9ea28b4c57f771466623754628",
+      "cffbebdeed3fcc5dbb05d5aa10bc983aa228eab302f3f320bc4ff2f04696c229",
+      "ee18f57a022d9d6515bbdd8b763d498e768697201b28dbe94d3116756d4f23ca",
+      "f7e7227b275a98112ecafa7bd575dccc6ec6dcec266fea0a97b0be055df8d4a6"
+    ],
+    "historical_catalog_file_count": 1935,
+    "projection_policy": "abstract roles and bounded applicability only; no project identifiers or executable artifacts"
+  },
+  "projection_sha256": "fe1438cbd39c295be80ca97703c6e3c8ecdd1af9486690cdb53f2f73a60a83d3"
+}

@@ -76,6 +76,69 @@ class RuntimeGateTest(unittest.TestCase):
         self.assertNotEqual("blocked", result["decision"])
         self.assertTrue(result["checks"]["scope_guard"]["metadata_namespace_ok"])
 
+    def test_current_online_boutique_namespace_is_allowed(self) -> None:
+        def kubectl_for_allowed_namespace(args: list[str], timeout: int = 20):
+            if len(args) >= 3 and args[0:2] == ["get", "crd"]:
+                return 0, "crd", ""
+            return 1, "", "not found"
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "mutation.yaml"
+            path.write_text(
+                mutation(namespace="chaosatlas-online-boutique"),
+                encoding="utf-8",
+            )
+            with patch.object(gate, "run_kubectl", side_effect=kubectl_for_allowed_namespace), patch.object(
+                gate,
+                "chaos_components",
+                return_value=(
+                    {"ready": True, "controller_pods": ["controller"], "daemon_pods": ["daemon"]},
+                    [],
+                ),
+            ), patch.object(gate, "target_pods", return_value=([READY_POD], [])):
+                result = gate.check_mutation(path)
+        self.assertNotEqual("blocked", result["decision"])
+        self.assertTrue(result["checks"]["scope_guard"]["metadata_namespace_ok"])
+
+    def test_current_otel_namespace_is_allowed(self) -> None:
+        def kubectl_for_allowed_namespace(args: list[str], timeout: int = 20):
+            if len(args) >= 3 and args[0:2] == ["get", "crd"]:
+                return 0, "crd", ""
+            return 1, "", "not found"
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "mutation.yaml"
+            path.write_text(mutation(namespace="chaosatlas-otel"), encoding="utf-8")
+            with patch.object(gate, "run_kubectl", side_effect=kubectl_for_allowed_namespace), patch.object(
+                gate,
+                "chaos_components",
+                return_value=(
+                    {"ready": True, "controller_pods": ["controller"], "daemon_pods": ["daemon"]},
+                    [],
+                ),
+            ), patch.object(gate, "target_pods", return_value=([READY_POD], [])):
+                result = gate.check_mutation(path)
+        self.assertNotEqual("blocked", result["decision"])
+        self.assertTrue(result["checks"]["scope_guard"]["metadata_namespace_ok"])
+
+    def test_current_sock_shop_namespace_is_allowed(self) -> None:
+        def kubectl_for_allowed_namespace(args: list[str], timeout: int = 20):
+            if len(args) >= 3 and args[0:2] == ["get", "crd"]:
+                return 0, "crd", ""
+            return 1, "", "not found"
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "mutation.yaml"
+            path.write_text(mutation(namespace="chaosatlas-sock-shop"), encoding="utf-8")
+            with patch.object(gate, "run_kubectl", side_effect=kubectl_for_allowed_namespace), patch.object(
+                gate,
+                "chaos_components",
+                return_value=({"ready": True, "controller_pods": ["controller"], "daemon_pods": ["daemon"]}, []),
+            ), patch.object(gate, "target_pods", return_value=([READY_POD], [])):
+                result = gate.check_mutation(path)
+        self.assertNotEqual("blocked", result["decision"])
+        self.assertTrue(result["checks"]["scope_guard"]["metadata_namespace_ok"])
+
     def test_mode_all_is_rejected(self) -> None:
         result = self.check(mutation(mode="all"))
         self.assertEqual("blocked", result["decision"])

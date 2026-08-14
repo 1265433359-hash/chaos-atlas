@@ -104,11 +104,15 @@ def validate_mutation(document: dict[str, Any]) -> tuple[str, dict[str, str]]:
 
 
 def residual_chaos() -> list[dict[str, Any]]:
-    data, error = kubectl_json(["get", CHAOS_RESOURCES, "-n", NAMESPACE])
+    data, error = kubectl_json(["get", CHAOS_RESOURCES, "-A"])
     if error:
-        raise RuntimeError(f"cannot verify P09 Chaos cleanup: {error}")
+        raise RuntimeError(f"cannot verify global Chaos cleanup: {error}")
     return [
-        {"kind": item.get("kind"), "name": item.get("metadata", {}).get("name")}
+        {
+            "kind": item.get("kind"),
+            "name": item.get("metadata", {}).get("name"),
+            "namespace": item.get("metadata", {}).get("namespace"),
+        }
         for item in (data or {}).get("items", [])
     ]
 
@@ -605,6 +609,12 @@ def main() -> int:
     parser.add_argument("--mutation-id", default=None)
     parser.add_argument("--replicate", type=positive_int, default=1)
     parser.add_argument("--capture-diagnostics", action="store_true")
+    parser.add_argument(
+        "--profile-gate",
+        type=Path,
+        default=None,
+        help="explicit P09 profile gate JSON; defaults to the execution-gate default",
+    )
     args = parser.parse_args()
     washout_successes = args.washout_stable_successes or args.washout_successes
     washout_timeout = args.washout_timeout or args.recovery_timeout
@@ -644,7 +654,10 @@ def main() -> int:
         report["mutation"]["sha256"] = hashlib.sha256(mutation_bytes).hexdigest()
         document = yaml.safe_load(mutation_text)
         name, labels = validate_mutation(document)
-        report["execution_gate"] = execution_gate_check(args.mutation)
+        gate_kwargs = {}
+        if args.profile_gate is not None:
+            gate_kwargs["profile_gate"] = args.profile_gate
+        report["execution_gate"] = execution_gate_check(args.mutation, **gate_kwargs)
         if report["execution_gate"].get("decision") != "ready_for_injection":
             raise RuntimeError(
                 "P09 execution gate blocked: "

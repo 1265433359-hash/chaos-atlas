@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from tools.validate_chaosatlas_experiment import PROJECT_ORDER, validate_feedback_manifest
+from tools.validate_chaosatlas_experiment import validate_inputs
+import tools.validate_chaosatlas_experiment as validator
 
 
 def test_feedback_manifest_requires_registered_order_and_prior_project() -> None:
@@ -33,3 +35,13 @@ def test_feedback_manifest_rejects_unreviewed_or_runtime_abstraction() -> None:
     result = validate_feedback_manifest(manifest)
     assert result["valid"] is False
     assert any(item["reason"] == "knowledge_boundary_failed" for item in result["errors"])
+
+
+def test_input_gate_includes_contamination_audit(monkeypatch) -> None:
+    monkeypatch.setattr(validator, "audit_repository", lambda root: {
+        "status": "blocked",
+        "records": [{"errors": ["forbidden_runtime_field:abstraction.mutation_path"]}],
+    })
+    result = validate_inputs(validator.ROOT / ".missing-contamination-test-root")
+    assert result["valid"] is False
+    assert any("contamination" in item["scope"] for item in result["errors"])

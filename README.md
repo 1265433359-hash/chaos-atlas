@@ -20,13 +20,13 @@ The current archive contains four case-study families:
 | Train Ticket | `FudanSELab/train-ticket` @ `313886e99befb94be6cd45f085c98e0019f59829` | First end-to-end test-node-centered workflow; CPU and network delay boundary cases | 7 |
 | Online Boutique | `GoogleCloudPlatform/microservices-demo` @ `9a4616e77f0f9cbcbecaf27d711c38890dda1404` | Cross-project comparison of delay, loss, probe restart, and multi-fault semantics | 8 |
 | OpenTelemetry Demo | `open-telemetry/opentelemetry-demo` @ `2e72d8bcdf754603e956406808630bc9663c992c` | Observability-aware comparison and repeated no-timeout behavior | 2 |
-| Sock Shop | `markfink/sock-shop` (pinned artifacts and lab manifest) | Held-out cross-project validation and direct comparison with ChaosEater; combines call-contract and deployment-availability evidence | 0 formal cards; project evidence archived |
+| Sock Shop | `markfink/sock-shop` (pinned artifacts and lab manifest) | Held-out transfer evidence plus frozen ChaosEater comparison material; current two-arm pilot is archived separately | 0 formal cards; project evidence archived |
 
 The held-out and knowledge-ablation tracks under `artifacts/experiments/` are
 supplementary evaluation material. They are not merged into the case-study
 claims unless their protocol gates and independent oracle checks pass.
 
-### Sock Shop: the fourth project and the ChaosEater comparison
+### Sock Shop: the fourth project and frozen comparison material
 
 Sock Shop is the external-transfer project for the method, not just another
 case study. It tests whether rules learned from the first three projects move
@@ -45,13 +45,31 @@ summary reports 4/8 + 4/8 because the two loss variants are inferred from the
 shared timeout contract rather than independently re-run. These denominators
 must not be mixed in a manuscript.
 
-Against ChaosEater (`47c4e44`), the comparison is intentionally layered:
+Against historical ChaosEater material (`47c4e44`), the comparison is intentionally layered:
 ChaosEater's Sock Shop run identified deployment availability risks such as
 single-replica services and missing PDB/HPA/probe coverage, while this method
 also verified request-level delay/loss behavior, source-level timeout
 contracts, business responses, recovery, and cleanup. The contribution is
-therefore complementary coverage and auditable attribution, not a claim of
-overall superiority or statistical significance.
+therefore a frozen comparison hypothesis, not a completed current three-method
+head-to-head or a claim of overall superiority.
+
+The latest Sock Shop Minikube pilot completed `ChaosAtlas-full` and
+`ChaosAtlas-ablation` only. Both used the same front-end PodKill mutation and
+passed lifecycle cleanup; the official ChaosEater arm was environment-blocked.
+See `docs/CHAOSATLAS_PROJECT_ARCHIVE_2026-08-13.md` for the exact boundary.
+
+### Next four-project queue
+
+The next active queue is `Online Boutique`, `OpenTelemetry Demo`, `Train Ticket`,
+and `TeaStore`. Only `ChaosAtlas-full` and `ChaosAtlas-ablation` are in scope.
+Online Boutique has a digest-pinned fresh manifest and is the only project
+currently eligible for an authorized Namespace-first dry-run. OpenTelemetry
+Demo is blocked on immutable image provenance, Train Ticket is blocked on
+missing dependency definitions plus immutable image provenance, and TeaStore
+remains blocked on source restoration. The first three may reuse deployment,
+oracle, recovery, and collection tooling only after their fresh manifest and
+baseline gates pass. The queue manifest is
+`artifacts/experiments/chaosatlas_followup_four_projects_2026-08-13/queue_manifest.json`.
 
 ## Method In One Line
 

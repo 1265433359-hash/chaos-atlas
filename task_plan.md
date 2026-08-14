@@ -1,5 +1,34 @@
 # 真实 YAML 测试节点知识库与项目影响子图计划
 
+## Git 上传前整理归档（2026-08-14）
+- 目标：把当前 ChaosAtlas 阶段成果整理为可上传前复核的仓库状态，明确提交范围、排除临时目录、保留证据边界，并形成上传准备清单。
+- 阶段 1：核对本地分支、领先提交、tracked/untracked 状态，区分已提交证据、未提交归档文件、临时验证目录和大体量 runtime 目录。状态：complete。
+- 阶段 2：整理三项目汇报文档，生成并排版 `docs/ChaosAtlas_three_project_experiment_report_2026-08-14.docx`，保留 UTF-8 Markdown 源稿。状态：complete。
+- 阶段 3：更新归档地图和上传准备清单，新增 `.tmp-*` 忽略规则，禁止 `git add .`。状态：complete。
+- 阶段 4：对最终提交集合执行敏感信息扫描和 focused regression。状态：complete（118 passed；严格敏感扫描 0 命中）。
+- 阶段 5：选择性暂存必要文件、提交本次归档整理 commit；不推送，等待用户确认。状态：complete（当前 HEAD）。
+- 阶段 6：等待用户确认后推送当前分支；推送前再次确认出境边界。状态：pending。
+- 边界：不删除用户实验产物；不提交未筛选临时目录；不把 pending 审核写入知识库；不声称 Word PNG 视觉渲染已通过。
+
+## 三项目两臂正式实验续跑（2026-08-14 当前会话）
+- 目标：不重跑已完成单元，完成 OpenTelemetry Demo 剩余正式单元和新 Sock Shop 的 ChaosAtlas-full/ChaosAtlas-ablation 正式实验，并对 Online Boutique、OpenTelemetry Demo、Sock Shop 形成可复核结果与问题清单。
+- 阶段 1：等待 OTel `runtime_results-r3` 串行批次自然完成，核验 48 个去重单元、生命周期、diagnostic/mutation SHA-256、pending human review 与全局无残留。状态：complete（48/48，验收 passed）。
+- 阶段 2：仅在 OTel 完成且平台稳定后部署 `chaosatlas-sock-shop`，完成健康、双基线、cleanup rehearsal 和稳定 washout gate。状态：in_progress。
+- 阶段 3：使用已授权 DeepSeek 出境范围生成新的 Sock Shop 两臂候选并执行静态/运行时适用性 gate。状态：pending。
+- 阶段 4：串行执行 Sock Shop 48 单元正式批次；每轮确认恢复、删除 Chaos 资源并全局扫描。状态：pending。
+- 阶段 5：验收三项目证据，区分已观测业务弱点与有直接证据支持的具体根因，保持 `human_review=pending`、`knowledge_base_updated=false`。状态：pending。
+- 阶段 6：测试、敏感信息扫描、选择性暂存本次必要代码与正式证据、提交并推送当前分支。状态：pending。
+- 禁止事项：不修复/安装 Docker、Minikube、Chaos Mesh；不重跑已完成 Online Boutique 或 OTel H3；不使用历史 Sock Shop 结果作为新实验正式证据；不自动更新知识库；不暴露 API key/token。
+- 本轮错误：沙箱 PowerShell 未解析到 `python`，但现有本机实验终端可用；后续改用本机授权执行环境或显式解析已有 Python 路径，不安装新运行时。
+- 本轮错误：新 Sock Shop deployment gate 首次组合测试因包式/脚本式导入差异失败两次；先补双模式导入，再按既有 runner 模式把 `tools/` 加入 `sys.path`，第三次 `13 passed`。未触发集群操作。
+- 本轮错误：Sock Shop runtime gate 在注入前因双基线失败而 blocked；两个复杂 PowerShell 诊断命令分别因空管道和缺失花括号在解析阶段失败，均未触发 kubectl。改为拆分简单 JSON 输出与独立日志查询，禁止第三次拼接复杂循环。
+
+## 三项目两臂正式实验续跑（2026-08-14）
+- 目标：完成 Online Boutique、OpenTelemetry Demo、Sock Shop 上 ChaosAtlas-full 与 ChaosAtlas-ablation 的真实运行时实验，汇总可复核问题证据。
+- 当前阶段：修复 Online Boutique 清理后业务恢复判定；从新目录重跑完整可比批次。
+- 后续 gate：OTel 与 Sock Shop 先证明镜像/源码 provenance、严格 dry-run、双基线、rehearsal、清理和 washout，再允许模型调用与正式注入。
+- 状态：in_progress。
+
 ## 本轮项目归档任务（2026-08-10）
 - 目标：为论文写作、对比实验复核和知识库复用补齐项目级文档、目录说明、证据索引、复现实验入口和代码注释。
 - 项目名称确定为：**ChaosAtlas**（TestNode-Centered Chaos Analysis and Knowledge Base）。名称用于文档与本地 Git 元数据，不执行远程上传。
@@ -260,6 +289,62 @@ Constraints:
 - `complete`: offline main ledger, P02 dry-run compiler/mutation path, selector map, Kubernetes server-side dry-run, and deployment remediation queue.
 - `blocked_pending_consent`: DeepSeek calls and real fault injection. The key has not been read and no request has been sent.
 - GitHub source restoration (2026-08-12): complete for P09; P03/P06 commit/tree verified but full restoration blocked by partial-clone missing blobs and archive download timeout. Manifest: `artifacts/experiments/chaosatlas_10_projects/sources_restored/RESTORATION_MANIFEST.md`. No deployment or DeepSeek calls.
+
+## Active method scope reset (2026-08-13)
+
+- `in_progress`: run the complete ChaosAtlas method and the complete-method
+  `noKB` ablation on the next eligible projects.
+- `deferred`: all ChaosEater execution and unified comparison work. Existing
+  ChaosEater artifacts remain frozen historical evidence only.
+- `required`: enforce contamination gates before every method run: identical
+  project inputs, separate method-owned outputs, no runtime feedback into the
+  ablation, no same-project feedback into the complete method, residual-Chaos
+  and cleanup checks, washout, and independent oracle evaluation.
+- `blocked_pending_consent`: model calls and real fault injection remain
+  separately gated; no credentials or requests are authorized by this scope
+  change.
+
+## Project summary and archive (2026-08-13)
+
+- [complete] Verify the current Sock Shop two-arm reports and ChaosEater block.
+- [complete] Create the dated project summary and machine-readable archive index.
+- [complete] Record the active method boundary and next four-project queue:
+  Online Boutique, OpenTelemetry Demo, Train Ticket, and TeaStore.
+- [complete] Create a separate two-method follow-up queue manifest with fresh-output
+  and contamination boundaries.
+- [complete] Run archive consistency, JSON, link, sensitive-information, and
+  repository regression checks.
+- [complete] Correct P03/P06 archive status and make source completeness include
+  required application files.
+- [complete] Begin offline preparation for the four-project queue with
+  Online Boutique, OpenTelemetry Demo, and Train Ticket fresh profiles.
+- [complete] Verify the Online Boutique `r3` digest-pinned manifest and record
+  its namespace-first dry-run as the next authorized runtime gate.
+- [complete] Keep OpenTelemetry Demo blocked on immutable image provenance,
+  Train Ticket blocked on missing dependency definitions plus immutable image
+  provenance, and TeaStore blocked on missing source restoration.
+- [pending] Obtain explicit `chaosatlas-online-boutique` authorization before
+  namespace-first dry-run, baseline windows, and the two active method runs.
+
+## Regression boundary (2026-08-13)
+
+- [complete] Update the two P03 tests to match the current fail-closed
+  `application_service_missing` and preparation-gate contract.
+- [pending] Historical knowledge-ablation hash drift remains outside this archive
+  change: the generic-rules and ESHOP mutation files are not tracked in the
+  current branch history and must not be overwritten by this task.
+- [pending] Default pytest temp-root access remains blocked by Windows ACLs;
+  use a repository-local `--basetemp` for verification.
+
+## Archive verification result (2026-08-13)
+
+- Focused archive/gate regression: 18 passed.
+- Contamination audit: 120 bundles and 30 KB/noKB pairs valid.
+- JSON/archive/queue parse and status consistency checks passed.
+- Full repository regression: 397 passed, 2 failed.
+- The two failures are pre-existing pinned-hash drift in historical knowledge
+  ablation artifacts; those files remain untouched and are excluded from this
+  archive repair.
 
 ## Repository handoff (2026-08-12)
 

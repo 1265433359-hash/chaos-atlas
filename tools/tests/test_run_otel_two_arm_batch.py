@@ -26,6 +26,29 @@ def test_runtime_units_expand_six_calls_to_48_repetitions(tmp_path: Path) -> Non
     assert {unit["replicate"] for unit in units} == {1, 2}
 
 
+def test_runtime_units_can_limit_to_full_v2_only(tmp_path: Path) -> None:
+    discovery = tmp_path / "discovery"
+    for seed in (1001, 1002, 1003):
+        method = "ChaosAtlas-full-v2"
+        directory = discovery / f"seed-{seed}" / method.lower()
+        mutation_dir = directory / "mutations"
+        mutation_dir.mkdir(parents=True)
+        selected = []
+        for index in range(4):
+            signature = hashlib.sha256(f"{seed}:{method}:{index}".encode()).hexdigest()
+            selected.append({"hypothesis_id": f"H{index + 1}", "canonical_signature": signature})
+            (mutation_dir / f"{signature[:12]}.yaml").write_text("kind: PodChaos\n", encoding="utf-8")
+        (directory / "handoff.json").write_text(json.dumps({"status": "handoff_ready", "selected_hypotheses": selected}), encoding="utf-8")
+
+    units = runtime_units(discovery, tmp_path / "runtime", methods=("ChaosAtlas-full-v2",))
+
+    assert len(units) == 24
+    assert {unit["method"] for unit in units} == {"ChaosAtlas-full-v2"}
+    assert report_path_for(tmp_path, "ChaosAtlas-full-v2", 1001, "H1", 1) == (
+        tmp_path / "opentelemetry-demo" / "seed-1001" / "chaosatlas-full-v2" / "H1-rep-1.json"
+    )
+
+
 def test_report_path_keeps_method_seed_hypothesis_and_replicate(tmp_path: Path) -> None:
     path = report_path_for(tmp_path, "ChaosAtlas-full", 1002, "H3", 2)
     assert path == tmp_path / "opentelemetry-demo" / "seed-1002" / "chaosatlas-full" / "H3-rep-2.json"
