@@ -15,6 +15,14 @@
 | Protocol/ablation | `artifacts/experiments/` | Frozen prompts, pools, snapshots, ledgers, and analysis outputs |
 | Session memory | `task_plan.md`, `findings.md`, `progress.md` | Decisions and discoveries; not a substitute for run evidence |
 
+## Project-Level Review Snapshots
+
+| Snapshot | Scope | Use |
+|---|---|---|
+| `docs/CHAOSATLAS_PROJECT_ARCHIVE_2026-08-13.md` | 2026-08-13 project-stage archive | Broad project status, P09/P02/Sock Shop history, queue and evidence boundaries |
+| `docs/CHAOSATLAS_STAGE_SUMMARY_2026-08-14.md` | 2026-08-14 project-stage summary | Current method scope, real-project evidence, ten-project boundary, paper narrative, and next-stage tasks |
+| `docs/CHAOSATLAS_REAL_PROJECT_REVIEW_2026-08-14.md` | Online Boutique, OpenTelemetry Demo, Sock Shop | Native-full vs ablation end-to-end capability and same-candidate-pool selection capability; includes `[CONFIRMED]`, `[PENDING]`, `[BOUNDARY]`, `[DO-NOT-CLAIM]` labels |
+
 ## Required Provenance
 
 Every new result should record, directly or through a linked manifest:
