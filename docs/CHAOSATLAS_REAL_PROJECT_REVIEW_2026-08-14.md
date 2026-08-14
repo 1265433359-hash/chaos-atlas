@@ -46,12 +46,16 @@
 
 这组实验衡量端到端能力：方法需要自己完成项目理解、候选生成、候选选择和真实注入。
 
-| 项目 | native-full 稳定弱点 | ablation 稳定弱点 | 结论 |
-|---|---:|---:|---|
-| Online Boutique | 2 | 3 | ablation 多 1 个 |
-| OpenTelemetry Demo | 4 | 2 | native-full 多 2 个 |
-| Sock Shop | 4 | 4 | 打平 |
-| 总计 | 10 | 9 | native-full 略多 |
+| 方法 | 项目 | 候选数 | 稳定真实弱点 | 不稳定/重复不了 | 非弱点/未发现 |
+|---|---|---:|---:|---:|---:|
+| native-full | Online Boutique | 6 | 2 | 0 | 4 |
+| native-full | OpenTelemetry Demo | 4 | 4 | 0 | 0 |
+| native-full | Sock Shop | 10 | 4 | 0 | 6 |
+| native-full 总计 | 三项目 | 20 | 10 | 0 | 10 |
+| ablation | Online Boutique | 4 | 3 | 0 | 1 |
+| ablation | OpenTelemetry Demo | 6 | 2 | 0 | 4 |
+| ablation | Sock Shop | 10 | 4 | 2 | 4 |
+| ablation 总计 | 三项目 | 20 | 9 | 2 | 9 |
 
 runtime 复现实例数：
 
@@ -62,6 +66,7 @@ runtime 复现实例数：
 
 [CONFIRMED] OpenTelemetry Demo 是 native-full 的最强证据点：4 个唯一弱点、24 次业务弱点复现实例，即之前讨论的 `24/24`。  
 [BOUNDARY] 这个 `24/24` 不是 24 个不同弱点，而是 4 个唯一故障多次复现。  
+[CONFIRMED] native-full 的结果更干净：没有不稳定/重复不了候选；ablation 有 2 个 Sock Shop 不稳定候选。  
 [CONFIRMED] Online Boutique 和 Sock Shop 上 native-full 没有稳定压过 ablation。  
 [PENDING] 这说明端到端完整流程仍受候选生成、知识投影和排序策略影响。
 
@@ -80,10 +85,16 @@ runtime 复现实例数：
 
 方法选择结果：
 
-| 方法 | 选中唯一候选 | 选中稳定弱点 | 无效候选 | 命中率 |
-|---|---:|---:|---:|---:|
-| ChaosAtlas-full | 15 | 12 | 3 | 80.0% |
-| ChaosAtlas-ablation | 17 | 12 | 5 | 70.6% |
+| 方法 | 项目 | 选中候选 | 稳定真实弱点 | 不稳定/重复不了 | 非弱点/未发现 |
+|---|---|---:|---:|---:|---:|
+| ChaosAtlas-full | Online Boutique | 4 | 4 | 0 | 0 |
+| ChaosAtlas-full | OpenTelemetry Demo | 5 | 4 | 0 | 1 |
+| ChaosAtlas-full | Sock Shop | 6 | 4 | 0 | 2 |
+| ChaosAtlas-full 总计 | 三项目 | 15 | 12 | 0 | 3 |
+| ChaosAtlas-ablation | Online Boutique | 4 | 4 | 0 | 0 |
+| ChaosAtlas-ablation | OpenTelemetry Demo | 6 | 5 | 0 | 1 |
+| ChaosAtlas-ablation | Sock Shop | 7 | 3 | 0 | 4 |
+| ChaosAtlas-ablation 总计 | 三项目 | 17 | 12 | 0 | 5 |
 
 分项目：
 
@@ -95,15 +106,25 @@ runtime 复现实例数：
 | 总计 | 12/15 | 12/17 | 真实弱点数量打平，full 命中率更高 |
 
 [CONFIRMED] 同候选池中 full 和 ablation 都选中 12 个稳定真实弱点。  
+[CONFIRMED] 同候选池没有不稳定候选：被验证的候选要么稳定复现，要么稳定无影响。  
 [CONFIRMED] full 用更少候选达到同样真实弱点数量，说明它的优势主要体现在选择效率和减少无效实验。  
 [BOUNDARY] 这不是“full 发现的真实弱点绝对数量更多”，而是“full 的选择精度更高”。
 
 ## 当前可写结论
 
 [CONFIRMED] 原始项目完整能力中，native-full 发现 10 个稳定真实弱点，ablation 发现 9 个，native-full 略高但优势不稳定。  
+[CONFIRMED] 原始项目完整能力中，native-full 有 10 个非弱点候选，ablation 有 9 个非弱点候选和 2 个不稳定候选。  
 [CONFIRMED] native-full 在 OpenTelemetry Demo 上表现出明显高上限，达到 24/24 业务弱点复现实例。  
 [CONFIRMED] 同候选池选择能力中，full 和 ablation 都选中 12 个稳定真实弱点，但 full 的无效候选更少，命中率 80.0% 高于 ablation 的 70.6%。  
 [CONFIRMED] full 的当前稳定优势更适合表述为“提高候选选择精度、减少无效实验”，而不是“在所有项目上发现更多弱点”。
+
+## 数据关系
+
+[CONFIRMED] 项目越简单、关键路径越明显，ablation 越容易追上 full。Online Boutique 在同候选池中二者都是 4/4。  
+[CONFIRMED] OTel 是 native-full 的高上限证据，说明项目知识在合适项目上可以显著提高端到端发现能力。  
+[CONFIRMED] Sock Shop 是区分选择质量的关键项目：ablation 在同候选池中产生 4 个非弱点候选，full 只有 2 个。  
+[BOUNDARY] 当前数据支持“full 更少选错”，不支持“full 在每个口径下都发现更多弱点”。  
+[PENDING] 原始 full 的主要改进点是候选生成和知识投影，而不是仅扩大候选预算。
 
 ## 当前不能写的结论
 

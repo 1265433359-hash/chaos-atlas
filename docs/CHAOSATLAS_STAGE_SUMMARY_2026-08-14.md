@@ -51,7 +51,15 @@ ChaosAtlas 已经从“十项目探索和 P02/P09/P08 等项目验证”转入�
 | Sock Shop | 4 | 4 | 两者稳定弱点数量打平 |
 | 总计 | 10 | 9 | native-full 略多，但优势不稳定 |
 
+[CONFIRMED] 扩展结果矩阵：
+
+| 方法 | 候选数 | 稳定真实弱点 | 不稳定/重复不了 | 非弱点/未发现 |
+|---|---:|---:|---:|---:|
+| native-full | 20 | 10 | 0 | 10 |
+| ChaosAtlas-ablation | 20 | 9 | 2 | 9 |
+
 [CONFIRMED] native-full 在三项目中确认 10 个稳定真实弱点，ablation 确认 9 个。  
+[CONFIRMED] native-full 没有不稳定候选；ablation 有 2 个 Sock Shop 不稳定候选。  
 [BOUNDARY] OTel 的 24/24 是 24 次复现实例，对应 4 个唯一稳定弱点，不是 24 个不同弱点。
 
 ### 4.2 同候选池选择能力
@@ -63,6 +71,13 @@ ChaosAtlas 已经从“十项目探索和 P02/P09/P08 等项目验证”转入�
 | ChaosAtlas-full | 15 | 12 | 3 | 80.0% |
 | ChaosAtlas-ablation | 17 | 12 | 5 | 70.6% |
 | ChaosEater-adapter | 15 | 11 | 4 | 73.3% |
+
+[CONFIRMED] 同候选池扩展矩阵：
+
+| 方法 | 选中候选 | 稳定真实弱点 | 不稳定/重复不了 | 非弱点/未发现 |
+|---|---:|---:|---:|---:|
+| ChaosAtlas-full | 15 | 12 | 0 | 3 |
+| ChaosAtlas-ablation | 17 | 12 | 0 | 5 |
 
 [CONFIRMED] 同候选池中 full 和 ablation 都选中 12 个稳定真实弱点。  
 [CONFIRMED] full 用更少无效候选达到同等真实弱点数量。  
@@ -160,6 +175,13 @@ ChaosAtlas 已经从“十项目探索和 P02/P09/P08 等项目验证”转入�
 推荐主结论：
 
 > ChaosAtlas 的知识增强不是简单增加所有项目上的弱点数量，而是帮助方法在候选选择阶段减少无效实验；端到端候选生成和知识投影仍是下一阶段需要改进的关键。
+
+数据关系：
+
+- Online Boutique 关键路径明显，ablation 在原始能力和同候选池中都能追上甚至超过 full。
+- OpenTelemetry Demo 是 native-full 的高上限证据，4 个唯一弱点带来 24/24 业务弱点复现实例。
+- Sock Shop 暴露选择质量差异：同候选池中 full 的非弱点候选为 2，ablation 为 4。
+- 原始 full 的问题主要是候选生成浪费；同候选池中的 full 说明知识本身能减少无效选择。
 
 ## 10. 下一阶段任务
 
