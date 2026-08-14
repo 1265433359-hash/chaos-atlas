@@ -1,0 +1,28 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: atlas-sock-shop-ab571a3e8436
+  namespace: chaosatlas-sock-shop
+  labels:
+    chaosatlas.dev/project: sock-shop
+    chaosatlas.dev/generator: open_discovery_mutation_compiler_v1
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: front-end
+  action: loss
+  loss:
+    loss: '100'
+    correlation: '100'
+  duration: 15s
+  direction: to
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - chaosatlas-sock-shop
+      labelSelectors:
+        name: front-end

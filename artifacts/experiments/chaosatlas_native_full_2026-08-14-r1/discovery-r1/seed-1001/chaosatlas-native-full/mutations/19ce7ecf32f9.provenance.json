@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "sock-shop",
+  "project_commit": null,
+  "topology_graph_hash": "ff58525e8236a9a5076a12613a9204e4f43b192542620f25a9ef0c5229d3a2dd",
+  "canonical_signature": "19ce7ecf32f93e3c990cd91129716510fe36fc29b4594f5d7b12ebaed15657bf",
+  "hypothesis_id": "H1",
+  "target": "service/front-end->workload/front-end",
+  "target_kind": "dependency_edge",
+  "fault_family": "network_delay",
+  "parameters": {
+    "latency_ms": 500,
+    "duration_s": 15
+  },
+  "namespace": "chaosatlas-sock-shop",
+  "resolved_source": {
+    "target": "workload/front-end",
+    "kind": "Deployment",
+    "name": "front-end",
+    "selector": {
+      "name": "front-end"
+    },
+    "selector_source": "topology.pod_labels"
+  },
+  "resolved_destination": {
+    "target": "workload/front-end",
+    "kind": "Deployment",
+    "name": "front-end",
+    "selector": {
+      "name": "front-end"
+    },
+    "selector_source": "topology.pod_labels"
+  },
+  "runtime_gate_required": true,
+  "execution_ready": false
+}

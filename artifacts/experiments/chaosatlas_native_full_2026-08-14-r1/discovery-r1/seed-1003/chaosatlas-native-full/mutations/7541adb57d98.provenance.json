@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "generator": "open_discovery_mutation_compiler_v1",
+  "project_id": "sock-shop",
+  "project_commit": null,
+  "topology_graph_hash": "ff58525e8236a9a5076a12613a9204e4f43b192542620f25a9ef0c5229d3a2dd",
+  "canonical_signature": "7541adb57d988a2217001e5d89c50510701e96ed300cd4caeb4609690b1fe81f",
+  "hypothesis_id": "H2",
+  "target": "service/front-end",
+  "target_kind": "service",
+  "fault_family": "network_loss",
+  "parameters": {
+    "loss_percent": 100,
+    "duration_s": 30
+  },
+  "namespace": "chaosatlas-sock-shop",
+  "resolved_source": {
+    "target": "workload/front-end",
+    "kind": "Deployment",
+    "name": "front-end",
+    "selector": {
+      "name": "front-end"
+    },
+    "selector_source": "topology.pod_labels"
+  },
+  "resolved_destination": null,
+  "runtime_gate_required": true,
+  "execution_ready": false
+}

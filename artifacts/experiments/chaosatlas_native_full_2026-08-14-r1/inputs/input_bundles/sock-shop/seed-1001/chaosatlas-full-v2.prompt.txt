@@ -1,0 +1,1162 @@
+ChaosAtlas native full-method input.
+
+{
+  "project_id": "sock-shop",
+  "seed": 1001,
+  "common_input": {
+    "schema_version": "chaosatlas-two-arm-common-v1",
+    "project_id": "sock-shop",
+    "project_commit": "9dff06fae4981921caec6a62393a6ebfce4b3e3f",
+    "source_manifest_sha256": "ff0abe7c95529ad74e3267f027679b3d174f52e8c1c6cc40d4c59b087183646b",
+    "namespace": "chaosatlas-sock-shop",
+    "topology": {
+      "project_id": "sock-shop",
+      "nodes": [
+        {
+          "id": "workload/carts",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "carts",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "carts"
+          }
+        },
+        {
+          "id": "workload/carts-db",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "carts-db",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "carts-db"
+          }
+        },
+        {
+          "id": "workload/catalogue",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "catalogue",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "catalogue"
+          }
+        },
+        {
+          "id": "workload/catalogue-db",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "catalogue-db",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "catalogue-db"
+          }
+        },
+        {
+          "id": "workload/front-end",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "front-end",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "front-end"
+          }
+        },
+        {
+          "id": "workload/orders",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "orders",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "orders"
+          }
+        },
+        {
+          "id": "workload/orders-db",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "orders-db",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "orders-db"
+          }
+        },
+        {
+          "id": "workload/payment",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "payment",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "payment"
+          }
+        },
+        {
+          "id": "workload/queue-master",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "queue-master",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "queue-master"
+          }
+        },
+        {
+          "id": "workload/rabbitmq",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "rabbitmq",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "rabbitmq"
+          }
+        },
+        {
+          "id": "workload/session-db",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "session-db",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "session-db"
+          }
+        },
+        {
+          "id": "workload/shipping",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "shipping",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "shipping"
+          }
+        },
+        {
+          "id": "workload/user",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "user",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "user"
+          }
+        },
+        {
+          "id": "workload/user-db",
+          "role": "workload",
+          "kind": "Deployment",
+          "name": "user-db",
+          "replicas": 1,
+          "pod_labels": {
+            "name": "user-db"
+          }
+        },
+        {
+          "id": "service/carts",
+          "role": "routing",
+          "kind": "Service",
+          "name": "carts",
+          "selector": {
+            "name": "carts"
+          }
+        },
+        {
+          "id": "service/carts-db",
+          "role": "routing",
+          "kind": "Service",
+          "name": "carts-db",
+          "selector": {
+            "name": "carts-db"
+          }
+        },
+        {
+          "id": "service/catalogue",
+          "role": "routing",
+          "kind": "Service",
+          "name": "catalogue",
+          "selector": {
+            "name": "catalogue"
+          }
+        },
+        {
+          "id": "service/catalogue-db",
+          "role": "routing",
+          "kind": "Service",
+          "name": "catalogue-db",
+          "selector": {
+            "name": "catalogue-db"
+          }
+        },
+        {
+          "id": "service/front-end",
+          "role": "routing",
+          "kind": "Service",
+          "name": "front-end",
+          "selector": {
+            "name": "front-end"
+          }
+        },
+        {
+          "id": "service/orders",
+          "role": "routing",
+          "kind": "Service",
+          "name": "orders",
+          "selector": {
+            "name": "orders"
+          }
+        },
+        {
+          "id": "service/orders-db",
+          "role": "routing",
+          "kind": "Service",
+          "name": "orders-db",
+          "selector": {
+            "name": "orders-db"
+          }
+        },
+        {
+          "id": "service/payment",
+          "role": "routing",
+          "kind": "Service",
+          "name": "payment",
+          "selector": {
+            "name": "payment"
+          }
+        },
+        {
+          "id": "service/queue-master",
+          "role": "routing",
+          "kind": "Service",
+          "name": "queue-master",
+          "selector": {
+            "name": "queue-master"
+          }
+        },
+        {
+          "id": "service/rabbitmq",
+          "role": "routing",
+          "kind": "Service",
+          "name": "rabbitmq",
+          "selector": {
+            "name": "rabbitmq"
+          }
+        },
+        {
+          "id": "service/session-db",
+          "role": "routing",
+          "kind": "Service",
+          "name": "session-db",
+          "selector": {
+            "name": "session-db"
+          }
+        },
+        {
+          "id": "service/shipping",
+          "role": "routing",
+          "kind": "Service",
+          "name": "shipping",
+          "selector": {
+            "name": "shipping"
+          }
+        },
+        {
+          "id": "service/user",
+          "role": "routing",
+          "kind": "Service",
+          "name": "user",
+          "selector": {
+            "name": "user"
+          }
+        },
+        {
+          "id": "service/user-db",
+          "role": "routing",
+          "kind": "Service",
+          "name": "user-db",
+          "selector": {
+            "name": "user-db"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "source": "service/carts",
+          "target": "workload/carts",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/carts-db",
+          "target": "workload/carts-db",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/catalogue-db",
+          "target": "workload/catalogue-db",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/orders",
+          "target": "workload/orders",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/orders-db",
+          "target": "workload/orders-db",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/payment",
+          "target": "workload/payment",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/queue-master",
+          "target": "workload/queue-master",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/rabbitmq",
+          "target": "workload/rabbitmq",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/session-db",
+          "target": "workload/session-db",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/shipping",
+          "target": "workload/shipping",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "kind": "selector_routes",
+          "relation": "selects"
+        },
+        {
+          "source": "service/user-db",
+          "target": "workload/user-db",
+          "kind": "selector_routes",
+          "relation": "selects"
+        }
+      ],
+      "graph_hash": "ff58525e8236a9a5076a12613a9204e4f43b192542620f25a9ef0c5229d3a2dd"
+    },
+    "business_oracle": {
+      "workflow": "front-end home, catalogue browse, demo login, and authenticated orders read-only golden journey",
+      "success": "front-end, catalogue, and login return HTTP 200; authenticated orders returns HTTP 201; all satisfy frozen response contracts",
+      "steps": [
+        {
+          "id": "front-end",
+          "service": "front-end",
+          "path": "/",
+          "contract": "non-empty HTML"
+        },
+        {
+          "id": "catalogue",
+          "service": "front-end",
+          "path": "/catalogue",
+          "contract": "JSON array"
+        },
+        {
+          "id": "login",
+          "service": "front-end",
+          "path": "/login",
+          "method": "GET",
+          "auth": "frozen_demo_basic",
+          "contract": "Cookie is set",
+          "success_status": 200
+        },
+        {
+          "id": "orders",
+          "service": "front-end",
+          "path": "/orders",
+          "contract": "JSON array or object",
+          "success_status": 201
+        }
+      ],
+      "read_only": true,
+      "timeout_seconds": 15,
+      "baseline_successes": 5,
+      "washout_successes": 10
+    },
+    "runtime_contract": {
+      "fault_families": [
+        "pod_kill",
+        "network_delay",
+        "network_loss",
+        "container_cpu_stress"
+      ],
+      "max_hypotheses": 8,
+      "max_executed_hypotheses": 4,
+      "repetitions": 2,
+      "lifecycle": [
+        "baseline",
+        "inject",
+        "observe",
+        "recover",
+        "cleanup",
+        "washout"
+      ],
+      "namespace_scope": "chaosatlas-sock-shop"
+    },
+    "image_provenance": {
+      "images": [
+        {
+          "deployment": "carts",
+          "container": "carts",
+          "source_image": "weaveworksdemos/carts:0.4.8",
+          "image": "weaveworksdemos/carts@sha256:434d2f5a6e0e8beef1f253fe96f45b8437a703125fc003434c5282ecf8969a4f",
+          "immutable": true
+        },
+        {
+          "deployment": "carts-db",
+          "container": "carts-db",
+          "source_image": "mongo",
+          "image": "mongo@sha256:6189a342f8da4568b4b111c378a890b1fe186b1bc133742bff8811fe63d2e01e",
+          "immutable": true
+        },
+        {
+          "deployment": "catalogue",
+          "container": "catalogue",
+          "source_image": "weaveworksdemos/catalogue:0.3.5",
+          "image": "weaveworksdemos/catalogue@sha256:0147a65b7116569439eefb1a6dbed455fe022464ef70e0c3cab75bc4a226b39b",
+          "immutable": true
+        },
+        {
+          "deployment": "catalogue-db",
+          "container": "catalogue-db",
+          "source_image": "weaveworksdemos/catalogue-db:0.3.0",
+          "image": "weaveworksdemos/catalogue-db@sha256:7ba74ec9adf88f6625b8d85d3323d1ee5232b39877e1590021ea485cf9457251",
+          "immutable": true
+        },
+        {
+          "deployment": "front-end",
+          "container": "front-end",
+          "source_image": "weaveworksdemos/front-end:0.3.12",
+          "image": "weaveworksdemos/front-end@sha256:26a2d9b6b291dee2dca32fca3f5bff6c2fa07bb5954359afcbc8001cc70eac71",
+          "immutable": true
+        },
+        {
+          "deployment": "orders",
+          "container": "orders",
+          "source_image": "weaveworksdemos/orders:0.4.7",
+          "image": "weaveworksdemos/orders@sha256:b622e40e83433baf6374f15e076b53893f79958640fc6667dff597622eff03b9",
+          "immutable": true
+        },
+        {
+          "deployment": "orders-db",
+          "container": "orders-db",
+          "source_image": "mongo",
+          "image": "mongo@sha256:6189a342f8da4568b4b111c378a890b1fe186b1bc133742bff8811fe63d2e01e",
+          "immutable": true
+        },
+        {
+          "deployment": "payment",
+          "container": "payment",
+          "source_image": "weaveworksdemos/payment:0.4.3",
+          "image": "weaveworksdemos/payment@sha256:5ab1c9877480a018d4dda10d6dfa382776e6bca9fc1c60bacbb80903fde8cfe0",
+          "immutable": true
+        },
+        {
+          "deployment": "queue-master",
+          "container": "queue-master",
+          "source_image": "weaveworksdemos/queue-master:0.3.1",
+          "image": "weaveworksdemos/queue-master@sha256:6292d3095f4c7aeed8d863527f8ef6d7a75d3128f20fc61e57f398c100142712",
+          "immutable": true
+        },
+        {
+          "deployment": "rabbitmq",
+          "container": "rabbitmq",
+          "source_image": "rabbitmq:3.6.8-management",
+          "image": "rabbitmq@sha256:0297618bd60270f03665448b02b3b1110dfc51fae60a3c6804005169f0904dad",
+          "immutable": true
+        },
+        {
+          "deployment": "rabbitmq",
+          "container": "rabbitmq-exporter",
+          "source_image": "kbudde/rabbitmq-exporter",
+          "image": "kbudde/rabbitmq-exporter@sha256:12f27d6d84e6dbdd72c6bc2605e48af9910517394483c1dfa3230e49d3e32107",
+          "immutable": true
+        },
+        {
+          "deployment": "session-db",
+          "container": "session-db",
+          "source_image": "redis:alpine",
+          "image": "redis@sha256:9d317178eceac8454a2284a9e6df2466b93c745529947f0cd42a0fa9609d7005",
+          "immutable": true
+        },
+        {
+          "deployment": "shipping",
+          "container": "shipping",
+          "source_image": "weaveworksdemos/shipping:0.4.8",
+          "image": "weaveworksdemos/shipping@sha256:983305c948fded487f4a4acdeab5f898e89d577b4bc1ca3de7750076469ccad4",
+          "immutable": true
+        },
+        {
+          "deployment": "user",
+          "container": "user",
+          "source_image": "weaveworksdemos/user:0.4.7",
+          "image": "weaveworksdemos/user@sha256:2ffccc332963c89e035fea52201012208bf62df43a55fe461ad6598a5c757ab7",
+          "immutable": true
+        },
+        {
+          "deployment": "user-db",
+          "container": "user-db",
+          "source_image": "weaveworksdemos/user-db:0.3.0",
+          "image": "weaveworksdemos/user-db@sha256:695bc22c11396c7ae747118c56e619f3b3295d9d4cbec999d30230b3f399a389",
+          "immutable": true
+        }
+      ],
+      "all_immutable": true,
+      "mutable_images": []
+    },
+    "deployable_manifest_sha256": "a2bf2398c40ebbb54e10a0f1ee6cd1815df6e21232c650dabeebc761fd558828"
+  },
+  "common_input_sha256": "4c4df7841ec80ae3d23456fa928e378eaf4b8ac4488dfd45402079c0993cac82",
+  "method_id": "ChaosAtlas-native-full",
+  "knowledge_view": {
+    "source": "artifacts/sock-shop/sock_knowledge_snapshot_static.json",
+    "sha256": "a61b8694aa686f8627f722b2cd93c71c3262cb8fdbc6e8e8a1918cca033ab25a",
+    "mode": "native_project_snapshot_direct",
+    "content": {
+      "schema_version": 1,
+      "provenance": {
+        "kind": "sock_static_reconstructed",
+        "source_commit": "unknown",
+        "created_at": "2026-08-10T02:41:37.079664+00:00",
+        "source_files": [
+          "orders:0.4.7 jar javap (bytecode offsets 153/178/201, ${http.timeout:5}) -> external image, unavailable",
+          "front-end api/cart/index.js + api/catalogue (synchronous request, no timeout) -> external image, unavailable",
+          "sock-shop deployment YAML (replicas=1, no PDB) -> artifacts/sock-shop/sock-shop-lab-manifest.yaml (repo-local)"
+        ],
+        "sha256": {
+          "sock-shop-manifest": "87b541bce78ba671eb22f3ba4230e8c238d2e3e722a8bc043a5bfdfc94a80f49",
+          "contract_inventory_live": "d023fdf7e81fb89a347b21ca8dd1944ebb9b0bd93d51c4592265ddb8f543627e",
+          "selection_experience_live": "f7280be785e34504fdcde76f81db027c32d5db6d572a2fc648c65eb347704fc1",
+          "defense_pattern_library_live": "afffb6ada45c947a3110dec6365152af8260358a45f7eb6e415926de70f557d8",
+          "judgment_experience_live": "7756d8d3beb0ea6a4644a3d2ecff117b09eabe62ad3e1d2a33aee61c2c6eead6",
+          "orders_jar": "unavailable",
+          "frontend_node_source": "unavailable",
+          "frontend_api_cart_index_js": "unavailable",
+          "frontend_api_catalogue": "unavailable"
+        },
+        "provenance_completeness": "partial",
+        "note": "contract + availability are STATIC-RECONSTRUCTED from pre-experiment evidence; loss_bounded marked static_inferred. SE/DP/JE have NO pre-Sock-experiment clean commit (f870e32 is r2-pre, not Sock-pre, and already contains Sock entries) -> marked posthoc_or_current. Full four-source frozen engine replay is BLOCKED; only static prediction audit is valid."
+      },
+      "contract": {
+        "contracts": {
+          "SOCK-orders->payment": {
+            "contract": "explicit_timeout",
+            "loss_bounded": true,
+            "loss_bounded_source": "static_inferred",
+            "evidence": "STATIC: orders jar OrdersController.newOrder bytecode offsets 153/178/201 invoke Future.get(timeout, TimeUnit.SECONDS); class constant '${http.timeout:5}'; TimeoutException in catch. No experiment data used.",
+            "note": "5s Future.get timeout; loss_bounded = static inference from Future.get semantics (bounded, never infinite hang), NOT claimed as pre-existing live registry field."
+          },
+          "SOCK-orders->shipping": {
+            "contract": "explicit_timeout",
+            "loss_bounded": true,
+            "loss_bounded_source": "static_inferred",
+            "evidence": "STATIC: same OrdersController.newOrder bytecode (shared http.timeout); Future.get at bytecode offset 178 (shipping).",
+            "note": "Shared 5s Future.get with orders->payment; loss_bounded = static_inferred."
+          },
+          "SOCK-frontend->carts": {
+            "contract": "no_timeout",
+            "loss_bounded": false,
+            "evidence": "STATIC: front-end api/cart/index.js uses synchronous request() with no per-request timeout on downstream fetch.",
+            "note": "No timeout -> loss hangs caller, delay amplifies 1:1 (unprotected)."
+          },
+          "SOCK-frontend->catalogue": {
+            "contract": "no_timeout",
+            "loss_bounded": false,
+            "evidence": "STATIC: front-end api/catalogue uses synchronous request() with no timeout.",
+            "note": "No timeout -> unprotected."
+          }
+        },
+        "availability": {
+          "SOCK": {
+            "FRONTEND": {
+              "replicas": 1,
+              "pdb": null,
+              "hpa": null,
+              "static_prediction": "single-replica no-PDB -> kill = total outage",
+              "service": "FRONTEND"
+            },
+            "ORDER": {
+              "replicas": 1,
+              "pdb": null,
+              "hpa": null,
+              "static_prediction": "single-replica no-PDB no-probes -> kill = total outage",
+              "service": "ORDER"
+            },
+            "PAYMENT": {
+              "replicas": 1,
+              "pdb": null,
+              "hpa": null,
+              "static_prediction": "single-replica no-PDB -> kill = total outage",
+              "service": "PAYMENT"
+            },
+            "SHIPPING": {
+              "replicas": 1,
+              "pdb": null,
+              "hpa": null,
+              "static_prediction": "single-replica no-PDB no-probes -> kill = total outage",
+              "service": "SHIPPING"
+            },
+            "USER": {
+              "replicas": 1,
+              "pdb": null,
+              "hpa": null,
+              "static_prediction": "single-replica no-PDB -> kill = total outage",
+              "service": "USER"
+            },
+            "CART": {
+              "replicas": 1,
+              "pdb": null,
+              "hpa": null,
+              "static_prediction": "single-replica no-PDB no-probes -> kill = total outage",
+              "service": "CART"
+            },
+            "CATALOGUE": {
+              "replicas": 1,
+              "pdb": null,
+              "hpa": null,
+              "static_prediction": "single-replica no-PDB -> kill = total outage",
+              "service": "CATALOGUE"
+            },
+            "QUEUE-MASTER": {
+              "replicas": 1,
+              "pdb": null,
+              "hpa": null,
+              "static_prediction": "single-replica no-PDB -> kill = total outage",
+              "service": "QUEUE-MASTER"
+            }
+          }
+        },
+        "candidate_map": {
+          "SOCK-ORDERS-PAYMENT-DELAY-2000": "SOCK-orders->payment",
+          "SOCK-ORDERS-PAYMENT-LOSS-100": "SOCK-orders->payment",
+          "SOCK-ORDERS-SHIPPING-DELAY-2000": "SOCK-orders->shipping",
+          "SOCK-ORDERS-SHIPPING-LOSS-100": "SOCK-orders->shipping",
+          "SOCK-FRONTEND-CARTS-DELAY-2000": "SOCK-frontend->carts",
+          "SOCK-FRONTEND-CARTS-LOSS-100": "SOCK-frontend->carts",
+          "SOCK-FRONTEND-CATALOGUE-DELAY-2000": "SOCK-frontend->catalogue",
+          "SOCK-FRONTEND-CATALOGUE-LOSS-100": "SOCK-frontend->catalogue"
+        }
+      },
+      "selection_experience": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "id": "SE-CORE-CHAIN-001",
+            "rule": "\u7ed3\u7b97/\u652f\u4ed8/\u4e0b\u5355\u7b49\u6838\u5fc3\u540c\u6b65\u94fe\u8def\u7684\u8c03\u7528\u6700\u5e38\u7f3a\u8d85\u65f6\uff1aOB payment/cart/checkout \u4e0e OTel checkout \u5168\u5728\u6838\u5fc3\u94fe\u8def\u6302\u6b7b\uff08sev2-3\uff09\uff1b\u8fd9\u4e9b\u8fb9\u662f\u6700\u9ad8\u4ef7\u503c\u4f18\u5148\u6d4b\u8bd5\u76ee\u6807\u3002",
+            "dimensions": [
+              "business_path"
+            ],
+            "corpus_evidence": [],
+            "experiment_evidence": [
+              "OB-PAYMENT-DELAY/LOSS",
+              "OB-CART-DELAY-2000",
+              "OB-CHECKOUT-DELAY-2000",
+              "OTEL-CHECKOUT-DELAY-2000",
+              "OTEL-PAYMENT-DELAY/LOSS",
+              "OB-PAYMENT-DELAY-2000 (delay sev2)",
+              "OB-PAYMENT-LOSS-100 (loss sev3)",
+              "OTEL-PAYMENT-DELAY-2000 (delay sev2)",
+              "OTEL-PAYMENT-LOSS-100 (loss sev3)",
+              "OB-CHECKOUT-DELAY-2000 (delay sev3)",
+              "OB-CART-DELAY-2000 (delay sev3)",
+              "OTEL-CHECKOUT-DELAY-2000 (delay sev3)"
+            ],
+            "counter_example": "\u6838\u5fc3\u94fe\u8def\u82e5\u5df2\u914d\u7f6e\u8d85\u65f6\uff08OB productcatalog 3s timeout\uff09\u5219\u4e0d\u7206\u2014\u2014\u5148\u67e5\u5951\u7ea6\u6e05\u5355",
+            "transferable_to": "\u7535\u5546/\u4ea4\u6613\u7c7b\u5fae\u670d\u52a1\uff1a\u652f\u4ed8\u3001\u8d2d\u7269\u8f66\u3001\u7ed3\u7b97\u670d\u52a1\u4f18\u5148",
+            "confidence": "high",
+            "source": "\u6838\u5fc3\u94fe\u8def 5+ \u5019\u9009\u786e\u8ba4\u5f31\u70b9 + \u5951\u7ea6\u6e05\u5355\uff08\u65e0\u8d85\u65f6\uff09",
+            "evidence_count": 7
+          },
+          {
+            "id": "SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001",
+            "rule": "\u5ef6\u8fdf\uff08delay\uff09\u7684\u4e25\u91cd\u5ea6\u53d6\u51b3\u4e8e\u8c03\u7528\u65b9\u662f\u5426\u540c\u6b65\u7b49\u5f85\u4e14\u65e0\u8d85\u65f6\uff0c\u800c\u4e0d\u662f fault \u7c7b\u578b\u672c\u8eab\uff1aSock Shop orders->payment \u540c\u6b65\u8c03\u7528\u65e0\u8d85\u65f6\uff0cdelay 2000ms \u6253\u6302\u5ba2\u6237\u7aef 10s\uff08sev3\uff09\uff0c\u4e0e loss \u540c\u7ea7\u3002\u8de8\u5206\u5e03\u9a8c\u8bc1\u63a8\u7ffb\u4e86'loss \u6c38\u8fdc\u6bd4 delay \u4e25\u91cd'\u7684\u5148\u9a8c\u3002",
+            "dimensions": [
+              "fault_intensity",
+              "contract"
+            ],
+            "experiment_evidence": [],
+            "cross_project_evidence": [
+              "SOCK-ORDERS-PAYMENT-DELAY-2000 (sev3)",
+              "SOCK-FRONTEND-CARTS-DELAY-2000 (sev2)",
+              "SOCK-ORDERS-SHIPPING-DELAY-2000 (sev2)"
+            ],
+            "transferable_to": "\u4efb\u610f\u5fae\u670d\u52a1\u7cfb\u7edf\uff1a\u5224\u65ad delay \u4e25\u91cd\u5ea6\u524d\u5148\u67e5\u8c03\u7528\u65b9\u662f\u5426\u540c\u6b65\u7b49\u5f85/\u6709\u8d85\u65f6",
+            "confidence": "medium",
+            "source": "Sock Shop \u8de8\u5206\u5e03\u9a8c\u8bc1\uff08HTTPChaos 8 \u5019\u9009\uff09",
+            "evidence_count": 3,
+            "corpus_evidence": [
+              {
+                "document_count": 0,
+                "kind": "cross_project",
+                "node": "delay_on_sync_no_timeout"
+              }
+            ],
+            "counter_example": "\u65e0\uff08\u8de8\u5206\u5e03\u9a8c\u8bc1\u652f\u6301\uff1adelay \u5728\u540c\u6b65\u65e0\u8d85\u65f6\u8c03\u7528 = sev3\uff09",
+            "adjudicated": "accepted",
+            "contested": false
+          },
+          {
+            "id": "SE-CROSSPROJECT-REPLICATION-001",
+            "rule": "\u5728 A \u9879\u76ee\u786e\u8ba4\u7684\u5f31\u70b9\u6a21\u5f0f\uff0c\u4f18\u5148\u5230 B \u9879\u76ee\u540c\u540d\u670d\u52a1/\u8fb9\u590d\u6d4b\uff1apayment \u65e0\u8d85\u65f6\u5728 OB \u548c OTel \u90fd\u9a8c\u8bc1\u6302\u6b7b\uff1bemail \u8026\u5408\u540c\u7406\u2014\u2014\u8de8\u9879\u76ee\u590d\u73b0\u662f\u4f4e\u6210\u672c\u9ad8\u6536\u76ca\u7684\u9009\u62e9\u7b56\u7565\u3002",
+            "dimensions": [
+              "transferability"
+            ],
+            "corpus_evidence": [],
+            "experiment_evidence": [
+              "OB-PAYMENT-LOSS-100 vs OTEL-PAYMENT-LOSS-100\uff08\u90fd 10s \u6302\u6b7b\uff09",
+              "OB email vs OTel email\uff08\u90fd\u963b\u585e\u4e3b\u6d41\u7a0b\uff09"
+            ],
+            "counter_example": "B \u9879\u76ee\u7684\u540c\u540d\u670d\u52a1\u53ef\u80fd\u6709\u4e0d\u540c\u5b9e\u73b0\uff08\u5982 OB catalog \u6709 3s timeout \u800c OTel catalog \u65e0\uff09\u2014\u2014\u590d\u6d4b\u524d\u67e5\u5951\u7ea6",
+            "transferable_to": "\u591a\u9879\u76ee\u5bf9\u6bd4/\u8fc1\u79fb",
+            "confidence": "medium",
+            "source": "payment/email \u53cc\u9879\u76ee\u590d\u73b0\u8bc1\u636e"
+          },
+          {
+            "id": "SE-LOSS-STRONGEST-001",
+            "rule": "100% \u4e22\u5305\uff08loss\uff09\u662f\u6253\u7a7f\u65e0\u8d85\u65f6\u540c\u6b65\u8c03\u7528\u7684\u6700\u7a33\u624b\u6bb5\uff1a\u6211\u4eec\u6ce8\u5165\u7684\u6240\u6709 loss\uff08payment/email/checkout\uff09100% \u6302\u6b7b\u5230\u5ba2\u6237\u7aef deadline\uff08severity 3\uff09\uff1b\u771f\u5b9e\u8bed\u6599 network_loss 57 docs\u3002",
+            "dimensions": [
+              "fault_intensity"
+            ],
+            "corpus_evidence": [
+              {
+                "node": "network_loss",
+                "document_count": 57,
+                "kind": "NetworkChaos"
+              }
+            ],
+            "experiment_evidence": [
+              "OB-PAYMENT-LOSS-100 (10s hang)",
+              "OTEL-PAYMENT-LOSS-100 (10s hang)",
+              "OTEL-EMAIL-LOSS-100 (10s hang)",
+              "OB-CART-DELAY-2000 (12s client timeout)",
+              "OB-PAYMENT-LOSS-100 (loss sev3)",
+              "OTEL-PAYMENT-LOSS-100 (loss sev3)",
+              "OTEL-EMAIL-LOSS-100 (loss sev3)"
+            ],
+            "counter_example": "\u6709\u8d85\u65f6/\u91cd\u8bd5\u4fdd\u62a4\u7684\u4e0b\u6e38\uff0closs \u53ef\u80fd\u88ab\u515c\u4f4f\uff08\u5982 OB productcatalog 3s timeout \u5bf9 delay \u6709\u6548\uff1b\u5bf9 loss \u662f\u5426\u6709\u6548\u672a\u6d4b\uff09",
+            "transferable_to": "\u53d1\u73b0'\u65e0\u8d85\u65f6'\u7c7b\u5f31\u70b9\u65f6\uff0closs \u662f\u6700\u77ed\u8def\u5f84",
+            "confidence": "high",
+            "source": "\u5168\u90e8 loss \u5b9e\u9a8c 100% \u6302\u6b7b\uff08severity 3\uff09+ \u8bed\u6599 network_loss",
+            "evidence_count": 3
+          },
+          {
+            "id": "SE-NETWORK-FAMILY-001",
+            "rule": "\u4f18\u5148\u5728\u7f51\u7edc\u6545\u969c\u5bb6\u65cf\u4e0a\u627e\u5f31\u70b9\uff1a\u771f\u5b9e\u8bed\u6599\u91cc NetworkChaos \u662f\u6700\u5e38\u6ce8\u5165\u7684\u7c7b\u578b\uff08delay 213/loss 57/partition 99 docs\uff09\uff0c\u4e14\u6211\u4eec\u5b9e\u9a8c\u91cc 13/14 \u4e2a\u786e\u8ba4\u5f31\u70b9\u6765\u81ea\u7f51\u7edc\u6545\u969c\u2014\u2014\u7f51\u7edc\u662f\u6700\u53ef\u80fd\u7684\u5f31\u70b9\u85cf\u8eab\u5904\u3002",
+            "dimensions": [
+              "fault_family"
+            ],
+            "corpus_evidence": [
+              {
+                "node": "network_delay",
+                "document_count": 213,
+                "kind": "NetworkChaos"
+              },
+              {
+                "node": "network_loss",
+                "document_count": 57,
+                "kind": "NetworkChaos"
+              },
+              {
+                "node": "network_partition",
+                "document_count": 99,
+                "kind": "NetworkChaos"
+              }
+            ],
+            "experiment_evidence": [
+              "OB-PAYMENT-DELAY-2000 (sev2)",
+              "OB-PAYMENT-LOSS-100 (sev3)",
+              "OTEL-PAYMENT-DELAY-2000 (sev2)",
+              "OTEL-PAYMENT-LOSS-100 (sev3)",
+              "OTEL-EMAIL-LOSS-100 (sev3)",
+              "OB-CHECKOUT-DELAY-2000 (sev3)",
+              "TT-STATION-DELAY-2000 (delay sev2)",
+              "OB-PAYMENT-DELAY-2000 (delay sev2)",
+              "OB-PAYMENT-LOSS-100 (loss sev3)",
+              "OB-PRODUCTCATALOG-DELAY-500 (delay sev2)",
+              "OTEL-PAYMENT-DELAY-2000 (delay sev2)",
+              "OTEL-PAYMENT-LOSS-100 (loss sev3)",
+              "OTEL-EMAIL-DELAY-2000 (delay sev2)",
+              "OTEL-EMAIL-LOSS-100 (loss sev3)",
+              "OB-CHECKOUT-DELAY-2000 (delay sev3)",
+              "OB-SHIPPING-DELAY-2000 (delay sev2)",
+              "OB-CART-DELAY-2000 (delay sev3)",
+              "OTEL-CHECKOUT-DELAY-2000 (delay sev3)",
+              "OTEL-CURRENCY-DELAY-2000 (delay sev2)",
+              "TT-ORDER-DELAY-2000 (delay sev2)"
+            ],
+            "counter_example": "HTTPChaos \u8bed\u6599 183 docs \u4f46\u5e73\u53f0 blocked \u672a\u6d4b\uff1b\u4e0d\u80fd\u65ad\u8a00 HTTP \u5bb6\u65cf\u540c\u6837\u6613\u7206\uff08\u672a\u5b9e\u8bc1\uff09",
+            "transferable_to": "\u4efb\u610f\u5fae\u670d\u52a1\u7cfb\u7edf\uff1a\u7f51\u7edc\u6545\u969c\uff08\u5ef6\u8fdf/\u4e22\u5305/\u5206\u533a\uff09\u4f18\u5148\u4e8e CPU/\u5185\u5b58\u7b49\u8d44\u6e90\u7c7b",
+            "confidence": "high",
+            "source": "\u8bed\u6599\u9891\u6b21 + 20 \u5019\u9009\u5b9e\u9a8c\u53cd\u63a8\uff0813/14 weakness \u4e3a\u7f51\u7edc\u6545\u969c\uff09",
+            "evidence_count": 14,
+            "counter_examples": [
+              "TT-STATION-DELAY-100 (delay sev1)",
+              "TT-STATION-CPU-80 (delay sev1)",
+              "TT-BASIC-DELAY-100 (delay sev1)",
+              "TT-BASIC-DELAY-500 (delay sev1)",
+              "TT-STATION-DELAY-500 (delay sev1)"
+            ],
+            "contested": true,
+            "contested_reason": "strong injection stayed 1:1 no-amplification (TT-STATION-DELAY-500 (delay sev1)), contradicting the rule's implied 'delay on this family amplifies'; human adjudication required",
+            "adjudicated": "accepted",
+            "adjudication_note": "TT-BASIC/STATION-500 single-call 1:1; rule needs boundary"
+          },
+          {
+            "id": "SE-SIDEEFFECT-COUPLING-001",
+            "rule": "email/\u901a\u77e5\u8fd9\u7c7b\u65c1\u8def\u4f9d\u8d56\u5728\u771f\u5b9e\u9879\u76ee\u91cc\u5e38\u88ab\u540c\u6b65\u8026\u5408\uff1aOTel \u4e0e OB \u7684 email \u90fd\u540c\u6b65\u963b\u585e\u4e3b\u6d41\u7a0b\uff0810s \u6302\u6b7b/5s \u5ef6\u8fdf\u653e\u5927\uff09\uff1b\u65b0\u9879\u76ee\u4f18\u5148\u67e5\u65c1\u8def\u4f9d\u8d56\u662f\u5426\u540c\u6b65\u8026\u5408\u4e3b\u6d41\u7a0b\u3002",
+            "dimensions": [
+              "business_path"
+            ],
+            "corpus_evidence": [],
+            "experiment_evidence": [
+              "OTEL-EMAIL-LOSS-100 (10s hang)",
+              "OTEL-EMAIL-DELAY-2000 (4.9s block)",
+              "KB-OB-CHECKOUT-EMAIL-FAILURE-001",
+              "OTEL-EMAIL-DELAY-2000 (delay sev2)",
+              "OTEL-EMAIL-LOSS-100 (loss sev3)"
+            ],
+            "counter_example": "\u65c1\u8def\u6b63\u786e\u9694\u79bb\uff08\u5f02\u6b65/\u72ec\u7acb\u9884\u7b97\uff09\u5219\u4e0d\u6784\u6210\u5f31\u70b9\u2014\u2014\u9700\u6e90\u7801\u786e\u8ba4\u8c03\u7528\u65b9\u5f0f",
+            "transferable_to": "\u4efb\u610f\u5fae\u670d\u52a1\uff1aemail/\u901a\u77e5/\u65e5\u5fd7/\u5206\u6790\u7c7b\u65c1\u8def\u4f9d\u8d56",
+            "confidence": "high",
+            "source": "OTel/OB email \u53cc\u9879\u76ee\u590d\u73b0 + \u5224\u5b9a\u7ecf\u9a8c JE-COUPLING-001",
+            "evidence_count": 2
+          },
+          {
+            "id": "SE-TEST-HYGIENE-PROBE-001",
+            "rule": "liveness/readiness probe timeout must exceed the injected latency, else the kubelet SIGKILLs the pod mid-experiment and the injection 'escapes' - the observed failure is probe self-kill, not the system's defense behavior. Check probe timeouts BEFORE designing delay injections (Sock Shop payment: 1s probe killed pod on 2s+ injection; relaxed to 25s for clean experiments).",
+            "dimensions": [
+              "test_design"
+            ],
+            "corpus_evidence": [],
+            "experiment_evidence": [
+              "SOCK-PAYMENT: 1s liveness + 2s delay -> pod SIGKILL (experiment polluted)",
+              "OB probe-restart escape (1s probe vs 2s+ delay, prior session)"
+            ],
+            "counter_example": "probe timeout >= injected latency, or probes disabled, keeps the experiment valid",
+            "transferable_to": "\u4efb\u4f55\u7528\u5ef6\u8fdf\u6ce8\u5165\u6d4b\u8bd5\u6709\u63a2\u9488\u7684\u670d\u52a1\uff1b\u5148\u8bfb deployment \u63a2\u9488\u914d\u7f6e",
+            "confidence": "high",
+            "source": "Sock Shop payment \u63a2\u9488\u6c61\u67d3\u5b9e\u6d4b + OB \u63a2\u9488\u91cd\u542f\u9003\u9038(\u65e2\u6709)",
+            "evidence_count": 2
+          },
+          {
+            "id": "SE-TEST-HYGIENE-IMAGECOMPAT-001",
+            "rule": "DB image 'latest' (mongo 8.x) breaks legacy app drivers: 'Unsupported OP_QUERY command: find/insert (code 352)'. If an old Spring/Go app fails with 352, pin the DB to the era-appropriate major (mongo:4.0) rather than debugging the app.",
+            "dimensions": [
+              "infrastructure"
+            ],
+            "corpus_evidence": [],
+            "experiment_evidence": [
+              "carts-db mongo:latest -> carts 500 (OP_QUERY 352); mongo:4.0 -> 201",
+              "orders-db mongo:latest -> orders insert 500 (OP_QUERY 352); mongo:4.0 -> 201"
+            ],
+            "counter_example": "modern driver / gRPC clients speak wire protocol v2+ (no OP_QUERY)",
+            "transferable_to": "\u4efb\u4f55 'latest' DB \u955c\u50cf + \u8001\u5fae\u670d\u52a1\uff1b\u5148\u9a8c\u8bc1\u9a71\u52a8\u517c\u5bb9\u518d\u6392\u67e5\u5e94\u7528",
+            "confidence": "high",
+            "source": "Sock Shop carts/orders-db \u964d\u7ea7\u5b9e\u6d4b",
+            "evidence_count": 2
+          },
+          {
+            "id": "SE-TEST-HYGIENE-PORTMISMATCH-001",
+            "rule": "Container listening port may differ from the Service targetPort in real YAML (front-end listens 8079, svc targetPort was 80 -> silent connection refused). Verify the container's actual listen port (netstat/ss) before blaming the mesh or the app - patch svc targetPort to the real port.",
+            "dimensions": [
+              "infrastructure"
+            ],
+            "corpus_evidence": [],
+            "experiment_evidence": [
+              "front-end: pod IP :80 refused; :8079 200; patched svc targetPort 8079 -> svc OK"
+            ],
+            "counter_example": "container port == svc targetPort (most manifests)",
+            "transferable_to": "\u4efb\u4f55 svc \u8fde\u63a5\u62d2\u7edd\u5148\u67e5 targetPort \u4e00\u81f4\u6027",
+            "confidence": "high",
+            "source": "Sock Shop front-end 8079/80 \u6392\u67e5",
+            "evidence_count": 1
+          },
+          {
+            "id": "SE-TEST-HYGIENE-OOM-001",
+            "rule": "Services without resource limits can OOM-crashloop independently of probes or injections (catalogue-db OOMKilled repeatedly). Distinguish infra OOM from probe/liveness issues before attributing it to the injected fault.",
+            "dimensions": [
+              "infrastructure"
+            ],
+            "corpus_evidence": [],
+            "experiment_evidence": [
+              "catalogue-db OOMKilled exit 137 crash-loop (no resource limits in deployment)"
+            ],
+            "counter_example": "resources.limits set (survives normal load)",
+            "transferable_to": "\u4efb\u4f55\u65e0 resources.limits \u7684\u670d\u52a1\uff1b\u6d4b\u524d\u5148\u67e5 limit",
+            "confidence": "medium",
+            "source": "Sock Shop catalogue-db OOM \u89c2\u5bdf",
+            "evidence_count": 1
+          }
+        ],
+        "generated_at": "2026-08-09T12:01:03.614213+00:00"
+      },
+      "defense_pattern_library": {
+        "schema_version": 1,
+        "patterns": [
+          {
+            "pattern_id": "DP-DEFENSE-ABSORBED-001",
+            "defense_mechanism": "absorbed_by_design",
+            "evidence": {
+              "project": "train-ticket",
+              "candidate_id": "TT-BASIC-DELAY-500",
+              "mutation": "artifacts/experiments/execution/mutations_extended/tt-basic-delay-500-one.yaml",
+              "observation": "500ms injection -> 517-535ms response (1:1, no amplification), 5/5 HTTP 200 x3",
+              "evidence_files": [
+                "m1_ext_tt_basic_delay_500_r1.json",
+                "m1_ext_tt_basic_delay_500_r2.json",
+                "m1_ext_tt_basic_delay_500_r3.json"
+              ]
+            },
+            "inference": "basic->station is a single downstream call; latency propagates 1:1 with no fan-out compounding",
+            "source_verified": false,
+            "source_note": "observation-inferred; requires source/config confirmation"
+          },
+          {
+            "pattern_id": "DP-DEFENSE-ABSORBED-002",
+            "defense_mechanism": "absorbed_by_design",
+            "evidence": {
+              "project": "train-ticket",
+              "candidate_id": "TT-BASIC-DELAY-100",
+              "mutation": "artifacts/train-ticket/runtime/generated_mutations/network/basic-network-delay-candidate-r1.yaml",
+              "observation": "100ms injection -> 141ms response, 5/5 HTTP 200",
+              "evidence_files": [
+                "m1_batch_tt_basic_delay_100_r1.json"
+              ]
+            },
+            "inference": "weak latency injection on a single-call path; no amplification",
+            "source_verified": false,
+            "source_note": "observation-inferred; requires source/config confirmation"
+          },
+          {
+            "pattern_id": "DP-DEFENSE-ABSORBED_BY_DESIGN-TT-BASIC-DELAY-500",
+            "defense_mechanism": "absorbed_by_design",
+            "source": "m5_llm_attribution",
+            "confidence": "medium",
+            "evidence": {
+              "project": "train-ticket",
+              "candidate_id": "TT-BASIC-DELAY-500",
+              "mutation": "TT-BASIC-DELAY-500",
+              "observation": "LLM attributed 'downstream latency propagated 1:1 with no retries or compounding (bounded path tolerated the 500ms delay)' as the defense mechanism",
+              "evidence_files": []
+            },
+            "inference": "LLM (deepseek-v4-flash) attributed defense mechanism 'downstream latency propagated 1:1 with no retries or compounding (bounded path tolerated the 500ms delay)' from runtime evidence; human/behavior verification recommended",
+            "source_verified": false,
+            "source_note": "observation-inferred; requires source/config confirmation"
+          },
+          {
+            "pattern_id": "DP-BOUNDED-TIMEOUT-FUTUREGET-001",
+            "defense_mechanism": "bounded_timeout",
+            "source_verified": true,
+            "source_note": "jar javap (Future.get + TimeoutException) + runtime TimeoutException at 5.07s",
+            "evidence": {
+              "project": "sock-shop",
+              "candidate_id": "SOCK-ORDERS-PAYMENT-DELAY-2000",
+              "mutation": "tc netem delay 2s/6s on payment veth (real-chain POST /orders)",
+              "observation": "2s -> 201@4.15s (absorbed, RTT 4.0s); 6s -> 500@5.10s TimeoutException; direct curl -> 12s hang (position artifact)",
+              "evidence_files": [
+                "artifacts/sock-shop/sock_orders_future_get_verified.md"
+              ]
+            },
+            "inference": "Future.get(timeout, SECONDS) async timeout (OrdersController.java:139/160, @Value ${http.timeout:5}) bounds BOTH delay and loss (loss_bounded): never an infinite hang. Invisible to direct port measurement - only business-chain entry reveals it."
+          }
+        ],
+        "generated_at": "2026-08-09T12:01:03.613480+00:00",
+        "backfilled_at": "2026-08-08T06:03:42.453295+00:00",
+        "a1_audit": {
+          "weak_stressor_dropped": 2,
+          "applied_at": "2026-08-08T06:27:13.203060+00:00"
+        },
+        "a1_audit_note": "2026-08-09 audit: DP-REDUNDANCY-ABSENT-001 removed - it records an ABSENT defense (single-replica no-PDB), which violates A1 principle (absence is NOT a defense pattern). Absence rules live in contract_inventory AVAILABILITY static_prediction + decision_engine availability_hard_filter (AD-REDUNDANCY-001), not in the defense-pattern library."
+      },
+      "judgment_experience": {
+        "schema_version": 1,
+        "entries": [
+          {
+            "id": "JE-CONTRACT-001",
+            "rule": "\u7cfb\u7edf\u6e90\u7801/\u914d\u7f6e\u58f0\u660e\u7684\u5951\u7ea6\uff08WithTimeout/gRPC deadline/SLO\uff09\u8fdd\u7ea6 = \u660e\u786e\u6f0f\u6d1e\uff1b\u4f46\u6d4b\u8bd5\u5ba2\u6237\u7aef\u81ea\u8bbe\u7684 timeout \u662f\u6d4b\u91cf\u9884\u7b97\uff0c\u6c38\u8fdc\u4e0d\u662f\u7cfb\u7edf\u5951\u7ea6\u2014\u2014\u6302\u5230\u5ba2\u6237\u7aef deadline \u66b4\u9732\u7684\u662f'\u7cfb\u7edf\u7f3a\u8d85\u65f6'\uff0c\u5224\u5b9a\u4f9d\u636e\u4e0d\u540c\uff08A2 \u4fee\u6b63\uff09\u3002",
+            "dimensions": [
+              "contract"
+            ],
+            "severity_adjustment": "confirm",
+            "evidence_cases": [
+              "OB-PAYMENT-LOSS-100: chargeCard \u65e0 WithTimeout\uff08main.go:369\uff0c\u7cfb\u7edf\u65e0\u5951\u7ea6\uff09\uff1b10s \u6302\u6b7b\u662f ob_client 10s \u9884\u7b97\u8017\u5c3d \u2192 \u5f31\u70b9\u662f'\u7cfb\u7edf\u7f3a\u8d85\u65f6'\u800c\u975e'\u8fdd\u7ea6'",
+              "OB-CART-DELAY-2000: 12s \u5ba2\u6237\u7aef\u8d85\u65f6 x3\uff0ccart \u8bfb\u65e0 deadline",
+              "TT \u7cfb: \u65e0\u8d85\u65f6\u914d\u7f6e\uff08application.yml\uff09\uff0c\u5ef6\u8fdf\u653e\u5927\u65e0\u8fdd\u7ea6\u4f46\u65e0\u4fdd\u62a4",
+              "TT-STATION-DELAY-2000 (delay sev2)",
+              "OB-PAYMENT-DELAY-2000 (delay sev2)",
+              "OB-PAYMENT-LOSS-100 (loss sev3)",
+              "OB-PRODUCTCATALOG-DELAY-500 (delay sev2)",
+              "OTEL-PAYMENT-DELAY-2000 (delay sev2)",
+              "OTEL-PAYMENT-LOSS-100 (loss sev3)",
+              "OTEL-EMAIL-DELAY-2000 (delay sev2)",
+              "OTEL-EMAIL-LOSS-100 (loss sev3)",
+              "OB-CHECKOUT-DELAY-2000 (delay sev3)",
+              "OB-SHIPPING-DELAY-2000 (delay sev2)",
+              "OB-CART-DELAY-2000 (delay sev3)",
+              "OTEL-CHECKOUT-DELAY-2000 (delay sev3)",
+              "OTEL-CURRENCY-DELAY-2000 (delay sev2)",
+              "TT-ORDER-DELAY-2000 (delay sev2)",
+              "SOCK-FRONTEND-CARTS-LOSS-100 (sev3)",
+              "SOCK-FRONTEND-CATALOGUE-LOSS-100 (sev3)",
+              "SOCK-ORDERS-PAYMENT-LOSS-100 (sev3)",
+              "SOCK-ORDERS-SHIPPING-LOSS-100 (sev2)",
+              "SOCK-FRONTEND-CARTS-DELAY-2000 (sev2)",
+              "SOCK-FRONTEND-CATALOGUE-DELAY-2000 (sev2)",
+              "SOCK-ORDERS-PAYMENT-DELAY-2000 (sev3)",
+              "SOCK-ORDERS-SHIPPING-DELAY-2000 (sev2)"
+            ],
+            "counter_example": "\u6709\u7cfb\u7edf\u7ea7 timeout \u4e14\u6ce8\u5165\u540e\u4ecd\u8fdd\u7ea6\uff08\u82e5\u5b58\u5728\uff09\u624d\u662f\u5951\u7ea6\u8fdd\u7ea6\uff1bTT-BASIC-500 1:1 \u65e0\u653e\u5927\u672a\u89e6\u4efb\u4f55\u9884\u7b97",
+            "transferable_to": "\u5224\u5b9a\u524d\u5fc5\u987b\u67e5 contract_inventory.json \u533a\u5206\u7cfb\u7edf\u5951\u7ea6 vs \u5ba2\u6237\u7aef\u9884\u7b97",
+            "confidence": "high",
+            "source": "A2 \u5ba1\u8ba1 + \u6e90\u7801\u6838\u67e5\uff08OB chargeCard \u65e0 WithTimeout\uff09",
+            "source_verified": true,
+            "source_note": "OB chargeCard no WithTimeout confirmed at online-boutique/src/checkoutservice/main.go:369; TT application.yml no timeout config",
+            "en_rule": "A violation of a SOURCE-DECLARED contract (WithTimeout/gRPC deadline/SLO) is a clear vulnerability; but a test-client's own timeout is a measurement budget, never a system contract - hanging to the client deadline reveals the system LACKS a timeout, a different finding (A2 fix).",
+            "evidence_count": 14
+          },
+          {
+            "id": "JE-CONTRACT-002",
+            "rule": "\u7cfb\u7edf\u65e0\u5951\u7ea6\uff08\u65e0 SLO/\u65e0\u663e\u5f0f deadline\uff0c\u89c1 contract_inventory\uff09\u7684\u5ef6\u8fdf\u653e\u5927 \u2260 \u81ea\u52a8\u6f0f\u6d1e\uff1b\u5e94\u67e5\u662f\u5426\u6709\u964d\u7ea7/\u515c\u5e95\uff0c\u65e0\u515c\u5e95\u5219\u5224'\u6f5c\u5728\u98ce\u9669'\u800c\u975e'\u786e\u5b9a\u6f0f\u6d1e'\u3002runner \u7684 request_timeout \u4e0d\u7b97\u5951\u7ea6\u3002",
+            "dimensions": [
+              "contract"
+            ],
+            "severity_adjustment": "downgrade",
+            "evidence_cases": [
+              "TT-STATION-DELAY-2000: 2s \u6ce8\u5165 -> 4s \u54cd\u5e94\uff0cHTTP 200\uff1b\u7cfb\u7edf\u65e0\u8d85\u65f6\u914d\u7f6e\uff08\u6f5c\u5728\u98ce\u9669\uff09",
+              "TT-ORDER-DELAY-2000: 2s -> 4s HTTP 200\uff08\u540c\u4e0a\uff09"
+            ],
+            "counter_example": "\u6709 SLO/\u9884\u7b97\u58f0\u660e\u7684\u8def\u5f84\u653e\u5927\u5373\u8fdd\u7ea6\uff08\u5347\u7ea7\u4e3a\u786e\u5b9a\u6f0f\u6d1e\uff09",
+            "transferable_to": "\u65e0\u663e\u5f0f SLO \u7684\u5185\u90e8\u670d\u52a1\u95f4\u8c03\u7528",
+            "confidence": "medium",
+            "source": "A2 \u5ba1\u8ba1\uff1aTT \u7cfb application.yml \u65e0\u8d85\u65f6\u914d\u7f6e\uff1brunner timeout 5s/8s \u4e3a\u6d4b\u8bd5\u53c2\u6570",
+            "source_verified": true,
+            "source_note": "TT station/basic/order application.yml have no timeout config (verified); runner request_timeout is a test parameter",
+            "en_rule": "Latency amplification with no system contract (no SLO/explicit deadline, see contract_inventory) is NOT automatically a vulnerability; check for degradation/fallback first - without it, classify as 'potential risk', not 'confirmed vulnerability'. The runner's request_timeout is not a contract."
+          },
+          {
+            "id": "JE-COUPLING-001",
+            "rule": "\u65c1\u8def/\u975e\u5173\u952e\u4f9d\u8d56\uff08email/\u901a\u77e5/\u65e5\u5fd7\uff09\u540c\u6b65\u963b\u585e\u4e3b\u6d41\u7a0b\u5e76\u6302\u5230\u5ba2\u6237\u7aef\u8d85\u65f6 = \u67b6\u6784\u7ea7\u8026\u5408\u7f3a\u9677\uff08severity 3 \u4e14\u5224\u5b9a\u4ef7\u503c\u6700\u9ad8\uff09\uff0c\u56e0\u4e3a\u66b4\u9732\u7684\u662f\u4f9d\u8d56\u9694\u79bb\u7f3a\u5931\u800c\u975e\u5355\u4e2a\u7f3a\u8d85\u65f6\u3002",
+            "dimensions": [
+              "business_path"
+            ],
+            "severity_adjustment": "upgrade",
+            "evidence_cases": [
+              "OTEL-EMAIL-LOSS-100: email 100% \u4e22\u5305 -> PlaceOrder 10s DEADLINE_EXCEEDED x3",
+              "KB-OB-CHECKOUT-EMAIL-FAILURE-001: OB email \u6545\u969c\u963b\u585e\u4e0b\u5355",
+              "OTEL-EMAIL-DELAY-2000 (delay sev2)",
+              "OTEL-EMAIL-LOSS-100 (loss sev3)"
+            ],
+            "counter_example": "\u72ec\u7acb\u65c1\u8def\u6545\u969c\u4e0d\u5f71\u54cd\u4e3b\u6d41\u7a0b\uff08\u82e5\u9694\u79bb\u6b63\u786e\uff09\u5219\u4e0d\u6784\u6210\u8be5\u7f3a\u9677",
+            "transferable_to": "\u4efb\u610f\u5fae\u670d\u52a1\u7cfb\u7edf\uff1a\u4f18\u5148\u67e5 email/\u901a\u77e5/\u65e5\u5fd7/\u5206\u6790\u8fd9\u7c7b\u65c1\u8def\u4f9d\u8d56\u662f\u5426\u540c\u6b65\u8026\u5408\u4e3b\u6d41\u7a0b",
+            "confidence": "high",
+            "source": "\u672c\u9879\u76ee\u6848\u4f8b\u53cd\u63a8 + \u6df7\u6c8c\u5de5\u7a0b\u5b9e\u8df5\uff08\u975e\u5173\u952e\u4f9d\u8d56\u8026\u5408\u662f\u6700\u5e38\u89c1\u67b6\u6784\u53cd\u6a21\u5f0f\uff09",
+            "source_verified": false,
+            "source_note": "observation-inferred from OTEL-EMAIL-LOSS + OB email card; source check of checkout->email call pending",
+            "en_rule": "A non-critical dependency (email/notification/log) synchronously blocking the primary flow and hanging to the client deadline = architecture-level coupling defect (severity 3+, highest value): it reveals missing dependency isolation, not a single missing timeout.",
+            "evidence_count": 2
+          },
+          {
+            "id": "JE-OBSERVABILITY-001",
+            "rule": "\u6545\u969c\u88ab\u8ffd\u8e2a\u7cfb\u7edf\u5b8c\u6574\u8bb0\u5f55\uff08trace/\u4e8b\u4ef6\u53ef\u89c1\uff09\u4f46\u65e0\u81ea\u52a8\u544a\u8b66 = \u90e8\u5206\u5f31\u70b9\uff08\u53ef\u8bca\u65ad\u3001\u4e0d\u53ef\u9884\u8b66\uff09\uff1b'\u6545\u969c\u53d1\u751f\u65f6\u65e0\u6cd5\u88ab\u770b\u89c1'\u672c\u8eab\u662f\u5f31\u70b9\uff0c\u5373\u4f7f\u529f\u80fd\u6b63\u5e38\u3002",
+            "dimensions": [
+              "observability"
+            ],
+            "severity_adjustment": "confirm",
+            "evidence_cases": [
+              "OTel payment: Jaeger \u5b8c\u6574\u6355\u83b7\u6ce8\u5165\u7a97\u53e3\uff08payment span 4462ms + error event\uff09\u4f46\u65e0 auto-alert"
+            ],
+            "counter_example": "\u6545\u969c\u5b8c\u5168\u4e0d\u53ef\u89c1\uff08\u65e0 trace \u65e0\u65e5\u5fd7\uff09\u5219\u4e25\u91cd\u5ea6\u66f4\u9ad8\uff08\u5b8c\u5168\u9ed1\u6d1e\uff09",
+            "transferable_to": "\u4efb\u4f55\u5e26 Jaeger/\u94fe\u8def\u8ffd\u8e2a\u4f46\u7f3a\u544a\u8b66\u94fe\u8def\u7684\u7cfb\u7edf",
+            "confidence": "medium",
+            "source": "OTel \u53ef\u89c2\u6d4b\u6027\u7f3a\u53e3\u7814\u7a76",
+            "source_verified": false,
+            "source_note": "observed via Jaeger capture (OTel payment); alert configuration not source-checked",
+            "en_rule": "A fault fully captured by tracing (visible events) but without auto-alert = partial weakness (diagnosable, not alertable); 'cannot be seen at fault time' is itself a weakness even if functionality is normal."
+          },
+          {
+            "id": "JE-RECOVERY-001",
+            "rule": "\u6ce8\u5165\u505c\u6b62\u540e\u7cfb\u7edf\u4e0d\u81ea\u52a8\u6062\u590d\uff08\u6216\u6062\u590d\u8d85\u65f6\uff09 = \u4e25\u91cd\u5ea6\u5347\u7ea7\uff0c\u65e0\u8bba\u539f\u59cb\u75c7\u72b6\u5f3a\u5f31\u2014\u2014\u6062\u590d\u80fd\u529b\u7f3a\u5931\u662f\u72ec\u7acb\u5f31\u70b9\u3002",
+            "dimensions": [
+              "recovery"
+            ],
+            "severity_adjustment": "upgrade",
+            "evidence_cases": [
+              "K7 \u63a2\u9488\u91cd\u542f\uff1apaymentservice \u91cd\u542f\u540e Ready \u8d85\u65f6 + \u4e1a\u52a1\u8fde\u63a5\u62d2\u7edd\uff08probe_restart_recovery_timeout\uff09"
+            ],
+            "counter_example": "\u6ce8\u5165\u540e\u6062\u590d\u6b63\u5e38\uff08TT \u7cfb\u3001OB/OTel \u6240\u6709\u5ef6\u8fdf/loss \u6ce8\u5165\u540e cleanup \u6062\u590d\u57fa\u7ebf\uff09\u4e0d\u89e6\u53d1\u5347\u7ea7",
+            "transferable_to": "\u6240\u6709\u6ce8\u5165\u5b9e\u9a8c\u90fd\u5e94\u663e\u5f0f\u68c0\u67e5\u6062\u590d\u662f\u5426\u81ea\u52a8\u5b8c\u6210",
+            "confidence": "high",
+            "source": "\u672c\u9879\u76ee\u63a2\u9488\u91cd\u542f\u9003\u9038\u673a\u5236\u7814\u7a76",
+            "source_verified": false,
+            "source_note": "behavior-observed (K7 probe-restart recovery timeout); mechanism root not source-checked",
+            "en_rule": "Failure to auto-recover after injection stops (or recovery timeout) upgrades severity regardless of symptom strength - missing recovery capability is an independent weakness."
+          },
+          {
+            "id": "JE-RISK-001",
+            "rule": "\u9ad8\u6982\u7387\u73b0\u5b9e\u6545\u969c\uff08\u652f\u4ed8\u5546\u8d85\u65f6/\u7f51\u7edc\u5206\u533a/\u4e22\u5305\uff09\u66b4\u9732\u7684\u5f31\u70b9\uff0c\u6392\u5e8f\u4ef7\u503c\u9ad8\u4e8e\u4f4e\u6982\u7387\u6781\u7aef\u573a\u666f\u2014\u2014\u98ce\u9669 = \u6982\u7387 \u00d7 \u5f71\u54cd\uff0c\u6982\u7387\u662f\u6392\u5e8f\u4f9d\u636e\u800c\u975e\u5224\u5b9a\u4f9d\u636e\u3002",
+            "dimensions": [
+              "risk"
+            ],
+            "severity_adjustment": "n_a",
+            "evidence_cases": [
+              "\u6240\u6709 payment/email loss \u573a\u666f\uff08\u652f\u4ed8\u5546\u8d85\u65f6\u662f\u5e38\u6001\u4e8b\u4ef6\uff09",
+              "TT-STATION-CPU-80: \u5355 worker 80% CPU \u662f\u4f4e\u6982\u7387\u5f31\u538b\u573a\u666f -> \u6392\u5e8f\u9760\u540e"
+            ],
+            "counter_example": "\u4f4e\u6982\u7387\u9ad8\u5f71\u54cd\uff08\u5982\u5168\u90e8\u8282\u70b9\u540c\u65f6\u5b95\u673a\uff09\u5728\u7279\u6b8a\u7cfb\u7edf\uff08\u94f6\u884c\uff09\u4e2d\u4ecd\u9700\u5347\u7ea7",
+            "transferable_to": "\u5019\u9009\u6392\u5e8f/\u4f18\u5148\u7ea7\uff0c\u4e0d\u6539\u5224\u5b9a\u672c\u8eab",
+            "confidence": "medium",
+            "source": "\u98ce\u9669\u77e9\u9635\u5b9e\u8df5 + \u672c\u9879\u76ee CPU \u5f31\u5f71\u54cd\u89c2\u5bdf",
+            "source_verified": true,
+            "source_note": "derived from executed experiments; probability assignment is practitioner judgment, flagged",
+            "en_rule": "Weaknesses exposed by high-probability real events (payment-provider timeout/network partition/packet loss) rank above low-probability extreme scenarios - risk = probability x impact; probability ranks, it does not judge."
+          }
+        ]
+      },
+      "source_provenance": {
+        "contract": "static_reconstructed_pre_experiment",
+        "availability": "static_reconstructed_pre_experiment",
+        "selection_experience": "posthoc_or_current",
+        "defense_pattern_library": "posthoc_or_current",
+        "judgment_experience": "posthoc_or_current"
+      }
+    }
+  },
+  "native_method_contract": {
+    "selection": "tools/decision_engine.py",
+    "candidate_input": "artifacts/sock-shop/decision_input.json",
+    "pollution_policy": "intentionally_not_excluded",
+    "projection_used": false
+  }
+}

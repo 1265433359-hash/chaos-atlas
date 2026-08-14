@@ -1,0 +1,226 @@
+{
+  "project_id": "sock-shop",
+  "project_commit": "9dff06fae4981921caec6a62393a6ebfce4b3e3f",
+  "hypotheses": [
+    {
+      "hypothesis_id": "H1",
+      "target": "service/front-end->workload/front-end",
+      "target_kind": "dependency_edge",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 15
+      },
+      "hypothesis": "Injecting 500ms network delay on the front-end service edge will cause the front-end home page to exceed the 15s business oracle timeout, resulting in a failure of the golden journey.",
+      "weakness_surface": "front-end has no timeout on downstream calls and is a single replica; delay on its own edge directly impacts all user-facing requests.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "front-end home page returns HTTP 200 with non-empty HTML within 15s",
+      "validation_plan": "Run baseline, inject delay, observe front-end home page response time and status, then recover and washout.",
+      "recovery_expectation": "After removing the delay, front-end should recover to baseline within washout period."
+    },
+    {
+      "hypothesis_id": "H2",
+      "target": "service/front-end->workload/front-end",
+      "target_kind": "dependency_edge",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 15
+      },
+      "hypothesis": "Injecting 100% network loss on the front-end service edge will cause the front-end home page to hang and fail the business oracle timeout, breaking the golden journey.",
+      "weakness_surface": "front-end has no timeout on downstream calls and is a single replica; loss on its own edge makes the service unreachable.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "front-end home page returns HTTP 200 with non-empty HTML within 15s",
+      "validation_plan": "Run baseline, inject loss, observe front-end home page response, then recover and washout.",
+      "recovery_expectation": "After removing the loss, front-end should recover to baseline within washout period."
+    },
+    {
+      "hypothesis_id": "H3",
+      "target": "service/catalogue->workload/catalogue",
+      "target_kind": "dependency_edge",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 15
+      },
+      "hypothesis": "Injecting 500ms network delay on the catalogue service edge will cause the catalogue browse step to exceed the 15s business oracle timeout, breaking the golden journey.",
+      "weakness_surface": "front-end calls catalogue synchronously without timeout; delay on catalogue edge propagates to front-end and can exceed the oracle timeout.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue browse returns JSON array within 15s",
+      "validation_plan": "Run baseline, inject delay on catalogue edge, observe catalogue browse response, then recover and washout.",
+      "recovery_expectation": "After removing the delay, catalogue browse should recover to baseline within washout period."
+    },
+    {
+      "hypothesis_id": "H4",
+      "target": "service/catalogue->workload/catalogue",
+      "target_kind": "dependency_edge",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 15
+      },
+      "hypothesis": "Injecting 100% network loss on the catalogue service edge will cause the catalogue browse step to hang and fail the business oracle timeout, breaking the golden journey.",
+      "weakness_surface": "front-end calls catalogue synchronously without timeout; loss on catalogue edge makes the catalogue browse step hang.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/catalogue",
+          "target": "workload/catalogue",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "catalogue browse returns JSON array within 15s",
+      "validation_plan": "Run baseline, inject loss on catalogue edge, observe catalogue browse response, then recover and washout.",
+      "recovery_expectation": "After removing the loss, catalogue browse should recover to baseline within washout period."
+    },
+    {
+      "hypothesis_id": "H5",
+      "target": "service/orders->workload/orders",
+      "target_kind": "dependency_edge",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 15
+      },
+      "hypothesis": "Injecting 500ms network delay on the orders service edge will cause the authenticated orders step to exceed the 15s business oracle timeout, breaking the golden journey.",
+      "weakness_surface": "orders has a 5s Future.get timeout on downstream calls, but delay on its own edge may still cause the orders step to exceed the oracle timeout if the delay is large enough.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/orders",
+          "target": "workload/orders",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "authenticated orders returns HTTP 201 within 15s",
+      "validation_plan": "Run baseline, inject delay on orders edge, observe orders step response, then recover and washout.",
+      "recovery_expectation": "After removing the delay, orders step should recover to baseline within washout period."
+    },
+    {
+      "hypothesis_id": "H6",
+      "target": "service/orders->workload/orders",
+      "target_kind": "dependency_edge",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 15
+      },
+      "hypothesis": "Injecting 100% network loss on the orders service edge will cause the authenticated orders step to hang and fail the business oracle timeout, breaking the golden journey.",
+      "weakness_surface": "orders has a 5s Future.get timeout on downstream calls, but loss on its own edge may cause the orders step to hang until the oracle timeout.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/orders",
+          "target": "workload/orders",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "authenticated orders returns HTTP 201 within 15s",
+      "validation_plan": "Run baseline, inject loss on orders edge, observe orders step response, then recover and washout.",
+      "recovery_expectation": "After removing the loss, orders step should recover to baseline within washout period."
+    },
+    {
+      "hypothesis_id": "H7",
+      "target": "service/user->workload/user",
+      "target_kind": "dependency_edge",
+      "fault_family": "network_delay",
+      "parameters": {
+        "latency_ms": 500,
+        "duration_s": 15
+      },
+      "hypothesis": "Injecting 500ms network delay on the user service edge will cause the demo login step to exceed the 15s business oracle timeout, breaking the golden journey.",
+      "weakness_surface": "front-end login depends on user service; delay on user edge may cause login to exceed the oracle timeout.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "login returns HTTP 200 and sets a cookie within 15s",
+      "validation_plan": "Run baseline, inject delay on user edge, observe login response, then recover and washout.",
+      "recovery_expectation": "After removing the delay, login should recover to baseline within washout period."
+    },
+    {
+      "hypothesis_id": "H8",
+      "target": "service/user->workload/user",
+      "target_kind": "dependency_edge",
+      "fault_family": "network_loss",
+      "parameters": {
+        "loss_percent": 100,
+        "duration_s": 15
+      },
+      "hypothesis": "Injecting 100% network loss on the user service edge will cause the demo login step to hang and fail the business oracle timeout, breaking the golden journey.",
+      "weakness_surface": "front-end login depends on user service; loss on user edge makes login hang.",
+      "call_chain": [
+        {
+          "source": "service/front-end",
+          "target": "workload/front-end",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        },
+        {
+          "source": "service/user",
+          "target": "workload/user",
+          "relation": "selects",
+          "evidence_ref": "topology"
+        }
+      ],
+      "expected_invariant": "login returns HTTP 200 and sets a cookie within 15s",
+      "validation_plan": "Run baseline, inject loss on user edge, observe login response, then recover and washout.",
+      "recovery_expectation": "After removing the loss, login should recover to baseline within washout period."
+    }
+  ]
+}
