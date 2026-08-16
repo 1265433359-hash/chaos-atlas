@@ -1,19 +1,39 @@
 # ChaosAtlas 项目总览
 
-更新时间：2026-08-13（阶段归档快照）
+更新时间：2026-08-16（Sock Shop 三方法阶段口径复核）
 
 本文档是仓库级总结，面向论文写作、实验复核、知识库检索和后续交接。
 它描述当前工作区的事实状态，不替代任何单次实验报告、原始日志或预注册协议。
 
-## 0. 2026-08-13 阶段归档更正
+## 0. 当前论文主线
 
-当前主动方法范围已经收窄为 `ChaosAtlas-full` 和
-`ChaosAtlas-ablation`。ChaosEater 暂停，历史材料只作为冻结审计证据。
+当前唯一论文主线见 `docs/CHAOSATLAS_PAPER_MAINLINE.md`，分为四个阶段：
 
-Sock Shop 最新运行只完成了两条 ChaosAtlas 臂：两臂均通过基线、注入、恢复、
-删除、washout 和残留检查，但使用的是同一个 `front-end` PodKill mutation，
-因此不能形成方法优势结论，也不能称为完整三方法 head-to-head。
-官方 ChaosEater 臂为 `environment_blocked`，不得使用 adapter 或历史输出替代。
+1. 初始 TestNode、局部影响子图、适用性门禁、证据链和知识库架构；
+2. Online Boutique、OpenTelemetry Demo、Sock Shop 三个真实项目的 issue 发现能力验证；
+3. 方法改进后在 Sock Shop 上进行完整方法与知识库消融的真实端到端比较；
+4. 下一阶段开展完整官方 ChaosEater 的真实对照。
+
+same-pool、预选候选池和 `ChaosEater-adapter` 结果均为冻结历史材料，保留原路径但不进入主线统计。
+
+## 0.1 2026-08-13 阶段归档更正
+
+当前主线主动方法范围是 `ChaosAtlas-full` 和
+`ChaosAtlas-ablation`。完整官方 ChaosEater 仍是后续真实对照，历史材料只作为冻结审计证据。
+
+旧 Sock Shop Minikube pilot 只完成了两条 ChaosAtlas 臂，使用同一个
+`front-end` PodKill mutation；该 pilot 作为冻结历史材料，不能替代当前自主
+discovery/ablation 结果，也不能称为完整三方法 head-to-head。官方 ChaosEater
+臂仍为 `environment_blocked`，不得使用 adapter 或历史输出替代。
+
+当前 Sock Shop 精确台账是：Full 114 个去重 family 已全部完成静态适用性处理，
+其中 96 个进入 runtime cohort，88 个完成两次真实注入、8 个 route-aware
+DNSChaos 在注入前被平台 gate 阻断、18 个被静态 gate 拒绝；
+88 个已注入 family 中 15 个稳定、3 个不稳定、70 个未观察到业务弱点。YAML15
+Ablation 从 458 个原始假设去重得到 51 个 family，46 个完成两次注入，得到 9 个
+稳定弱点、0 个不稳定和 37 个 no-impact。两者问题面重合 8 个，Full 与 Ablation
+分别有 2 个和 1 个独有稳定问题面；Fisher 双侧 `p=0.8132`，不支持稳定率优越性。
+详见 `docs/SOCK_SHOP_THREE_METHOD_STAGE_REVIEW_2026-08-16.md`。
 
 P09 已完成 `ChaosAtlas-full` 与 `ChaosAtlas-ablation` 各 5 次运行，全部通过
 生命周期校验，但当前 oracle 仍是 `/health`，因此只支持有界中断/恢复和连接症状
@@ -194,11 +214,12 @@ CPU 线使用 cgroup-v2 观测到真实 throttling，业务响应在部分窗口
 该案例的价值是证明“观测完备”与“自动诊断”不是同一个命题，并提供了前两个
 项目缺少的 span 级证据。
 
-### 6.4 Sock Shop：跨项目迁移与冻结对照材料
+### 6.4 Sock Shop：真实迁移验证、历史分层材料与当前消融入口
 
-Sock Shop 是前三个项目之外的第四个项目，承担外部迁移验证和历史对照作用。
-它检验前面形成的知识规则能否迁移到新的服务分布，并检验调用契约分析与部署
-可用性分析能否统一到同一条证据链。
+Sock Shop 是当前三项目主线中的真实迁移和方法改进项目。它检验前面形成的
+证据链能否在新的服务分布上发现业务 issue，并为完整方法与知识库消融提供真实
+端到端实验场景。下面的 `6/8` 结果属于历史 HTTP-edge 分层验证，不是当前
+full/ablation discovery 的统计分母。
 
 最终 HTTP 边结果为 **6/8 weakness、2/8 defended**。`orders→payment` 和
 `orders→shipping` 在真实 `POST /orders` 链路中存在 5 秒
@@ -215,20 +236,37 @@ loss 未单独走真实订单链路复跑，论文中不能把两种分母混用
 
 - ChaosEater 的完整运行主要发现单副本、缺少 PDB/HPA、探针覆盖不足及 kill 后恢复时间等部署可用性风险；
 - 本方法补充了 HTTP 调用边的 delay/loss 语义、业务响应、源码中的 timeout 契约、恢复/清理和结构化根因；
-- 当前 Sock Shop 新运行尚未完成官方 ChaosEater 臂，因此不能写成三方法结果。
-- 历史材料最多支持**分层覆盖和可审计产出互补的研究假设**，不支持未经统计验证的全面优于 ChaosEater。
+- 当前 ChaosEater 阶段摘要记录 2 个 availability/readiness 弱点，但五次复现尚缺统一机器 manifest，不能与 Full/Ablation 直接做正式统计。
+- 当前材料支持**分层覆盖和可审计产出互补**，不支持未经同层公平协议验证的全面优于 ChaosEater。
 
 这一项目给论文带来的四个具体贡献是：知识跨项目迁移、识别“loss 大于 delay”先验的边界、把调用契约层与部署可用性层统一、以及将结果输出为可复核和可复用的证据链。
 
-## 7. 跨项目可复现模式与边界
+## 7. 跨项目迁移证据、可复现模式与边界
 
-Train Ticket、Online Boutique 和 OTel Demo 三个项目都观察到一组相近模式：同步微服务链缺少一致的 timeout/deadline，延迟
-可以全额传导，丢包可能一直挂起到调用方边界。但这应写成“在三个被测项目和
-当前 workload 中复现的模式”，不能外推为所有微服务的普遍定律。
+论文主线的三个真实项目是 Online Boutique、OpenTelemetry Demo 和 Sock Shop。
+三者在不同语言、协议、服务拓扑和业务路径中复现了同一抽象问题族：同步下游
+调用缺少一致的 timeout/deadline 或降级边界时，延迟、丢包或下游故障会向业务
+路径传播。这里的“同一问题”指可迁移的调用契约和故障传播模式，不是三个项目
+中完全相同的代码级缺陷。
+
+- Online Boutique 中，payment 延迟几乎全量传导，丢包可持续到调用方 deadline；
+  product catalog 核心路径缺少等价降级。
+- OpenTelemetry Demo 中，checkout 链路的 payment/shipping 调用存在无有效
+  timeout/deadline 的路径，延迟和丢包传播到业务调用方。
+- Sock Shop 中，catalogue 和 orders-db 故障能够传播为真实业务失败；同时
+  `orders -> payment/shipping` 已观测到 `Future.get(timeout, SECONDS)` 防御，
+  说明方法也能识别保护边界和反例。
+
+这支持“ChaosAtlas 具备跨项目迁移能力”的克制结论：迁移的是 TestNode、调用
+契约、timeout/deadline、业务 oracle 和证据链分析模式，而不是某个项目的服务名
+或固定故障配置。Sock Shop 的防御边还说明，知识迁移必须允许新项目修正既有
+先验，不能把所有同步调用预先判为弱点。
+
+Train Ticket 保留为初始架构的历史闭环案例，不计入上述三项目迁移结论。
 
 跨项目差异同样重要：
 
-| 维度 | Train Ticket | Online Boutique | OTel Demo | Sock Shop |
+| 维度 | Train Ticket（历史架构案例） | Online Boutique | OTel Demo | Sock Shop |
 |---|---|---|---|---|
 | 观测 | 客户端/日志/cgroup 为主 | 客户端、日志、Pod/探针 | 增加 Jaeger span 证据 | 业务响应、日志、静态 manifest、Ready 曲线 |
 | email/旁路语义 | 未形成同等对照 | gRPC 快速失败并降级 | HTTP 挂起到 deadline 后才降级 | 重点验证 orders 下游 timeout 防御 |
@@ -261,34 +299,29 @@ Sock Shop、P02、P08、P09 的 pending 审核材料不自动进入知识库。
 防御语义、恢复和观测能力。`reporting/projects_matrix.md`、各项目实验报告和
 `docs/EXPERIMENT_CATALOG.md` 是入口。
 
-### 9.2 选择方法/ChaosEater 对照
+### 9.2 ChaosEater 正式对照
 
-审查修复已完成工具层的 fail-closed、universe 对齐、provenance、分类和清理回归。
-已有重算和 ChaosEater 分析对照已归档，但最终方法对比实验尚未完成。当前证据只能
-支持“不同方法的覆盖层次和输出形态不同”，不能写“某方法显著优于其他方法”。
-该轨道暂缓，不纳入当前论文的正式 superiority 结论；后续需要重新冻结候选池、
-统一 oracle、完成独立真值和项目聚类统计后再恢复。
+历史 ChaosEater 运行、`ChaosEater-adapter` 和覆盖层次分析已归档，但完整官方
+ChaosEater 的真实部署、候选生成、故障注入、业务 oracle、恢复和审计尚未完成。
+该轨道是下一阶段正式实验，不进入当前论文的主线结果。adapter 不能替代官方完整
+方法，也不能支持 ChaosAtlas 的总体优越性结论。
 
-### 9.3 知识库选择-only 消融
+### 9.3 same-pool/预选候选池冻结材料
 
-- 当前修正版完成 36/36 条 selection records，12 个 leakage audit 通过，但这只是
-  协议准备和静态选择材料，不是完成的运行时消融实验；
-- SOCIALNET formal protected-waste：blind 0.433、generic 0.200、full-pre 0.033；
-- ESHOP 没有 protected oracle，相关比例不具解释力；
-- ESHOP/SOCIALNET formal pool 实际为 40/30，不符合原预注册 48；
-- Gate 0 已验证，Gate 1/2 仍为冻结待人工审查，后续 Gate 3-6 尚未完成；
-- ESHOP 环境缺少可用部署入口，SOCIALNET 受 CoreDNS/selector mismatch 阻断；
-- 没有可写成“运行时 weakness discovery 提升”或“跨项目优越性”的证据。
-
-该轨道暂缓，当前论文不报告其正式效果量。已有结果只能作为协议状态和描述性材料，
-不能写成“知识库让 LLM 普遍更强”；恢复时必须沿用冻结 prompt、seed、K、candidate pool
-和独立 oracle，不得事后重选口径。
+- same-pool、预选候选池和固定 mutation 选择实验已冻结；原始 prompt、candidate
+  pool、selection records、runtime reports 和 audit 文件全部保留。
+- 该轨道不再作为当前论文的主线比较，也不使用 80.0%、70.6% 等命中率支持知识库
+  有效性结论。
+- 如未来恢复，必须另行批准 protocol amendment；恢复后的结果也不能回写覆盖当前
+  主线数据。
 
 ### 9.4 当前论文冻结边界
 
-当前论文版本只使用已完成的主线运行证据、跨项目语义对照、Sock Shop 历史分层验证、
-知识卡结构和工具回归结果。当前 Sock Shop 两臂 PodKill、P02 RCA、P08/P09 pending
-材料和最终方法 head-to-head 对比均不能提前写成 superiority claim。
+当前论文版本优先使用：初始架构说明、三个真实项目的 issue 发现证据、Sock Shop
+完整方法与知识库消融的真实 discovery/runtime 证据，以及可回链的人工审核材料。
+`human_review=pending` 的运行可以作为阶段性证据保存，但不能自动进入知识库。
+旧 Sock Shop pilot、same-pool/预选池结果、P02/P08/P09 等非主线 pending 材料和
+ChaosEater 历史对照不得写成当前方法 superiority 结论。
 
 ## 10. 报告与对外问题
 
@@ -309,20 +342,20 @@ Docker Desktop/WSL2 `ebtables`、本地镜像构建和 manifest 适配属于环�
 4. HTTPChaos 在当前 WSL2 内核上仍被 `ebtables` 前置条件阻断。
 5. 一些 Online Boutique/OTel 卡片的 `source_yaml` 是 generated candidate，因此 validator 保留 warning。
 6. 历史报告的卡片数量可能低于当前索引数量；以当前 `index.json` 和 validation report 为准。
-7. 知识库消融和最终方法对比尚未完成，当前只保留为 `parked_future_work`，不能提前写成正式结论。
+7. Sock Shop Full 分母已复核为 114/96/88，YAML15 Ablation 已完成 51/46/9；ChaosEater 五次复现摘要尚缺统一机器 manifest，因此三方法同层公平比较仍未完成。
 8. 工作区有大量用户生成的未跟踪/修改文件和临时目录，不是干净 release branch。
 
 ## 12. 论文材料建议
 
 建议论文按以下顺序组织：
 
-1. 方法：TestNode 抽象、局部影响子图、适用性门禁和三阶段测量；
-2. 工程实现：选择器、变异器、runner、分类器、知识库和停止规则；
-3. 主案例：Train Ticket Station 延迟边界；
-4. 跨项目对照：Online Boutique、OTel Demo 与 Sock Shop 的不同下游语义、观测证据和 ChaosEater 分层覆盖；
-5. 评估：重复实验、延迟/错误/恢复/证据完整度，不使用未经注册的总分；
-6. 消融：当前版本暂不纳入正式结果，只在未来工作中说明知识可见性消融协议；
-7. 威胁与限制：项目数量、环境、SLO、oracle、样本量和协议偏差。
+1. 初始方法：TestNode 抽象、局部影响子图、适用性门禁、证据链和知识库；
+2. 三项目能力验证：Online Boutique、OpenTelemetry Demo、Sock Shop 的真实 issue 发现；
+3. 方法改进与 Sock Shop 消融：完整方法与知识库消融的自主假设和真实运行结果；
+4. Train Ticket 历史闭环：Station 延迟边界、客户端/服务端时间线和适用性分类；
+5. 评估与限制：实际注入覆盖、issue/weakness、恢复/清理、观测完整度和审核状态；
+6. 后续工作：完整官方 ChaosEater 的正式真实对照；
+7. 威胁与限制：项目数量、环境、SLO、oracle、样本量和阶段性 protocol 边界。
 
 论文每个数字都应回链到 `.json`/`.csv`/ledger，再链接人读报告；每个 defense
 claim 都应有源码合同、运行时间线或明确 SLO 证据。
@@ -353,11 +386,17 @@ P08/P03/P06 的历史准备材料保留在十项目 ledger 中但不进入本批
 - 记录 p50/p95、错误率、客户端/服务端完成时间、重启、清理和观测覆盖；
 - 将平台 blocked、not reachable、unknown 单独作为结果类。
 
-### P1：暂缓知识库消融和最终方法对比
+### P1：完成主线证据锁定
 
-- 保留 protocol、snapshot、prompt、selection record 和 audit 结果，不删除、不并入当前论文结论；
-- 后续恢复时先由人工批准 amendment，重新确认项目边界、candidate pool、prompt、seed、K 和 oracle；
-- 完成独立真值、环境门禁、Gate 1-6 和项目聚类统计后，再决定是否进入论文补充实验。
+- 锁定三个项目真实 issue 证据和 Sock Shop 完整方法/消融的最终 discovery/runtime 台账；
+- 分离生成假设、未注入、门禁阻断、已注入、重复完成、唯一 issue、稳定 weakness 和根因审核状态；
+- 不把 same-pool/预选池文件重新引入主线统计。
+
+### P1：准备 ChaosEater 正式对照
+
+- 单独建立官方完整 ChaosEater 的真实部署和业务 oracle 协议；
+- 完成真实注入、恢复、清理、证据审核后，再决定是否作为论文扩展实验；
+- 现有历史 ChaosEater 和 adapter 材料只作为冻结背景，不替代正式第三臂。
 
 ### P2：扩展业务路径
 

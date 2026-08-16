@@ -1,0 +1,31 @@
+2026-08-16T06:27:38.506+0000 I CONTROL  [initandlisten] MongoDB starting : pid=1 port=27017 dbpath=/data/db-users 64-bit host=user-db-874ffcd78-kjps7
+2026-08-16T06:27:38.506+0000 I CONTROL  [initandlisten] db version v3.2.10
+2026-08-16T06:27:38.506+0000 I CONTROL  [initandlisten] git version: 79d9b3ab5ce20f51c272b4411202710a082d0317
+2026-08-16T06:27:38.506+0000 I CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1t  3 May 2016
+2026-08-16T06:27:38.506+0000 I CONTROL  [initandlisten] allocator: tcmalloc
+2026-08-16T06:27:38.506+0000 I CONTROL  [initandlisten] modules: none
+2026-08-16T06:27:38.506+0000 I CONTROL  [initandlisten] build environment:
+2026-08-16T06:27:38.506+0000 I CONTROL  [initandlisten]     distmod: debian81
+2026-08-16T06:27:38.506+0000 I CONTROL  [initandlisten]     distarch: x86_64
+2026-08-16T06:27:38.506+0000 I CONTROL  [initandlisten]     target_arch: x86_64
+2026-08-16T06:27:38.506+0000 I CONTROL  [initandlisten] options: { config: "/etc/mongodb.conf", storage: { dbPath: "/data/db-users", mmapv1: { smallFiles: true } } }
+2026-08-16T06:27:38.509+0000 I -        [initandlisten] Detected data files in /data/db-users created by the 'wiredTiger' storage engine, so setting the active storage engine to 'wiredTiger'.
+2026-08-16T06:27:38.509+0000 I STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=17G,session_max=20000,eviction=(threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000),checkpoint=(wait=60,log_size=2GB),statistics_log=(wait=0),
+2026-08-16T06:27:38.833+0000 W STORAGE  [initandlisten] Detected configuration for non-active storage engine mmapv1 when current storage engine is wiredTiger
+2026-08-16T06:27:38.835+0000 I FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory '/data/db-users/diagnostic.data'
+2026-08-16T06:27:38.835+0000 I NETWORK  [HostnameCanonicalizationWorker] Starting hostname canonicalization worker
+2026-08-16T06:27:38.835+0000 I NETWORK  [initandlisten] waiting for connections on port 27017
+2026-08-16T06:27:39.809+0000 I NETWORK  [initandlisten] connection accepted from 10.244.2.156:57556 #1 (1 connection now open)
+2026-08-16T06:27:42.748+0000 I NETWORK  [conn1] end connection 10.244.2.156:57556 (0 connections now open)
+2026-08-16T06:27:44.130+0000 I NETWORK  [initandlisten] connection accepted from 10.244.2.156:45420 #2 (1 connection now open)
+2026-08-16T06:27:44.131+0000 I NETWORK  [initandlisten] connection accepted from 10.244.2.156:45436 #3 (2 connections now open)
+2026-08-16T06:27:44.131+0000 I NETWORK  [initandlisten] connection accepted from 10.244.2.156:45446 #4 (3 connections now open)
+2026-08-16T06:27:44.131+0000 I NETWORK  [initandlisten] connection accepted from 10.244.2.156:45448 #5 (4 connections now open)
+2026-08-16T06:49:20.773+0000 I NETWORK  [conn2] end connection 10.244.2.156:45420 (3 connections now open)
+2026-08-16T06:49:20.773+0000 I NETWORK  [conn4] end connection 10.244.2.156:45446 (3 connections now open)
+2026-08-16T06:49:20.773+0000 I NETWORK  [conn3] end connection 10.244.2.156:45436 (3 connections now open)
+2026-08-16T06:49:20.773+0000 I NETWORK  [conn5] end connection 10.244.2.156:45448 (3 connections now open)
+2026-08-16T06:49:22.053+0000 I NETWORK  [initandlisten] connection accepted from 10.244.2.156:59034 #6 (1 connection now open)
+2026-08-16T06:49:23.066+0000 I INDEX    [conn6] build index on: users.customers properties: { v: 1, unique: true, key: { username: 1 }, name: "username_1", ns: "users.customers", background: true }
+2026-08-16T06:49:23.066+0000 I INDEX    [conn6] build index done.  scanned 3 total records. 0 secs
+2026-08-16T06:53:46.365+0000 I NETWORK  [initandlisten] connection accepted from 10.244.2.156:54666 #7 (2 connections now open)

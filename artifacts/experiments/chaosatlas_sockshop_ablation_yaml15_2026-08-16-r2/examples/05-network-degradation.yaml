@@ -1,0 +1,22 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: yaml15-example
+  namespace: target-namespace
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+    - target-namespace
+    labelSelectors:
+      app: target-workload
+  direction: both
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - target-namespace
+      labelSelectors:
+        app: target-workload
+  duration: 75s

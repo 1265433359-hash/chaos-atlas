@@ -1,0 +1,33 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 3905,
+    "completion_tokens": 132,
+    "total_tokens": 4037,
+    "prompt_tokens_details": {
+      "cached_tokens": 896
+    },
+    "prompt_cache_hit_tokens": 896,
+    "prompt_cache_miss_tokens": 3009
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-009",
+      "target_service": "queue-master",
+      "action_or_target": "pod-kill",
+      "call_chain_position": "queue-master in order processing pipeline",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "queue-master",
+        "pod-kill",
+        "order processing",
+        "read-only golden journey"
+      ],
+      "rationale": "Killing queue-master tests resilience of order processing pipeline, which may impact the authenticated orders journey if order submission is involved."
+    }
+  }
+}

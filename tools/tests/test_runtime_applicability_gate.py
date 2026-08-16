@@ -165,6 +165,82 @@ class RuntimeGateTest(unittest.TestCase):
             result = gate.daemon_prerequisite("HTTPChaos", ["daemon"])
         self.assertEqual("pass", result["status"])
 
+    def test_http_prerequisite_accepts_all_daemons_with_read_only_capability_probe(self) -> None:
+        def kubectl(args, timeout=30):
+            if args[0] == "logs":
+                return 0, "ordinary daemon log", ""
+            if args[0] == "exec":
+                return 0, "HTTPCHAOS_CAPABILITY_OK", ""
+            raise AssertionError(args)
+
+        with patch.object(gate, "run_kubectl", side_effect=kubectl):
+            result = gate.daemon_prerequisite("HTTPChaos", ["daemon-a", "daemon-b"])
+
+        self.assertEqual("pass", result["status"])
+        self.assertEqual("read_only_daemon_capability_probe", result["evidence_source"])
+
+    def test_http_prerequisite_blocks_when_any_daemon_capability_probe_fails(self) -> None:
+        def kubectl(args, timeout=30):
+            if args[0] == "logs":
+                return 0, "ordinary daemon log", ""
+            if args[0] == "exec" and args[3] == "daemon-a":
+                return 0, "HTTPCHAOS_CAPABILITY_OK", ""
+            if args[0] == "exec" and args[3] == "daemon-b":
+                return 1, "", "missing xt_TPROXY"
+            raise AssertionError(args)
+
+        with patch.object(gate, "run_kubectl", side_effect=kubectl):
+            result = gate.daemon_prerequisite("HTTPChaos", ["daemon-a", "daemon-b"])
+
+        self.assertEqual("blocked", result["status"])
+        self.assertEqual("http_tproxy_positive_evidence_missing", result["blocker"])
+
+    def test_http_target_port_mismatch_is_an_explicit_error_with_other_blocker(self) -> None:
+        content = """apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: bad-http-target
+  namespace: chaosatlas-sock-shop
+spec:
+  mode: one
+  selector:
+    namespaces: [chaosatlas-sock-shop]
+    labelSelectors:
+      name: catalogue-db
+  target: Request
+  port: 80
+  path: /catalogue
+  delay: 500ms
+  duration: 30s
+"""
+
+        def kubectl(args: list[str], timeout: int = 20):
+            if args[:2] == ["get", "crd"]:
+                return 0, "crd", ""
+            if args and args[0] == "logs":
+                return 0, "ordinary daemon log", ""
+            return 1, "", 'Error from server (NotFound): httpchaos "bad-http-target" not found'
+
+        pod = {
+            **READY_POD,
+            "metadata": {"namespace": "chaosatlas-sock-shop", "name": "catalogue-db-0"},
+            "spec": {"containers": [{"ports": [{"containerPort": 3306}]}]},
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "mutation.yaml"
+            path.write_text(content, encoding="utf-8")
+            with patch.object(gate, "run_kubectl", side_effect=kubectl), patch.object(
+                gate,
+                "chaos_components",
+                return_value=({"ready": True, "controller_pods": ["controller"], "daemon_pods": ["daemon"]}, []),
+            ), patch.object(gate, "target_pods", return_value=([pod], [])):
+                result = gate.check_mutation(path)
+
+        self.assertEqual("blocked", result["decision"])
+        self.assertFalse(result["checks"]["target_port_exists"])
+        self.assertIn("target_port_missing:80", result["errors"])
+        self.assertIn("http_tproxy_positive_evidence_missing", result["errors"])
+
     def test_http_prerequisite_negation_fragments_never_pass(self) -> None:
         # Regression: the positive-evidence regex must not match negated
         # phrases; a daemon reporting that tproxy is NOT available must never
@@ -183,6 +259,45 @@ class RuntimeGateTest(unittest.TestCase):
                 result = gate.daemon_prerequisite("HTTPChaos", ["daemon"])
                 self.assertEqual("blocked", result["status"], fragment)
                 self.assertEqual("http_tproxy_positive_evidence_missing", result["blocker"], fragment)
+
+    def test_schedule_uses_nested_podchaos_scope_for_runtime_gate(self) -> None:
+        content = """apiVersion: chaos-mesh.org/v1alpha1
+kind: Schedule
+metadata:
+  name: scheduled-fault
+  namespace: chaosatlas-sock-shop
+spec:
+  type: PodChaos
+  schedule: '@every 1s'
+  podChaos:
+    action: pod-kill
+    mode: one
+    selector:
+      namespaces: [chaosatlas-sock-shop]
+      labelSelectors:
+        name: payment
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "schedule.yaml"
+            path.write_text(content, encoding="utf-8")
+
+            def kubectl_for_schedule(args: list[str], timeout: int = 20):
+                if args[:2] == ["get", "crd"]:
+                    return 0, "crd", ""
+                return 1, "", "not found"
+
+            with patch.object(gate, "run_kubectl", side_effect=kubectl_for_schedule), patch.object(
+                gate,
+                "chaos_components",
+                return_value=(
+                    {"ready": True, "controller_pods": ["controller"], "daemon_pods": ["daemon"]},
+                    [],
+                ),
+            ), patch.object(gate, "target_pods", return_value=([READY_POD], [])):
+                result = gate.check_mutation(path)
+        self.assertNotEqual("blocked", result["decision"])
+        self.assertEqual("Schedule", result["kind"])
+        self.assertEqual({"name": "payment"}, result["selector"]["labelSelectors"])
 
     def test_check_mutation_malformed_yaml_is_blocked_not_crash(self) -> None:
         # Regression: yaml.safe_load failures must produce a blocked decision

@@ -1,0 +1,33 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 7377,
+    "completion_tokens": 146,
+    "total_tokens": 7523,
+    "prompt_tokens_details": {
+      "cached_tokens": 4352
+    },
+    "prompt_cache_hit_tokens": 4352,
+    "prompt_cache_miss_tokens": 3025
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-040",
+      "target_service": "session-db",
+      "action_or_target": "abort",
+      "call_chain_position": "session storage for authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "session-db",
+        "abort",
+        "authentication",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting HTTP abort faults on session-db tests resilience of session storage by simulating server errors or connection resets, which could cause login failures or session loss, directly impacting the demo login and authenticated orders journey."
+    }
+  }
+}

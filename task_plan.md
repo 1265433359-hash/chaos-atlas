@@ -1,5 +1,23 @@
 # 真实 YAML 测试节点知识库与项目影响子图计划
 
+## Sock Shop Ablation YAML15 重做（2026-08-16）
+- 目标：按五类明确标注各 3 个真实 YAML，作为新版 Ablation 的唯一新增前置知识；保持无知识库、无项目调用链证据、无置信度、LLM 自停和 Full discovery wall-clock 硬上限，重做 discovery 与 runtime。
+- 阶段 1：冻结设计、选择规则和实现计划。状态：complete。
+- 阶段 2：实现 YAML15 确定性选择、结构化去敏、双 hash 和输入审计。状态：complete（r1 审计发现嵌套 URL 泄漏并保留为失败证据；r2 修复后 15/15 hash 一致、敏感扫描 0 命中、确定性复跑一致）。
+- 阶段 3：扩展独立 `chaosatlas-ablation-yaml15` discovery 协议并完成离线回归。状态：complete（14 个 focused tests 通过；fake discovery 自停并由公共编译器生成 4/4 候选）。
+- 阶段 4：运行 DeepSeek discovery、自去重、公共编译器和静态 gate。状态：in_progress（模型调用前全量相关回归与输入审计中）。
+- 阶段 5：对所有 gate 通过的唯一 family 各运行两次，逐轮确认恢复、cleanup、washout 和全局无残留。状态：pending。
+- 阶段 6：替换旧 Ablation 正式分栏，与 Full 冻结口径比较，生成 pending 审核并选择性提交。状态：pending。
+- 边界：不重跑 Full discovery 或既有 Full mutation；YAML15 选择不使用 runtime outcome；旧 Ablation 保留但不叠加；不更新知识库；不覆盖已有实验目录。
+
+## Sock Shop 三方法阶段结果归档（2026-08-16）
+- 目标：按当前证据整理 `ChaosAtlas-full`、最终版 `ChaosAtlas-ablation` 和 ChaosEater 原生结果，冻结统计口径、问题覆盖关系与证据边界，为后续重做 Ablation 保留可替换入口。
+- 阶段 1：复核 Full 全部 completed runtime 报告，按 `mutation_id + replicate` 取最新完成记录并统计稳定/不稳定/无影响。状态：complete（114 个冻结 family 均有静态适用性处置；96 个进入 runtime cohort，其中 88 个完成 176 个注入重复槽位、8 个 DNSChaos 被平台 gate 阻断；15 个稳定、3 个不稳定、70 个未观察到弱点；另 18 个被静态 gate 拒绝）。
+- 阶段 2：复核当前最终 Ablation 与 ChaosEater 证据，区分正式结果、exploratory 结果和仅有会话摘要但尚缺统一机器台账的结果。状态：complete。
+- 阶段 3：生成阶段对比报告和机器可读摘要，更新论文主线、项目总览及归档索引。状态：complete。
+- 阶段 4：执行 JSON/Markdown 引用、数字一致性和敏感信息检查；审核 diff。状态：complete（JSON 算术一致、6/6 证据路径存在、敏感模式 0 命中；未提交）。
+- 冻结边界：same-pool、预选池和早期 pilot 不进入本轮统计；Ablation 标记为待重做；`human_review=pending`、`knowledge_base_updated=false`；不重跑实验、不调用外部模型、不读取密钥。
+
 ## Git 上传前整理归档（2026-08-14）
 - 目标：把当前 ChaosAtlas 阶段成果整理为可上传前复核的仓库状态，明确提交范围、排除临时目录、保留证据边界，并形成上传准备清单。
 - 阶段 1：核对本地分支、领先提交、tracked/untracked 状态，区分已提交证据、未提交归档文件、临时验证目录和大体量 runtime 目录。状态：complete。
@@ -61,6 +79,10 @@
 ## 本轮错误记录
 | 错误 | 处理 |
 |---|---|
+| 2026-08-16 首次枚举规划文件的 PowerShell `foreach` 后直接接管道，触发 `EmptyPipeElement` 解析错误 | 改用 `Get-ChildItem | Where-Object` 的简单管道，未重复原失败命令；未修改任何文件或集群状态 |
+| 2026-08-16 首次敏感信息扫描的 PowerShell 正则引号转义失败，命令在解析阶段退出 | 改用 `Select-String` 的模式数组逐项扫描；最终 0 命中，未执行任何写入或外部调用 |
+| 2026-08-16 首次完整验证被 Git 的 LF/CRLF stderr 提示打断；第二次 `diff --check` 把 CR 误报为行尾空格 | 使用只影响本次只读校验的 `core.whitespace=cr-at-eol`，最终完整校验 11/11 通过；未改 Git 配置 |
+| 2026-08-16 首次生成 18-family 明细时再次在 PowerShell `foreach` 后直接接管道，触发 `EmptyPipeElement` | 改为先收集 `$result` 数组再管道格式化，成功确认 18 个均为静态 gate 拒绝；未触发实验 |
 | 全量 pytest 首次运行时 2 个使用 `tmp_path` 的测试因 Windows `AppData\\Local\\Temp\\pytest-of-*` 权限拒绝而在 setup 阶段失败 | 使用仓库内隔离 `--basetemp .pytest-tmp-archive-run` 重跑，2/2 通过；其余 247 个测试通过 |
 | 知识库校验对 Online Boutique 8 张卡、OpenTelemetry Demo 2 张卡给出 `source_yaml` 不存在 warning | 这些卡明确使用 generated candidate；保留 warning，不把它升级为错误 |
 
@@ -404,3 +426,21 @@ Constraints:
 - [complete] Generate the first offline artifact directory `artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r1/`.
 - [in_progress] Run focused regression over the new modules, scan for sensitive data, validate diffs, and decide whether to proceed to authorized DeepSeek-backed discovery/runtime.
 - Boundary: do not touch Sock Shop Kubernetes until the offline pipeline and verification finish; keep `human_review=pending` and `knowledge_base_updated=false`.
+# 2026-08-16 Sock Shop YAML15 Ablation closure
+
+- [x] Freeze and audit five labeled YAML categories with three examples each.
+- [x] Run independent DeepSeek discovery under the Full discovery time cap.
+- [x] Deduplicate 458 hypotheses into 51 families and gate 46 runtime-ready families.
+- [x] Fix the post-washout target readiness gap with a RED/GREEN regression test.
+- [x] Complete 92 runtime report slots without rerunning 53 completed slots.
+- [x] Verify lifecycle fields, mutation hashes, diagnostic hashes and empty Chaos residue.
+- [x] Publish pending machine/Chinese review and replace the superseded Ablation headline.
+
+## 2026-08-16 YAML15 review hardening
+
+- [x] Reproduce and fix gate exclusion status, discovery hard-deadline, and DeepSeek retry-deadline findings with RED/GREEN tests.
+- [x] Add `target_ready=false` regression coverage and preserve the 53 legacy / 39 current-schema evidence boundary.
+- [x] Freeze the Full canonical 38-family batch with 76 report SHA-256 entries and combine it with the audited route-aware 50-family batch.
+- [x] Correct protocol metadata, source hashes, sensitive-scan status, and Chinese review wording while keeping human review pending.
+- [x] Verify affected tests, full-suite residual failures, cluster readiness, empty Chaos residue, JSON/SHA consistency, and Git diff hygiene.
+- [in_progress] Selectively stage, commit, and push only the YAML15 closure and necessary review fixes.

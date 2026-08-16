@@ -1,0 +1,33 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 4013,
+    "completion_tokens": 135,
+    "total_tokens": 4148,
+    "prompt_tokens_details": {
+      "cached_tokens": 1024
+    },
+    "prompt_cache_hit_tokens": 1024,
+    "prompt_cache_miss_tokens": 2989
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-010",
+      "target_service": "shipping",
+      "action_or_target": "pod-kill",
+      "call_chain_position": "shipping service in order fulfillment",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "shipping",
+        "pod-kill",
+        "order fulfillment",
+        "read-only golden journey"
+      ],
+      "rationale": "Killing the shipping pod tests resilience of the shipping service, which is a dependency for order fulfillment and may impact the authenticated orders journey if shipping is invoked."
+    }
+  }
+}

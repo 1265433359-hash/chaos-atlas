@@ -1,0 +1,70 @@
+{
+  "schema_version": "sock-shop-ablation-yaml15-discovery-v1",
+  "method": "chaosatlas-ablation-yaml15",
+  "status": "completed",
+  "self_stop": true,
+  "time_cap_hit": false,
+  "stop_reason": "self_stop",
+  "time_cap_seconds": 1419.047,
+  "seed": 0,
+  "input_sha256": "4b47ff8ab2252ca64bf911848693104e893810bc8d2547618a984e7dac08f8bd",
+  "prompt_protocol_sha256": "03529ffa1e75e2dcc79c1f0ee2910efee9e63d1a73facb93e3de910c4c1afa8f",
+  "prompt_protocol": {
+    "schema_version": "sock-shop-ablation-yaml15-prompt-v1",
+    "classification_examples_allowed": true,
+    "examples_per_category": 3,
+    "confidence_allowed": false,
+    "full_stop_trace_allowed": false,
+    "knowledge_projection_allowed": false,
+    "project_call_chain_allowed": false,
+    "stop_control": "llm_self_stop_with_full_wall_clock_cap"
+  },
+  "yaml15_provenance": {
+    "manifest_sha256": "d6b6f41fa76bf8598448765e35490b8906b32e319507b1edc221c0525fce367b",
+    "prompt_sha256": "36ca40fc1d0d2a45d848f959f0fd754ab2e894f475dbbb8012bf0e700a2d31df",
+    "selection_fingerprint_sha256": "48884d9c75014845dd0fe1f6bd20d703c1577cdca6ae5ec2d4bdcd717c1409cf"
+  },
+  "hypotheses": [
+    {
+      "call_chain_position": "entry",
+      "target_service": "carts",
+      "id": "ablation-h-1",
+      "action_or_target": "pod-kill",
+      "rationale": "deterministic offline ablation discovery",
+      "call_chain_position_source": "model_inference"
+    },
+    {
+      "call_chain_position": "business-service",
+      "target_service": "carts-db",
+      "id": "ablation-h-2",
+      "action_or_target": "delay",
+      "rationale": "deterministic offline ablation discovery",
+      "call_chain_position_source": "model_inference"
+    },
+    {
+      "call_chain_position": "business-service",
+      "target_service": "catalogue",
+      "id": "ablation-h-3",
+      "action_or_target": "pod-kill",
+      "rationale": "deterministic offline ablation discovery",
+      "call_chain_position_source": "model_inference"
+    },
+    {
+      "call_chain_position": "business-service",
+      "target_service": "catalogue-db",
+      "id": "ablation-h-4",
+      "action_or_target": "delay",
+      "rationale": "deterministic offline ablation discovery",
+      "call_chain_position_source": "model_inference"
+    }
+  ],
+  "timing": {
+    "discovery_wall_clock_seconds": 0.0,
+    "model_calls": 5,
+    "prompt_tokens": 8,
+    "completion_tokens": 12,
+    "total_tokens": 21
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 3695,
+    "completion_tokens": 113,
+    "total_tokens": 3808,
+    "prompt_tokens_details": {
+      "cached_tokens": 768
+    },
+    "prompt_cache_hit_tokens": 768,
+    "prompt_cache_miss_tokens": 2927
+  },
+  "message": {
+    "stop": false,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-007",
+      "target_service": "payment",
+      "action_or_target": "pod-kill",
+      "call_chain_position": "payment service in authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "payment",
+        "pod-kill",
+        "read-only golden journey"
+      ],
+      "rationale": "Killing the payment pod tests resilience of the payment service, which is a dependency for the authenticated orders journey."
+    }
+  }
+}

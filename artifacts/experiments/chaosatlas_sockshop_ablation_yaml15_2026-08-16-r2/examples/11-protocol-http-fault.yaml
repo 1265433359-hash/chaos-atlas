@@ -1,0 +1,18 @@
+kind: HTTPChaos
+apiVersion: chaos-mesh.org/v1alpha1
+metadata:
+  namespace: target-namespace
+  name: yaml15-example
+spec:
+  selector:
+    namespaces:
+    - target-namespace
+    labelSelectors:
+      app: target-workload
+  mode: one
+  target: Response
+  replace:
+    code: 404
+  port: 12346
+  path: /example
+  duration: 5m

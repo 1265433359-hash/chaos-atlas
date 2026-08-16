@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: yc-hyp-207-bd3d6008
+  namespace: chaosatlas-sock-shop
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: catalogue-db
+  duration: 30s
+  stressors:
+    memory:
+      workers: 1
+      size: 256MB

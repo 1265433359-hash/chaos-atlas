@@ -1,0 +1,34 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 46872,
+    "completion_tokens": 143,
+    "total_tokens": 47015,
+    "prompt_tokens_details": {
+      "cached_tokens": 43904
+    },
+    "prompt_cache_hit_tokens": 43904,
+    "prompt_cache_miss_tokens": 2968
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-378",
+      "target_service": "rabbitmq",
+      "action_or_target": "delay",
+      "call_chain_position": "message broker for order processing",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "rabbitmq",
+        "network-delay",
+        "message broker",
+        "order processing",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting network delay on rabbitmq tests resilience of the message broker under latency, which could impact the authenticated orders journey if order submission is involved, though the oracle is read-only."
+    }
+  }
+}

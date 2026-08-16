@@ -1,0 +1,32 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 55415,
+    "completion_tokens": 142,
+    "total_tokens": 55557,
+    "prompt_tokens_details": {
+      "cached_tokens": 52480
+    },
+    "prompt_cache_hit_tokens": 52480,
+    "prompt_cache_miss_tokens": 2935
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-451",
+      "target_service": "front-end",
+      "action_or_target": "memory",
+      "call_chain_position": "entry point for all user interactions",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "front-end",
+        "memory-pressure",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting memory stress on the front-end service tests resilience of the entry point under resource pressure, potentially causing slowdowns or OOM kills that could impact the entire business oracle path including home, catalogue, login, and orders."
+    }
+  }
+}

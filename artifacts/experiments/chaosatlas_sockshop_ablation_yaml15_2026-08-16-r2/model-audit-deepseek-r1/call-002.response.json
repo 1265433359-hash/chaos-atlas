@@ -1,0 +1,31 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 3183,
+    "completion_tokens": 116,
+    "total_tokens": 3299,
+    "prompt_tokens_details": {
+      "cached_tokens": 0
+    },
+    "prompt_cache_hit_tokens": 0,
+    "prompt_cache_miss_tokens": 3183
+  },
+  "message": {
+    "stop": false,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-002",
+      "target_service": "catalogue",
+      "action_or_target": "delay",
+      "call_chain_position": "catalogue browse step in authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "catalogue",
+        "network-delay",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting network delay on the catalogue service tests resilience of the browse step, a critical path in the business oracle."
+    }
+  }
+}

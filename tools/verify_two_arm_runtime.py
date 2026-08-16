@@ -24,6 +24,7 @@ def verify_reports(roots: list[Path], *, expected: int) -> dict[str, Any]:
             if previous is None or (previous[1].get("status") != "completed" and value.get("status") == "completed"):
                 reports[key] = (path, value)
     failures: list[dict[str, Any]] = []
+    report_evidence: list[dict[str, Any]] = []
     classifications: dict[str, int] = {}
     methods: dict[str, int] = {}
     for key, (path, report) in reports.items():
@@ -42,7 +43,8 @@ def verify_reports(roots: list[Path], *, expected: int) -> dict[str, Any]:
             (report.get("human_review") == "pending", "human_review"),
             (report.get("knowledge_base_updated") is False, "knowledge_base_updated"),
         )
-        reasons.extend(name for ok, name in checks if not ok)
+        failed_lifecycle_checks = [name for ok, name in checks if not ok]
+        reasons.extend(failed_lifecycle_checks)
         mutation = report.get("mutation") or {}
         mutation_path = Path(str(mutation.get("path", "")))
         if not mutation_path.is_file():
@@ -64,9 +66,22 @@ def verify_reports(roots: list[Path], *, expected: int) -> dict[str, Any]:
         classifications[classification] = classifications.get(classification, 0) + 1
         method = str(report.get("arm") or report.get("method_id"))
         methods[method] = methods.get(method, 0) + 1
+        report_evidence.append(
+            {
+                "path": str(path).replace("\\", "/"),
+                "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                "project_id": report.get("project_id"),
+                "seed": report.get("seed"),
+                "method": method,
+                "mutation_id": report.get("mutation_id"),
+                "replicate": report.get("replicate"),
+                "classification": classification,
+                "lifecycle_valid": not failed_lifecycle_checks,
+            }
+        )
     if len(reports) != expected:
         failures.append({"report": "<aggregate>", "reasons": [f"expected_reports={expected},actual={len(reports)}"]})
-    return {"schema_version": "two-arm-runtime-verification-v1", "status": "passed" if not failures else "failed", "reports": len(reports), "expected": expected, "methods": methods, "classifications": classifications, "failures": failures, "human_review": "pending", "knowledge_base_updated": False}
+    return {"schema_version": "two-arm-runtime-verification-v1", "status": "passed" if not failures else "failed", "reports": len(reports), "expected": expected, "methods": methods, "classifications": classifications, "report_evidence": sorted(report_evidence, key=lambda item: item["path"]), "failures": failures, "human_review": "pending", "knowledge_base_updated": False}
 
 
 def main() -> int:

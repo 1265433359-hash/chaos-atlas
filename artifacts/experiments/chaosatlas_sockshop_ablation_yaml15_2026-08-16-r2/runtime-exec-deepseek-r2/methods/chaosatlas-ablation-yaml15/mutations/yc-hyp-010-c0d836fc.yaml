@@ -1,0 +1,13 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: yc-hyp-010-c0d836fc
+  namespace: chaosatlas-sock-shop
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: shipping
+  action: pod-kill

@@ -398,3 +398,71 @@ Artifact checks found nine classification-index mismatches rather than three; al
   Sock Shop has no usable Zipkin backend in this frozen topology; every
   diagnostics set records the trace state as unavailable. `human_review`
   remains `pending` and `knowledge_base_updated` remains `false`.
+
+# Sock Shop route-aware remaining families finding (2026-08-16)
+
+- The route-aware HTTP rebuild matters: the mutations now target the actual
+  service ports and observed call paths, so the HTTP result is not based on
+  a generic port or wildcard route assumption.
+- Of the 32 HTTP reports, stable weaknesses were produced by HTTP abort on
+  `catalogue`, `orders`, and `user`; HTTP delay did not produce a stable
+  business failure. This is a business-oracle observation, not a claimed
+  implementation root cause.
+- Among the 68 completed Stress/Schedule reports, stable weaknesses were
+  observed for Schedule-wrapped `PodChaos` `pod-kill` on
+  `catalogue-db -> catalogue`, `catalogue -> front-end`,
+  `orders-db -> orders`, and `user -> front-end`. The `delay` token in the
+  hypothesis IDs is a legacy family label, not the nested Chaos Mesh action.
+  `user-db -> front-end` was mixed across the two replicates and is marked
+  unstable rather than counted as a real stable weakness.
+- The logs support bounded evidence such as catalogue reporting
+  `database connection error` during catalogue-db disruption and the
+  front-end reporting `Can't set headers after they are sent` in the same
+  run. These observations support the affected business path, but they do
+  not by themselves prove a particular Eureka, cache, registration, or
+  retry mechanism.
+- `zipkin.json` sidecars exist and hash correctly, but the frozen Sock Shop
+  topology has no usable Zipkin backend. They are therefore evidence of
+  trace unavailability, not positive trace attribution.
+- DNSChaos is explicitly classified as platform-blocked: Chaos Mesh could
+  not create `/etc/resolv.conf.chaos.bak` because `/etc/resolv.conf` was
+  read-only. It contributes zero business weaknesses and is not rerun.
+
+# Sock Shop 三方法阶段口径复核（2026-08-16）
+
+- Full 去重台账冻结 114 个 family，全部已有静态适用性处置。`runtime-remaining-route-aware` 的选择清单把其中 38 个已有完成证据的 family 与 58 个后续候选合并为 96 个 runtime cohort family；58 个后续候选中 8 个 DNSChaos 在业务注入前被平台 gate 阻断。其余 18 个是静态 gate failed：6 个 DB/中间件 HTTP abort、6 个 HTTP delay、6 个缺少正确 source->DNS-name 映射的 DNS 假设。
+- 对所有 native-full `runtime_reports` 按 `mutation_id + replicate` 选择最新 completed 报告，得到 88 个真正完成注入的 family、176 个重复槽位；全部 baseline、injection、recovery、cleanup 和 washout 字段通过。Full 结果为 15 个稳定 family、3 个一发性/混合 family、70 个两次均未观察到业务弱点的 family；另有 8 个 runtime platform-blocked 和 18 个 static gate rejected，没有未处置 family。
+- 15 个稳定 family 中，Schedule 的 4 个 `delay` 名称实际封装的是 `PodChaos/pod-kill`；另一个 `sock-pod-failure-catalogue-002` 的实际 action 也是 `pod-kill`。按故障作用目标合并这些直接/定时重复后，是 10 个问题面，不是 15 个互不相同的代码级 ISSUE。
+- 当前最终 Ablation discovery 生成 12 个假设；正式主结果是 catalogue-db PodKill 和 orders-db PodKill 两个稳定弱点。`hyp-003` user PodKill 是 exploratory 多跑结果，不进入正式分母。Full 的 15 个稳定 family 包含这两个可执行弱点，因此覆盖当前 Ablation 的 2/2。
+- ChaosEater 的两类阶段结论属于可用性测量层：front-end 单副本单点故障，以及 readiness/recovery 慢。Full 的业务 mutation 15-family 清单不应直接宣称包含这两个 availability issue；ChaosAtlas 的独立 availability 轨道有对应证据，但实验设计晚于已知 ChaosEater 结论，存在确认偏误边界。
+- Ablation 即将重做，因此当前 `15 vs 2 vs 2` 只能作为阶段性问题集合盘点，不能作为公平方法优越性统计。
+# 2026-08-16 Sock Shop Ablation YAML15
+
+- YAML15 r1 去敏审计发现 Schedule 内嵌 `statusCheck.http.url` 仍保留源域名，故 r1 禁止发送；r2 增加 URL 和 label key 归一化后敏感扫描 0 命中。
+- YAML15 r2 fingerprint 为 `48884d9c75014845dd0fe1f6bd20d703c1577cdca6ae5ec2d4bdcd717c1409cf`，prompt SHA-256 为 `36ca40fc1d0d2a45d848f959f0fd754ab2e894f475dbbb8012bf0e700a2d31df`；独立确定性复跑一致。
+- Full 时间硬上限的权威来源是 `runtime.../discovery/native-full.json` 的 `timing.generation_seconds=1419.047`，源文件 SHA-256 为 `5ea0f2331ca7cb27ce6c05e195d02d2a055078f74590540e57da11689c28a965`。
+- 新 discovery 输出的调用链位置只能标为 `model_inference` 或 `unknown`；后处理适配器保留 YAML15 已获得类别示例这一边界，不再错误标记为无分类可见性。
+- 用户与老师确认：新版 Ablation 在 discovery 前获得五类明确标注的真实 YAML，每类 3 个，共 15 个；LLM 自主停止，Full discovery wall-clock 为硬上限。
+- 该实验臂应命名为 `chaosatlas-ablation-yaml15`，因为它已获得类别标签，不能继续描述为“无分类 Ablation”。
+- YAML15 只补充故障语法和动作示例，不提供知识库、历史弱点、Sock Shop 调用链、Full 假设、置信度、停止轨迹或 runtime outcome。
+- 权威语料入口是 `raw_yaml/`：总数 1935，五类 runtime scope 共 1506；现有分类器可提取 kind、action、mode、selector、duration 和 intensity 静态特征。
+- 样本选择必须确定性且与结果无关；冻结原始与结构化去敏文本的 SHA-256。
+# 2026-08-16 Sock Shop YAML15 Ablation findings
+
+- DeepSeek self-stopped after 734.188 seconds and 458 calls, below the frozen 1419.047-second Full cap.
+- Independent normalization reduced 458 raw hypotheses to 51 families; 46 were executable and 5 database HTTP-abort families were compile-blocked.
+- Runtime completed 92/92 slots. Results are 9 stable weaknesses, 0 unstable families and 37 no-impact families.
+- Full and YAML15 Ablation overlap on 8 stable problem surfaces. Full-only surfaces are catalogue loss and partition; Ablation-only is user 500ms delay.
+- Full 15/88 versus Ablation 9/46 gives Fisher two-sided p=0.813213712; Wilson 95% intervals overlap, so no stable-rate superiority claim is supported.
+- All 92 mutation hashes and 552 diagnostic hashes match. Zipkin is unavailable by frozen profile, so no trace-root-cause claim is supported.
+- The initial NetworkChaos runner could complete while a probe-restarted target Pod remained NotReady. The runner now requires target Ready after washout; 39 continuation reports record target_ready=true.
+- The 53 reused completed reports retain the legacy schema but pass the original lifecycle/hash gates. Their results are not rewritten.
+- Git initially normalized evidence YAML from CRLF to LF and ignored `.log` files, which would have invalidated recorded hashes after clone. The formal r2 evidence tree is now `-text -eol`, ignored logs are force-added only for that tree, and staged-blob verification passes 92 mutation plus 552 diagnostic hashes.
+
+# 2026-08-16 YAML15 independent review follow-up
+
+- RED verification reproduced three review findings: compile exclusions were labeled plain `passed`; a model response arriving after the wall-clock deadline could be accepted as self-stop; and DeepSeek retries reused the initial timeout instead of enforcing an absolute request deadline.
+- Minimal fixes now pass 30 focused tests, including CLI success for `passed_with_exclusions`, post-response deadline precedence, retry deadline enforcement, and the existing target-ready failure behavior.
+- Full `15/88` is composed of two disjoint runtime evidence batches: the first 38 families are under `runtime-canonical-plan-r2` (`8 stable / 2 unstable / 28 no-impact`), and the later 50 are audited by route-aware r3 (`7 / 1 / 42`). The first batch now has a deterministic 76-report verification manifest with per-report SHA-256 plus a 38-family result review.
+- Independent review found that rounding the remaining discovery budget to milliseconds could turn `0.0004` into `0.0`, after which truthy fallback restored a 120-second request budget. The payload now preserves sub-millisecond budgets and the request wrapper treats only `None` as “no supplied deadline”; zero expires before opening a request.
+- Terminal discovery checkpoints now return unchanged on resume, preventing additional model calls or timing/token evidence drift. The stage review no longer labels the superseded 12-hypothesis Ablation as current, and final audit SHA labels now have an explicit one-to-one `source_paths` map.

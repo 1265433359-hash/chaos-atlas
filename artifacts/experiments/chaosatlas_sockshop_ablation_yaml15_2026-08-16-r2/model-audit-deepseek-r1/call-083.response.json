@@ -1,0 +1,33 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 12450,
+    "completion_tokens": 139,
+    "total_tokens": 12589,
+    "prompt_tokens_details": {
+      "cached_tokens": 9472
+    },
+    "prompt_cache_hit_tokens": 9472,
+    "prompt_cache_miss_tokens": 2978
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-083",
+      "target_service": "user",
+      "action_or_target": "pod-kill",
+      "call_chain_position": "authentication step in authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "user",
+        "pod-kill",
+        "authentication",
+        "read-only golden journey"
+      ],
+      "rationale": "Killing the user pod tests resilience of the authentication step, which is essential for the demo login and authenticated orders journey. This is a direct and impactful fault on a core service."
+    }
+  }
+}

@@ -1,0 +1,15 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: yaml15-example
+  namespace: target-namespace
+spec:
+  action: duplicate
+  mode: one
+  selector:
+    labelSelectors:
+      app: target-workload
+  duplicate:
+    duplicate: '40'
+    correlation: '25'
+  duration: 10s

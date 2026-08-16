@@ -1,0 +1,32 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 14779,
+    "completion_tokens": 142,
+    "total_tokens": 14921,
+    "prompt_tokens_details": {
+      "cached_tokens": 11776
+    },
+    "prompt_cache_hit_tokens": 11776,
+    "prompt_cache_miss_tokens": 3003
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-103",
+      "target_service": "front-end",
+      "action_or_target": "abort",
+      "call_chain_position": "entry point for all user interactions",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "front-end",
+        "abort",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting HTTP abort faults on the front-end service tests resilience of the entry point by simulating server errors or connection resets, which could directly impact the entire business oracle path including home, catalogue, login, and orders."
+    }
+  }
+}

@@ -1,0 +1,324 @@
+{
+  "schema_version": "sock-shop-r5-dedup-review-v1",
+  "selection_basis": {
+    "runtime_outcomes_used_for_selection": false,
+    "full_requires_two_strict_instance_completed_reports": true,
+    "confidence_threshold": 0.696238,
+    "sample_seed": 20260815,
+    "matched_sample_size": 10,
+    "full_high_confidence_with_existing_evidence": 10,
+    "ablation_only_pool": 11
+  },
+  "methods": {
+    "native-full": {
+      "denominator": 11,
+      "counts": {
+        "stable_weakness": 2,
+        "unstable": 1,
+        "no_impact": 8
+      },
+      "stable_weakness_rate": 0.18181818181818182,
+      "wilson_95_interval": [
+        0.05136768974608513,
+        0.4769805619608442
+      ],
+      "items": [
+        {
+          "hypothesis_id": "sock-pod-kill-front-end-110",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=front-end|call_chain_position=entry",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=front-end|call_chain_position=entry|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=front-end|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "sock-pod-kill-carts-db-113",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=carts-db|call_chain_position=data-dependency",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=carts-db|call_chain_position=data-dependency|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=carts-db|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "sock-pod-kill-catalogue-db-112",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=catalogue-db|call_chain_position=data-dependency",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=catalogue-db|call_chain_position=data-dependency|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=catalogue-db|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "classification": "stable_weakness"
+        },
+        {
+          "hypothesis_id": "sock-pod-kill-carts-104",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=carts|call_chain_position=business-service",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=carts|call_chain_position=business-service|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=carts|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "net-delay-frontend-catalogue-072",
+          "fault_family_key": "kind=NetworkChaos|action=delay|target=catalogue|call_chain_position=entry",
+          "mutation_instance_key": "kind=NetworkChaos|action=delay|target=catalogue|call_chain_position=entry|parameters=spec.action=delay|spec.delay.correlation=100|spec.delay.jitter=0ms|spec.delay.latency=500ms|spec.duration=30s|spec.mode=one|spec.selector.labelSelectors.name=catalogue|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "weakness_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "unstable"
+        },
+        {
+          "hypothesis_id": "sock-mem-catalogue-098",
+          "fault_family_key": "kind=StressChaos|action=memory|target=catalogue|call_chain_position=business-service",
+          "mutation_instance_key": "kind=StressChaos|action=memory|target=catalogue|call_chain_position=business-service|parameters=spec.duration=30s|spec.mode=one|spec.selector.labelSelectors.name=catalogue|spec.selector.namespaces[0]=chaosatlas-sock-shop|spec.stressors.memory.size=256MB|spec.stressors.memory.workers=1",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "net-partition-orders-shipping-065",
+          "fault_family_key": "kind=NetworkChaos|action=partition|target=shipping|call_chain_position=business-service",
+          "mutation_instance_key": "kind=NetworkChaos|action=partition|target=shipping|call_chain_position=business-service|parameters=spec.action=partition|spec.direction=to|spec.duration=30s|spec.mode=one|spec.selector.labelSelectors.name=shipping|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "net-delay-orders-shipping-060",
+          "fault_family_key": "kind=NetworkChaos|action=delay|target=shipping|call_chain_position=business-service",
+          "mutation_instance_key": "kind=NetworkChaos|action=delay|target=shipping|call_chain_position=business-service|parameters=spec.action=delay|spec.delay.correlation=100|spec.delay.jitter=0ms|spec.delay.latency=500ms|spec.duration=30s|spec.mode=one|spec.selector.labelSelectors.name=shipping|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "net-delay-orders-payment-054",
+          "fault_family_key": "kind=NetworkChaos|action=delay|target=payment|call_chain_position=business-service",
+          "mutation_instance_key": "kind=NetworkChaos|action=delay|target=payment|call_chain_position=business-service|parameters=spec.action=delay|spec.delay.correlation=100|spec.delay.jitter=0ms|spec.delay.latency=500ms|spec.duration=30s|spec.mode=one|spec.selector.labelSelectors.name=payment|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "net-delay-frontend-carts-050",
+          "fault_family_key": "kind=NetworkChaos|action=delay|target=carts|call_chain_position=entry",
+          "mutation_instance_key": "kind=NetworkChaos|action=delay|target=carts|call_chain_position=entry|parameters=spec.action=delay|spec.delay.correlation=100|spec.delay.jitter=0ms|spec.delay.latency=500ms|spec.duration=30s|spec.mode=one|spec.selector.labelSelectors.name=carts|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "net-loss-frontend-catalogue-046",
+          "fault_family_key": "kind=NetworkChaos|action=loss|target=catalogue|call_chain_position=entry",
+          "mutation_instance_key": "kind=NetworkChaos|action=loss|target=catalogue|call_chain_position=entry|parameters=spec.action=loss|spec.duration=30s|spec.loss.correlation=100|spec.loss.loss=50|spec.mode=one|spec.selector.labelSelectors.name=catalogue|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "classification": "stable_weakness"
+        }
+      ]
+    },
+    "chaosatlas-ablation": {
+      "denominator": 11,
+      "counts": {
+        "stable_weakness": 2,
+        "unstable": 0,
+        "no_impact": 9
+      },
+      "stable_weakness_rate": 0.18181818181818182,
+      "wilson_95_interval": [
+        0.05136768974608513,
+        0.4769805619608442
+      ],
+      "items": [
+        {
+          "hypothesis_id": "hyp-001",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=front-end|call_chain_position=entry",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=front-end|call_chain_position=entry|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=front-end|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "hyp-004",
+          "fault_family_key": "kind=NetworkChaos|action=delay|target=orders|call_chain_position=after-user-authentication,-before-orders-db",
+          "mutation_instance_key": "kind=NetworkChaos|action=delay|target=orders|call_chain_position=after-user-authentication,-before-orders-db|parameters=spec.action=delay|spec.delay.correlation=100|spec.delay.jitter=0ms|spec.delay.latency=500ms|spec.duration=30s|spec.mode=one|spec.selector.labelSelectors.name=orders|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "hyp-002",
+          "fault_family_key": "kind=NetworkChaos|action=delay|target=catalogue|call_chain_position=after-front-end,-before-catalogue-db",
+          "mutation_instance_key": "kind=NetworkChaos|action=delay|target=catalogue|call_chain_position=after-front-end,-before-catalogue-db|parameters=spec.action=delay|spec.delay.correlation=100|spec.delay.jitter=0ms|spec.delay.latency=500ms|spec.duration=30s|spec.mode=one|spec.selector.labelSelectors.name=catalogue|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "hyp-011",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=shipping|call_chain_position=after-payment,-before-delivery",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=shipping|call_chain_position=after-payment,-before-delivery|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=shipping|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "hyp-008",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=queue-master|call_chain_position=after-orders,-before-rabbitmq",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=queue-master|call_chain_position=after-orders,-before-rabbitmq|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=queue-master|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "hyp-009",
+          "fault_family_key": "kind=NetworkChaos|action=delay|target=rabbitmq|call_chain_position=message-broker-between-queue-master-and-orders",
+          "mutation_instance_key": "kind=NetworkChaos|action=delay|target=rabbitmq|call_chain_position=message-broker-between-queue-master-and-orders|parameters=spec.action=delay|spec.delay.correlation=100|spec.delay.jitter=0ms|spec.delay.latency=500ms|spec.duration=30s|spec.mode=one|spec.selector.labelSelectors.name=rabbitmq|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "hyp-007",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=user-db|call_chain_position=database-for-user-authentication",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=user-db|call_chain_position=database-for-user-authentication|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=user-db|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "hyp-005",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=carts|call_chain_position=after-front-end,-before-orders",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=carts|call_chain_position=after-front-end,-before-orders|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=carts|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "hyp-010",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=payment|call_chain_position=after-orders,-before-shipping",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=payment|call_chain_position=after-orders,-before-shipping|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=payment|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "no_business_impact_observed",
+            "no_business_impact_observed"
+          ],
+          "classification": "no_impact"
+        },
+        {
+          "hypothesis_id": "hyp-006",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=catalogue-db|call_chain_position=database-for-catalogue-browse",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=catalogue-db|call_chain_position=database-for-catalogue-browse|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=catalogue-db|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "classification": "stable_weakness"
+        },
+        {
+          "hypothesis_id": "hyp-012",
+          "fault_family_key": "kind=PodChaos|action=pod-kill|target=orders-db|call_chain_position=database-for-orders",
+          "mutation_instance_key": "kind=PodChaos|action=pod-kill|target=orders-db|call_chain_position=database-for-orders|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=orders-db|spec.selector.namespaces[0]=chaosatlas-sock-shop",
+          "replicate_classifications": [
+            "weakness_observed",
+            "weakness_observed"
+          ],
+          "classification": "stable_weakness"
+        }
+      ]
+    }
+  },
+  "statistics": {
+    "fisher_exact_two_sided": {
+      "odds_ratio": 1.0,
+      "p_value": 1.0
+    },
+    "interpretation": "small_sample_no_general_superiority_claim"
+  },
+  "identity_sensitivity": {
+    "registered_strict_overlap_count": 1,
+    "executable_overlap_count": 4,
+    "reworded_call_chain_collisions": 3,
+    "executable_overlap_pairs": [
+      {
+        "full_hypothesis_id": "sock-pod-kill-front-end-110",
+        "ablation_hypothesis_id": "hyp-001",
+        "strict_instance_match": true,
+        "executable_mutation_key": "kind=PodChaos|action=pod-kill|target=front-end|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=front-end|spec.selector.namespaces[0]=chaosatlas-sock-shop"
+      },
+      {
+        "full_hypothesis_id": "net-delay-frontend-catalogue-072",
+        "ablation_hypothesis_id": "hyp-002",
+        "strict_instance_match": false,
+        "executable_mutation_key": "kind=NetworkChaos|action=delay|target=catalogue|parameters=spec.action=delay|spec.delay.correlation=100|spec.delay.jitter=0ms|spec.delay.latency=500ms|spec.duration=30s|spec.mode=one|spec.selector.labelSelectors.name=catalogue|spec.selector.namespaces[0]=chaosatlas-sock-shop"
+      },
+      {
+        "full_hypothesis_id": "sock-pod-kill-carts-104",
+        "ablation_hypothesis_id": "hyp-005",
+        "strict_instance_match": false,
+        "executable_mutation_key": "kind=PodChaos|action=pod-kill|target=carts|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=carts|spec.selector.namespaces[0]=chaosatlas-sock-shop"
+      },
+      {
+        "full_hypothesis_id": "sock-pod-kill-catalogue-db-112",
+        "ablation_hypothesis_id": "hyp-006",
+        "strict_instance_match": false,
+        "executable_mutation_key": "kind=PodChaos|action=pod-kill|target=catalogue-db|parameters=spec.action=pod-kill|spec.mode=one|spec.selector.labelSelectors.name=catalogue-db|spec.selector.namespaces[0]=chaosatlas-sock-shop"
+      }
+    ]
+  },
+  "excluded_from_main_denominator": [
+    "hyp-003"
+  ],
+  "exploratory": [
+    {
+      "hypothesis_id": "hyp-003",
+      "classification": "stable_weakness",
+      "replicate_classifications": [
+        "weakness_observed",
+        "weakness_observed"
+      ],
+      "included_in_main_denominator": false
+    }
+  ],
+  "human_review": "pending",
+  "knowledge_base_updated": false,
+  "evidence_verification": {
+    "main_reports_revalidated": 44,
+    "diagnostic_files_rehashed": 264,
+    "failures": [],
+    "all_valid": true
+  }
+}

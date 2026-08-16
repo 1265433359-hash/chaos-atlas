@@ -1,0 +1,33 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 7262,
+    "completion_tokens": 139,
+    "total_tokens": 7401,
+    "prompt_tokens_details": {
+      "cached_tokens": 4352
+    },
+    "prompt_cache_hit_tokens": 4352,
+    "prompt_cache_miss_tokens": 2910
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-039",
+      "target_service": "session-db",
+      "action_or_target": "delay",
+      "call_chain_position": "session storage for authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "session-db",
+        "network-delay",
+        "authentication",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting network delay on session-db tests resilience of session storage under latency, which could cause login delays or session timeouts, impacting the demo login and authenticated orders journey."
+    }
+  }
+}

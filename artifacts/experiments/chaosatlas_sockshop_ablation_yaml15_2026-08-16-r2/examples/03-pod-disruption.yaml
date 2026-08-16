@@ -1,0 +1,12 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: yaml15-example
+  namespace: target-namespace
+spec:
+  action: pod-failure
+  mode: all
+  duration: 5m
+  selector:
+    labelSelectors:
+      app: target-workload

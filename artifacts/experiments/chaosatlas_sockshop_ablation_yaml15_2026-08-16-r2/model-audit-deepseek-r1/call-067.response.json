@@ -1,0 +1,32 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 10560,
+    "completion_tokens": 124,
+    "total_tokens": 10684,
+    "prompt_tokens_details": {
+      "cached_tokens": 7552
+    },
+    "prompt_cache_hit_tokens": 7552,
+    "prompt_cache_miss_tokens": 3008
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-067",
+      "target_service": "orders",
+      "action_or_target": "pod-kill",
+      "call_chain_position": "orders service in authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "orders",
+        "pod-kill",
+        "read-only golden journey"
+      ],
+      "rationale": "Killing the orders pod tests resilience of the authenticated orders journey, a core business oracle path, by simulating a complete service outage."
+    }
+  }
+}

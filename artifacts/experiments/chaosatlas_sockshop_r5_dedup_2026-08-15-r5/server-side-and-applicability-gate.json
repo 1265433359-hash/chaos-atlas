@@ -1,0 +1,1063 @@
+{
+  "schema_version": "sock-shop-r5-selection-gate-v1",
+  "status": "passed",
+  "selection_manifest": "artifacts\\experiments\\chaosatlas_sockshop_r5_dedup_2026-08-15-r5\\selection_manifest.json",
+  "selection_manifest_sha256": "7e9fac65b9f49c7da9b8d86f2b7db3c00e60fd76b69fb06e7a86b5a8e2d19ed3",
+  "namespace": "chaosatlas-sock-shop",
+  "summary": {
+    "selected": 12,
+    "dry_run_passed": 12,
+    "ready_for_injection": 12,
+    "blocked": 0
+  },
+  "results": [
+    {
+      "group": "overlap_high_confidence",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4\\runtime\\methods\\native-full\\mutations\\yc-sock-pod-kill-front-end-110-fa4ec3c4.yaml",
+      "expected_sha256": "2e3dc39bf0b0d89a60c8ee3cb2c265f475ded16fd828e7b9924fbdb11242711d",
+      "actual_sha256": "2e3dc39bf0b0d89a60c8ee3cb2c265f475ded16fd828e7b9924fbdb11242711d",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "podchaos.chaos-mesh.org/yc-sock-pod-kill-front-end-110-fa4ec3c4 serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:34.812155+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime/methods/native-full/mutations/yc-sock-pod-kill-front-end-110-fa4ec3c4.yaml",
+        "kind": "PodChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-sock-pod-kill-front-end-110-fa4ec3c4",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "front-end"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "front-end-7c99fd6d8d-cgkkl",
+              "uid": "228f6364-c372-40b7-8a4d-2ad155030e85",
+              "terminating": false,
+              "ready": true,
+              "restarts": 0,
+              "ports": [
+                8079
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-sock-pod-kill-front-end-110-fa4ec3c4\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-sock-pod-kill-front-end-110-fa4ec3c4\" not found\n"
+      },
+      "status": "passed"
+    },
+    {
+      "group": "ablation_only_random",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_discovery_2026-08-15-r1\\runtime-candidates-r1\\runtime\\methods\\chaosatlas-ablation\\mutations\\yc-hyp-004-74ffa344.yaml",
+      "expected_sha256": "980d03a249ec89e69a30d1b420948416376e862ef97a04f3926ea3c0fce6da69",
+      "actual_sha256": "980d03a249ec89e69a30d1b420948416376e862ef97a04f3926ea3c0fce6da69",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "networkchaos.chaos-mesh.org/yc-hyp-004-74ffa344 serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:35.179137+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/runtime-candidates-r1/runtime/methods/chaosatlas-ablation/mutations/yc-hyp-004-74ffa344.yaml",
+        "kind": "NetworkChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-hyp-004-74ffa344",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "orders"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "orders-784885f94f-vt6xl",
+              "uid": "18ab8a9a-31eb-40c7-b3d4-78696b445f67",
+              "terminating": false,
+              "ready": true,
+              "restarts": 0,
+              "ports": [
+                80
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"yc-hyp-004-74ffa344\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"yc-hyp-004-74ffa344\" not found\n"
+      },
+      "status": "passed"
+    },
+    {
+      "group": "ablation_only_random",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_discovery_2026-08-15-r1\\runtime-candidates-r1\\runtime\\methods\\chaosatlas-ablation\\mutations\\yc-hyp-002-90e52eb4.yaml",
+      "expected_sha256": "5621705ac588124d925aea51e7f9c9bfa32452cd1e967ecbb1cfd2ba1753ecac",
+      "actual_sha256": "5621705ac588124d925aea51e7f9c9bfa32452cd1e967ecbb1cfd2ba1753ecac",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "networkchaos.chaos-mesh.org/yc-hyp-002-90e52eb4 serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:35.516606+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/runtime-candidates-r1/runtime/methods/chaosatlas-ablation/mutations/yc-hyp-002-90e52eb4.yaml",
+        "kind": "NetworkChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-hyp-002-90e52eb4",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "catalogue"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "catalogue-546f6b848f-8bxvv",
+              "uid": "cdb36ebd-0730-42c7-95b0-f2a78a68be0a",
+              "terminating": false,
+              "ready": true,
+              "restarts": 3,
+              "ports": [
+                80
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"yc-hyp-002-90e52eb4\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"yc-hyp-002-90e52eb4\" not found\n"
+      },
+      "status": "passed"
+    },
+    {
+      "group": "ablation_only_random",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_discovery_2026-08-15-r1\\runtime-candidates-r1\\runtime\\methods\\chaosatlas-ablation\\mutations\\yc-hyp-011-38329945.yaml",
+      "expected_sha256": "7ceb062210fd86e80d653df1cb32db2bea1ad6ff1d8c9067188600b0ac760423",
+      "actual_sha256": "7ceb062210fd86e80d653df1cb32db2bea1ad6ff1d8c9067188600b0ac760423",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "podchaos.chaos-mesh.org/yc-hyp-011-38329945 serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:35.859227+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/runtime-candidates-r1/runtime/methods/chaosatlas-ablation/mutations/yc-hyp-011-38329945.yaml",
+        "kind": "PodChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-hyp-011-38329945",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "shipping"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "shipping-58b5c4fd4d-k6h8d",
+              "uid": "2f8d0560-edf9-40dd-b3b3-69845c7fe7ac",
+              "terminating": false,
+              "ready": true,
+              "restarts": 0,
+              "ports": [
+                80
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-011-38329945\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-011-38329945\" not found\n"
+      },
+      "status": "passed"
+    },
+    {
+      "group": "ablation_only_random",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_discovery_2026-08-15-r1\\runtime-candidates-r1\\runtime\\methods\\chaosatlas-ablation\\mutations\\yc-hyp-008-3fbb4331.yaml",
+      "expected_sha256": "37057fab740e08c6a8a9835a4ec2c5bc1f444fb32002516c2c240b4d3a7b9fb5",
+      "actual_sha256": "37057fab740e08c6a8a9835a4ec2c5bc1f444fb32002516c2c240b4d3a7b9fb5",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "podchaos.chaos-mesh.org/yc-hyp-008-3fbb4331 serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:36.243193+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/runtime-candidates-r1/runtime/methods/chaosatlas-ablation/mutations/yc-hyp-008-3fbb4331.yaml",
+        "kind": "PodChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-hyp-008-3fbb4331",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "queue-master"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "queue-master-684b5d657c-sgrll",
+              "uid": "cf6afb1b-1c4d-4d2d-af9e-dcdb85a5756c",
+              "terminating": false,
+              "ready": true,
+              "restarts": 0,
+              "ports": [
+                80
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-008-3fbb4331\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-008-3fbb4331\" not found\n"
+      },
+      "status": "passed"
+    },
+    {
+      "group": "ablation_only_random",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_discovery_2026-08-15-r1\\runtime-candidates-r1\\runtime\\methods\\chaosatlas-ablation\\mutations\\yc-hyp-009-91f13a52.yaml",
+      "expected_sha256": "0de45a274a05df13bed5698017ffe00a066e67a86830f5bba2607366be544f11",
+      "actual_sha256": "0de45a274a05df13bed5698017ffe00a066e67a86830f5bba2607366be544f11",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "networkchaos.chaos-mesh.org/yc-hyp-009-91f13a52 serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:36.585368+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/runtime-candidates-r1/runtime/methods/chaosatlas-ablation/mutations/yc-hyp-009-91f13a52.yaml",
+        "kind": "NetworkChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-hyp-009-91f13a52",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "rabbitmq"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "rabbitmq-5f4fc89676-2bdrp",
+              "uid": "f510edd3-52d3-4da3-bbcc-cda6b9ad9383",
+              "terminating": false,
+              "ready": true,
+              "restarts": 0,
+              "ports": [
+                5672,
+                9090,
+                15672
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"yc-hyp-009-91f13a52\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): networkchaos.chaos-mesh.org \"yc-hyp-009-91f13a52\" not found\n"
+      },
+      "status": "passed"
+    },
+    {
+      "group": "ablation_only_random",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_discovery_2026-08-15-r1\\runtime-candidates-r1\\runtime\\methods\\chaosatlas-ablation\\mutations\\yc-hyp-007-0df077f1.yaml",
+      "expected_sha256": "8514f12c7253f29825faf306c10162fb7aa1cc9bd8121288bbb65daea451084e",
+      "actual_sha256": "8514f12c7253f29825faf306c10162fb7aa1cc9bd8121288bbb65daea451084e",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "podchaos.chaos-mesh.org/yc-hyp-007-0df077f1 serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:36.957589+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/runtime-candidates-r1/runtime/methods/chaosatlas-ablation/mutations/yc-hyp-007-0df077f1.yaml",
+        "kind": "PodChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-hyp-007-0df077f1",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "user-db"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "user-db-874ffcd78-hx2zb",
+              "uid": "c7e8a080-ceab-4bba-9757-5cfaae8ce19b",
+              "terminating": false,
+              "ready": true,
+              "restarts": 0,
+              "ports": [
+                27017
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-007-0df077f1\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-007-0df077f1\" not found\n"
+      },
+      "status": "passed"
+    },
+    {
+      "group": "ablation_only_random",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_discovery_2026-08-15-r1\\runtime-candidates-r1\\runtime\\methods\\chaosatlas-ablation\\mutations\\yc-hyp-005-b7e7d5aa.yaml",
+      "expected_sha256": "e68a79cce1cb618d6f189967ab3554b1feea09aea37ab3dc6c75089365b1f658",
+      "actual_sha256": "e68a79cce1cb618d6f189967ab3554b1feea09aea37ab3dc6c75089365b1f658",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "podchaos.chaos-mesh.org/yc-hyp-005-b7e7d5aa serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:37.298258+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/runtime-candidates-r1/runtime/methods/chaosatlas-ablation/mutations/yc-hyp-005-b7e7d5aa.yaml",
+        "kind": "PodChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-hyp-005-b7e7d5aa",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "carts"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "carts-946859594-9h7ht",
+              "uid": "4fb75f26-4a0f-49be-b53c-d0b8737480f9",
+              "terminating": false,
+              "ready": true,
+              "restarts": 0,
+              "ports": [
+                80
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-005-b7e7d5aa\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-005-b7e7d5aa\" not found\n"
+      },
+      "status": "passed"
+    },
+    {
+      "group": "ablation_only_random",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_discovery_2026-08-15-r1\\runtime-candidates-r1\\runtime\\methods\\chaosatlas-ablation\\mutations\\yc-hyp-010-265bbdb0.yaml",
+      "expected_sha256": "00eeee5adf687a411df4139a9d5f9b532b066c36568b5c2b4d8df12eedef0d00",
+      "actual_sha256": "00eeee5adf687a411df4139a9d5f9b532b066c36568b5c2b4d8df12eedef0d00",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "podchaos.chaos-mesh.org/yc-hyp-010-265bbdb0 serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:37.629360+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/runtime-candidates-r1/runtime/methods/chaosatlas-ablation/mutations/yc-hyp-010-265bbdb0.yaml",
+        "kind": "PodChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-hyp-010-265bbdb0",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "payment"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "payment-66c7cd54b4-9fkxp",
+              "uid": "26214c50-b7e7-45dc-bbda-66b5ab023c73",
+              "terminating": false,
+              "ready": true,
+              "restarts": 4,
+              "ports": [
+                80
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-010-265bbdb0\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-010-265bbdb0\" not found\n"
+      },
+      "status": "passed"
+    },
+    {
+      "group": "ablation_only_random",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_discovery_2026-08-15-r1\\runtime-candidates-r1\\runtime\\methods\\chaosatlas-ablation\\mutations\\yc-hyp-006-272fda55.yaml",
+      "expected_sha256": "8aa67b5b018119154f8ab7b82cfa6a3a882b3cfd7b2fd5c22ec8a01c3a4caa7e",
+      "actual_sha256": "8aa67b5b018119154f8ab7b82cfa6a3a882b3cfd7b2fd5c22ec8a01c3a4caa7e",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "podchaos.chaos-mesh.org/yc-hyp-006-272fda55 serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:37.978097+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/runtime-candidates-r1/runtime/methods/chaosatlas-ablation/mutations/yc-hyp-006-272fda55.yaml",
+        "kind": "PodChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-hyp-006-272fda55",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "catalogue-db"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "catalogue-db-86447d6f9f-rqk6g",
+              "uid": "f312603a-3dfd-4c74-9a19-a7fd3f88998d",
+              "terminating": false,
+              "ready": true,
+              "restarts": 0,
+              "ports": [
+                3306
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-006-272fda55\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-006-272fda55\" not found\n"
+      },
+      "status": "passed"
+    },
+    {
+      "group": "ablation_only_random",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_discovery_2026-08-15-r1\\runtime-candidates-r1\\runtime\\methods\\chaosatlas-ablation\\mutations\\yc-hyp-012-b5497023.yaml",
+      "expected_sha256": "a0d53eea016eb886521c4d42f94100a10347e0bcea5324369b1bf78a0bc209a7",
+      "actual_sha256": "a0d53eea016eb886521c4d42f94100a10347e0bcea5324369b1bf78a0bc209a7",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "podchaos.chaos-mesh.org/yc-hyp-012-b5497023 serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:38.320406+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/runtime-candidates-r1/runtime/methods/chaosatlas-ablation/mutations/yc-hyp-012-b5497023.yaml",
+        "kind": "PodChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-hyp-012-b5497023",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "orders-db"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "orders-db-6566d7c6d-5gzz6",
+              "uid": "7f5ddb5c-e1ec-4abc-b89f-703df087f08d",
+              "terminating": false,
+              "ready": true,
+              "restarts": 0,
+              "ports": [
+                27017
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-012-b5497023\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-012-b5497023\" not found\n"
+      },
+      "status": "passed"
+    },
+    {
+      "group": "ablation_only_random",
+      "mutation_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_discovery_2026-08-15-r1\\runtime-candidates-r1\\runtime\\methods\\chaosatlas-ablation\\mutations\\yc-hyp-003-1ee706da.yaml",
+      "expected_sha256": "3741c03401dd2c54f09b8b346ad9dc43cd24a92d91351f4a97fdfd6db8514ced",
+      "actual_sha256": "3741c03401dd2c54f09b8b346ad9dc43cd24a92d91351f4a97fdfd6db8514ced",
+      "static_errors": [],
+      "server_side_dry_run": {
+        "status": "passed",
+        "return_code": 0,
+        "stdout": "podchaos.chaos-mesh.org/yc-hyp-003-1ee706da serverside-applied (server dry run)\n",
+        "stderr": ""
+      },
+      "applicability": {
+        "checked_at": "2026-08-15T10:49:38.662409+00:00",
+        "mutation": "artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/runtime-candidates-r1/runtime/methods/chaosatlas-ablation/mutations/yc-hyp-003-1ee706da.yaml",
+        "kind": "PodChaos",
+        "namespace": "chaosatlas-sock-shop",
+        "name": "yc-hyp-003-1ee706da",
+        "selector": {
+          "namespaces": [
+            "chaosatlas-sock-shop"
+          ],
+          "labelSelectors": {
+            "name": "user"
+          }
+        },
+        "decision": "ready_for_injection",
+        "checks": {
+          "scope_guard": {
+            "allowed_namespace": "train-ticket-lab",
+            "allowed_namespaces": [
+              "chaosatlas-online-boutique",
+              "chaosatlas-otel",
+              "chaosatlas-sock-shop",
+              "online-boutique-lab",
+              "otel-demo-lab",
+              "sock-shop-lab",
+              "train-ticket-lab"
+            ],
+            "metadata_namespace_ok": true,
+            "selector_namespaces_ok": true,
+            "selector_labels_ok": true,
+            "requested_namespaces": [
+              "chaosatlas-sock-shop"
+            ],
+            "requested_mode": "one",
+            "allowed_modes": [
+              "one"
+            ],
+            "mode_ok": true
+          },
+          "yaml_shape": true,
+          "crd_exists": true,
+          "chaos_components_ready": true,
+          "selector_matches": true,
+          "target_pods": [
+            {
+              "namespace": "chaosatlas-sock-shop",
+              "name": "user-66f6885fc5-2wnvp",
+              "uid": "2ed0e307-8ada-4aeb-8215-31d1de5935ae",
+              "terminating": false,
+              "ready": true,
+              "restarts": 0,
+              "ports": [
+                80
+              ]
+            }
+          ],
+          "target_pods_ready": true,
+          "target_port_exists": true,
+          "mutation_name_available": true,
+          "mutation_name_status": "available",
+          "mutation_name_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-003-1ee706da\" not found",
+          "injector_prerequisite": {
+            "status": "pass",
+            "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+          }
+        },
+        "errors": [],
+        "interpretation": {
+          "selected_is_not_injected": true,
+          "defense_conclusion_allowed": true
+        },
+        "resource_error": "Error from server (NotFound): podchaos.chaos-mesh.org \"yc-hyp-003-1ee706da\" not found\n"
+      },
+      "status": "passed"
+    }
+  ],
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

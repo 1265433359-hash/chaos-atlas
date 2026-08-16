@@ -1,0 +1,33 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 32967,
+    "completion_tokens": 138,
+    "total_tokens": 33105,
+    "prompt_tokens_details": {
+      "cached_tokens": 29952
+    },
+    "prompt_cache_hit_tokens": 29952,
+    "prompt_cache_miss_tokens": 3015
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-259",
+      "target_service": "orders-db",
+      "action_or_target": "delay",
+      "call_chain_position": "database dependency for orders service",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "orders-db",
+        "network-delay",
+        "database dependency",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting network delay on the orders-db pod tests resilience of the orders service when its database is slow, potentially causing timeouts or degraded performance in the authenticated orders journey."
+    }
+  }
+}

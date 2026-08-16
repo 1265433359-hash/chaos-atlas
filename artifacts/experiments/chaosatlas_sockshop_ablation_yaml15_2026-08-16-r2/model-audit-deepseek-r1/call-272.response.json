@@ -1,0 +1,31 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 34487,
+    "completion_tokens": 134,
+    "total_tokens": 34621,
+    "prompt_tokens_details": {
+      "cached_tokens": 31488
+    },
+    "prompt_cache_hit_tokens": 31488,
+    "prompt_cache_miss_tokens": 2999
+  },
+  "message": {
+    "stop": false,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-272",
+      "target_service": "catalogue",
+      "action_or_target": "pod-kill",
+      "call_chain_position": "catalogue browse step in authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "catalogue",
+        "pod-kill",
+        "read-only golden journey"
+      ],
+      "rationale": "Killing the catalogue pod tests resilience of the browse step, a critical path in the business oracle, by simulating a complete service outage. This is a direct and impactful fault on a core service."
+    }
+  }
+}

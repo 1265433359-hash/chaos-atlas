@@ -735,3 +735,73 @@
 - Focused runtime/review regression: 25 passed. The only warning is the
   pre-existing Windows `.pytest_cache` ACL warning. No knowledge-base update,
   key read, or external model request occurred in this closure.
+
+# Sock Shop route-aware remaining families closure (2026-08-16)
+
+- The HTTP family was rebuilt against the frozen Sock Shop topology before
+  execution: front-end uses port 8079; service calls use port 80 and the
+  observed route prefixes (`/catalogue*`, `/carts*`, `/orders*`,
+  `/paymentAuth*`, `/shipping*`, `/login*`). The 16 HTTP abort/delay
+  mutations produced 32 completed reports.
+- The formal route-aware audit combines those 32 HTTP reports with 68
+  completed Stress/Schedule reports. It excludes DNSChaos from business
+  statistics because the canary was platform-blocked before business
+  injection. Audit output: `runtime-remaining-route-aware-2026-08-15-r3/final-audit.json`.
+- The 100 audited reports all pass baseline, injection, recovery, cleanup,
+  washout, mutation SHA-256, and diagnostic sidecar SHA-256 checks. The
+  formal set contains 50 mutation families, 7 stable weaknesses, and 1
+  mixed one-shot weakness. The mixed result is not counted as stable.
+- The stable Schedule cases are Schedule resources whose actual nested
+  action is `PodChaos` `pod-kill` on a 30-second schedule; the `delay` word
+  in their hypothesis IDs is not the Chaos Mesh action field.
+- DNS evidence was archived separately as
+  `runtime-remaining-route-aware-2026-08-15-r3/dns-runtime-blocked.json`.
+  The daemon failed while attempting to back up read-only
+  `/etc/resolv.conf`; this is a platform applicability result, not a
+  Sock Shop weakness, and no DNS rerun is planned without a platform change.
+- Human review is still `pending`; `knowledge_base_updated` remains `false`.
+
+# Sock Shop 三方法阶段归档（2026-08-16）
+
+- 恢复并读取根规划文件，核对脏工作树；未覆盖或删除任何既有实验目录。
+- 结构化扫描 Full 报告并按 `mutation_id + replicate` 去重：88 个注入 family、176 completed slots、15 stable、3 unstable、70 no-business-impact；88/88 family 的 baseline/injection/recovery/cleanup/washout 字段通过。
+- 继续对齐 114-family 去重台账、runtime plan 和后续 selection manifest，确认 114 个 family 全部已有处置：96 个进入 runtime cohort（88 个完成注入、8 个 DNSChaos 在注入前 platform-blocked），其余 18 个为 static gate rejected。18 个不是遗漏未评估。
+- 复核 15 个稳定 mutation YAML，确认 4 个 Schedule family 的真实嵌套 action 为 `PodChaos/pod-kill`，并发现 `sock-pod-failure-catalogue-002` 名称与实际 `pod-kill` action 不一致。
+- 复核 R5 最终 Ablation：12 个 discovery 假设，正式稳定弱点 2 个；Full 覆盖 catalogue-db 与 orders-db 两个可执行弱点。
+- 新增 `docs/SOCK_SHOP_THREE_METHOD_STAGE_REVIEW_2026-08-16.md` 和 `analysis_outputs/sock_shop_three_method_stage_2026-08-16.json`，并更新 README、论文主线、项目总览与归档索引中的过时 headline。
+- 最终完整验证 11/11 通过：JSON 可解析；114=96+18、96=88+8、88=15+3+70；15 个 stable ID 数量匹配；6/6 证据路径存在；前后两批结果分别为 8/2/28 与 7/1/42；生命周期字段通过；敏感模式 0 命中；diff check 通过。
+- 未调用模型、未读取密钥、未运行 Kubernetes 注入、未提交 Git。Ablation 后续重做时替换当前 Ablation 分栏，不与旧分母叠加。
+# 2026-08-16 Sock Shop Ablation YAML15
+
+- TDD 完成 YAML15 选择器：首次 RED 为模块缺失；实现后 3/3 通过。
+- 正式 r1 审计发现嵌套 URL 未去敏；补 URL/label key RED 测试后修复，r2 重新冻结且未覆盖 r1。
+- r2 生成 15 个示例，原始/去敏 hash 全部匹配，prompt hash 匹配，敏感模式 0 命中；独立复跑 fingerprint 与 prompt hash 一致。
+- TDD 完成 YAML15 discovery：新增 manifest/prompt hash fail-closed、五类各 3 校验、调用链来源约束；相关 11/11 通过。
+- TDD 扩展后处理 runtime adapter：新臂保留分类示例可见性并复用公共编译器；三组相关测试合计 14/14 通过。
+- fake discovery 在 1419.047 秒上限下自主停止，4 个假设全部编译为 runtime 候选；未调用外部模型、未读取 key、未操作集群。
+- 已确认采用五类明确标注、每类 3 个真实 YAML 的前置示例设计。
+- 已复核语料、分类器、旧 Ablation discovery runner 和现有 Full/Ablation 边界。
+- 已新增设计文档 `docs/superpowers/specs/2026-08-16-sockshop-ablation-yaml15-design.md`。
+- 已新增实施计划 `docs/superpowers/plans/2026-08-16-sockshop-ablation-yaml15-plan.md`。
+- 下一步：先写 YAML15 选择器失败测试，再实现确定性选择与结构化去敏。
+# 2026-08-16 Sock Shop YAML15 Ablation closure
+
+- Reproduced the missing post-washout target readiness behavior with a failing runner test, implemented the target Ready gate, and passed 15 runner tests plus 47 focused YAML15 tests.
+- Waited for payment Ready and confirmed the global Chaos resource set was empty before continuation.
+- Created `runtime-exec-deepseek-r2`, reused 53 completed r1 reports, reran failed `hyp-028-rep-2`, and executed the remaining 38 slots. The runtime process exited 0 with 92 completed reports.
+- Independent audit: 46 families; 9 stable, 0 unstable, 37 no-impact; 92/92 lifecycle-valid; 92/92 mutation hashes and 552/552 diagnostic hashes matched.
+- Final cluster check: 14/14 Sock Shop Pods Ready and no PodChaos, NetworkChaos, StressChaos, HTTPChaos, DNSChaos, Schedule or Workflow resources globally.
+- Added `final-audit.json` and `FINAL_REVIEW.zh-CN.md`; updated stage review, paper mainline, project summary and machine stage summary. Human review remains pending and the knowledge base was not updated.
+- Encountered one non-experiment PowerShell summary error by passing FileInfo through the pipeline without `.FullName`; the corrected read used `-LiteralPath $f.FullName`. No experiment command was repeated because of this reporting-only error.
+- Added an immutable `.gitattributes` rule for the formal YAML15 r2 tree. After `git add --renormalize -f`, direct Git-index verification passed with 92 reports, 92 mutation hashes, 552 diagnostic hashes, zero missing and zero mismatch.
+
+# 2026-08-16 YAML15 review hardening
+
+- Ran the new regression set. The first run found a missing `pytest` test import; after correcting the test harness, RED was 3 failed / 26 passed for the intended behaviors.
+- Implemented the three minimal production fixes and added CLI coverage; GREEN is 30 passed.
+- Located and corrected the Full evidence boundary: first 38 families are in `runtime-canonical-plan-r2`, later 50 in route-aware r3. Generated a 76-report SHA verification manifest and a 38-family result review; both pass and are now referenced by the combined provenance.
+- Affected Sock Shop/YAML15 regression is 96 passed plus 5 subtests. Full `tools/tests` is 640 passed plus 5 subtests and the same 2 pre-existing pinned-hash drift failures; implicated historical files are unchanged in this worktree.
+- JSON, batch arithmetic, mixed-schema boundary, source SHA, and 5-pattern sensitive scans pass. `git diff --check` formatting findings were corrected.
+- Final live check: context `minikube`, all 14 Sock Shop Pods Ready, and no PodChaos/NetworkChaos/StressChaos/HTTPChaos/DNSChaos/Schedule/Workflow resources remain.
+- Independent reviewer reported no Critical issues and two Important issues. Fixed the sub-millisecond deadline escape and stale `15 vs 2 vs 2` wording; also fixed terminal checkpoint resume and added explicit source paths.
+- Review-fix regression: 19 passed. Updated affected suite: 99 passed plus 5 subtests. Updated full suite: 643 passed plus 5 subtests, with only the same 2 historical pinned-hash drift failures.

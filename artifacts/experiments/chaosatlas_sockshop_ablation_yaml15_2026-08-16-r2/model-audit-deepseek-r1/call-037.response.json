@@ -1,0 +1,32 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 7035,
+    "completion_tokens": 135,
+    "total_tokens": 7170,
+    "prompt_tokens_details": {
+      "cached_tokens": 4096
+    },
+    "prompt_cache_hit_tokens": 4096,
+    "prompt_cache_miss_tokens": 2939
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-037",
+      "target_service": "carts",
+      "action_or_target": "memory",
+      "call_chain_position": "carts service in authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "carts",
+        "memory-pressure",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting memory stress on the carts service tests resilience under resource pressure, potentially causing slowdowns or OOM kills that could impact the authenticated orders journey if carts is invoked during order processing."
+    }
+  }
+}

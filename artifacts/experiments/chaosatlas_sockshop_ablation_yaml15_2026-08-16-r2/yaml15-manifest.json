@@ -1,0 +1,296 @@
+{
+  "schema_version": "sock-shop-ablation-yaml15-manifest-v1",
+  "total_examples": 15,
+  "category_order": [
+    "Pod disruption",
+    "Network degradation",
+    "Resource pressure",
+    "Protocol/HTTP fault",
+    "Composite/scheduled fault"
+  ],
+  "selection_policy": {
+    "version": "frequency-two-plus-max-hamming-v1",
+    "signature_fields": [
+      "kind",
+      "action_or_target",
+      "mode",
+      "selector_shape",
+      "duration_bucket",
+      "intensity_bucket"
+    ],
+    "runtime_outcomes_used": false,
+    "full_results_used": false
+  },
+  "selection_fingerprint_sha256": "48884d9c75014845dd0fe1f6bd20d703c1577cdca6ae5ec2d4bdcd717c1409cf",
+  "prompt_path": "yaml15-prompt.json",
+  "prompt_sha256": "36ca40fc1d0d2a45d848f959f0fd754ab2e894f475dbbb8012bf0e700a2d31df",
+  "categories": {
+    "Pod disruption": [
+      {
+        "order": 1,
+        "category": "Pod disruption",
+        "source_path": "PodChaos/03774772b265f584b5dbb164.yaml",
+        "source_sha256": "9de347d5cdcad86a17e16fb728e9d04f721aa7fae8f9f7f9ebd6b5bed53c8030",
+        "redacted_path": "examples/01-pod-disruption.yaml",
+        "redacted_sha256": "72a6f1436d3ad37f103d049149aaf9c6e2ab65ec1fbd6e39b508812cfc30a42d",
+        "features": {
+          "kind": "PodChaos",
+          "action_or_target": "pod-kill",
+          "mode": "one",
+          "selector_shape": "app-label",
+          "duration_bucket": "unknown",
+          "intensity_bucket": "unknown"
+        },
+        "selection_reason": "highest_frequency_signature"
+      },
+      {
+        "order": 2,
+        "category": "Pod disruption",
+        "source_path": "PodChaos/0a0d9b8e6a9990731cfa01ff.yaml",
+        "source_sha256": "ad6e1a37a5c084dced2e559850fb59a5d03734f4b786f752a554db18cb2a29df",
+        "redacted_path": "examples/02-pod-disruption.yaml",
+        "redacted_sha256": "6bccf9bd2b889ae28c1d5f889ece237b9cc78c51a34b26c937996b816906fc56",
+        "features": {
+          "kind": "PodChaos",
+          "action_or_target": "pod-kill",
+          "mode": "one",
+          "selector_shape": "app-label",
+          "duration_bucket": "short",
+          "intensity_bucket": "unknown"
+        },
+        "selection_reason": "second_highest_uncovered_signature"
+      },
+      {
+        "order": 3,
+        "category": "Pod disruption",
+        "source_path": "PodChaos/5d665922d9e67c3d91ed27d1.yaml",
+        "source_sha256": "c2e971b8c2ee4f95f3417ad61f7b43cb6d9ef8b0c730784ea71cc614e654328a",
+        "redacted_path": "examples/03-pod-disruption.yaml",
+        "redacted_sha256": "0c561fd535918f5c8e34c7a094e62c3acb511ff72d9348b8ed1fd7e9646ac6f9",
+        "features": {
+          "kind": "PodChaos",
+          "action_or_target": "pod-failure",
+          "mode": "all",
+          "selector_shape": "other-selector",
+          "duration_bucket": "medium",
+          "intensity_bucket": "unknown"
+        },
+        "selection_reason": "maximum_signature_distance"
+      }
+    ],
+    "Network degradation": [
+      {
+        "order": 4,
+        "category": "Network degradation",
+        "source_path": "NetworkChaos/025f95b5838d52f44bb96003.yaml",
+        "source_sha256": "56244739ec2cc11a2ad14bcc051e84c0c0305f704caefea2806134ccd276dcc1",
+        "redacted_path": "examples/04-network-degradation.yaml",
+        "redacted_sha256": "cdf92d174b3781b9352509d5cb12603f4d06ed99fec1ff98b59f60e0fff4d3cb",
+        "features": {
+          "kind": "NetworkChaos",
+          "action_or_target": "delay",
+          "mode": "all",
+          "selector_shape": "app-label",
+          "duration_bucket": "medium",
+          "intensity_bucket": "high"
+        },
+        "selection_reason": "highest_frequency_signature"
+      },
+      {
+        "order": 5,
+        "category": "Network degradation",
+        "source_path": "NetworkChaos/0cbd43df3645f2407736288f.yaml",
+        "source_sha256": "a59fb7089cf82170a5c32558d6f3d07631f5fc0e00c093a13ab724fe830ceb3e",
+        "redacted_path": "examples/05-network-degradation.yaml",
+        "redacted_sha256": "af6eeaf090aa6b17d5d3e69c03c17e2ddc3eaa982fc22ee26adf0f3d10a2b884",
+        "features": {
+          "kind": "NetworkChaos",
+          "action_or_target": "partition",
+          "mode": "all",
+          "selector_shape": "app-label",
+          "duration_bucket": "medium",
+          "intensity_bucket": "partition"
+        },
+        "selection_reason": "second_highest_uncovered_signature"
+      },
+      {
+        "order": 6,
+        "category": "Network degradation",
+        "source_path": "NetworkChaos/10e41844c02b942c063850a7.yaml",
+        "source_sha256": "e67c40409bee231f76d2fe9aacb021762768bebc497d22b6f22fe59c1a586ef1",
+        "redacted_path": "examples/06-network-degradation.yaml",
+        "redacted_sha256": "10da1d72e8acce4fddbe04c130eab306fceb90f443a28a1891441bca3a198b49",
+        "features": {
+          "kind": "NetworkChaos",
+          "action_or_target": "duplicate",
+          "mode": "one",
+          "selector_shape": "other-selector",
+          "duration_bucket": "short",
+          "intensity_bucket": "unknown"
+        },
+        "selection_reason": "maximum_signature_distance"
+      }
+    ],
+    "Resource pressure": [
+      {
+        "order": 7,
+        "category": "Resource pressure",
+        "source_path": "StressChaos/061685aa6c28659b370f0f2c.yaml",
+        "source_sha256": "ed68e3dca363cc5dc4f288bf653f686265b2d32e1917515ac18fdd2acb51e4e9",
+        "redacted_path": "examples/07-resource-pressure.yaml",
+        "redacted_sha256": "917d48f4f5d08ed04d3ae1677d6ac42f86331017825107ddeabf9b1f72da6867",
+        "features": {
+          "kind": "StressChaos",
+          "action_or_target": "memory",
+          "mode": "one",
+          "selector_shape": "app-label",
+          "duration_bucket": "medium",
+          "intensity_bucket": "unknown"
+        },
+        "selection_reason": "highest_frequency_signature"
+      },
+      {
+        "order": 8,
+        "category": "Resource pressure",
+        "source_path": "StressChaos/01f7ae66f5b1311d8e7a9c69.yaml",
+        "source_sha256": "eba2ff8532b1d70c1c714ae350e17e19b64f758655490efad799e6daaac6382d",
+        "redacted_path": "examples/08-resource-pressure.yaml",
+        "redacted_sha256": "161bc13456beba56fb98a7b6fcc3100b58ce678aebd7f163d6bb30f6f75e4c5a",
+        "features": {
+          "kind": "StressChaos",
+          "action_or_target": "cpu",
+          "mode": "one",
+          "selector_shape": "app-label",
+          "duration_bucket": "medium",
+          "intensity_bucket": "medium"
+        },
+        "selection_reason": "second_highest_uncovered_signature"
+      },
+      {
+        "order": 9,
+        "category": "Resource pressure",
+        "source_path": "StressChaos/c69a48158f2edc64bb8282d0.yaml",
+        "source_sha256": "cc0b5b24e6cf33605daafb554e0c5a4146e85ba111204878ead1942b43d72595",
+        "redacted_path": "examples/09-resource-pressure.yaml",
+        "redacted_sha256": "a095640402d5b449ffa8e45c109d8ad66b071f209798dbc76704f63ad5c8a2e1",
+        "features": {
+          "kind": "StressChaos",
+          "action_or_target": "cpu",
+          "mode": "all",
+          "selector_shape": "empty-or-high-risk",
+          "duration_bucket": "short",
+          "intensity_bucket": "low"
+        },
+        "selection_reason": "maximum_signature_distance"
+      }
+    ],
+    "Protocol/HTTP fault": [
+      {
+        "order": 10,
+        "category": "Protocol/HTTP fault",
+        "source_path": "HTTPChaos/038135d16a173f81cc9c2b27.yaml",
+        "source_sha256": "18a8e14cfd311427ddaa7de6be3765aad6b963570699666ac4ae66456d092fdd",
+        "redacted_path": "examples/10-protocol-http-fault.yaml",
+        "redacted_sha256": "816430ac2936ce6ed6f52a308728fbbb9fbc9fbf9983c62adcf6313957c9854e",
+        "features": {
+          "kind": "HTTPChaos",
+          "action_or_target": "Response",
+          "mode": "all",
+          "selector_shape": "app-label",
+          "duration_bucket": "medium",
+          "intensity_bucket": "unknown"
+        },
+        "selection_reason": "highest_frequency_signature"
+      },
+      {
+        "order": 11,
+        "category": "Protocol/HTTP fault",
+        "source_path": "HTTPChaos/0c829ea120dd0d3a6ae14386.yaml",
+        "source_sha256": "952a670d22ce551801a574dc08631038ebfcf916140dd12cbc70788045fbfa37",
+        "redacted_path": "examples/11-protocol-http-fault.yaml",
+        "redacted_sha256": "9227868a8549369831b27c3c542e0a582720997c0e7106541d7e1574b9c8c0b5",
+        "features": {
+          "kind": "HTTPChaos",
+          "action_or_target": "Response",
+          "mode": "one",
+          "selector_shape": "app-label",
+          "duration_bucket": "medium",
+          "intensity_bucket": "unknown"
+        },
+        "selection_reason": "second_highest_uncovered_signature"
+      },
+      {
+        "order": 12,
+        "category": "Protocol/HTTP fault",
+        "source_path": "DNSChaos/60b0646c95ee8800993f8d7e.yaml",
+        "source_sha256": "36d8e91dc39ccae7bed14ebeefa504e6ff3507ad3960a5389d2f007c9249fd50",
+        "redacted_path": "examples/12-protocol-http-fault.yaml",
+        "redacted_sha256": "fd655b6b81e153ec65e38fd341ddb14cdb150df21d3eaf43bad4b36eb69a8be2",
+        "features": {
+          "kind": "DNSChaos",
+          "action_or_target": "error",
+          "mode": "fixed-percent",
+          "selector_shape": "namespace-only",
+          "duration_bucket": "short",
+          "intensity_bucket": "unknown"
+        },
+        "selection_reason": "maximum_signature_distance"
+      }
+    ],
+    "Composite/scheduled fault": [
+      {
+        "order": 13,
+        "category": "Composite/scheduled fault",
+        "source_path": "Workflow/024ed0954ac7144deea64a7b.yaml",
+        "source_sha256": "2ab9ad85337b5417e5ca8357eba1dc9e74d46a7324c7f5306f94890d557acb95",
+        "redacted_path": "examples/13-composite-scheduled-fault.yaml",
+        "redacted_sha256": "a5b9f4bb7cd5380a04ee82f49daa441051a055636f3ca25f811b4bc45c04ff0e",
+        "features": {
+          "kind": "Workflow",
+          "action_or_target": "unknown",
+          "mode": "unknown",
+          "selector_shape": "empty-or-high-risk",
+          "duration_bucket": "unknown",
+          "intensity_bucket": "unknown"
+        },
+        "selection_reason": "highest_frequency_signature"
+      },
+      {
+        "order": 14,
+        "category": "Composite/scheduled fault",
+        "source_path": "Schedule/0054ed9dc231acc49742e12f.yaml",
+        "source_sha256": "c12a5238dda181fbe4ba45f01a54b368f5e6ffe950e2323fcdb0ad973511aa4b",
+        "redacted_path": "examples/14-composite-scheduled-fault.yaml",
+        "redacted_sha256": "47692081ede91f6efe4ba38a951cc155d0087f38c8713809734b25f4d20937e4",
+        "features": {
+          "kind": "Schedule",
+          "action_or_target": "unknown",
+          "mode": "unknown",
+          "selector_shape": "empty-or-high-risk",
+          "duration_bucket": "unknown",
+          "intensity_bucket": "unknown"
+        },
+        "selection_reason": "second_highest_uncovered_signature"
+      },
+      {
+        "order": 15,
+        "category": "Composite/scheduled fault",
+        "source_path": "Workflow/04904d42262b16bb0e871c03.yaml",
+        "source_sha256": "88110eb86e199e89d1e0b106ae26c93552e6158300f760a2ab2b13ea98f56957",
+        "redacted_path": "examples/15-composite-scheduled-fault.yaml",
+        "redacted_sha256": "2b04460a8e12a4dfb92ddf6fd6cac62bc08a62c312b6d130f039b646c5a1442b",
+        "features": {
+          "kind": "Workflow",
+          "action_or_target": "unknown",
+          "mode": "unknown",
+          "selector_shape": "empty-or-high-risk",
+          "duration_bucket": "unknown",
+          "intensity_bucket": "unknown"
+        },
+        "selection_reason": "maximum_signature_distance"
+      }
+    ]
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

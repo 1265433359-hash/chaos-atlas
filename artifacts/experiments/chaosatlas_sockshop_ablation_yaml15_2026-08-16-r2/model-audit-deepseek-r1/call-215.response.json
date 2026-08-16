@@ -1,0 +1,33 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 27866,
+    "completion_tokens": 143,
+    "total_tokens": 28009,
+    "prompt_tokens_details": {
+      "cached_tokens": 24832
+    },
+    "prompt_cache_hit_tokens": 24832,
+    "prompt_cache_miss_tokens": 3034
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-215",
+      "target_service": "queue-master",
+      "action_or_target": "abort",
+      "call_chain_position": "queue-master in order processing pipeline",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "queue-master",
+        "abort",
+        "order processing",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting HTTP abort faults on queue-master tests resilience of the order processing pipeline by simulating server errors or connection resets, which could impact the authenticated orders journey if order submission is involved."
+    }
+  }
+}

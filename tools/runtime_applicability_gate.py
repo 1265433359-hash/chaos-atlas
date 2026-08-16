@@ -18,11 +18,14 @@ except ImportError as exc:  # pragma: no cover
 
 RESOURCE_BY_KIND = {
     "HTTPChaos": "httpchaos",
+    "DNSChaos": "dnschaos",
     "StressChaos": "stresschaos",
     "NetworkChaos": "networkchaos",
     "PodChaos": "podchaos",
     "IOChaos": "iochaos",
     "TimeChaos": "timechaos",
+    "Schedule": "schedules",
+    "Workflow": "workflows",
 }
 
 # Runtime injection is intentionally scoped to isolated lab namespaces. This is
@@ -98,6 +101,35 @@ def _is_empty_selector(labels: dict[str, Any] | None) -> bool:
     """A mutation with an empty labelSelectors degrades to a whole-namespace
     query (target no longer deterministic). This is a safety boundary: reject."""
     return not labels or len(labels) == 0
+
+
+def effective_chaos_spec(kind: str, spec: dict[str, Any]) -> dict[str, Any]:
+    """Return the nested fault spec used by Schedule/Workflow resources."""
+    if kind == "Schedule":
+        nested_key = {
+            "PodChaos": "podChaos",
+            "NetworkChaos": "networkChaos",
+            "StressChaos": "stressChaos",
+            "HTTPChaos": "httpChaos",
+            "DNSChaos": "dnsChaos",
+        }.get(str(spec.get("type") or ""))
+        nested = spec.get(nested_key) if nested_key else None
+        return nested if isinstance(nested, dict) else {}
+    if kind == "Workflow":
+        for template in spec.get("templates") or []:
+            if not isinstance(template, dict):
+                continue
+            nested_key = {
+                "PodChaos": "podChaos",
+                "NetworkChaos": "networkChaos",
+                "StressChaos": "stressChaos",
+                "HTTPChaos": "httpChaos",
+                "DNSChaos": "dnsChaos",
+            }.get(str(template.get("templateType") or ""))
+            nested = template.get(nested_key) if nested_key else None
+            if isinstance(nested, dict):
+                return nested
+    return spec
 
 
 def target_pods(namespaces: list[str], labels: dict[str, Any]) -> tuple[list[dict[str, Any]], list[str]]:
@@ -201,13 +233,48 @@ def daemon_prerequisite(kind: str, daemon_names: list[str]) -> dict[str, Any]:
             result.update(
                 status="pass",
                 evidence="Chaos Daemon logs contain positive tproxy/ebtables readiness evidence.",
+                evidence_source="daemon_logs",
             )
         else:
-            result.update(
-                status="blocked",
-                evidence="No positive tproxy/ebtables readiness evidence was obtained from Chaos Daemon logs.",
-                blocker="http_tproxy_positive_evidence_missing",
+            probe_script = (
+                "ebtables -t broute -L >/dev/null 2>&1 && "
+                "ebtables -t nat -L >/dev/null 2>&1 && "
+                "modprobe -n ebtables >/dev/null 2>&1 && "
+                "modprobe -n xt_TPROXY >/dev/null 2>&1 && "
+                "iptables -t mangle -S >/dev/null 2>&1 && "
+                "printf HTTPCHAOS_CAPABILITY_OK"
             )
+            probe_results = []
+            for daemon in daemon_names:
+                code, stdout, stderr = run_kubectl(
+                    ["exec", "-n", "chaos-testing", daemon, "--", "sh", "-c", probe_script],
+                    timeout=30,
+                )
+                probe_results.append(
+                    {
+                        "daemon": daemon,
+                        "passed": code == 0 and "HTTPCHAOS_CAPABILITY_OK" in stdout,
+                        "error": stderr.strip() if code != 0 else "",
+                    }
+                )
+            all_probes_passed = bool(probe_results) and all(item["passed"] for item in probe_results)
+            if all_probes_passed:
+                result.update(
+                    status="pass",
+                    evidence="All Chaos Daemon Pods passed the read-only HTTPChaos capability probe.",
+                    evidence_source="read_only_daemon_capability_probe",
+                    capability_probes=probe_results,
+                )
+            else:
+                result.update(
+                    status="blocked",
+                    evidence=(
+                        "No positive tproxy/ebtables readiness evidence was obtained from Chaos Daemon logs, "
+                        "and the read-only capability probe did not pass on every daemon."
+                    ),
+                    blocker="http_tproxy_positive_evidence_missing",
+                    capability_probes=probe_results,
+                )
     return result
 
 
@@ -238,6 +305,7 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
         metadata = {}
     if not isinstance(spec, dict):
         spec = {}
+    spec = effective_chaos_spec(str(kind or ""), spec)
     namespace = metadata.get("namespace")
     selector = spec.get("selector") or {}
     if not isinstance(selector, dict):
@@ -346,6 +414,8 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
         checks["target_port_exists"] = bool(
             port_number is not None and pods and all(port_number in ports_for_pod(pod) for pod in pods)
         )
+        if not checks["target_port_exists"]:
+            errors.append(f"target_port_missing:{requested_port}")
 
     resource_args = ["get", resource or "unknown", str(metadata.get("name") or "")]
     if namespace:

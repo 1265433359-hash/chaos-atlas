@@ -1,0 +1,26 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: yaml15-example
+  namespace: target-namespace
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+    - target-namespace
+    labelSelectors:
+      app: target-workload
+  direction: both
+  target:
+    mode: all
+    selector:
+      namespaces:
+      - target-namespace
+      labelSelectors:
+        app: target-workload
+  delay:
+    latency: 3000ms
+    correlation: '0'
+    jitter: 0ms
+  duration: 150s

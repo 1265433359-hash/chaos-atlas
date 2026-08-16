@@ -35,6 +35,19 @@ def test_verifier_resolves_reports_across_roots_and_checks_diagnostic_hashes(tmp
     result = verify_reports([first, second], expected=1)
     assert result["status"] == "passed"
     assert result["reports"] == 1
+    assert result["report_evidence"] == [
+        {
+            "path": str(report_path).replace("\\", "/"),
+            "sha256": hashlib.sha256(report_path.read_bytes()).hexdigest(),
+            "project_id": "demo",
+            "seed": 1001,
+            "method": "ChaosAtlas-full",
+            "mutation_id": "H1",
+            "replicate": 1,
+            "classification": "missing",
+            "lifecycle_valid": True,
+        }
+    ]
 
 
 def test_verifier_prefers_completed_duplicate_and_rejects_mutation_hash_mismatch(tmp_path: Path) -> None:

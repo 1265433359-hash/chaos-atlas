@@ -1,0 +1,61 @@
+{
+  "action_aliases": {
+    "cpu-stress": "cpu",
+    "failure": "pod-failure",
+    "http-delay": "http-delay",
+    "kill": "pod-kill",
+    "memory-stress": "memory",
+    "net-delay": "delay",
+    "net-loss": "loss",
+    "net-partition": "partition",
+    "network-delay": "delay",
+    "network-loss": "loss",
+    "network-partition": "partition",
+    "pod-failure": "pod-failure",
+    "pod-kill": "pod-kill",
+    "podfailure": "pod-failure",
+    "podkill": "pod-kill",
+    "stress-cpu": "cpu",
+    "stress-memory": "memory"
+  },
+  "call_chain_aliases": {
+    "business service": "business-service",
+    "business_service": "business-service",
+    "data dependency": "data-dependency",
+    "data_dependency": "data-dependency",
+    "entry point": "entry",
+    "entry-point": "entry",
+    "supporting service": "supporting-service",
+    "supporting_service": "supporting-service"
+  },
+  "family_fields": [
+    "kind",
+    "normalized_action",
+    "target_service",
+    "call_chain_position"
+  ],
+  "instance_fields": [
+    "family_key",
+    "normalized_parameters"
+  ],
+  "kind_aliases": {
+    "dns-chaos": "DNSChaos",
+    "dnschaos": "DNSChaos",
+    "http-chaos": "HTTPChaos",
+    "httpchaos": "HTTPChaos",
+    "network-chaos": "NetworkChaos",
+    "networkchaos": "NetworkChaos",
+    "pod-chaos": "PodChaos",
+    "podchaos": "PodChaos",
+    "schedule": "Schedule",
+    "stress-chaos": "StressChaos",
+    "stresschaos": "StressChaos",
+    "workflow": "Workflow"
+  },
+  "metadata_excluded_from_parameters": [
+    "metadata.name",
+    "metadata.namespace"
+  ],
+  "schema_version": "sock-shop-hypothesis-identity-v1",
+  "sha256": "dea50beeaae3499a03e8c68e9fb94e5f623eaf29ad279589623d418a65c5bdae"
+}

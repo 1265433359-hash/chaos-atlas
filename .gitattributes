@@ -6,3 +6,7 @@
 *.bash text eol=lf
 *.yaml text eol=lf
 *.yml  text eol=lf
+
+# Immutable experiment logs retain source bytes so recorded SHA-256 stays valid.
+artifacts/experiments/chaosatlas_sockshop_r5_runtime_2026-08-15-r1/**/*.log -text -whitespace
+artifacts/experiments/chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2/** -text -eol -whitespace

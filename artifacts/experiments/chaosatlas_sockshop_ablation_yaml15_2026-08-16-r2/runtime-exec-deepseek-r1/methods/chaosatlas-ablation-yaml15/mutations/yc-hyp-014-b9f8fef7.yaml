@@ -1,0 +1,17 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: yc-hyp-014-b9f8fef7
+  namespace: chaosatlas-sock-shop
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: catalogue
+  target: Response
+  abort: true
+  port: 80
+  path: /catalogue*
+  duration: 30s

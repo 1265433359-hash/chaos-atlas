@@ -1,0 +1,33 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 32844,
+    "completion_tokens": 147,
+    "total_tokens": 32991,
+    "prompt_tokens_details": {
+      "cached_tokens": 29824
+    },
+    "prompt_cache_hit_tokens": 29824,
+    "prompt_cache_miss_tokens": 3020
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-258",
+      "target_service": "orders-db",
+      "action_or_target": "pod-kill",
+      "call_chain_position": "database dependency for orders service",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "orders-db",
+        "pod-kill",
+        "database dependency",
+        "read-only golden journey"
+      ],
+      "rationale": "Killing the orders-db pod directly tests the resilience of the orders service when its database is unavailable, which is critical for the authenticated orders journey. This is a direct and impactful fault on a core dependency."
+    }
+  }
+}

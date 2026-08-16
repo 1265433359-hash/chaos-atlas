@@ -1,0 +1,163 @@
+{
+  "schema_version": "sock-shop-ablation-discovery-v1",
+  "method": "chaosatlas-ablation",
+  "status": "completed",
+  "self_stop": true,
+  "time_cap_hit": false,
+  "stop_reason": "self_stop",
+  "time_cap_seconds": 1419.047,
+  "seed": 0,
+  "input_sha256": "77ad3e1a36df7894b22b2b6f791ad340669beb4b01363ed7793614a5b52038b1",
+  "prompt_protocol_sha256": "348016d7b324a3b2bf7379c5ae59a9e308baf40c142da98a7b7a93d64dc06e3e",
+  "prompt_protocol": {
+    "schema_version": "sock-shop-ablation-prompt-v1",
+    "classification_allowed": false,
+    "confidence_allowed": false,
+    "full_stop_trace_allowed": false,
+    "knowledge_projection_allowed": false,
+    "stop_control": "llm_self_stop_with_wall_clock_cap"
+  },
+  "hypotheses": [
+    {
+      "rationale": "Killing the front-end pod directly disrupts all user-facing paths, testing the resilience of the entry point.",
+      "action_or_target": "pod-kill",
+      "id": "hyp-001",
+      "motifs": [
+        "golden journey",
+        "front-end availability"
+      ],
+      "call_chain_position": "entry point",
+      "target_service": "front-end"
+    },
+    {
+      "rationale": "Injecting delay into the catalogue service tests the impact of slow responses on the browse path, which is part of the golden journey.",
+      "action_or_target": "delay",
+      "id": "hyp-002",
+      "motifs": [
+        "golden journey",
+        "catalogue browse latency"
+      ],
+      "call_chain_position": "after front-end, before catalogue-db",
+      "target_service": "catalogue"
+    },
+    {
+      "rationale": "Killing the user service pod disrupts the demo login and authenticated orders journey, testing resilience of authentication dependency.",
+      "action_or_target": "pod-kill",
+      "id": "hyp-003",
+      "motifs": [
+        "golden journey",
+        "login dependency"
+      ],
+      "call_chain_position": "authentication step before orders",
+      "target_service": "user"
+    },
+    {
+      "rationale": "Injecting delay into the orders service tests the impact of slow order retrieval on the authenticated orders journey, which is a core part of the golden path.",
+      "action_or_target": "delay",
+      "id": "hyp-004",
+      "motifs": [
+        "golden journey",
+        "authenticated orders latency"
+      ],
+      "call_chain_position": "after user authentication, before orders-db",
+      "target_service": "orders"
+    },
+    {
+      "rationale": "Killing the carts service pod disrupts the authenticated orders journey as it may be required for order creation or retrieval, testing resilience of the cart dependency.",
+      "action_or_target": "pod-kill",
+      "id": "hyp-005",
+      "motifs": [
+        "golden journey",
+        "carts dependency"
+      ],
+      "call_chain_position": "after front-end, before orders",
+      "target_service": "carts"
+    },
+    {
+      "rationale": "Killing the catalogue-db pod tests the resilience of the catalogue browse path when its underlying database is unavailable, which is a critical dependency for the golden journey.",
+      "action_or_target": "pod-kill",
+      "id": "hyp-006",
+      "motifs": [
+        "golden journey",
+        "catalogue browse dependency"
+      ],
+      "call_chain_position": "database for catalogue browse",
+      "target_service": "catalogue-db"
+    },
+    {
+      "rationale": "Killing the user-db pod tests the resilience of the login and authenticated orders journey when the user database is unavailable, a critical dependency for authentication.",
+      "action_or_target": "pod-kill",
+      "id": "hyp-007",
+      "motifs": [
+        "golden journey",
+        "login dependency"
+      ],
+      "call_chain_position": "database for user authentication",
+      "target_service": "user-db"
+    },
+    {
+      "rationale": "Killing queue-master disrupts order processing, which may affect the authenticated orders journey if orders are queued, testing resilience of the order pipeline.",
+      "action_or_target": "pod-kill",
+      "id": "hyp-008",
+      "motifs": [
+        "golden journey",
+        "order processing dependency"
+      ],
+      "call_chain_position": "after orders, before rabbitmq",
+      "target_service": "queue-master"
+    },
+    {
+      "rationale": "Injecting delay into rabbitmq tests the impact of slow message delivery on the authenticated orders journey, as orders may rely on asynchronous processing through the broker.",
+      "action_or_target": "delay",
+      "id": "hyp-009",
+      "motifs": [
+        "golden journey",
+        "order processing latency"
+      ],
+      "call_chain_position": "message broker between queue-master and orders",
+      "target_service": "rabbitmq"
+    },
+    {
+      "rationale": "Killing the payment service pod tests the resilience of the authenticated orders journey when payment processing is unavailable, which is a critical dependency for order completion.",
+      "action_or_target": "pod-kill",
+      "id": "hyp-010",
+      "motifs": [
+        "golden journey",
+        "payment dependency"
+      ],
+      "call_chain_position": "after orders, before shipping",
+      "target_service": "payment"
+    },
+    {
+      "rationale": "Killing the shipping service pod tests the resilience of the authenticated orders journey when shipping is unavailable, which is a downstream dependency for order fulfillment.",
+      "action_or_target": "pod-kill",
+      "id": "hyp-011",
+      "motifs": [
+        "golden journey",
+        "shipping dependency"
+      ],
+      "call_chain_position": "after payment, before delivery",
+      "target_service": "shipping"
+    },
+    {
+      "rationale": "Killing the orders-db pod tests the resilience of the authenticated orders journey when its underlying database is unavailable, a critical dependency for order retrieval.",
+      "action_or_target": "pod-kill",
+      "id": "hyp-012",
+      "motifs": [
+        "golden journey",
+        "authenticated orders dependency"
+      ],
+      "call_chain_position": "database for orders",
+      "target_service": "orders-db"
+    }
+  ],
+  "timing": {
+    "discovery_wall_clock_seconds": 39.438,
+    "model_calls": 13,
+    "prompt_tokens": 12476,
+    "completion_tokens": 1310,
+    "total_tokens": 13786
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

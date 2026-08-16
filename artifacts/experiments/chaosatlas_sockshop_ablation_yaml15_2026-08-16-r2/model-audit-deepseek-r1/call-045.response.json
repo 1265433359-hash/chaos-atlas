@@ -1,0 +1,31 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 7994,
+    "completion_tokens": 126,
+    "total_tokens": 8120,
+    "prompt_tokens_details": {
+      "cached_tokens": 4992
+    },
+    "prompt_cache_hit_tokens": 4992,
+    "prompt_cache_miss_tokens": 3002
+  },
+  "message": {
+    "stop": false,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-045",
+      "target_service": "catalogue",
+      "action_or_target": "memory",
+      "call_chain_position": "catalogue browse step in authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "catalogue",
+        "memory-pressure",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting memory stress on the catalogue service tests resilience of the browse step under resource pressure, potentially causing slowdowns or OOM kills that could impact the business oracle path."
+    }
+  }
+}

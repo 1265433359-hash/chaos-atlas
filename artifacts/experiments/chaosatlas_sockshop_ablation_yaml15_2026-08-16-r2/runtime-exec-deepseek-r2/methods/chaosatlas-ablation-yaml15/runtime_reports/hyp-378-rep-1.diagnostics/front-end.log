@@ -1,0 +1,500 @@
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+[0mGET /catalogue [32m200 [0m2.812 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+Received login request
+{"user":{"firstName":"User","lastName":"Name","username":"user","id":"57a98d98e4b00679b4a830b2","_links":{"addresses":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/addresses"},"cards":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/cards"},"customer":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"},"self":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"}}}}
+
+57a98d98e4b00679b4a830b2
+Merging carts for customer id: 57a98d98e4b00679b4a830b2 and session id: QBzwbOktlqa4qmaariEKqqzwLwQX-HuD
+Carts merged.
+Sent cookies.
+[0mGET /login [32m200 [0m7.817 ms - 13[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:170:12)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:256:15)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+Request received with body: {}
+Received response: "{\n  \"_embedded\" : {\n    \"customerOrders\" : [ ]\n  },\n  \"_links\" : {\n    \"self\" : {\n      \"href\" : \"http://orders/orders/search/customerId?sort=date&custId=undefined\"\n    }\n  }\n}"
+[0mGET /orders [32m201 [0m4.519 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+[0mGET /catalogue [32m200 [0m2.716 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+Received login request
+{"user":{"firstName":"User","lastName":"Name","username":"user","id":"57a98d98e4b00679b4a830b2","_links":{"addresses":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/addresses"},"cards":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/cards"},"customer":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"},"self":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"}}}}
+
+57a98d98e4b00679b4a830b2
+Merging carts for customer id: 57a98d98e4b00679b4a830b2 and session id: al2-U1Mc4Vd4INd0xnzf4APOJahIWPUz
+Carts merged.
+Sent cookies.
+[0mGET /login [32m200 [0m8.393 ms - 13[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:170:12)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:256:15)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+Request received with body: {}
+Received response: "{\n  \"_embedded\" : {\n    \"customerOrders\" : [ ]\n  },\n  \"_links\" : {\n    \"self\" : {\n      \"href\" : \"http://orders/orders/search/customerId?sort=date&custId=undefined\"\n    }\n  }\n}"
+[0mGET /orders [32m201 [0m4.795 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+[0mGET /catalogue [32m200 [0m2.903 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+Received login request
+{"user":{"firstName":"User","lastName":"Name","username":"user","id":"57a98d98e4b00679b4a830b2","_links":{"addresses":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/addresses"},"cards":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/cards"},"customer":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"},"self":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"}}}}
+
+57a98d98e4b00679b4a830b2
+Merging carts for customer id: 57a98d98e4b00679b4a830b2 and session id: gmFGUBEAL_Ser1ikch8Jl_rXLdaW-tX3
+Carts merged.
+Sent cookies.
+[0mGET /login [32m200 [0m8.508 ms - 13[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:170:12)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:256:15)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+Request received with body: {}
+Received response: "{\n  \"_embedded\" : {\n    \"customerOrders\" : [ ]\n  },\n  \"_links\" : {\n    \"self\" : {\n      \"href\" : \"http://orders/orders/search/customerId?sort=date&custId=undefined\"\n    }\n  }\n}"
+[0mGET /orders [32m201 [0m4.533 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+[0mGET /catalogue [32m200 [0m2.922 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+Received login request
+{"user":{"firstName":"User","lastName":"Name","username":"user","id":"57a98d98e4b00679b4a830b2","_links":{"addresses":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/addresses"},"cards":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/cards"},"customer":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"},"self":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"}}}}
+
+57a98d98e4b00679b4a830b2
+Merging carts for customer id: 57a98d98e4b00679b4a830b2 and session id: _3EkqkV117NAUNJZDaLtFD9yOUgXAVof
+Carts merged.
+Sent cookies.
+[0mGET /login [32m200 [0m7.649 ms - 13[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:170:12)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:256:15)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+Request received with body: {}
+Received response: "{\n  \"_embedded\" : {\n    \"customerOrders\" : [ ]\n  },\n  \"_links\" : {\n    \"self\" : {\n      \"href\" : \"http://orders/orders/search/customerId?sort=date&custId=undefined\"\n    }\n  }\n}"
+[0mGET /orders [32m201 [0m4.658 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+[0mGET /catalogue [32m200 [0m2.815 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+Received login request
+{"user":{"firstName":"User","lastName":"Name","username":"user","id":"57a98d98e4b00679b4a830b2","_links":{"addresses":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/addresses"},"cards":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/cards"},"customer":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"},"self":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"}}}}
+
+57a98d98e4b00679b4a830b2
+Merging carts for customer id: 57a98d98e4b00679b4a830b2 and session id: D-7qxRec1xhwOWXyYFx7ZM_Zf5Rr2F67
+Carts merged.
+Sent cookies.
+[0mGET /login [32m200 [0m7.734 ms - 13[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:170:12)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:256:15)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+Request received with body: {}
+Received response: "{\n  \"_embedded\" : {\n    \"customerOrders\" : [ ]\n  },\n  \"_links\" : {\n    \"self\" : {\n      \"href\" : \"http://orders/orders/search/customerId?sort=date&custId=undefined\"\n    }\n  }\n}"
+[0mGET /orders [32m201 [0m5.158 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+[0mGET /catalogue [32m200 [0m2.961 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+Received login request
+{"user":{"firstName":"User","lastName":"Name","username":"user","id":"57a98d98e4b00679b4a830b2","_links":{"addresses":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/addresses"},"cards":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/cards"},"customer":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"},"self":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"}}}}
+
+57a98d98e4b00679b4a830b2
+Merging carts for customer id: 57a98d98e4b00679b4a830b2 and session id: wWWqtqDOp9kqMmh23z0AxhMaGMzP2aQ0
+Carts merged.
+Sent cookies.
+[0mGET /login [32m200 [0m8.141 ms - 13[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:170:12)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:256:15)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+Request received with body: {}
+Received response: "{\n  \"_embedded\" : {\n    \"customerOrders\" : [ ]\n  },\n  \"_links\" : {\n    \"self\" : {\n      \"href\" : \"http://orders/orders/search/customerId?sort=date&custId=undefined\"\n    }\n  }\n}"
+[0mGET /orders [32m201 [0m5.142 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+[0mGET /catalogue [32m200 [0m2.982 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+Received login request
+{"user":{"firstName":"User","lastName":"Name","username":"user","id":"57a98d98e4b00679b4a830b2","_links":{"addresses":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/addresses"},"cards":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/cards"},"customer":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"},"self":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"}}}}
+
+57a98d98e4b00679b4a830b2
+Merging carts for customer id: 57a98d98e4b00679b4a830b2 and session id: -UD1EOYc1M70-CROwhKP6JmIrSFCq5Fg
+Carts merged.
+Sent cookies.
+[0mGET /login [32m200 [0m7.865 ms - 13[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:170:12)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:256:15)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+Request received with body: {}
+Received response: "{\n  \"_embedded\" : {\n    \"customerOrders\" : [ ]\n  },\n  \"_links\" : {\n    \"self\" : {\n      \"href\" : \"http://orders/orders/search/customerId?sort=date&custId=undefined\"\n    }\n  }\n}"
+[0mGET /orders [32m201 [0m4.744 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+[0mGET /catalogue [32m200 [0m2.968 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+Received login request
+{"user":{"firstName":"User","lastName":"Name","username":"user","id":"57a98d98e4b00679b4a830b2","_links":{"addresses":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/addresses"},"cards":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/cards"},"customer":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"},"self":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"}}}}
+
+57a98d98e4b00679b4a830b2
+Merging carts for customer id: 57a98d98e4b00679b4a830b2 and session id: tWKf7SV-NU0B0sc0k_LshJCAqYIUTazq
+Carts merged.
+Sent cookies.
+[0mGET /login [32m200 [0m8.267 ms - 13[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:170:12)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:256:15)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+Request received with body: {}
+Received response: "{\n  \"_embedded\" : {\n    \"customerOrders\" : [ ]\n  },\n  \"_links\" : {\n    \"self\" : {\n      \"href\" : \"http://orders/orders/search/customerId?sort=date&custId=undefined\"\n    }\n  }\n}"
+[0mGET /orders [32m201 [0m4.876 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+[0mGET /catalogue [32m200 [0m2.855 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+Received login request
+{"user":{"firstName":"User","lastName":"Name","username":"user","id":"57a98d98e4b00679b4a830b2","_links":{"addresses":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/addresses"},"cards":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/cards"},"customer":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"},"self":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"}}}}
+
+57a98d98e4b00679b4a830b2
+Merging carts for customer id: 57a98d98e4b00679b4a830b2 and session id: z5Jh83i4Pmh1uyB_DsmpZBJm15lvjnVG
+Carts merged.
+Sent cookies.
+[0mGET /login [32m200 [0m7.959 ms - 13[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:170:12)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:256:15)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+Request received with body: {}
+Received response: "{\n  \"_embedded\" : {\n    \"customerOrders\" : [ ]\n  },\n  \"_links\" : {\n    \"self\" : {\n      \"href\" : \"http://orders/orders/search/customerId?sort=date&custId=undefined\"\n    }\n  }\n}"
+[0mGET /orders [32m201 [0m4.848 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+[0mGET /catalogue [32m200 [0m3.081 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+Received login request
+{"user":{"firstName":"User","lastName":"Name","username":"user","id":"57a98d98e4b00679b4a830b2","_links":{"addresses":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/addresses"},"cards":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/cards"},"customer":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"},"self":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"}}}}
+
+57a98d98e4b00679b4a830b2
+Merging carts for customer id: 57a98d98e4b00679b4a830b2 and session id: hlgyUxol0-G9AfrlbRFThY5l-vRwVY6S
+Carts merged.
+Sent cookies.
+[0mGET /login [32m200 [0m8.665 ms - 13[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:170:12)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:256:15)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+Request received with body: {}
+Received response: "{\n  \"_embedded\" : {\n    \"customerOrders\" : [ ]\n  },\n  \"_links\" : {\n    \"self\" : {\n      \"href\" : \"http://orders/orders/search/customerId?sort=date&custId=undefined\"\n    }\n  }\n}"
+[0mGET /orders [32m201 [0m5.550 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+[0mGET /catalogue [32m200 [0m3.002 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)
+Received login request
+{"user":{"firstName":"User","lastName":"Name","username":"user","id":"57a98d98e4b00679b4a830b2","_links":{"addresses":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/addresses"},"cards":{"href":"http://user/customers/57a98d98e4b00679b4a830b2/cards"},"customer":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"},"self":{"href":"http://user/customers/57a98d98e4b00679b4a830b2"}}}}
+
+57a98d98e4b00679b4a830b2
+Merging carts for customer id: 57a98d98e4b00679b4a830b2 and session id: eZuzgH7-dOQ5KYQdOpR41n_WiySocvOM
+Carts merged.
+Sent cookies.
+[0mGET /login [32m200 [0m8.407 ms - 13[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:170:12)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:256:15)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+Request received with body: {}
+Received response: "{\n  \"_embedded\" : {\n    \"customerOrders\" : [ ]\n  },\n  \"_links\" : {\n    \"self\" : {\n      \"href\" : \"http://orders/orders/search/customerId?sort=date&custId=undefined\"\n    }\n  }\n}"
+[0mGET /orders [32m201 [0m5.227 ms - -[0m
+Error: Can't set headers after they are sent.
+    at ServerResponse.OutgoingMessage.setHeader (_http_outgoing.js:356:11)
+    at ServerResponse.header (/usr/src/app/node_modules/express/lib/response.js:725:10)
+    at ServerResponse.json (/usr/src/app/node_modules/express/lib/response.js:253:10)
+    at ServerResponse.send (/usr/src/app/node_modules/express/lib/response.js:158:21)
+    at helpers.errorHandler (/usr/src/app/helpers/index.js:22:7)
+    at Layer.handle_error (/usr/src/app/node_modules/express/lib/router/layer.js:71:5)
+    at trim_prefix (/usr/src/app/node_modules/express/lib/router/index.js:315:13)
+    at /usr/src/app/node_modules/express/lib/router/index.js:284:7
+    at Function.process_params (/usr/src/app/node_modules/express/lib/router/index.js:335:12)
+    at next (/usr/src/app/node_modules/express/lib/router/index.js:275:10)

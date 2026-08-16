@@ -1,0 +1,33 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 6785,
+    "completion_tokens": 147,
+    "total_tokens": 6932,
+    "prompt_tokens_details": {
+      "cached_tokens": 3840
+    },
+    "prompt_cache_hit_tokens": 3840,
+    "prompt_cache_miss_tokens": 2945
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-035",
+      "target_service": "carts-db",
+      "action_or_target": "abort",
+      "call_chain_position": "database dependency for carts service",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "carts-db",
+        "abort",
+        "database dependency",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting HTTP abort faults on the carts-db pod tests resilience of the carts service when its database returns errors or connection resets, which could impact the authenticated orders journey if carts is invoked during order processing."
+    }
+  }
+}

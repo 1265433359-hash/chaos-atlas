@@ -1,0 +1,19 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: HTTPChaos
+metadata:
+  name: yaml15-example
+  namespace: target-namespace
+spec:
+  mode: all
+  selector:
+    namespaces:
+    - target-namespace
+    labelSelectors:
+      app: target-workload
+  target: Response
+  port: 5001
+  replace:
+    headers:
+      X-Chaos-Injected: 'true'
+      X-Debug-Info: chaos-mesh-experiment
+  duration: 5m

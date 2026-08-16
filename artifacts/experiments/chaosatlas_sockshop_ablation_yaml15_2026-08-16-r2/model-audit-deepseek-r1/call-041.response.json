@@ -1,0 +1,33 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 7499,
+    "completion_tokens": 148,
+    "total_tokens": 7647,
+    "prompt_tokens_details": {
+      "cached_tokens": 4480
+    },
+    "prompt_cache_hit_tokens": 4480,
+    "prompt_cache_miss_tokens": 3019
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-041",
+      "target_service": "session-db",
+      "action_or_target": "memory",
+      "call_chain_position": "session storage for authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "session-db",
+        "memory-pressure",
+        "authentication",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting memory stress on session-db tests resilience of session storage under resource pressure, potentially causing slowdowns or OOM kills that could lead to session loss or login failures, directly impacting the demo login and authenticated orders journey."
+    }
+  }
+}

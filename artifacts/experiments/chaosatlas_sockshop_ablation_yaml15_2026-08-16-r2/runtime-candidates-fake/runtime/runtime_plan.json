@@ -1,0 +1,323 @@
+{
+  "experiment": "sock_shop_yaml_confidence",
+  "status": "completed",
+  "executed_units": 0,
+  "methods": {
+    "chaosatlas-ablation-yaml15": {
+      "generated_hypotheses": 4,
+      "runtime_candidates": 4,
+      "gate_failed": 0,
+      "processed_runtime_candidates": 4,
+      "processed_gate_failed": 0,
+      "unprocessed_hypotheses": 0,
+      "candidates": [
+        {
+          "hypothesis_id": "ablation-h-1",
+          "target_service": "carts",
+          "kind": "PodChaos",
+          "name": "yc-ablation-h-1-d6396b58",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-1-d6396b58.yaml",
+          "sha256": "89fbdfc812f398e8648b41cf3c5223c86687adc549e6e31f033704ac52e6ff24",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "call_chain_position": "entry",
+            "target_service": "carts",
+            "id": "ablation-h-1",
+            "action_or_target": "pod-kill",
+            "rationale": "deterministic offline ablation discovery",
+            "call_chain_position_source": "model_inference",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 0
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-1-d6396b58.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-1-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "ablation-h-1",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "180"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-1-rep-1.json",
+              "execute_requested": false,
+              "executed": false
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-1-d6396b58.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-1-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "ablation-h-1",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "180"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-1-rep-2.json",
+              "execute_requested": false,
+              "executed": false
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "ablation-h-2",
+          "target_service": "carts-db",
+          "kind": "NetworkChaos",
+          "name": "yc-ablation-h-2-53c94eeb",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-2-53c94eeb.yaml",
+          "sha256": "73b7345814ff711e09099f060999064c681ad9f3fa507683109e703dbb0b5123",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "call_chain_position": "business-service",
+            "target_service": "carts-db",
+            "id": "ablation-h-2",
+            "action_or_target": "delay",
+            "rationale": "deterministic offline ablation discovery",
+            "call_chain_position_source": "model_inference",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 1
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-2-53c94eeb.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-2-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "ablation-h-2",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "180"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-2-rep-1.json",
+              "execute_requested": false,
+              "executed": false
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-2-53c94eeb.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-2-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "ablation-h-2",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "180"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-2-rep-2.json",
+              "execute_requested": false,
+              "executed": false
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "ablation-h-3",
+          "target_service": "catalogue",
+          "kind": "PodChaos",
+          "name": "yc-ablation-h-3-71498e69",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-3-71498e69.yaml",
+          "sha256": "36bbc9b256896381df283430587259baa918eb7734c15e2c731a601b6d2cbe62",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "call_chain_position": "business-service",
+            "target_service": "catalogue",
+            "id": "ablation-h-3",
+            "action_or_target": "pod-kill",
+            "rationale": "deterministic offline ablation discovery",
+            "call_chain_position_source": "model_inference",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 2
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-3-71498e69.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-3-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "ablation-h-3",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "180"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-3-rep-1.json",
+              "execute_requested": false,
+              "executed": false
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-3-71498e69.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-3-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "ablation-h-3",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "180"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-3-rep-2.json",
+              "execute_requested": false,
+              "executed": false
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "ablation-h-4",
+          "target_service": "catalogue-db",
+          "kind": "NetworkChaos",
+          "name": "yc-ablation-h-4-c464181d",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-4-c464181d.yaml",
+          "sha256": "b10f03ac14a6bd54e2afba9085ca3bb90f42096aaa9f1619c63eb3e7a79f0ebb",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "call_chain_position": "business-service",
+            "target_service": "catalogue-db",
+            "id": "ablation-h-4",
+            "action_or_target": "delay",
+            "rationale": "deterministic offline ablation discovery",
+            "call_chain_position_source": "model_inference",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 3
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-4-c464181d.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-4-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "ablation-h-4",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "180"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-4-rep-1.json",
+              "execute_requested": false,
+              "executed": false
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-ablation-h-4-c464181d.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-4-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "ablation-h-4",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "180"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-candidates-fake\\runtime\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\ablation-h-4-rep-2.json",
+              "execute_requested": false,
+              "executed": false
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "timing_fields": [
+    "generation_seconds",
+    "compile_seconds",
+    "gate_seconds",
+    "runtime_seconds",
+    "washout_seconds",
+    "total_wall_clock_seconds"
+  ],
+  "recovery_timeout_seconds": 180,
+  "timing": {
+    "compile_seconds": 0.015,
+    "gate_seconds": 0.0,
+    "runtime_seconds": null,
+    "washout_seconds": null,
+    "total_wall_clock_seconds": 0.015
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 46991,
+    "completion_tokens": 139,
+    "total_tokens": 47130,
+    "prompt_tokens_details": {
+      "cached_tokens": 44032
+    },
+    "prompt_cache_hit_tokens": 44032,
+    "prompt_cache_miss_tokens": 2959
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-379",
+      "target_service": "rabbitmq",
+      "action_or_target": "pod-kill",
+      "call_chain_position": "message broker for order processing",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "rabbitmq",
+        "pod-kill",
+        "message broker",
+        "order processing",
+        "read-only golden journey"
+      ],
+      "rationale": "Killing rabbitmq tests resilience of the message broker, a critical dependency for order processing, though the oracle is read-only and may not invoke it."
+    }
+  }
+}

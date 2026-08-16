@@ -30,6 +30,113 @@ TIMING_FIELDS = [
 ]
 
 
+# These routes were checked against the frozen Sock Shop services on
+# 2026-08-15.  HTTPChaos selects the target Pod, so front-end uses its Pod
+# port (8079), not the Service port (80).  The wildcard suffixes cover the
+# concrete resource IDs used by the real call chain.
+SOCK_SHOP_HTTP_ROUTES: dict[str, dict[str, Any]] = {
+    "front-end": {
+        "port": 8079,
+        "path": "*",
+        "source": "sock-shop-call-chain:front-end-golden-journeys-live-probe",
+    },
+    "carts": {
+        "port": 80,
+        "path": "/carts*",
+        "source": "sock-shop-call-chain:front-end->carts",
+    },
+    "catalogue": {
+        "port": 80,
+        "path": "/catalogue*",
+        "source": "sock-shop-call-chain:front-end->catalogue",
+    },
+    "orders": {
+        "port": 80,
+        "path": "/orders*",
+        "source": "sock-shop-call-chain:front-end->orders",
+    },
+    "payment": {
+        "port": 80,
+        "path": "/paymentAuth*",
+        "source": "sock-shop-call-chain:orders->payment",
+    },
+    "shipping": {
+        "port": 80,
+        "path": "/shipping*",
+        "source": "sock-shop-call-chain:orders->shipping",
+    },
+    "user": {
+        "port": 80,
+        "path": "/login*",
+        "source": "sock-shop-call-chain:front-end->user",
+    },
+    "queue-master": {
+        "port": 80,
+        "path": "/",
+        "source": "sock-shop-supporting-service:live-probe-root",
+    },
+}
+
+HTTP_NON_BUSINESS_TARGETS = {
+    "carts-db",
+    "catalogue-db",
+    "orders-db",
+    "rabbitmq",
+    "session-db",
+    "user-db",
+}
+
+SOCK_SHOP_DNS_SUFFIX = ".chaosatlas-sock-shop.svc.cluster.local"
+
+# DNSChaos selects the Pod that issues the lookup.  The fault target is the
+# downstream service name, so keep the source and destination explicit.
+SOCK_SHOP_DNS_ROUTES: dict[str, dict[str, Any]] = {
+    "front-end": {
+        "selector": "front-end",
+        "patterns": [
+            f"carts{SOCK_SHOP_DNS_SUFFIX}",
+            f"catalogue{SOCK_SHOP_DNS_SUFFIX}",
+        ],
+        "source": "sock-shop-call-chain:front-end->carts,catalogue",
+    },
+    "carts": {
+        "selector": "front-end",
+        "patterns": [f"carts{SOCK_SHOP_DNS_SUFFIX}"],
+        "source": "sock-shop-call-chain:front-end->carts",
+    },
+    "catalogue": {
+        "selector": "front-end",
+        "patterns": [f"catalogue{SOCK_SHOP_DNS_SUFFIX}"],
+        "source": "sock-shop-call-chain:front-end->catalogue",
+    },
+    "orders": {
+        "selector": "front-end",
+        "patterns": [f"orders{SOCK_SHOP_DNS_SUFFIX}"],
+        "source": "sock-shop-call-chain:front-end->orders",
+    },
+    "payment": {
+        "selector": "orders",
+        "patterns": [f"payment{SOCK_SHOP_DNS_SUFFIX}"],
+        "source": "sock-shop-call-chain:orders->payment",
+    },
+    "shipping": {
+        "selector": "orders",
+        "patterns": [f"shipping{SOCK_SHOP_DNS_SUFFIX}"],
+        "source": "sock-shop-call-chain:orders->shipping",
+    },
+    "user": {
+        "selector": "front-end",
+        "patterns": [f"user{SOCK_SHOP_DNS_SUFFIX}"],
+        "source": "sock-shop-call-chain:front-end->user",
+    },
+    "queue-master": {
+        "selector": "queue-master",
+        "patterns": [f"rabbitmq{SOCK_SHOP_DNS_SUFFIX}"],
+        "source": "sock-shop-call-chain:queue-master->rabbitmq",
+    },
+}
+
+
 def _slug(value: str) -> str:
     slug = re.sub(r"[^a-z0-9-]+", "-", value.lower()).strip("-")
     return slug[:48] or "hypothesis"
@@ -41,9 +148,19 @@ def _mutation_name(hypothesis: dict[str, Any]) -> str:
     return f"yc-{_slug(raw)}-{digest}"[:63]
 
 
+def _http_route(target: str) -> tuple[dict[str, Any] | None, str | None]:
+    route = SOCK_SHOP_HTTP_ROUTES.get(target)
+    if route is not None:
+        return dict(route), None
+    if target in HTTP_NON_BUSINESS_TARGETS:
+        return None, f"http_target_not_applicable:{target}"
+    return None, f"http_target_route_unknown:{target}"
+
+
 def _kind_and_spec(hypothesis: dict[str, Any]) -> tuple[str | None, dict[str, Any], str | None]:
     category = hypothesis.get("category")
     action = str(hypothesis.get("action_or_target") or "").lower()
+    target = str(hypothesis.get("target_service") or "")
     if category == "Pod disruption":
         return "PodChaos", {"action": "pod-kill"}, None
     if category == "Network degradation":
@@ -58,6 +175,50 @@ def _kind_and_spec(hypothesis: dict[str, Any]) -> tuple[str | None, dict[str, An
         if action in {"memory", "stress_memory"}:
             return "StressChaos", {"duration": "30s", "stressors": {"memory": {"workers": 1, "size": "256MB"}}}, None
         return "StressChaos", {"duration": "30s", "stressors": {"cpu": {"workers": 1, "load": 50}}}, None
+    if category == "Protocol/HTTP fault":
+        route, route_error = _http_route(target)
+        if route_error:
+            return None, {}, route_error
+        if action in {"abort", "http_abort"}:
+            return "HTTPChaos", {
+                "target": "Response",
+                "abort": True,
+                "port": route["port"],
+                "path": route["path"],
+                "duration": "30s",
+            }, None
+        if action in {"delay", "http_delay"}:
+            return "HTTPChaos", {
+                "target": "Request",
+                "delay": "500ms",
+                "port": route["port"],
+                "path": route["path"],
+                "duration": "30s",
+            }, None
+        if action in {"dns", "dns_error"}:
+            route = SOCK_SHOP_DNS_ROUTES.get(target)
+            if route is None:
+                return None, {}, f"dns_target_route_unknown:{target}"
+            return "DNSChaos", {
+                "action": "error",
+                "patterns": list(route["patterns"]),
+                "duration": "30s",
+            }, None
+        return None, {}, "unsupported_protocol_action"
+    if category == "Composite/scheduled fault":
+        if action in {"scheduled-delay", "scheduled-pod-kill", "schedule"}:
+            return "Schedule", {
+                "type": "PodChaos",
+                "schedule": "@every 30s",
+                "concurrencyPolicy": "Forbid",
+                "historyLimit": 1,
+                "podChaos": {
+                    "action": "pod-kill",
+                    "mode": "one",
+                    "duration": "10s",
+                },
+            }, None
+        return None, {}, "unsupported_composite_action"
     return None, {}, "runner_unsupported_category"
 
 
@@ -94,15 +255,26 @@ def compile_hypothesis_to_mutation(hypothesis: dict[str, Any], output_dir: Path)
         }
 
     name = _mutation_name(hypothesis)
+    selector_target = target
+    if kind == "DNSChaos":
+        selector_target = str(SOCK_SHOP_DNS_ROUTES[target]["selector"])
+    selector = {"namespaces": [NAMESPACE], "labelSelectors": {"name": selector_target}}
+    if kind == "Schedule":
+        nested = dict(extra_spec["podChaos"])
+        nested["selector"] = selector
+        spec = {key: value for key, value in extra_spec.items() if key != "podChaos"}
+        spec["podChaos"] = nested
+    else:
+        spec = {
+            "mode": "one",
+            "selector": selector,
+            **extra_spec,
+        }
     document = {
         "apiVersion": "chaos-mesh.org/v1alpha1",
         "kind": kind,
         "metadata": {"name": name, "namespace": NAMESPACE},
-        "spec": {
-            "mode": "one",
-            "selector": {"namespaces": [NAMESPACE], "labelSelectors": {"name": target}},
-            **extra_spec,
-        },
+        "spec": spec,
     }
     path = output_dir / "mutations" / f"{name}.yaml"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -111,7 +283,7 @@ def compile_hypothesis_to_mutation(hypothesis: dict[str, Any], output_dir: Path)
         raise FileExistsError(f"refusing to overwrite existing mutation with different content: {path}")
     path.write_text(content, encoding="utf-8")
     digest = hashlib.sha256(path.read_bytes()).hexdigest()
-    return {
+    result = {
         "hypothesis_id": hypothesis.get("id") or hypothesis.get("hypothesis_id") or name,
         "target_service": target,
         "kind": kind,
@@ -123,6 +295,14 @@ def compile_hypothesis_to_mutation(hypothesis: dict[str, Any], output_dir: Path)
         "category": hypothesis.get("category"),
         "hypothesis": hypothesis,
     }
+    if kind == "HTTPChaos":
+        route, route_error = _http_route(target)
+        if route_error or route is None:
+            raise ValueError(route_error or "http route resolution failed")
+        result["http_route"] = route
+    if kind == "DNSChaos":
+        result["dns_route"] = SOCK_SHOP_DNS_ROUTES[target]
+    return result
 
 
 def build_runtime_invocation(
@@ -194,14 +374,21 @@ def plan_confidence_runtime(
     replicates: int = 2,
     prior_runtime_roots: list[Path] | None = None,
     recovery_timeout: float = 180,
+    fresh_only: bool = False,
 ) -> dict[str, Any]:
     started = time.monotonic()
+    if fresh_only and prior_runtime_roots:
+        raise ValueError("fresh-only runtime planning forbids prior-runtime roots")
+    if fresh_only and output_dir.exists() and any(output_dir.iterdir()):
+        raise FileExistsError(f"fresh-only runtime output must be empty: {output_dir}")
     output_dir.mkdir(parents=True, exist_ok=True)
     prior_runtime_roots = prior_runtime_roots or []
     methods: dict[str, Any] = {}
     status = "completed"
     executed_units = 0
     for method, discovery in discoveries.items():
+        if discovery.get("status") == "confidence_incomplete":
+            raise ValueError(f"confidence-incomplete discovery cannot enter runtime: {method}")
         method_dir = output_dir / "methods" / method
         candidates = []
         hypotheses = list(discovery.get("hypotheses", []))
@@ -307,6 +494,7 @@ def main() -> int:
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--prior-runtime-root", type=Path, action="append")
     parser.add_argument("--recovery-timeout", type=float, default=180)
+    parser.add_argument("--fresh-only", action="store_true")
     args = parser.parse_args()
     plan = plan_confidence_runtime(
         _load_discoveries(args.discovery),
@@ -314,6 +502,7 @@ def main() -> int:
         execute=args.execute,
         prior_runtime_roots=args.prior_runtime_root,
         recovery_timeout=args.recovery_timeout,
+        fresh_only=args.fresh_only,
     )
     print(json.dumps({"methods": list(plan["methods"]), "output": str(args.output)}, ensure_ascii=False))
     return 0

@@ -1,0 +1,2396 @@
+{
+  "experiment": "sock_shop_yaml_confidence",
+  "status": "stopped_on_failure",
+  "executed_units": 54,
+  "methods": {
+    "chaosatlas-ablation-yaml15": {
+      "generated_hypotheses": 51,
+      "runtime_candidates": 46,
+      "gate_failed": 5,
+      "processed_runtime_candidates": 27,
+      "processed_gate_failed": 0,
+      "unprocessed_hypotheses": 24,
+      "candidates": [
+        {
+          "hypothesis_id": "hyp-001",
+          "target_service": "orders",
+          "kind": "PodChaos",
+          "name": "yc-hyp-001-97227a7f",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-001-97227a7f.yaml",
+          "sha256": "fca3bafb536c40bc8d9295222c284500cc50f32bb8c5b3d31ad169d67d2b5f9a",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "rationale": "Killing the orders pod tests resilience of the authenticated orders journey, a core business oracle path.",
+            "motifs": [
+              "orders",
+              "pod-kill",
+              "read-only golden journey"
+            ],
+            "target_service": "orders",
+            "id": "hyp-001",
+            "call_chain_position": "orders service in authenticated orders journey",
+            "action_or_target": "pod-kill",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=orders|action=pod-kill|position=orders-service-in-authenticated-orders-journey",
+            "family_size": 3,
+            "family_members": [
+              "hyp-001",
+              "hyp-067",
+              "hyp-229"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 0
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-001-97227a7f.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-001-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-001",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-001-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-001-97227a7f.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-001-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-001",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-001-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-002",
+          "target_service": "catalogue",
+          "kind": "NetworkChaos",
+          "name": "yc-hyp-002-cf67f6b4",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-002-cf67f6b4.yaml",
+          "sha256": "03595eb6be24dde9c735a100377a5ea3c16cb269ab059f40f921f0556250ad42",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "rationale": "Injecting network delay on the catalogue service tests resilience of the browse step, a critical path in the business oracle.",
+            "motifs": [
+              "catalogue",
+              "network-delay",
+              "read-only golden journey"
+            ],
+            "target_service": "catalogue",
+            "id": "hyp-002",
+            "call_chain_position": "catalogue browse step in authenticated orders journey",
+            "action_or_target": "delay",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=catalogue|action=delay|position=catalogue-browse-step-in-authenticated-orders-journey",
+            "family_size": 2,
+            "family_members": [
+              "hyp-002",
+              "hyp-048"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 1
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-002-cf67f6b4.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-002-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-002",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-002-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-002-cf67f6b4.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-002-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-002",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-002-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-003",
+          "target_service": "user",
+          "kind": "PodChaos",
+          "name": "yc-hyp-003-f4603e57",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-003-f4603e57.yaml",
+          "sha256": "ed736839cd9469001588ff429d347b71a3ca2db35b003f4d75f35e623fa249a4",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "rationale": "Killing the user pod tests resilience of the authentication step, which is essential for the demo login and authenticated orders journey.",
+            "motifs": [
+              "user",
+              "pod-kill",
+              "authentication",
+              "read-only golden journey"
+            ],
+            "target_service": "user",
+            "id": "hyp-003",
+            "call_chain_position": "authentication step in authenticated orders journey",
+            "action_or_target": "pod-kill",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=user|action=pod-kill|position=authentication-step-in-authenticated-orders-journey",
+            "family_size": 3,
+            "family_members": [
+              "hyp-003",
+              "hyp-083",
+              "hyp-273"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 2
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-003-f4603e57.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-003-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-003",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-003-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-003-f4603e57.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-003-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-003",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-003-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-004",
+          "target_service": "carts",
+          "kind": "PodChaos",
+          "name": "yc-hyp-004-f9acc161",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-004-f9acc161.yaml",
+          "sha256": "c6039216fd2aa6a203efac02cf8f942c48a91d5294c91767888f64b461e2fa73",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "rationale": "Killing the carts pod tests resilience of the carts service, which is a dependency for the authenticated orders journey.",
+            "motifs": [
+              "carts",
+              "pod-kill",
+              "read-only golden journey"
+            ],
+            "target_service": "carts",
+            "id": "hyp-004",
+            "call_chain_position": "carts service in authenticated orders journey",
+            "action_or_target": "pod-kill",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=carts|action=pod-kill|position=carts-service-in-authenticated-orders-journey",
+            "family_size": 3,
+            "family_members": [
+              "hyp-004",
+              "hyp-046",
+              "hyp-138"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 3
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-004-f9acc161.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-004-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-004",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-004-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-004-f9acc161.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-004-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-004",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-004-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-005",
+          "target_service": "front-end",
+          "kind": "NetworkChaos",
+          "name": "yc-hyp-005-f0188459",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-005-f0188459.yaml",
+          "sha256": "f25c18884ae6abcccc0189ab2834a607335bf9f0583e15959504709964559c42",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "rationale": "Injecting network delay on the front-end service tests resilience of the entry point for all user interactions, potentially impacting the entire business oracle path.",
+            "motifs": [
+              "front-end",
+              "network-delay",
+              "read-only golden journey"
+            ],
+            "target_service": "front-end",
+            "id": "hyp-005",
+            "call_chain_position": "entry point for all user interactions",
+            "action_or_target": "delay",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=front-end|action=delay|position=entry-point-for-all-user-interactions",
+            "family_size": 3,
+            "family_members": [
+              "hyp-005",
+              "hyp-064",
+              "hyp-401"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 4
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-005-f0188459.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-005-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-005",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-005-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-005-f0188459.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-005-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-005",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-005-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-006",
+          "target_service": "orders-db",
+          "kind": "PodChaos",
+          "name": "yc-hyp-006-5d51e99a",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-006-5d51e99a.yaml",
+          "sha256": "a0941278367109bd750756a47b418b620222972e6f63bafd960a06f114039b7a",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "rationale": "Killing the orders-db pod tests resilience of the orders service when its database is unavailable, which is critical for the authenticated orders journey.",
+            "motifs": [
+              "orders-db",
+              "pod-kill",
+              "database dependency",
+              "read-only golden journey"
+            ],
+            "target_service": "orders-db",
+            "id": "hyp-006",
+            "call_chain_position": "database dependency for orders service",
+            "action_or_target": "pod-kill",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=orders-db|action=pod-kill|position=database-dependency-for-orders-service",
+            "family_size": 2,
+            "family_members": [
+              "hyp-006",
+              "hyp-258"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 5
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-006-5d51e99a.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-006-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-006",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-006-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-006-5d51e99a.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-006-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-006",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-006-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-007",
+          "target_service": "payment",
+          "kind": "PodChaos",
+          "name": "yc-hyp-007-c47f7c9c",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-007-c47f7c9c.yaml",
+          "sha256": "99a3ce14b0c8bc64ee13a8e147e13ddd994f376f5e51907819ff61942353a58a",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "rationale": "Killing the payment pod tests resilience of the payment service, which is a dependency for the authenticated orders journey.",
+            "motifs": [
+              "payment",
+              "pod-kill",
+              "read-only golden journey"
+            ],
+            "target_service": "payment",
+            "id": "hyp-007",
+            "call_chain_position": "payment service in authenticated orders journey",
+            "action_or_target": "pod-kill",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=payment|action=pod-kill|position=payment-service-in-authenticated-orders-journey",
+            "family_size": 1,
+            "family_members": [
+              "hyp-007"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 6
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-007-c47f7c9c.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-007-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-007",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-007-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-007-c47f7c9c.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-007-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-007",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-007-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-008",
+          "target_service": "catalogue-db",
+          "kind": "PodChaos",
+          "name": "yc-hyp-008-0a2e0610",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-008-0a2e0610.yaml",
+          "sha256": "65573a6ad589b01bab0355759bc99f41f2829005fae1efd5f11e234febd600a0",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "rationale": "Killing the catalogue-db pod tests resilience of the catalogue service when its database is unavailable, which is critical for the browse step in the business oracle.",
+            "motifs": [
+              "catalogue-db",
+              "pod-kill",
+              "database dependency",
+              "read-only golden journey"
+            ],
+            "target_service": "catalogue-db",
+            "id": "hyp-008",
+            "call_chain_position": "database dependency for catalogue service",
+            "action_or_target": "pod-kill",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=catalogue-db|action=pod-kill|position=database-dependency-for-catalogue-service",
+            "family_size": 3,
+            "family_members": [
+              "hyp-008",
+              "hyp-066",
+              "hyp-193"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 7
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-008-0a2e0610.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-008-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-008",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-008-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-008-0a2e0610.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-008-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-008",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-008-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-009",
+          "target_service": "queue-master",
+          "kind": "PodChaos",
+          "name": "yc-hyp-009-80420146",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-009-80420146.yaml",
+          "sha256": "8d5106aad502ce19ac181b14e8ce320d5e1596fbff44097f197d45ce62aedde6",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "rationale": "Killing queue-master tests resilience of order processing pipeline, which may impact the authenticated orders journey if order submission is involved.",
+            "motifs": [
+              "queue-master",
+              "pod-kill",
+              "order processing",
+              "read-only golden journey"
+            ],
+            "target_service": "queue-master",
+            "id": "hyp-009",
+            "call_chain_position": "queue-master in order processing pipeline",
+            "action_or_target": "pod-kill",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=queue-master|action=pod-kill|position=queue-master-in-order-processing-pipeline",
+            "family_size": 2,
+            "family_members": [
+              "hyp-009",
+              "hyp-034"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 8
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-009-80420146.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-009-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-009",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-009-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-009-80420146.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-009-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-009",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-009-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-010",
+          "target_service": "shipping",
+          "kind": "PodChaos",
+          "name": "yc-hyp-010-c0d836fc",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-010-c0d836fc.yaml",
+          "sha256": "55ce1bcb54b6e757d54541222951641dfd6ad4443f91474461ab35b9874609ed",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "rationale": "Killing the shipping pod tests resilience of the shipping service, which is a dependency for order fulfillment and may impact the authenticated orders journey if shipping is invoked.",
+            "motifs": [
+              "shipping",
+              "pod-kill",
+              "order fulfillment",
+              "read-only golden journey"
+            ],
+            "target_service": "shipping",
+            "id": "hyp-010",
+            "call_chain_position": "shipping service in order fulfillment",
+            "action_or_target": "pod-kill",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=shipping|action=pod-kill|position=shipping-service-in-order-fulfillment",
+            "family_size": 2,
+            "family_members": [
+              "hyp-010",
+              "hyp-032"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 9
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-010-c0d836fc.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-010-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-010",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-010-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-010-c0d836fc.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-010-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-010",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-010-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-011",
+          "target_service": "user-db",
+          "kind": "PodChaos",
+          "name": "yc-hyp-011-9e5534c5",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-011-9e5534c5.yaml",
+          "sha256": "c27fefe504b544ab82e1c1e7d46d3e40027c9aa3a9edb35271d86c2e3c60df6b",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "rationale": "Killing the user-db pod tests resilience of the user service when its database is unavailable, which is critical for the authentication step in the business oracle.",
+            "motifs": [
+              "user-db",
+              "pod-kill",
+              "database dependency",
+              "authentication",
+              "read-only golden journey"
+            ],
+            "target_service": "user-db",
+            "id": "hyp-011",
+            "call_chain_position": "database dependency for user service",
+            "action_or_target": "pod-kill",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=user-db|action=pod-kill|position=database-dependency-for-user-service",
+            "family_size": 2,
+            "family_members": [
+              "hyp-011",
+              "hyp-073"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 10
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-011-9e5534c5.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-011-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-011",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-011-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-011-9e5534c5.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-011-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-011",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-011-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-012",
+          "target_service": "rabbitmq",
+          "kind": "PodChaos",
+          "name": "yc-hyp-012-8d17fbb0",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-012-8d17fbb0.yaml",
+          "sha256": "d9d2eea833cdae255a35656371be4621611363c116e152242b29062fdc5a1291",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "rationale": "Killing the rabbitmq pod tests resilience of the message broker, which is a critical dependency for order processing and may impact the authenticated orders journey if order submission is involved.",
+            "motifs": [
+              "rabbitmq",
+              "pod-kill",
+              "message broker",
+              "order processing",
+              "read-only golden journey"
+            ],
+            "target_service": "rabbitmq",
+            "id": "hyp-012",
+            "call_chain_position": "message broker for order processing",
+            "action_or_target": "pod-kill",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=rabbitmq|action=pod-kill|position=message-broker-for-order-processing",
+            "family_size": 2,
+            "family_members": [
+              "hyp-012",
+              "hyp-379"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 11
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-012-8d17fbb0.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-012-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-012",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-012-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-012-8d17fbb0.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-012-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-012",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-012-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-013",
+          "target_service": "carts-db",
+          "kind": "PodChaos",
+          "name": "yc-hyp-013-2b344e82",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-013-2b344e82.yaml",
+          "sha256": "0ed5a82610baddfd5f25b57ce89a1ac1975edf40deb78a56c5ffdccac79bc39d",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Pod disruption",
+          "hypothesis": {
+            "rationale": "Killing the carts-db pod tests resilience of the carts service when its database is unavailable, which is a dependency for the authenticated orders journey.",
+            "motifs": [
+              "carts-db",
+              "pod-kill",
+              "database dependency",
+              "read-only golden journey"
+            ],
+            "target_service": "carts-db",
+            "id": "hyp-013",
+            "call_chain_position": "database dependency for carts service",
+            "action_or_target": "pod-kill",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=carts-db|action=pod-kill|position=database-dependency-for-carts-service",
+            "family_size": 3,
+            "family_members": [
+              "hyp-013",
+              "hyp-025",
+              "hyp-044"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Pod disruption",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 12
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-013-2b344e82.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-013-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-013",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-013-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-013-2b344e82.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-013-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-013",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-013-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-014",
+          "target_service": "catalogue",
+          "kind": "HTTPChaos",
+          "name": "yc-hyp-014-b9f8fef7",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-014-b9f8fef7.yaml",
+          "sha256": "aec665c70dc1640bb986f66f575375810b00c67dfe9e784e23abe93f6bdc6ae5",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Protocol/HTTP fault",
+          "hypothesis": {
+            "rationale": "Injecting HTTP abort faults on the catalogue service tests resilience of the browse step, a critical path in the business oracle, by simulating server errors or connection resets.",
+            "motifs": [
+              "catalogue",
+              "abort",
+              "read-only golden journey"
+            ],
+            "target_service": "catalogue",
+            "id": "hyp-014",
+            "call_chain_position": "catalogue browse step in authenticated orders journey",
+            "action_or_target": "abort",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=catalogue|action=abort|position=catalogue-browse-step-in-authenticated-orders-journey",
+            "family_size": 1,
+            "family_members": [
+              "hyp-014"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Protocol/HTTP fault",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 13
+          },
+          "http_route": {
+            "port": 80,
+            "path": "/catalogue*",
+            "source": "sock-shop-call-chain:front-end->catalogue"
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-014-b9f8fef7.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-014-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-014",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-014-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-014-b9f8fef7.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-014-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-014",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-014-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-015",
+          "target_service": "front-end",
+          "kind": "HTTPChaos",
+          "name": "yc-hyp-015-6b38fa58",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-015-6b38fa58.yaml",
+          "sha256": "f865861af48c068d54b91b404ba46639d27f244a088fe2ddb67b3df11f13bcab",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Protocol/HTTP fault",
+          "hypothesis": {
+            "rationale": "Injecting HTTP abort faults on the front-end service tests resilience of the entry point for all user interactions, potentially impacting the entire business oracle path by simulating server errors or connection resets.",
+            "motifs": [
+              "front-end",
+              "abort",
+              "read-only golden journey"
+            ],
+            "target_service": "front-end",
+            "id": "hyp-015",
+            "call_chain_position": "entry point for all user interactions",
+            "action_or_target": "abort",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=front-end|action=abort|position=entry-point-for-all-user-interactions",
+            "family_size": 2,
+            "family_members": [
+              "hyp-015",
+              "hyp-103"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Protocol/HTTP fault",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 14
+          },
+          "http_route": {
+            "port": 8079,
+            "path": "*",
+            "source": "sock-shop-call-chain:front-end-golden-journeys-live-probe"
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-015-6b38fa58.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-015-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-015",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-015-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-015-6b38fa58.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-015-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-015",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-015-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-016",
+          "target_service": "catalogue",
+          "kind": "StressChaos",
+          "name": "yc-hyp-016-b9b277f2",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-016-b9b277f2.yaml",
+          "sha256": "acaa30f30693ab798a980ecde0ee24c8b29e0c10186ae121767ef80794a4dfce",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "rationale": "Injecting CPU stress on the catalogue service tests resilience of the browse step under resource pressure, potentially causing slowdowns or timeouts in the business oracle path.",
+            "motifs": [
+              "catalogue",
+              "cpu-pressure",
+              "read-only golden journey"
+            ],
+            "target_service": "catalogue",
+            "id": "hyp-016",
+            "call_chain_position": "catalogue browse step in authenticated orders journey",
+            "action_or_target": "cpu",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=catalogue|action=cpu|position=catalogue-browse-step-in-authenticated-orders-journey",
+            "family_size": 3,
+            "family_members": [
+              "hyp-016",
+              "hyp-108",
+              "hyp-332"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Resource pressure",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 15
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-016-b9b277f2.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-016-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-016",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-016-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-016-b9b277f2.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-016-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-016",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-016-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-017",
+          "target_service": "orders",
+          "kind": "NetworkChaos",
+          "name": "yc-hyp-017-73c65ca7",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-017-73c65ca7.yaml",
+          "sha256": "cee6fd905d0b7f9d5095b7434789a444f8786372b54c2db57f6ebad5080af285",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "rationale": "Injecting network delay on the orders service tests resilience of the authenticated orders journey under latency, potentially causing timeouts or degraded performance in the core business oracle path.",
+            "motifs": [
+              "orders",
+              "network-delay",
+              "read-only golden journey"
+            ],
+            "target_service": "orders",
+            "id": "hyp-017",
+            "call_chain_position": "orders service in authenticated orders journey",
+            "action_or_target": "delay",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=orders|action=delay|position=orders-service-in-authenticated-orders-journey",
+            "family_size": 3,
+            "family_members": [
+              "hyp-017",
+              "hyp-146",
+              "hyp-230"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 16
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-017-73c65ca7.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-017-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-017",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-017-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-017-73c65ca7.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-017-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-017",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-017-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-018",
+          "target_service": "user",
+          "kind": "NetworkChaos",
+          "name": "yc-hyp-018-53fc3db7",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-018-53fc3db7.yaml",
+          "sha256": "c3b2bed0fb43b90b90ad2e62b5b0d4b0211c5a37bc282427e8288522c995edf4",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "rationale": "Injecting network delay on the user service tests resilience of the authentication step under latency, potentially causing timeouts or degraded performance in the demo login and authenticated orders journey.",
+            "motifs": [
+              "user",
+              "network-delay",
+              "authentication",
+              "read-only golden journey"
+            ],
+            "target_service": "user",
+            "id": "hyp-018",
+            "call_chain_position": "authentication step in authenticated orders journey",
+            "action_or_target": "delay",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=user|action=delay|position=authentication-step-in-authenticated-orders-journey",
+            "family_size": 2,
+            "family_members": [
+              "hyp-018",
+              "hyp-085"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 17
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-018-53fc3db7.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-018-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-018",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-018-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-018-53fc3db7.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-018-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-018",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-018-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-019",
+          "target_service": "carts",
+          "kind": "NetworkChaos",
+          "name": "yc-hyp-019-44e6edea",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-019-44e6edea.yaml",
+          "sha256": "43decbd8e643455d293572bce8b113fb2d285998662754dc2f05652d388138bd",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "rationale": "Injecting network delay on the carts service tests resilience of the carts dependency under latency, potentially causing timeouts or degraded performance in the authenticated orders journey.",
+            "motifs": [
+              "carts",
+              "network-delay",
+              "read-only golden journey"
+            ],
+            "target_service": "carts",
+            "id": "hyp-019",
+            "call_chain_position": "carts service in authenticated orders journey",
+            "action_or_target": "delay",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=carts|action=delay|position=carts-service-in-authenticated-orders-journey",
+            "family_size": 2,
+            "family_members": [
+              "hyp-019",
+              "hyp-123"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 18
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-019-44e6edea.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-019-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-019",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-019-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-019-44e6edea.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-019-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-019",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-019-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-020",
+          "target_service": "orders",
+          "kind": "HTTPChaos",
+          "name": "yc-hyp-020-63ef830b",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-020-63ef830b.yaml",
+          "sha256": "def87428442bb6759c4279d9136a3105d72ce45c83e3900044d64cbdc9fa1df4",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Protocol/HTTP fault",
+          "hypothesis": {
+            "rationale": "Injecting HTTP abort faults on the orders service tests resilience of the authenticated orders journey by simulating server errors or connection resets, which could directly impact the core business oracle path.",
+            "motifs": [
+              "orders",
+              "abort",
+              "read-only golden journey"
+            ],
+            "target_service": "orders",
+            "id": "hyp-020",
+            "call_chain_position": "orders service in authenticated orders journey",
+            "action_or_target": "abort",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=orders|action=abort|position=orders-service-in-authenticated-orders-journey",
+            "family_size": 2,
+            "family_members": [
+              "hyp-020",
+              "hyp-233"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Protocol/HTTP fault",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 19
+          },
+          "http_route": {
+            "port": 80,
+            "path": "/orders*",
+            "source": "sock-shop-call-chain:front-end->orders"
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-020-63ef830b.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-020-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-020",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-020-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-020-63ef830b.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-020-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-020",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-020-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-021",
+          "target_service": "user",
+          "kind": "HTTPChaos",
+          "name": "yc-hyp-021-a22b9c50",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-021-a22b9c50.yaml",
+          "sha256": "ebdaf675a5089048cf5bc31b869aa6afa1dff3e87e1af036866a299fbd66c3d3",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Protocol/HTTP fault",
+          "hypothesis": {
+            "rationale": "Injecting HTTP abort faults on the user service tests resilience of the authentication step by simulating server errors or connection resets, which could directly impact the demo login and authenticated orders journey.",
+            "motifs": [
+              "user",
+              "abort",
+              "authentication",
+              "read-only golden journey"
+            ],
+            "target_service": "user",
+            "id": "hyp-021",
+            "call_chain_position": "authentication step in authenticated orders journey",
+            "action_or_target": "abort",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=user|action=abort|position=authentication-step-in-authenticated-orders-journey",
+            "family_size": 2,
+            "family_members": [
+              "hyp-021",
+              "hyp-086"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Protocol/HTTP fault",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 20
+          },
+          "http_route": {
+            "port": 80,
+            "path": "/login*",
+            "source": "sock-shop-call-chain:front-end->user"
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-021-a22b9c50.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-021-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-021",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-021-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-021-a22b9c50.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-021-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-021",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-021-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-022",
+          "target_service": "carts-db",
+          "kind": "NetworkChaos",
+          "name": "yc-hyp-022-f1bf2955",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-022-f1bf2955.yaml",
+          "sha256": "13307ac6734f758d81319edc7f2ea49829052c142c777de9baf75faca6b440e9",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "rationale": "Injecting network delay on the carts-db pod tests resilience of the carts service when its database is slow, potentially causing timeouts or degraded performance in the authenticated orders journey.",
+            "motifs": [
+              "carts-db",
+              "network-delay",
+              "database dependency",
+              "read-only golden journey"
+            ],
+            "target_service": "carts-db",
+            "id": "hyp-022",
+            "call_chain_position": "database dependency for carts service",
+            "action_or_target": "delay",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=carts-db|action=delay|position=database-dependency-for-carts-service",
+            "family_size": 1,
+            "family_members": [
+              "hyp-022"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 21
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-022-f1bf2955.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-022-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-022",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-022-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-022-f1bf2955.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-022-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-022",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-022-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-023",
+          "target_service": "orders-db",
+          "kind": "NetworkChaos",
+          "name": "yc-hyp-023-1a45da75",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-023-1a45da75.yaml",
+          "sha256": "c2b47fb73df9e83b83501f99c8553bab01a20103f3a762eb70943c8643bc64b7",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "rationale": "Injecting network delay on the orders-db pod tests resilience of the orders service when its database is slow, potentially causing timeouts or degraded performance in the authenticated orders journey.",
+            "motifs": [
+              "orders-db",
+              "network-delay",
+              "database dependency",
+              "read-only golden journey"
+            ],
+            "target_service": "orders-db",
+            "id": "hyp-023",
+            "call_chain_position": "database dependency for orders service",
+            "action_or_target": "delay",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=orders-db|action=delay|position=database-dependency-for-orders-service",
+            "family_size": 2,
+            "family_members": [
+              "hyp-023",
+              "hyp-259"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 22
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-023-1a45da75.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-023-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-023",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-023-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-023-1a45da75.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-023-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-023",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-023-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-024",
+          "target_service": "catalogue-db",
+          "kind": "NetworkChaos",
+          "name": "yc-hyp-024-ebff3da7",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-024-ebff3da7.yaml",
+          "sha256": "d7997beed9bbe0fbf4951b14a6da24ee6c98d319552066bb7fed0dee50f11860",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "rationale": "Injecting network delay on the catalogue-db pod tests resilience of the catalogue service when its database is slow, potentially causing timeouts or degraded performance in the browse step of the business oracle.",
+            "motifs": [
+              "catalogue-db",
+              "network-delay",
+              "database dependency",
+              "read-only golden journey"
+            ],
+            "target_service": "catalogue-db",
+            "id": "hyp-024",
+            "call_chain_position": "database dependency for catalogue service",
+            "action_or_target": "delay",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=catalogue-db|action=delay|position=database-dependency-for-catalogue-service",
+            "family_size": 2,
+            "family_members": [
+              "hyp-024",
+              "hyp-192"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 23
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-024-ebff3da7.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-024-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-024",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-024-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-024-ebff3da7.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-024-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-024",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-024-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-026",
+          "target_service": "catalogue",
+          "kind": "StressChaos",
+          "name": "yc-hyp-026-163b9d14",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-026-163b9d14.yaml",
+          "sha256": "bc5b01ebceedebd1be95bd50ba37c92d53d61ed0ab1657f5331576912493169f",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Resource pressure",
+          "hypothesis": {
+            "rationale": "Injecting memory stress on the catalogue service tests resilience of the browse step under resource pressure, potentially causing slowdowns or OOM kills in the business oracle path.",
+            "motifs": [
+              "catalogue",
+              "memory-pressure",
+              "read-only golden journey"
+            ],
+            "target_service": "catalogue",
+            "id": "hyp-026",
+            "call_chain_position": "catalogue browse step in authenticated orders journey",
+            "action_or_target": "memory",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=catalogue|action=memory|position=catalogue-browse-step-in-authenticated-orders-journey",
+            "family_size": 2,
+            "family_members": [
+              "hyp-026",
+              "hyp-045"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Resource pressure",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 24
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-026-163b9d14.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-026-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-026",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-026-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-026-163b9d14.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-026-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-026",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-026-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-027",
+          "target_service": "shipping",
+          "kind": "NetworkChaos",
+          "name": "yc-hyp-027-d03739ee",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-027-d03739ee.yaml",
+          "sha256": "53c0cf3bd90954bd29bb39d177b6aeea80ea9db547fc407d4e203d0048cddf35",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "rationale": "Injecting network delay on the shipping service tests resilience of the order fulfillment step under latency, which may impact the authenticated orders journey if shipping is invoked during order processing.",
+            "motifs": [
+              "shipping",
+              "network-delay",
+              "order fulfillment",
+              "read-only golden journey"
+            ],
+            "target_service": "shipping",
+            "id": "hyp-027",
+            "call_chain_position": "shipping service in order fulfillment",
+            "action_or_target": "delay",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=shipping|action=delay|position=shipping-service-in-order-fulfillment",
+            "family_size": 1,
+            "family_members": [
+              "hyp-027"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 25
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-027-d03739ee.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-027-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-027",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-027-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-027-d03739ee.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-027-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-027",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-027-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            }
+          ]
+        },
+        {
+          "hypothesis_id": "hyp-028",
+          "target_service": "payment",
+          "kind": "NetworkChaos",
+          "name": "yc-hyp-028-ad8dbe75",
+          "path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-028-ad8dbe75.yaml",
+          "sha256": "09970373a1afbc735c30d7b3e162d106e02bdade8f81c59fb97944852b9a5c83",
+          "gate": {
+            "status": "passed",
+            "reason": "static_compiled"
+          },
+          "method": "chaosatlas-ablation-yaml15",
+          "category": "Network degradation",
+          "hypothesis": {
+            "rationale": "Injecting network delay on the payment service tests resilience of the payment dependency under latency, which could impact the authenticated orders journey if payment is invoked during order processing.",
+            "motifs": [
+              "payment",
+              "network-delay",
+              "read-only golden journey"
+            ],
+            "target_service": "payment",
+            "id": "hyp-028",
+            "call_chain_position": "payment service in authenticated orders journey",
+            "action_or_target": "delay",
+            "call_chain_position_source": "model_inference",
+            "discovery_family_key": "target=payment|action=delay|position=payment-service-in-authenticated-orders-journey",
+            "family_size": 1,
+            "family_members": [
+              "hyp-028"
+            ],
+            "representative_selection_reason": "first_generation_in_normalized_discovery_family",
+            "method": "chaosatlas-ablation-yaml15",
+            "category": "Network degradation",
+            "category_assignment": "posthoc_runtime_adapter",
+            "source_order": 26
+          },
+          "runtime_invocations": [
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-028-ad8dbe75.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-028-rep-1.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-028",
+                "--replicate",
+                "1",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-028-rep-1.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 0
+            },
+            {
+              "command": [
+                "C:\\Users\\23741\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+                "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\tools\\run_sock_shop_two_arm.py",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\mutations\\yc-hyp-028-ad8dbe75.yaml",
+                "--report",
+                "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-028-rep-2.json",
+                "--arm",
+                "chaosatlas-ablation-yaml15",
+                "--seed",
+                "0",
+                "--hypothesis-id",
+                "hyp-028",
+                "--replicate",
+                "2",
+                "--recovery-timeout",
+                "240.0"
+              ],
+              "report_path": "artifacts\\experiments\\chaosatlas_sockshop_ablation_yaml15_2026-08-16-r2\\runtime-exec-deepseek-r1\\methods\\chaosatlas-ablation-yaml15\\runtime_reports\\hyp-028-rep-2.json",
+              "execute_requested": true,
+              "executed": true,
+              "return_code": 2
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "timing_fields": [
+    "generation_seconds",
+    "compile_seconds",
+    "gate_seconds",
+    "runtime_seconds",
+    "washout_seconds",
+    "total_wall_clock_seconds"
+  ],
+  "recovery_timeout_seconds": 240.0,
+  "timing": {
+    "compile_seconds": 6207.203,
+    "gate_seconds": 0.0,
+    "runtime_seconds": 0.0,
+    "washout_seconds": 0.0,
+    "total_wall_clock_seconds": 6207.203
+  },
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}

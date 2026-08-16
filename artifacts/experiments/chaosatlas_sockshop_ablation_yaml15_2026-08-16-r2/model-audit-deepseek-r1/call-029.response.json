@@ -1,0 +1,32 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 6119,
+    "completion_tokens": 138,
+    "total_tokens": 6257,
+    "prompt_tokens_details": {
+      "cached_tokens": 3200
+    },
+    "prompt_cache_hit_tokens": 3200,
+    "prompt_cache_miss_tokens": 2919
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-029",
+      "target_service": "carts",
+      "action_or_target": "abort",
+      "call_chain_position": "carts service in authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "carts",
+        "abort",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting HTTP abort faults on the carts service tests resilience of the carts dependency by simulating server errors or connection resets, which could impact the authenticated orders journey if carts is invoked during order processing."
+    }
+  }
+}

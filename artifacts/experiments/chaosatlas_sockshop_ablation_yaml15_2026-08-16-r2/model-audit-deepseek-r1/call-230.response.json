@@ -1,0 +1,32 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 29606,
+    "completion_tokens": 128,
+    "total_tokens": 29734,
+    "prompt_tokens_details": {
+      "cached_tokens": 26624
+    },
+    "prompt_cache_hit_tokens": 26624,
+    "prompt_cache_miss_tokens": 2982
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-230",
+      "target_service": "orders",
+      "action_or_target": "delay",
+      "call_chain_position": "orders service in authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "orders",
+        "network-delay",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting network delay on the orders service tests resilience of the authenticated orders journey under latency, potentially causing timeouts or degraded performance in the core business oracle path."
+    }
+  }
+}

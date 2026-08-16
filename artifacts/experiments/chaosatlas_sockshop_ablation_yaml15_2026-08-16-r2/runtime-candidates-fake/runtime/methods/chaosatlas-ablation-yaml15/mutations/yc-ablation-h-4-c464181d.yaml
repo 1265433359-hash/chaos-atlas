@@ -1,0 +1,18 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: yc-ablation-h-4-c464181d
+  namespace: chaosatlas-sock-shop
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-sock-shop
+    labelSelectors:
+      name: catalogue-db
+  action: delay
+  duration: 30s
+  delay:
+    latency: 500ms
+    correlation: '100'
+    jitter: 0ms

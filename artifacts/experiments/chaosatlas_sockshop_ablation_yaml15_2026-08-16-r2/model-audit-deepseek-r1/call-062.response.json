@@ -1,0 +1,32 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 9989,
+    "completion_tokens": 150,
+    "total_tokens": 10139,
+    "prompt_tokens_details": {
+      "cached_tokens": 7040
+    },
+    "prompt_cache_hit_tokens": 7040,
+    "prompt_cache_miss_tokens": 2949
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-062",
+      "target_service": "front-end",
+      "action_or_target": "pod-kill",
+      "call_chain_position": "entry point for all user interactions",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "front-end",
+        "pod-kill",
+        "read-only golden journey"
+      ],
+      "rationale": "Killing the front-end pod directly impacts the entry point for all user interactions, causing immediate failure of the entire business oracle path including home, catalogue, login, and orders."
+    }
+  }
+}

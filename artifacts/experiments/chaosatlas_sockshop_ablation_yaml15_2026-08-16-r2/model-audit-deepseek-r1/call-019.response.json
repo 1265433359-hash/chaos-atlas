@@ -1,0 +1,32 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 5011,
+    "completion_tokens": 129,
+    "total_tokens": 5140,
+    "prompt_tokens_details": {
+      "cached_tokens": 2048
+    },
+    "prompt_cache_hit_tokens": 2048,
+    "prompt_cache_miss_tokens": 2963
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-019",
+      "target_service": "carts",
+      "action_or_target": "delay",
+      "call_chain_position": "carts service in authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "carts",
+        "network-delay",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting network delay on the carts service tests resilience of the carts dependency under latency, potentially causing timeouts or degraded performance in the authenticated orders journey."
+    }
+  }
+}

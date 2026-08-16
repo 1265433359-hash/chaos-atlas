@@ -1,0 +1,32 @@
+{
+  "schema_version": "sock-shop-ablation-model-response-audit-v1",
+  "model": "deepseek-v4-flash",
+  "usage": {
+    "prompt_tokens": 41501,
+    "completion_tokens": 130,
+    "total_tokens": 41631,
+    "prompt_tokens_details": {
+      "cached_tokens": 38528
+    },
+    "prompt_cache_hit_tokens": 38528,
+    "prompt_cache_miss_tokens": 2973
+  },
+  "message": {
+    "stop": false,
+    "stop_reason": null,
+    "continue_generation": true,
+    "hypothesis": {
+      "id": "hyp-332",
+      "target_service": "catalogue",
+      "action_or_target": "cpu",
+      "call_chain_position": "catalogue browse step in authenticated orders journey",
+      "call_chain_position_source": "model_inference",
+      "motifs": [
+        "catalogue",
+        "cpu-pressure",
+        "read-only golden journey"
+      ],
+      "rationale": "Injecting CPU stress on the catalogue service tests resilience of the browse step under resource pressure, potentially causing slowdowns or timeouts in the business oracle path."
+    }
+  }
+}
