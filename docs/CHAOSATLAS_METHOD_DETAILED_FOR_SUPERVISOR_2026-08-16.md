@@ -100,31 +100,62 @@ ChaosAtlas 将以下概念严格区分：
 
 ## 3. 前三个真实项目：框架验证阶段
 
-### 3.1 实验目的
+### 3.1 为什么选择这三个项目
 
-Online Boutique、OpenTelemetry Demo 和 Train Ticket 的作用是验证初始框架，而不是验证后续的知识增强方法。三个项目分别提供：
+前三个项目不是为了堆叠项目数量，也不是按照某个单一故障动作挑选，而是用于验证初始框架能否迁移到结构、调用关系和观测条件不同的真实微服务系统。选择依据有四个：
 
-| 项目 | 框架验证重点 |
-|---|---|
-| Online Boutique | 电商 checkout 路径、同步下游故障传播、timeout/deadline 和降级边界 |
-| OpenTelemetry Demo | 多语言服务、trace 证据、错误传播和错误服务标识一致性 |
-| Train Ticket | 复杂业务路径、客户端 timeout、源码实现与实际可达路径的一致性 |
+1. 项目必须有真实的多服务依赖和可执行的端到端业务路径；
+2. 项目必须能够在固定版本和本地 Kubernetes 环境中重复部署；
+3. 业务结果必须能够通过页面、API、响应码、延迟或 trace 观察；
+4. 三个项目之间要有足够的结构差异，避免 TestNode 和证据链只适用于某一个项目的服务命名。
 
-三个项目共同验证：ChaosAtlas 能把真实部署事实、源码/调用链和 Chaos 运行证据结合起来，形成可提交、可复现的 issue。阶段二共形成 6 个已提交 GitHub issue，分布为 Online Boutique 3 个、OpenTelemetry Demo 1 个、Train Ticket 2 个。
+| 项目 | 选择原因 | 主要验证重点 |
+|---|---|---|
+| Online Boutique | Google 的云原生电商演示系统，部署资料完整，首页、购物车和 checkout 路径清晰，并且包含多个同步下游服务。 | 下游不可用、延迟和丢包如何传播到核心业务，以及调用方的 timeout、deadline 和降级边界。 |
+| OpenTelemetry Demo | 多语言微服务组成，带有丰富的日志、指标和 trace 观测，适合检验复杂观测条件下的错误传播和错误标识。 | 跨服务调用、trace 证据、错误传播，以及报告的错误服务是否与实际故障服务一致。 |
+| Train Ticket | 业务服务数量多、业务流程真实，既能部署和重复运行，又能检验源码实现与实际生产可达路径是否一致。 | 调用契约、客户端 timeout、下游路径可达性，以及“代码中存在但业务路径未必经过”的情况。 |
 
-### 3.2 阶段二的执行步骤
+三个项目共同形成互补验证面：Online Boutique 强调业务下游传播，OpenTelemetry Demo 强调多语言调用链和观测证据，Train Ticket 强调复杂业务路径和可达性核对。这个选择支持方法迁移性的工程验证，但不宣称三个项目构成所有微服务系统的统计代表样本。
 
-1. 固定项目仓库、commit、镜像和部署清单。
-2. 读取真实 YAML，提取 kind、action、selector、duration、intensity 和目标服务。
-3. 建立项目服务清单、业务入口、调用关系和观测入口。
-4. 为候选故障建立 TestNode 和局部影响子图。
-5. 运行 baseline，确认业务路径在无故障时稳定通过。
-6. 对候选 mutation 做静态检查、目标核对和平台前置条件检查。
-7. 按 baseline -> 注入 -> 观测 -> 删除 -> 恢复 -> washout 执行。
-8. 分析服务日志、HTTP 响应、指标、事件和 trace，区分业务现象与具体根因。
-9. 对可复现、证据充分的问题形成 GitHub issue；不能充分证明的结果保留为 pending 审核材料。
+### 3.2 三项目实验的实际执行步骤
 
-阶段二的贡献是验证“框架是否能工作”，包括 TestNode、调用链位置、适用性门禁、业务 oracle 和证据链；它还为后续知识卡片、契约规则、反例边界和跨项目选择经验的迭代提供了真实证据。
+阶段二使用的是 ChaosAtlas 初始框架，核心目标是证明“从真实 YAML 到可复核 issue”的闭环能够工作。每个项目按以下步骤执行：
+
+1. **冻结项目事实**：固定仓库 commit、镜像、部署清单、命名空间、服务清单和业务入口，记录部署输入及相关文件 hash。
+2. **建立项目地图**：整理 Deployment、Service、Pod、端口、业务入口、下游依赖、源码候选调用和日志/指标/trace 入口，形成项目级服务事实表。
+3. **把 YAML 转成 TestNode**：读取真实 Chaos YAML 的 kind、action、selector、duration、intensity 和目标服务；再绑定业务路径、调用链位置、适用条件、预期现象和证据入口。YAML 只是故障意图，不直接等同于问题。
+4. **建立局部影响子图**：连接故障目标、调用方、下游服务、数据库/消息队列、业务 oracle 和观测节点，先判断目标是否位于当前业务路径上。
+5. **执行 baseline 和 gate**：确认无故障业务路径稳定通过，再检查目标存在性、selector、真实端口/路径、协议匹配、平台支持和 server-side dry-run；gate 失败单独记录，不伪造 runtime 结果。
+6. **执行有界故障生命周期**：按 baseline -> 注入 -> 确认 injected -> 业务观测 -> 删除 Chaos 资源 -> 恢复 -> washout 执行，并记录资源状态、业务响应、事件和诊断日志。
+7. **结合静态与运行时证据分析**：将源码/配置中的 timeout、fallback、错误处理和路径实现，与注入期间的 HTTP 响应、延迟、服务日志、trace 和 Kubernetes 事件对应起来。
+8. **形成 issue 或保留 pending**：只有现象能够复现、业务影响明确、证据可以回链且没有把未经证明的内部机制写成事实时，才形成 GitHub issue；证据不足的结果保留为 pending 审核材料。
+
+### 3.3 三项目的实际发现和外部结果
+
+阶段二共形成 6 个已提交 GitHub issue。它们不是模型生成的“可能问题”清单，而是经过部署事实、业务 oracle、运行时故障和源码/日志分析后的外部报告：
+
+| 项目 | 实际发现 | GitHub issue | 证据含义 |
+|---|---|---|---|
+| Online Boutique | `productcatalogservice` 不可用时首页返回 HTTP 500 | [`microservices-demo#3473`](https://github.com/GoogleCloudPlatform/microservices-demo/issues/3473) | 核心首页路径缺少等价降级，属于业务路径上的可复现故障传播。 |
+| Online Boutique | checkout 在 payment、shipping 或 email 延迟/不可用时持续等待 | [`microservices-demo#3474`](https://github.com/GoogleCloudPlatform/microservices-demo/issues/3474) | 多个同步下游的等待和错误边界未形成一致的业务级保护。 |
+| Online Boutique | paymentservice 延迟 2 秒后触发 probe，容器被重启 | [`microservices-demo#3475`](https://github.com/GoogleCloudPlatform/microservices-demo/issues/3475) | 探针阈值与服务实际处理/等待行为之间存在可观测的重启风险。 |
+| OpenTelemetry Demo | shipping quote 失败时，错误报告错误地指向 email service | [`opentelemetry-demo#3818`](https://github.com/open-telemetry/opentelemetry-demo/issues/3818) | 故障传播后的错误服务标识与真实失败服务不一致，影响诊断和用户反馈。 |
+| Train Ticket | 出站延迟 3 秒时，station lookup 超过客户端 timeout | [`train-ticket#311`](https://github.com/FudanSELab/train-ticket/issues/311) | 客户端 timeout 与下游调用延迟边界不协调，业务请求被截断或失败。 |
+| Train Ticket | `/order/refresh` 可能跳过 `ts-order-service` 到 `ts-station-service` 的 station-name 查询 | [`train-ticket#310`](https://github.com/FudanSELab/train-ticket/issues/310) | 源码中存在的调用并不必然经过当前业务路径，暴露了调用路径可达性与预期不一致。 |
+
+这 6 个 issue 的具体提交状态和链接由 `reporting/submission_index.md`、`reporting/tracking.md` 维护。issue 是否已经被上游修复或回复，不是 ChaosAtlas 发现能力成立的必要条件；论文应区分“我们发现并提交了问题”和“上游是否接受或修复问题”。
+
+### 3.4 三项目共性结论与边界
+
+三个项目虽然不是同一段代码，也不是同一个可直接合并的 bug，但在抽象层面暴露出同一个问题族：**跨服务同步调用的 timeout/deadline、降级和错误传播边界不完整或不一致**。当下游延迟、丢包、不可用或返回异常时，调用方可能等待过久、把故障继续传播到业务路径，或者报告错误的服务/错误类型。
+
+跨项目证据表现为：
+
+- **Online Boutique**：payment 延迟几乎全量传导到 checkout，丢包可持续到调用方 deadline；product catalog 不可用时核心首页没有等价降级。
+- **OpenTelemetry Demo**：checkout 链路中的 payment/shipping 调用在特定路径上缺少有效的 timeout/deadline 保护，故障能够传播到业务调用方；shipping 失败还会产生错误服务标识。
+- **Train Ticket**：station 查询延迟直接暴露客户端 timeout 边界；`/order/refresh` 的可达性分析则证明“有实现”不等于“生产路径一定经过”。
+
+因此，三项目阶段支持的克制结论是：ChaosAtlas 能把 TestNode、调用契约、timeout/deadline、降级/错误边界、业务 oracle、源码核对和证据链分析模式迁移到不同真实项目，并发现可以提交、可以复现、可以回链的 issue。它是初始框架有效性验证，不是最终 Full 方法的完整性能对比；后续 Sock Shop 才加入知识闭环、项目知识视图和更严格的路径/契约约束。
 
 ## 4. Sock Shop 上的改进后 ChaosAtlas-full
 
@@ -275,7 +306,72 @@ Sock Shop 阶段真正增加的是知识和证据的可复用性，以及面向�
 - ChaosEater 的 2 个 availability/readiness 结果可以和 Full/Ablation 的业务 weakness 直接排名；
 - pending 审核结果已经自动写入知识库。
 
-## 8. 建议补充到论文主线的内容
+## 8. ChaosEater 官方原生流程对比实验
+
+### 8.1 对比实验的定位
+
+ChaosEater 是论文中的外部方法参照。它与 ChaosAtlas 都在真实 Kubernetes 微服务系统上使用 LLM 生成故障假设并执行 Chaos Mesh，但两者的核心输入和测量层不同：ChaosEater 以稳态、故障生成、实验分析和 manifest 重配置为主；ChaosAtlas 以 TestNode、局部影响子图、适用性 gate、业务 oracle、证据链和知识闭环为主。
+
+因此，本实验的目的不是把两个方法强行压成一个分数，而是回答两个问题：
+
+1. 官方 ChaosEater 原生流程能否在当前真实 Sock Shop 环境中复现并产生可验证结果；
+2. ChaosAtlas 的业务路径/调用契约测量层与 ChaosEater 的 availability/readiness 测量层分别能看到什么问题，二者是互补还是重复。
+
+### 8.2 实验条件和公平性边界
+
+| 维度 | 论文中的 ChaosEater 条件 | 当前原生复现条件 |
+|---|---|---|
+| 实现 | 官方 ChaosEater | 官方 ChaosEater，commit `47c4e44` |
+| Sock Shop 入口 | 官方 `examples/sock-shop-2` | 相同入口 |
+| 执行次数 | 5 次 | 5 次 |
+| 集群/故障执行 | Kubernetes + Chaos Mesh | 真实 Kind/Kubernetes + Chaos Mesh |
+| 模型 | `gpt-4o-2024-08-06` | DeepSeek |
+| 参数 | `temperature=0`、`seed=42` | `temperature=0`、`seed=42` |
+| LLM-as-a-judge | 论文脚本包含评审阶段 | `num_review_samples=0`，未运行评审阶段 |
+| 输入边界 | ChaosEater 官方 manifest、prompt 和原生流程 | 只提供 ChaosEater 官方流程所需输入，不注入 ChaosAtlas 知识库 |
+
+这意味着当前结果是**官方流程的真实原生复现**，但不是 GPT-4o 条件下的逐字逐结果复现。即使温度和 seed 相同，不同模型仍会改变假设内容、排序、停止轨迹和重配置建议；没有运行 judge 阶段也会改变最终评价报告。因此论文应把模型、judge、集群版本、镜像和网络条件作为复现差异明确报告。
+
+### 8.3 ChaosEater 原生流程步骤
+
+1. 固定官方 ChaosEater 仓库 commit、Sock Shop 示例入口、Kubernetes manifest 和运行环境。
+2. 部署 Sock Shop，建立官方流程使用的 steady state，并确认服务能够正常运行。
+3. 按官方流程让模型生成 steady-state hypotheses、场景假设和初始故障假设，记录原始响应和调用轨迹。
+4. 将可执行故障假设转成 Chaos Mesh 实验，执行故障注入、系统观测和结果分析。
+5. 让官方流程根据分析结果尝试提出 Kubernetes manifest 重配置建议；原始输出与实际运行结果分开保存。
+6. 重复 5 次，汇总场景假设、steady-state 假设、可执行初始故障假设和实际可验证的弱点。
+7. 由于当前没有运行 LLM-as-a-judge，只将原生执行输出和机器证据作为阶段性结果，不把它写成论文 judge 后的等价评分。
+
+### 8.4 ChaosEater 当前复现结果
+
+5 次原生运行得到：
+
+| 结果层 | 数量 | 解释 |
+|---|---:|---|
+| 场景假设 | 4 | 官方流程生成的实验场景层候选。 |
+| steady-state 假设 | 8 | 官方流程用于描述系统正常状态和可用性条件的候选。 |
+| 可执行初始故障假设 | 12 | 经过原生流程后进入实际故障实验的初始假设。 |
+| 实际确认的弱点类型 | 2 | 在当前环境和当前测量层下得到稳定、可验证的可用性/恢复现象。 |
+
+这 2 类实际确认的弱点是：
+
+1. **front-end 单副本导致单点故障**：杀掉唯一实例后，系统出现可观测的可用性下降；
+2. **readiness/recovery 延迟过长**：故障后实例恢复和重新可用的时间过长，影响业务可用性窗口。
+
+### 8.5 与 ChaosAtlas 结果的理解
+
+ChaosEater 当前测量的是 availability/readiness 层，重点是“服务实例是否还在、是否达到 Ready、恢复是否及时”；ChaosAtlas Full/Ablation 主线测量的是业务 oracle 层，重点是“调用是否成功、请求是否超时、错误是否传播、业务 journey 是否失败”。因此：
+
+- ChaosEater 的 front-end 单副本和 readiness/recovery 问题属于部署可用性/恢复层；
+- ChaosAtlas 的 15 个 Full 稳定 weakness 和 9 个 Ablation 稳定 weakness 属于业务 mutation family 层；
+- 两组数字不能直接相加、计算覆盖率或排序谁发现得更多；
+- 当前实验更适合表述为两种测量层的分层参照：ChaosEater 能发现部署可用性弱点，ChaosAtlas 能沿业务路径验证调用契约和故障传播。
+
+当前允许写成：ChaosAtlas 工作区完成了官方 ChaosEater 原生流程的真实复现；在当前 DeepSeek、Kind、Chaos Mesh 和未启用 judge 的条件下，ChaosEater 发现了 front-end 单副本和恢复/readiness 相关可用性弱点；该结果为 ChaosAtlas 的业务 oracle 和证据链方法提供了外部参照。
+
+当前不能写成：已经完成 GPT-4o、同集群、同 judge、同测量层的严格三方法公平比较；ChaosAtlas 已经全面优于 ChaosEater；15、9、2 可以作为三种方法的统一弱点排名；或 `ChaosEater-adapter` 等同于官方完整 ChaosEater。`ChaosEater-adapter` 仍属于辅助历史材料，不能替代本节的官方原生结果。
+
+## 9. 建议补充到论文主线的内容
 
 当前主线已经有阶段划分、项目选择、方法演进、结果数字和边界，但建议再补充以下内容：
 
@@ -286,9 +382,9 @@ Sock Shop 阶段真正增加的是知识和证据的可复用性，以及面向�
 5. **失败候选的处理**：将 static gate rejected、platform blocked、not reachable、no business impact 和 unstable 分开列出，不能把未注入候选当作负例。
 6. **证据链与复现信息**：在每个 headline 数字后附 machine ledger、报告 SHA-256、日志/events/trace 入口和 `human_review=pending` 状态。
 7. **公平性与限制**：说明 Full/Ablation 使用共同 runtime 协议，但不共享候选池、不使用相同 runtime 候选数量，因此当前比较是端到端描述性对照，不是严格同候选池 superiority test。
-8. **结果解释层次**：主表先报告稳定 weakness 数量，问题面重合、ChaosEater coverage 和 same-pool 结果放到补充材料或历史附录。
+8. **结果解释层次**：主表先报告稳定 weakness 数量，问题面重合、ChaosEater 分层参照和 same-pool 结果放到补充材料或历史附录。
 
-## 9. 当前证据入口
+## 10. 当前证据入口
 
 - 论文主线：`docs/CHAOSATLAS_PAPER_MAINLINE.md`
 - Sock Shop 阶段审核：`docs/SOCK_SHOP_THREE_METHOD_STAGE_REVIEW_2026-08-16.md`
