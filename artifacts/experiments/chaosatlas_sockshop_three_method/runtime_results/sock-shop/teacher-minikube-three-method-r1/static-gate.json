@@ -1,0 +1,31 @@
+{
+  "schema_version": "sock-shop-three-method-v1",
+  "project_id": "SockShop",
+  "namespace": "sock-shop",
+  "context": "minikube",
+  "native_skaffold_input": {
+    "status": "pass",
+    "skaffold": "artifacts/experiments/chaos_eater_deployed/improvement/mod_0/sock-shop-2/skaffold.yaml",
+    "manifest_count": 29
+  },
+  "server_side_dry_run": {
+    "namespace_object": "pass",
+    "namespaced_objects": "pass",
+    "note": "Namespace must exist before validating namespaced objects; validating the whole directory in one dry-run reports namespace-not-found for later files."
+  },
+  "resource_capacity": {
+    "node": "minikube",
+    "status": "pass",
+    "cpu_capacity": "16",
+    "memory_capacity": "31656000Ki",
+    "pods_capacity": "110"
+  },
+  "official_chaoseater": {
+    "status": "environment_blocked",
+    "reason": "No skaffold executable, ChaosEater runner, or official ChaosEater image is available in the local execution environment.",
+    "native_input_retained": true,
+    "adapter_substitution_allowed": false
+  },
+  "runtime_apply_allowed": true,
+  "human_review": "pending"
+}

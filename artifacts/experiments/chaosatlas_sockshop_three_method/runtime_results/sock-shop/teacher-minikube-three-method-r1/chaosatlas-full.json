@@ -1,0 +1,489 @@
+{
+  "schema_version": "sock-shop-three-method-v1",
+  "project_id": "SockShop",
+  "method_id": "ChaosAtlas-full",
+  "replicate": 1,
+  "namespace": "sock-shop",
+  "mutation": {
+    "path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_sockshop_three_method/runtime_results/sock-shop/teacher-minikube-three-method-r1/mutations/front-end-pod-kill.yaml",
+    "sha256": "6bd9c2908e3226aee36ffd47d204df59250973e7238b8e06bc215c1179dd8eaa"
+  },
+  "baseline": {
+    "pass": true,
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 31.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 31.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 15.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 0.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      }
+    ],
+    "namespace_health": {
+      "pass": true,
+      "deployments": [
+        {
+          "name": "carts",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "carts-db",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "catalogue",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "catalogue-db",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "front-end",
+          "desired": 3,
+          "ready": 3,
+          "available": 3,
+          "updated": 3
+        },
+        {
+          "name": "orders",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "orders-db",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "payment",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "queue-master",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "rabbitmq",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "session-db",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "shipping",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "user",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "user-db",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        }
+      ],
+      "pods": [
+        {
+          "name": "front-end-65888758d4-c76dk",
+          "uid": "418b1882-c720-491d-8dac-697eef02f715",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "front-end-65888758d4-mbtg2",
+          "uid": "229ff927-b543-4272-8e8a-aa5220dcbcfb",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "front-end-65888758d4-mtdx2",
+          "uid": "71e071e8-dc03-4a64-a65b-f72b6393b75f",
+          "ready": true,
+          "terminating": false
+        }
+      ],
+      "stable_checks": 3
+    }
+  },
+  "injection": {
+    "applied": true,
+    "injected": true,
+    "status": {
+      "injected_count": 1,
+      "recovered_count": 0,
+      "conditions": [
+        {
+          "status": "False",
+          "type": "AllRecovered"
+        },
+        {
+          "status": "False",
+          "type": "Paused"
+        },
+        {
+          "status": "True",
+          "type": "Selected"
+        },
+        {
+          "status": "True",
+          "type": "AllInjected"
+        }
+      ]
+    }
+  },
+  "observation": {
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 32.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 31.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 31.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 31.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 31.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 31.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      }
+    ]
+  },
+  "recovery": {
+    "recovered": true,
+    "namespace_health": {
+      "pass": true,
+      "deployments": [
+        {
+          "name": "carts",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "carts-db",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "catalogue",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "catalogue-db",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "front-end",
+          "desired": 3,
+          "ready": 3,
+          "available": 3,
+          "updated": 3
+        },
+        {
+          "name": "orders",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "orders-db",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "payment",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "queue-master",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "rabbitmq",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "session-db",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "shipping",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "user",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        },
+        {
+          "name": "user-db",
+          "desired": 1,
+          "ready": 1,
+          "available": 1,
+          "updated": 1
+        }
+      ],
+      "pods": [
+        {
+          "name": "front-end-65888758d4-c76dk",
+          "uid": "418b1882-c720-491d-8dac-697eef02f715",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "front-end-65888758d4-mbtg2",
+          "uid": "229ff927-b543-4272-8e8a-aa5220dcbcfb",
+          "ready": true,
+          "terminating": false
+        },
+        {
+          "name": "front-end-65888758d4-vv5x2",
+          "uid": "637f14ad-942a-4f58-b9a1-9b922a56d1ef",
+          "ready": true,
+          "terminating": false
+        }
+      ],
+      "stable_checks": 3
+    }
+  },
+  "cleanup": {
+    "delete_code": 0,
+    "delete_output": "podchaos.chaos-mesh.org \"sockshop-front-end-pod-kill\" deleted from sock-shop namespace",
+    "absent_confirmed": true,
+    "residual_resources": []
+  },
+  "washout": {
+    "stable": true,
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 46.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 15.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 46.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 15.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 31.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 31.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 31.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 16.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      },
+      {
+        "status_code": 200,
+        "latency_ms": 15.0,
+        "body_sha256": "d249b9890d2e37674daf4cffbebf40ca52a339fea8e2a850e50d46c7e7e1cbd7",
+        "error": null
+      }
+    ]
+  },
+  "diagnostics": {
+    "logs": {
+      "front-end": {
+        "path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_sockshop_three_method/runtime_results/sock-shop/teacher-minikube-three-method-r1/chaosatlas-full.front-end.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "captured"
+      },
+      "carts": {
+        "path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_sockshop_three_method/runtime_results/sock-shop/teacher-minikube-three-method-r1/chaosatlas-full.carts.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": "captured"
+      },
+      "catalogue": {
+        "path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_sockshop_three_method/runtime_results/sock-shop/teacher-minikube-three-method-r1/chaosatlas-full.catalogue.log",
+        "sha256": "e20d15fe111dc78055e71452836c7e769a0f2b51a6cd17a8d0278cd5c67a1b79",
+        "status": "captured"
+      }
+    },
+    "events": {
+      "path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_sockshop_three_method/runtime_results/sock-shop/teacher-minikube-three-method-r1/chaosatlas-full.events.json",
+      "sha256": "f3e6b704d08cb1298ec3cfa750b8078e9146231a8523ad9cf99ed6017910128b",
+      "status": "captured"
+    },
+    "zipkin": {
+      "path": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/experiments/chaosatlas_sockshop_three_method/runtime_results/sock-shop/teacher-minikube-three-method-r1/chaosatlas-full.zipkin.json",
+      "sha256": "c7ec90024fd84647b70665362eebb9645a5da248105461ff7011f6ab7f558905",
+      "status": "unavailable"
+    }
+  },
+  "human_review": "pending",
+  "status": "completed",
+  "started_at": "2026-08-13T09:16:46.116989+00:00",
+  "errors": [],
+  "apply": {
+    "return_code": 0,
+    "stdout": "podchaos.chaos-mesh.org/sockshop-front-end-pod-kill created",
+    "stderr": ""
+  },
+  "comparison": {
+    "eligible": true,
+    "reasons": []
+  },
+  "finished_at": "2026-08-13T09:17:47.325540+00:00"
+}

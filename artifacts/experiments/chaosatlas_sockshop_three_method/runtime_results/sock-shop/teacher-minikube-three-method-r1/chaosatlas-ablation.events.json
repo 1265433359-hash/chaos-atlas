@@ -1,0 +1,5057 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "status": "captured",
+  "capture_since": "2026-08-13T09:18:21.338676+00:00",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "carts-65c6d779c-m56t9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185819",
+        "uid": "d16e3f38-446c-41a7-bc0d-9380e1765188"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Successfully assigned sock-shop/carts-65c6d779c-m56t9 to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "carts-65c6d779c-m56t9.18cb524d2b9debb8",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185838",
+        "uid": "59962c09-a43a-4edf-a48c-1e3b0bcd4abc"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{carts}",
+        "kind": "Pod",
+        "name": "carts-65c6d779c-m56t9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185830",
+        "uid": "d16e3f38-446c-41a7-bc0d-9380e1765188"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Pulling image \"weaveworksdemos/carts:0.4.8\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "carts-65c6d779c-m56t9.18cb524d7c1413d8",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186015",
+        "uid": "a1f4871f-3e65-4842-bff7-02ebd545ad42"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:41Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{carts}",
+        "kind": "Pod",
+        "name": "carts-65c6d779c-m56t9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185830",
+        "uid": "d16e3f38-446c-41a7-bc0d-9380e1765188"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:41Z",
+      "message": "Successfully pulled image \"weaveworksdemos/carts:0.4.8\" in 11.32s (11.32s including waiting). Image size: 197631354 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:41Z",
+        "name": "carts-65c6d779c-m56t9.18cb52501ed37105",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186085",
+        "uid": "593c1da5-b9a1-49c4-b476-3e44133d8415"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:41Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{carts}",
+        "kind": "Pod",
+        "name": "carts-65c6d779c-m56t9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185830",
+        "uid": "d16e3f38-446c-41a7-bc0d-9380e1765188"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:41Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:41Z",
+        "name": "carts-65c6d779c-m56t9.18cb52503e691528",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186089",
+        "uid": "b520aa66-9f4c-4152-b8ef-db0f989e1bfa"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:41Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{carts}",
+        "kind": "Pod",
+        "name": "carts-65c6d779c-m56t9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185830",
+        "uid": "d16e3f38-446c-41a7-bc0d-9380e1765188"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:41Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:41Z",
+        "name": "carts-65c6d779c-m56t9.18cb525045bfcdea",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186090",
+        "uid": "8fa1a4f2-66af-46c4-b9bf-db8a670ea965"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "carts-65c6d779c",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185808",
+        "uid": "31cbf652-6396-4b79-a3d4-de174384349d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Created pod: carts-65c6d779c-m56t9",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "carts-65c6d779c.18cb524d2aae9f04",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185824",
+        "uid": "3c4fbae8-de9f-4c43-bc9f-f87e20e5310e"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "carts-db-6cd6456c45-6xvpg",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185818",
+        "uid": "1f4dd93d-ad59-4477-aa10-8aa17b509f49"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Successfully assigned sock-shop/carts-db-6cd6456c45-6xvpg to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "carts-db-6cd6456c45-6xvpg.18cb524d2b9deb3f",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185835",
+        "uid": "8fac2b9e-a1c9-48fa-85fb-4573430973cd"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{carts-db}",
+        "kind": "Pod",
+        "name": "carts-db-6cd6456c45-6xvpg",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185831",
+        "uid": "1f4dd93d-ad59-4477-aa10-8aa17b509f49"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Pulling image \"mongo\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "carts-db-6cd6456c45-6xvpg.18cb524d7c2b7a87",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186020",
+        "uid": "84c83fe8-08d8-4c12-a002-20014409f4d3"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:33Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{carts-db}",
+        "kind": "Pod",
+        "name": "carts-db-6cd6456c45-6xvpg",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185831",
+        "uid": "1f4dd93d-ad59-4477-aa10-8aa17b509f49"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:33Z",
+      "message": "Successfully pulled image \"mongo\" in 33.913s (1m3.173s including waiting). Image size: 947372301 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:33Z",
+        "name": "carts-db-6cd6456c45-6xvpg.18cb525c31763eb4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186181",
+        "uid": "04742ac5-16f8-46eb-8a9e-25f7bc687c5e"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:33Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{carts-db}",
+        "kind": "Pod",
+        "name": "carts-db-6cd6456c45-6xvpg",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185831",
+        "uid": "1f4dd93d-ad59-4477-aa10-8aa17b509f49"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:33Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:33Z",
+        "name": "carts-db-6cd6456c45-6xvpg.18cb525c397a3a6c",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186182",
+        "uid": "0add8d1c-28e9-4e56-b24f-0b5420b7d94c"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:33Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{carts-db}",
+        "kind": "Pod",
+        "name": "carts-db-6cd6456c45-6xvpg",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185831",
+        "uid": "1f4dd93d-ad59-4477-aa10-8aa17b509f49"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:33Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:33Z",
+        "name": "carts-db-6cd6456c45-6xvpg.18cb525c3f9ad9b3",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186184",
+        "uid": "0f59c01a-bf93-4ebb-ba32-759df5c50a84"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "carts-db-6cd6456c45",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185813",
+        "uid": "c6ca258e-c1fe-40a1-a258-afc490aaa4ba"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Created pod: carts-db-6cd6456c45-6xvpg",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "carts-db-6cd6456c45.18cb524d2aaea0fd",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185828",
+        "uid": "e9a6e68f-5172-4c6c-9060-b8cb71deb90c"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "carts-db",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185809",
+        "uid": "2c09af4b-a646-4821-bd14-a45d2bbd4bc5"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Scaled up replica set carts-db-6cd6456c45 from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "carts-db.18cb524d29d43876",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185816",
+        "uid": "fdb941a7-add3-4fe6-8af0-216919781e44"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "carts",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185805",
+        "uid": "d647b53b-5809-4114-9449-ea4ec27ea9c7"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Scaled up replica set carts-65c6d779c from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "carts.18cb524d291f11e6",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185814",
+        "uid": "a21c9ff2-db66-493c-9b5d-ea9f448aacf0"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "catalogue-7dcfc9c778-nvfqb",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185840",
+        "uid": "dc751fbf-63f6-48a7-af0f-7f9d0c4dbb6c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Successfully assigned sock-shop/catalogue-7dcfc9c778-nvfqb to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "catalogue-7dcfc9c778-nvfqb.18cb524d2d87f7dc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185849",
+        "uid": "1dbbe502-0568-4b01-b248-9afbb3cc81ca"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{catalogue}",
+        "kind": "Pod",
+        "name": "catalogue-7dcfc9c778-nvfqb",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185847",
+        "uid": "dc751fbf-63f6-48a7-af0f-7f9d0c4dbb6c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Pulling image \"weaveworksdemos/catalogue:0.3.5\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "catalogue-7dcfc9c778-nvfqb.18cb524d7c15000c",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186017",
+        "uid": "1a52b39c-333b-4834-853f-5aa864ea94e1"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:47Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{catalogue}",
+        "kind": "Pod",
+        "name": "catalogue-7dcfc9c778-nvfqb",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185847",
+        "uid": "dc751fbf-63f6-48a7-af0f-7f9d0c4dbb6c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:47Z",
+      "message": "Successfully pulled image \"weaveworksdemos/catalogue:0.3.5\" in 6.369s (17.689s including waiting). Image size: 41221511 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:47Z",
+        "name": "catalogue-7dcfc9c778-nvfqb.18cb52519a771309",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186104",
+        "uid": "fbc7fd33-3c5d-4f3c-ae3e-70068162e46c"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:47Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{catalogue}",
+        "kind": "Pod",
+        "name": "catalogue-7dcfc9c778-nvfqb",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185847",
+        "uid": "dc751fbf-63f6-48a7-af0f-7f9d0c4dbb6c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:47Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:47Z",
+        "name": "catalogue-7dcfc9c778-nvfqb.18cb5251a1259963",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186105",
+        "uid": "70a900e0-77df-4c8b-b46c-81812fe4a58a"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:48Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{catalogue}",
+        "kind": "Pod",
+        "name": "catalogue-7dcfc9c778-nvfqb",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185847",
+        "uid": "dc751fbf-63f6-48a7-af0f-7f9d0c4dbb6c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:48Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:48Z",
+        "name": "catalogue-7dcfc9c778-nvfqb.18cb5251c0adfc16",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186106",
+        "uid": "60a51367-26e1-4186-93f7-b1bbb7291798"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 7,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:12:50Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{catalogue}",
+        "kind": "Pod",
+        "name": "catalogue-7dcfc9c778-nvfqb",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185847",
+        "uid": "dc751fbf-63f6-48a7-af0f-7f9d0c4dbb6c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:13:08Z",
+      "message": "Readiness probe failed: Get \"http://10.244.0.243:80/health\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:13:12Z",
+        "name": "catalogue-7dcfc9c778-nvfqb.18cb527c32c66a99",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186722",
+        "uid": "b2a757bd-4763-4968-b6ff-a85263e27ab4"
+      },
+      "reason": "Unhealthy",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Warning"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "catalogue-7dcfc9c778",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185836",
+        "uid": "25107daf-b726-4164-aa4b-55cb84613bca"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Created pod: catalogue-7dcfc9c778-nvfqb",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "catalogue-7dcfc9c778.18cb524d2d0cb025",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185845",
+        "uid": "1a91dd82-eb57-45f7-982e-8f30f277e896"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "catalogue-db-686b98d96c-z44kj",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185859",
+        "uid": "22982d70-0fe3-4b21-95d9-2d35d4c3b9c5"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Successfully assigned sock-shop/catalogue-db-686b98d96c-z44kj to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "catalogue-db-686b98d96c-z44kj.18cb524d30254e92",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185869",
+        "uid": "05b12707-ef63-4283-bcf2-0e139173bef5"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{catalogue-db}",
+        "kind": "Pod",
+        "name": "catalogue-db-686b98d96c-z44kj",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185865",
+        "uid": "22982d70-0fe3-4b21-95d9-2d35d4c3b9c5"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Pulling image \"weaveworksdemos/catalogue-db:0.3.0\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "catalogue-db-686b98d96c-z44kj.18cb524d7c42d7c2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186022",
+        "uid": "5cb68e4a-1ad9-4c80-a581-7a0675c9ea68"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:49Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{catalogue-db}",
+        "kind": "Pod",
+        "name": "catalogue-db-686b98d96c-z44kj",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185865",
+        "uid": "22982d70-0fe3-4b21-95d9-2d35d4c3b9c5"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:49Z",
+      "message": "Successfully pulled image \"weaveworksdemos/catalogue-db:0.3.0\" in 16.783s (1m19.956s including waiting). Image size: 400161654 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:49Z",
+        "name": "catalogue-db-686b98d96c-z44kj.18cb526019dc44a9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186212",
+        "uid": "12aba237-b996-4f73-b04a-4450d97a341e"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:50Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{catalogue-db}",
+        "kind": "Pod",
+        "name": "catalogue-db-686b98d96c-z44kj",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185865",
+        "uid": "22982d70-0fe3-4b21-95d9-2d35d4c3b9c5"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:50Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:50Z",
+        "name": "catalogue-db-686b98d96c-z44kj.18cb52602252573f",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186213",
+        "uid": "e3123cad-21b4-499a-a699-2f1a92c14d8a"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:50Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{catalogue-db}",
+        "kind": "Pod",
+        "name": "catalogue-db-686b98d96c-z44kj",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185865",
+        "uid": "22982d70-0fe3-4b21-95d9-2d35d4c3b9c5"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:50Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:50Z",
+        "name": "catalogue-db-686b98d96c-z44kj.18cb526027c0255d",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186214",
+        "uid": "420214aa-2d8b-4170-95fd-2b7373dfbe55"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "catalogue-db-686b98d96c",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185857",
+        "uid": "6da3b999-045b-4dc3-bbc3-5fb00d13d6c0"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Created pod: catalogue-db-686b98d96c-z44kj",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "catalogue-db-686b98d96c.18cb524d2fc4e02e",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185863",
+        "uid": "962c84b7-5554-41fd-abd6-1060d3af582a"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "catalogue-db",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185854",
+        "uid": "4a9c43b2-5759-47db-819c-01d54db8a066"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Scaled up replica set catalogue-db-686b98d96c from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "catalogue-db.18cb524d2f48ebf6",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185858",
+        "uid": "5c28fb0d-dbfa-48b8-a2e9-ceae591a380b"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "catalogue",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185833",
+        "uid": "d48dbf47-2a00-4564-8467-7e5ecf1b1f1f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Scaled up replica set catalogue-7dcfc9c778 from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "catalogue.18cb524d2c86081f",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185839",
+        "uid": "51571c73-c6a8-40df-aad0-7f5cdca3a77b"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-c76dk",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185882",
+        "uid": "418b1882-c720-491d-8dac-697eef02f715"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Successfully assigned sock-shop/front-end-65888758d4-c76dk to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "front-end-65888758d4-c76dk.18cb524d333bfc5f",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185894",
+        "uid": "bfcc8d97-6f42-47b2-b3c7-280e1ea27059"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-c76dk",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185890",
+        "uid": "418b1882-c720-491d-8dac-697eef02f715"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Pulling image \"weaveworksdemos/front-end:0.3.12\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "front-end-65888758d4-c76dk.18cb524d8398cdb9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186031",
+        "uid": "8a601c7d-7a7f-4245-895d-e752b56a60ee"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:00Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-c76dk",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185890",
+        "uid": "418b1882-c720-491d-8dac-697eef02f715"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:00Z",
+      "message": "Successfully pulled image \"weaveworksdemos/front-end:0.3.12\" in 2.354s (1m30.452s including waiting). Image size: 119797603 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:00Z",
+        "name": "front-end-65888758d4-c76dk.18cb526292bd0030",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186247",
+        "uid": "35f42f91-5cc0-4033-ba72-437c5ca0488b"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:00Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-c76dk",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185890",
+        "uid": "418b1882-c720-491d-8dac-697eef02f715"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:00Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:00Z",
+        "name": "front-end-65888758d4-c76dk.18cb526297258c51",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186248",
+        "uid": "d14d78f3-13be-4958-8048-6a7d57e61cd3"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:00Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-c76dk",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185890",
+        "uid": "418b1882-c720-491d-8dac-697eef02f715"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:00Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:00Z",
+        "name": "front-end-65888758d4-c76dk.18cb52629dc22cf4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186249",
+        "uid": "869147ca-534c-4676-90b2-13f67347436d"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 13,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:12:24Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-c76dk",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185890",
+        "uid": "418b1882-c720-491d-8dac-697eef02f715"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:13:05Z",
+      "message": "Readiness probe failed: Get \"http://10.244.0.249:8079/\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:13:10Z",
+        "name": "front-end-65888758d4-c76dk.18cb527613831b42",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186709",
+        "uid": "b5f15b60-4b67-4a73-9043-b5165a47be15"
+      },
+      "reason": "Unhealthy",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Warning"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mbtg2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185876",
+        "uid": "229ff927-b543-4272-8e8a-aa5220dcbcfb"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Successfully assigned sock-shop/front-end-65888758d4-mbtg2 to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "front-end-65888758d4-mbtg2.18cb524d3285008b",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185886",
+        "uid": "5c052bbf-16f6-4e8f-95ba-0f33740f9d91"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mbtg2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185881",
+        "uid": "229ff927-b543-4272-8e8a-aa5220dcbcfb"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Pulling image \"weaveworksdemos/front-end:0.3.12\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "front-end-65888758d4-mbtg2.18cb524d7c1a0286",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186018",
+        "uid": "75bb0230-d0ea-4ad1-a206-3a6a3c6e8136"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:59Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mbtg2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185881",
+        "uid": "229ff927-b543-4272-8e8a-aa5220dcbcfb"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:59Z",
+      "message": "Successfully pulled image \"weaveworksdemos/front-end:0.3.12\" in 11.571s (29.261s including waiting). Image size: 119797603 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:59Z",
+        "name": "front-end-65888758d4-mbtg2.18cb52544c1d2bbf",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186123",
+        "uid": "9b662edd-9507-443a-825d-921e090c4956"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:59Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mbtg2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185881",
+        "uid": "229ff927-b543-4272-8e8a-aa5220dcbcfb"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:59Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:59Z",
+        "name": "front-end-65888758d4-mbtg2.18cb525451d6b09b",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186124",
+        "uid": "d2df4358-aaa4-4f56-8824-e05edd986582"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:59Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mbtg2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185881",
+        "uid": "229ff927-b543-4272-8e8a-aa5220dcbcfb"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:59Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:59Z",
+        "name": "front-end-65888758d4-mbtg2.18cb525458e96004",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186125",
+        "uid": "34cb7786-75ec-4a22-a30d-e74866521d18"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 9,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:12:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mbtg2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185881",
+        "uid": "229ff927-b543-4272-8e8a-aa5220dcbcfb"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:12:59Z",
+      "message": "Readiness probe failed: Get \"http://10.244.0.246:8079/\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:13:11Z",
+        "name": "front-end-65888758d4-mbtg2.18cb52774f5095f0",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186659",
+        "uid": "2829807e-1d21-4118-b69c-471e2bb54674"
+      },
+      "reason": "Unhealthy",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Warning"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mtdx2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185883",
+        "uid": "71e071e8-dc03-4a64-a65b-f72b6393b75f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Successfully assigned sock-shop/front-end-65888758d4-mtdx2 to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "front-end-65888758d4-mtdx2.18cb524d333f0dae",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185897",
+        "uid": "a19a36b1-a25d-4ce1-887f-da06b91c03de"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mtdx2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185888",
+        "uid": "71e071e8-dc03-4a64-a65b-f72b6393b75f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Pulling image \"weaveworksdemos/front-end:0.3.12\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "front-end-65888758d4-mtdx2.18cb524d82a4fc28",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186028",
+        "uid": "6678654b-de1a-46f5-b2a1-46118bbcb5e4"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:52Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mtdx2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185888",
+        "uid": "71e071e8-dc03-4a64-a65b-f72b6393b75f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:52Z",
+      "message": "Successfully pulled image \"weaveworksdemos/front-end:0.3.12\" in 2.254s (1m22.103s including waiting). Image size: 119797603 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:52Z",
+        "name": "front-end-65888758d4-mtdx2.18cb5260a03849ae",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186222",
+        "uid": "d816dba4-818a-495e-9361-1731e393f66a"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:52Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mtdx2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185888",
+        "uid": "71e071e8-dc03-4a64-a65b-f72b6393b75f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:52Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:52Z",
+        "name": "front-end-65888758d4-mtdx2.18cb5260a6c9c2bf",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186223",
+        "uid": "edbc4931-a2cf-4eb7-a592-3043bf7adcc0"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:52Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mtdx2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185888",
+        "uid": "71e071e8-dc03-4a64-a65b-f72b6393b75f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:52Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:52Z",
+        "name": "front-end-65888758d4-mtdx2.18cb5260ac8f7889",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186224",
+        "uid": "cc67f71d-229a-48c5-bd1c-632b5a6a8d36"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 13,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:12:19Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mtdx2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185888",
+        "uid": "71e071e8-dc03-4a64-a65b-f72b6393b75f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:12:59Z",
+      "message": "Readiness probe failed: Get \"http://10.244.0.247:8079/\": context deadline exceeded (Client.Timeout exceeded while awaiting headers)",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:13:10Z",
+        "name": "front-end-65888758d4-mtdx2.18cb5274e3759eab",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186655",
+        "uid": "001abe40-65c7-42cd-9081-1330c037a9cd"
+      },
+      "reason": "Unhealthy",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Warning"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:16:51Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-mtdx2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185888",
+        "uid": "71e071e8-dc03-4a64-a65b-f72b6393b75f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:16:51Z",
+      "message": "Stopping container front-end",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:16:51Z",
+        "name": "front-end-65888758d4-mtdx2.18cb52b45c0d5044",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187079",
+        "uid": "cdb31561-c08c-4cd3-8c64-f1b3c0bf4292"
+      },
+      "reason": "Killing",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:18:27Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-rs6n9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187252",
+        "uid": "8f764937-60ca-4dc6-b1ee-b469dccbd7aa"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:18:27Z",
+      "message": "Successfully assigned sock-shop/front-end-65888758d4-rs6n9 to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:18:27Z",
+        "name": "front-end-65888758d4-rs6n9.18cb52ca98623586",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187259",
+        "uid": "82273689-c66d-4833-800e-e78c718a39dc"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:18:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-rs6n9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187258",
+        "uid": "8f764937-60ca-4dc6-b1ee-b469dccbd7aa"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:18:28Z",
+      "message": "Container image \"weaveworksdemos/front-end:0.3.12\" already present on machine and can be accessed by the pod",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:18:28Z",
+        "name": "front-end-65888758d4-rs6n9.18cb52cac9cf06d4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187262",
+        "uid": "058158b2-c1fa-487c-9c5f-829a07425019"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:18:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-rs6n9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187258",
+        "uid": "8f764937-60ca-4dc6-b1ee-b469dccbd7aa"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:18:28Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:18:28Z",
+        "name": "front-end-65888758d4-rs6n9.18cb52cace5dfe93",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187264",
+        "uid": "b0d4b70e-3ce8-4c0b-a530-a6d43248a8be"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:18:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-rs6n9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187258",
+        "uid": "8f764937-60ca-4dc6-b1ee-b469dccbd7aa"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:18:28Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:18:28Z",
+        "name": "front-end-65888758d4-rs6n9.18cb52cad6e829fe",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187265",
+        "uid": "00b5fdf0-14b9-4e19-a4b0-e1d83ecc3417"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:16:51Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-vv5x2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187083",
+        "uid": "637f14ad-942a-4f58-b9a1-9b922a56d1ef"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:16:51Z",
+      "message": "Successfully assigned sock-shop/front-end-65888758d4-vv5x2 to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:16:51Z",
+        "name": "front-end-65888758d4-vv5x2.18cb52b46196ab55",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187089",
+        "uid": "4cef9f65-caef-43d5-aafd-8ae4902a3b83"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:16:52Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-vv5x2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187086",
+        "uid": "637f14ad-942a-4f58-b9a1-9b922a56d1ef"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:16:52Z",
+      "message": "Container image \"weaveworksdemos/front-end:0.3.12\" already present on machine and can be accessed by the pod",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:16:52Z",
+        "name": "front-end-65888758d4-vv5x2.18cb52b4a2740c68",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187092",
+        "uid": "86caaa33-21bb-4557-8df5-591d939ee937"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:16:53Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-vv5x2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187086",
+        "uid": "637f14ad-942a-4f58-b9a1-9b922a56d1ef"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:16:53Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:16:53Z",
+        "name": "front-end-65888758d4-vv5x2.18cb52b4a70865f4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187093",
+        "uid": "deeaaf3f-1cab-4871-9a60-a3201667abe1"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:16:53Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-vv5x2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187086",
+        "uid": "637f14ad-942a-4f58-b9a1-9b922a56d1ef"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:16:53Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:16:53Z",
+        "name": "front-end-65888758d4-vv5x2.18cb52b4afebc988",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187094",
+        "uid": "0e7aee99-0d4d-4626-b4f0-243efaa07cd9"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:18:27Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{front-end}",
+        "kind": "Pod",
+        "name": "front-end-65888758d4-vv5x2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187086",
+        "uid": "637f14ad-942a-4f58-b9a1-9b922a56d1ef"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:18:27Z",
+      "message": "Stopping container front-end",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:18:27Z",
+        "name": "front-end-65888758d4-vv5x2.18cb52ca8bf8ad14",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187246",
+        "uid": "42731a51-a3fe-4103-9626-33b050651f20"
+      },
+      "reason": "Killing",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "front-end-65888758d4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185874",
+        "uid": "666adc2d-cbf7-4809-8e0d-87fecc5a1989"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Created pod: front-end-65888758d4-mbtg2",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "front-end-65888758d4.18cb524d32095ef7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185880",
+        "uid": "fab03938-8d78-4873-a8a9-ed7a79166d5a"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "front-end-65888758d4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185874",
+        "uid": "666adc2d-cbf7-4809-8e0d-87fecc5a1989"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Created pod: front-end-65888758d4-c76dk",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "front-end-65888758d4.18cb524d3286aaae",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185887",
+        "uid": "133673c4-75a0-4502-84d1-7cef631e38b0"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "front-end-65888758d4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185874",
+        "uid": "666adc2d-cbf7-4809-8e0d-87fecc5a1989"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Created pod: front-end-65888758d4-mtdx2",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "front-end-65888758d4.18cb524d328784ad",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185893",
+        "uid": "cb500b99-3b1c-4c32-91f2-011900399210"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:16:51Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "front-end-65888758d4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186344",
+        "uid": "666adc2d-cbf7-4809-8e0d-87fecc5a1989"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:16:51Z",
+      "message": "Created pod: front-end-65888758d4-vv5x2",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:16:51Z",
+        "name": "front-end-65888758d4.18cb52b45f56ce2a",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187084",
+        "uid": "9cb84372-dfd7-49ef-9b89-36314efcd2f9"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:18:27Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "front-end-65888758d4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187144",
+        "uid": "666adc2d-cbf7-4809-8e0d-87fecc5a1989"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:18:27Z",
+      "message": "Created pod: front-end-65888758d4-rs6n9",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:18:27Z",
+        "name": "front-end-65888758d4.18cb52ca934c3493",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187253",
+        "uid": "77347072-af9e-42b4-b8ae-804cbd27a7cc"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "front-end",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185871",
+        "uid": "4fdc43b1-4fe4-4f09-b4fa-ad61ce5e399c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Scaled up replica set front-end-65888758d4 from 0 to 3",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "front-end.18cb524d318e1053",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185875",
+        "uid": "371beceb-f4d0-4dfc-90bc-e25c9c52d88f"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "orders-6f5cbfbff9-cgcsc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185901",
+        "uid": "53e78b19-641b-4875-a25b-58d2ed276211"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Successfully assigned sock-shop/orders-6f5cbfbff9-cgcsc to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "orders-6f5cbfbff9-cgcsc.18cb524d35fa8b2d",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185909",
+        "uid": "c9077676-67a7-4440-9e65-28a7fec521c4"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{orders}",
+        "kind": "Pod",
+        "name": "orders-6f5cbfbff9-cgcsc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185907",
+        "uid": "53e78b19-641b-4875-a25b-58d2ed276211"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Pulling image \"weaveworksdemos/orders:0.4.7\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "orders-6f5cbfbff9-cgcsc.18cb524d836bccf0",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186029",
+        "uid": "6733fb69-1dfd-422f-a4eb-65ecd4e976b6"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:58Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{orders}",
+        "kind": "Pod",
+        "name": "orders-6f5cbfbff9-cgcsc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185907",
+        "uid": "53e78b19-641b-4875-a25b-58d2ed276211"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:58Z",
+      "message": "Successfully pulled image \"weaveworksdemos/orders:0.4.7\" in 6.01s (1m28.101s including waiting). Image size: 197650258 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:58Z",
+        "name": "orders-6f5cbfbff9-cgcsc.18cb52620669d196",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186237",
+        "uid": "8dc8e9e3-6ad4-48a3-afcf-000d9f0e545b"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:58Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{orders}",
+        "kind": "Pod",
+        "name": "orders-6f5cbfbff9-cgcsc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185907",
+        "uid": "53e78b19-641b-4875-a25b-58d2ed276211"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:58Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:58Z",
+        "name": "orders-6f5cbfbff9-cgcsc.18cb52620e682818",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186238",
+        "uid": "2dd1b4fa-d293-4204-92c3-b2868c2a59bc"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:10:58Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{orders}",
+        "kind": "Pod",
+        "name": "orders-6f5cbfbff9-cgcsc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185907",
+        "uid": "53e78b19-641b-4875-a25b-58d2ed276211"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:10:58Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:10:58Z",
+        "name": "orders-6f5cbfbff9-cgcsc.18cb526214072e94",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186239",
+        "uid": "1ccb3a23-18d2-414b-bc12-e30efe55dd2b"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "orders-6f5cbfbff9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185900",
+        "uid": "c556b964-4802-4645-aefe-785621c9aeab"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Created pod: orders-6f5cbfbff9-cgcsc",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "orders-6f5cbfbff9.18cb524d357e1bda",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185905",
+        "uid": "138b4d61-7da1-431b-ace4-0f118de12cb5"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "orders-db-5c44bb46b7-zvkfz",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185938",
+        "uid": "ad6c102b-7633-422a-a92a-32039b46819b"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Successfully assigned sock-shop/orders-db-5c44bb46b7-zvkfz to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "orders-db-5c44bb46b7-zvkfz.18cb524d3e32e1a1",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185944",
+        "uid": "f502d1b0-0f10-47b3-af6c-d62689bb2b5e"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{orders-db}",
+        "kind": "Pod",
+        "name": "orders-db-5c44bb46b7-zvkfz",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185940",
+        "uid": "ad6c102b-7633-422a-a92a-32039b46819b"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Pulling image \"mongo\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "orders-db-5c44bb46b7-zvkfz.18cb524d8486153b",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186034",
+        "uid": "ac2d8389-9694-473d-ae14-225cd09dbe6f"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:02Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{orders-db}",
+        "kind": "Pod",
+        "name": "orders-db-5c44bb46b7-zvkfz",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185940",
+        "uid": "ad6c102b-7633-422a-a92a-32039b46819b"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:02Z",
+      "message": "Successfully pulled image \"mongo\" in 2.262s (1m32.699s including waiting). Image size: 947372301 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:02Z",
+        "name": "orders-db-5c44bb46b7-zvkfz.18cb526319932886",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186257",
+        "uid": "0139a2bb-a045-478d-8c67-d0940eb739c2"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:02Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{orders-db}",
+        "kind": "Pod",
+        "name": "orders-db-5c44bb46b7-zvkfz",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185940",
+        "uid": "ad6c102b-7633-422a-a92a-32039b46819b"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:02Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:02Z",
+        "name": "orders-db-5c44bb46b7-zvkfz.18cb52631e7326fc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186258",
+        "uid": "241ccc0c-1bcc-4113-b6b8-f88a8d3a8b1b"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:02Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{orders-db}",
+        "kind": "Pod",
+        "name": "orders-db-5c44bb46b7-zvkfz",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185940",
+        "uid": "ad6c102b-7633-422a-a92a-32039b46819b"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:02Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:02Z",
+        "name": "orders-db-5c44bb46b7-zvkfz.18cb526323dd8a89",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186259",
+        "uid": "900eafdd-7bde-42e7-afdf-e1ee73db4ed6"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "orders-db-5c44bb46b7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185937",
+        "uid": "c278ed84-5e82-4350-9df8-a0f8fd16969a"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Created pod: orders-db-5c44bb46b7-zvkfz",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "orders-db-5c44bb46b7.18cb524d3dd8b0fa",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185941",
+        "uid": "bb87eeda-9b09-42f4-bdc9-601dbd8b9e26"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "orders-db",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185916",
+        "uid": "d1dd0d34-51bc-427d-8d79-42d49a0b45de"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Scaled up replica set orders-db-5c44bb46b7 from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "orders-db.18cb524d3d9914ec",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185980",
+        "uid": "0e7d443e-55fc-4e15-b9aa-5634e1248701"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "orders",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185898",
+        "uid": "2e32de33-93c0-488a-8494-6ae0f33f5d5c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Scaled up replica set orders-6f5cbfbff9 from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "orders.18cb524d35232431",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185915",
+        "uid": "c8c9598f-34b7-4739-b1be-2d65bdaacb41"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "payment-576548d6f9-866c2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185955",
+        "uid": "46c34b1b-0467-4b6d-b8e2-814c47a28a82"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Successfully assigned sock-shop/payment-576548d6f9-866c2 to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:28Z",
+        "name": "payment-576548d6f9-866c2.18cb524d427cc1fd",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185958",
+        "uid": "57f9493c-2ee8-47cb-bdb4-05d29c407f60"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{payment}",
+        "kind": "Pod",
+        "name": "payment-576548d6f9-866c2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185957",
+        "uid": "46c34b1b-0467-4b6d-b8e2-814c47a28a82"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Pulling image \"weaveworksdemos/payment:0.4.3\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "payment-576548d6f9-866c2.18cb524d86d54e20",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186036",
+        "uid": "47d699b0-6831-4097-802d-c0b8ca6bafeb"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:08Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{payment}",
+        "kind": "Pod",
+        "name": "payment-576548d6f9-866c2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185957",
+        "uid": "46c34b1b-0467-4b6d-b8e2-814c47a28a82"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:08Z",
+      "message": "Successfully pulled image \"weaveworksdemos/payment:0.4.3\" in 5.443s (1m38.104s including waiting). Image size: 32459351 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:08Z",
+        "name": "payment-576548d6f9-866c2.18cb52645e0bcb39",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186273",
+        "uid": "5bf1d8b0-ade4-4a90-9bdc-69e8b615859c"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:08Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{payment}",
+        "kind": "Pod",
+        "name": "payment-576548d6f9-866c2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185957",
+        "uid": "46c34b1b-0467-4b6d-b8e2-814c47a28a82"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:08Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:08Z",
+        "name": "payment-576548d6f9-866c2.18cb526464d9317f",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186274",
+        "uid": "1ccc7032-6fe9-4ebf-a901-c77bf08d3a78"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:08Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{payment}",
+        "kind": "Pod",
+        "name": "payment-576548d6f9-866c2",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185957",
+        "uid": "46c34b1b-0467-4b6d-b8e2-814c47a28a82"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:08Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:08Z",
+        "name": "payment-576548d6f9-866c2.18cb52646ecec392",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186275",
+        "uid": "634e0752-5635-494d-9533-a842cb49e845"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "payment-576548d6f9",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185952",
+        "uid": "fdac1fd5-3a80-4fba-bc6f-5ffb04f29282"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Created pod: payment-576548d6f9-866c2",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "payment-576548d6f9.18cb524d41e806f3",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185972",
+        "uid": "0eaed175-bc37-49bb-8604-078d46b36bdb"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "payment",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185921",
+        "uid": "ac43ada3-e4f8-4330-b5d7-72dd1be52be7"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Scaled up replica set payment-576548d6f9 from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "payment.18cb524d418d96c6",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185996",
+        "uid": "6dfc8433-a673-4286-bb07-38dbd77d7837"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "queue-master-6cc9d686fc-97fnk",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185974",
+        "uid": "6ad34518-727f-484f-80dc-37333558a019"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Successfully assigned sock-shop/queue-master-6cc9d686fc-97fnk to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "queue-master-6cc9d686fc-97fnk.18cb524d4b504434",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185976",
+        "uid": "6179ab45-e8b0-4328-93f8-1fca376ebfef"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{queue-master}",
+        "kind": "Pod",
+        "name": "queue-master-6cc9d686fc-97fnk",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185975",
+        "uid": "6ad34518-727f-484f-80dc-37333558a019"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Pulling image \"weaveworksdemos/queue-master:0.3.1\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "queue-master-6cc9d686fc-97fnk.18cb524d8a1eb2ee",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186039",
+        "uid": "52ddf510-a6b1-4d70-bdb6-dfb09328c955"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:15Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{queue-master}",
+        "kind": "Pod",
+        "name": "queue-master-6cc9d686fc-97fnk",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185975",
+        "uid": "6ad34518-727f-484f-80dc-37333558a019"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:15Z",
+      "message": "Successfully pulled image \"weaveworksdemos/queue-master:0.3.1\" in 7.675s (1m45.724s including waiting). Image size: 178508575 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:15Z",
+        "name": "queue-master-6cc9d686fc-97fnk.18cb526627917230",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186289",
+        "uid": "1b99dd0f-06e1-47aa-9a6c-ae20ca1d9d75"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:15Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{queue-master}",
+        "kind": "Pod",
+        "name": "queue-master-6cc9d686fc-97fnk",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185975",
+        "uid": "6ad34518-727f-484f-80dc-37333558a019"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:15Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:15Z",
+        "name": "queue-master-6cc9d686fc-97fnk.18cb52662c70f843",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186290",
+        "uid": "b3ed01d3-80e4-48f2-81fa-c019b0aed0f5"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:16Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{queue-master}",
+        "kind": "Pod",
+        "name": "queue-master-6cc9d686fc-97fnk",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185975",
+        "uid": "6ad34518-727f-484f-80dc-37333558a019"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:16Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:16Z",
+        "name": "queue-master-6cc9d686fc-97fnk.18cb526632f33918",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186292",
+        "uid": "d982ea2a-a2e4-4b5a-9d32-039d5e6c3bea"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "queue-master-6cc9d686fc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185961",
+        "uid": "31d146cd-831d-4ea9-8705-c0e1b4ee6ae2"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Created pod: queue-master-6cc9d686fc-97fnk",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "queue-master-6cc9d686fc.18cb524d4ad8f439",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185989",
+        "uid": "8f5a42cd-aa58-4bf3-b93a-2686b30c9913"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:28Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "queue-master",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185926",
+        "uid": "679b47dd-7fcf-4898-8095-6e96fe41a811"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:28Z",
+      "message": "Scaled up replica set queue-master-6cc9d686fc from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "queue-master.18cb524d446a97f0",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186006",
+        "uid": "49a7fb46-c8de-4a7a-a9e1-b2ff1a8d96f5"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "rabbitmq-76b7f59b8b-g8cn7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185981",
+        "uid": "a24c8642-04a1-4527-9238-6c1e5204e71d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Successfully assigned sock-shop/rabbitmq-76b7f59b8b-g8cn7 to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "rabbitmq-76b7f59b8b-g8cn7.18cb524d51862d9a",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185983",
+        "uid": "9656cf4b-ee88-488f-9373-6127ec6fba50"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 2,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{rabbitmq}",
+        "kind": "Pod",
+        "name": "rabbitmq-76b7f59b8b-g8cn7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185982",
+        "uid": "a24c8642-04a1-4527-9238-6c1e5204e71d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:54Z",
+      "message": "Pulling image \"rabbitmq:3.6.8-management\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "rabbitmq-76b7f59b8b-g8cn7.18cb524d8a215e26",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186387",
+        "uid": "b493e899-7d4e-40fc-b452-534c9a2aea32"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:17Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{rabbitmq}",
+        "kind": "Pod",
+        "name": "rabbitmq-76b7f59b8b-g8cn7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185982",
+        "uid": "a24c8642-04a1-4527-9238-6c1e5204e71d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:17Z",
+      "message": "Failed to pull image \"rabbitmq:3.6.8-management\": Error response from daemon: Head \"https://registry-1.docker.io/v2/library/rabbitmq/manifests/3.6.8-management\": EOF",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:17Z",
+        "name": "rabbitmq-76b7f59b8b-g8cn7.18cb52667d1df3cc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186298",
+        "uid": "d46e8621-211f-4207-b477-f2fd3a5b23cd"
+      },
+      "reason": "Failed",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Warning"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:17Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{rabbitmq}",
+        "kind": "Pod",
+        "name": "rabbitmq-76b7f59b8b-g8cn7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185982",
+        "uid": "a24c8642-04a1-4527-9238-6c1e5204e71d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:17Z",
+      "message": "Error: ErrImagePull",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:17Z",
+        "name": "rabbitmq-76b7f59b8b-g8cn7.18cb52667d25a701",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186299",
+        "uid": "d5583c00-7e83-4d16-ad33-c72a82796f7f"
+      },
+      "reason": "Failed",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Warning"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:17Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{rabbitmq-exporter}",
+        "kind": "Pod",
+        "name": "rabbitmq-76b7f59b8b-g8cn7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185982",
+        "uid": "a24c8642-04a1-4527-9238-6c1e5204e71d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:17Z",
+      "message": "Pulling image \"kbudde/rabbitmq-exporter\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:17Z",
+        "name": "rabbitmq-76b7f59b8b-g8cn7.18cb52667d6515d4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186300",
+        "uid": "96de8fd2-e24a-47dc-8221-8737f8c76f28"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:52Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{rabbitmq-exporter}",
+        "kind": "Pod",
+        "name": "rabbitmq-76b7f59b8b-g8cn7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185982",
+        "uid": "a24c8642-04a1-4527-9238-6c1e5204e71d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:52Z",
+      "message": "Successfully pulled image \"kbudde/rabbitmq-exporter\" in 6.131s (35.385s including waiting). Image size: 14683423 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:52Z",
+        "name": "rabbitmq-76b7f59b8b-g8cn7.18cb526eba7f22ad",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186380",
+        "uid": "dfc33e50-7d8a-45ef-a474-428b649c18f6"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:52Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{rabbitmq-exporter}",
+        "kind": "Pod",
+        "name": "rabbitmq-76b7f59b8b-g8cn7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185982",
+        "uid": "a24c8642-04a1-4527-9238-6c1e5204e71d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:52Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:52Z",
+        "name": "rabbitmq-76b7f59b8b-g8cn7.18cb526ec2a4395c",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186381",
+        "uid": "99a1d3b5-255b-4b48-b65e-62213470f222"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:53Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{rabbitmq-exporter}",
+        "kind": "Pod",
+        "name": "rabbitmq-76b7f59b8b-g8cn7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185982",
+        "uid": "a24c8642-04a1-4527-9238-6c1e5204e71d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:53Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:53Z",
+        "name": "rabbitmq-76b7f59b8b-g8cn7.18cb526ed89f182e",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186382",
+        "uid": "57980fd7-66e6-45fa-a564-40349e0670aa"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:12:08Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{rabbitmq}",
+        "kind": "Pod",
+        "name": "rabbitmq-76b7f59b8b-g8cn7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185982",
+        "uid": "a24c8642-04a1-4527-9238-6c1e5204e71d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:12:08Z",
+      "message": "Successfully pulled image \"rabbitmq:3.6.8-management\" in 14.074s (14.074s including waiting). Image size: 179449261 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:12:08Z",
+        "name": "rabbitmq-76b7f59b8b-g8cn7.18cb52725e148d15",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186408",
+        "uid": "ce9ebae2-b810-4906-8237-5c2931e450e5"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:12:08Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{rabbitmq}",
+        "kind": "Pod",
+        "name": "rabbitmq-76b7f59b8b-g8cn7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185982",
+        "uid": "a24c8642-04a1-4527-9238-6c1e5204e71d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:12:08Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:12:08Z",
+        "name": "rabbitmq-76b7f59b8b-g8cn7.18cb52726428cf9d",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186409",
+        "uid": "b39d9fd7-334b-45e9-8e75-08a6f3f7dd77"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:12:08Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{rabbitmq}",
+        "kind": "Pod",
+        "name": "rabbitmq-76b7f59b8b-g8cn7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185982",
+        "uid": "a24c8642-04a1-4527-9238-6c1e5204e71d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:12:08Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:12:08Z",
+        "name": "rabbitmq-76b7f59b8b-g8cn7.18cb5272764aeeb1",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186412",
+        "uid": "89699799-cfe7-4159-8482-d1e9f1d9efd2"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "rabbitmq-76b7f59b8b",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185973",
+        "uid": "477b73c3-6634-4751-a3a5-45cf66d01652"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Created pod: rabbitmq-76b7f59b8b-g8cn7",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "rabbitmq-76b7f59b8b.18cb524d507f958f",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185995",
+        "uid": "57017a28-4d6c-44a9-9e51-042dea3cbe9c"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "rabbitmq",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185931",
+        "uid": "bcf2b2cb-f535-4611-8561-987cdcf9386d"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Scaled up replica set rabbitmq-76b7f59b8b from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "rabbitmq.18cb524d49c6e7ac",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186033",
+        "uid": "e876539b-d0a8-4977-bb4a-8f23ee93085f"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "session-db-74c949bb66-8jtfc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185997",
+        "uid": "218a58d4-30e4-4db8-95f5-ff52cacb349c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Successfully assigned sock-shop/session-db-74c949bb66-8jtfc to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "session-db-74c949bb66-8jtfc.18cb524d63869141",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185999",
+        "uid": "a9a2a592-8493-42e8-81aa-56713c678b31"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{session-db}",
+        "kind": "Pod",
+        "name": "session-db-74c949bb66-8jtfc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185998",
+        "uid": "218a58d4-30e4-4db8-95f5-ff52cacb349c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Container image \"redis:alpine\" already present on machine and can be accessed by the pod",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "session-db-74c949bb66-8jtfc.18cb524d9513d963",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186047",
+        "uid": "1944c88f-31a3-4cf4-bd18-7f56f6903690"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{session-db}",
+        "kind": "Pod",
+        "name": "session-db-74c949bb66-8jtfc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185998",
+        "uid": "218a58d4-30e4-4db8-95f5-ff52cacb349c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "session-db-74c949bb66-8jtfc.18cb524d9d6107be",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186051",
+        "uid": "16a1e795-51f5-4f62-9eca-b24a4543277c"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{session-db}",
+        "kind": "Pod",
+        "name": "session-db-74c949bb66-8jtfc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185998",
+        "uid": "218a58d4-30e4-4db8-95f5-ff52cacb349c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "session-db-74c949bb66-8jtfc.18cb524da659b5f3",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186057",
+        "uid": "3d14f13a-b8e2-4d5a-b403-179b23fd5c58"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "session-db-74c949bb66",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185991",
+        "uid": "737fe83b-0450-4362-b8a5-283e940f7e14"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Created pod: session-db-74c949bb66-8jtfc",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "session-db-74c949bb66.18cb524d62b16caf",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186004",
+        "uid": "17dd767a-94b6-40c5-99a0-6f1ba25aa562"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "session-db",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185936",
+        "uid": "e7208d37-4034-4f92-a526-2404a462f5f8"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Scaled up replica set session-db-74c949bb66 from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "session-db.18cb524d588e66d6",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186048",
+        "uid": "05343fa2-d268-4660-8866-145b30d52626"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "shipping-5f9f5c5d95-l2rhx",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186007",
+        "uid": "22d159bd-ec5b-4eb7-936c-460bbd516be1"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Successfully assigned sock-shop/shipping-5f9f5c5d95-l2rhx to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "shipping-5f9f5c5d95-l2rhx.18cb524d74ed7b18",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186009",
+        "uid": "7d3a777e-e211-46d3-b88c-b806929a1abe"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{shipping}",
+        "kind": "Pod",
+        "name": "shipping-5f9f5c5d95-l2rhx",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186008",
+        "uid": "22d159bd-ec5b-4eb7-936c-460bbd516be1"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Pulling image \"weaveworksdemos/shipping:0.4.8\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "shipping-5f9f5c5d95-l2rhx.18cb524d9ee3a629",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186053",
+        "uid": "f7ef197d-f468-4b53-97c5-08d614259850"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:23Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{shipping}",
+        "kind": "Pod",
+        "name": "shipping-5f9f5c5d95-l2rhx",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186008",
+        "uid": "22d159bd-ec5b-4eb7-936c-460bbd516be1"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:23Z",
+      "message": "Successfully pulled image \"weaveworksdemos/shipping:0.4.8\" in 6.134s (1m52.946s including waiting). Image size: 198611718 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:23Z",
+        "name": "shipping-5f9f5c5d95-l2rhx.18cb5267eac74896",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186309",
+        "uid": "37502bab-9a48-40e6-bea6-22b495c548b4"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:23Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{shipping}",
+        "kind": "Pod",
+        "name": "shipping-5f9f5c5d95-l2rhx",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186008",
+        "uid": "22d159bd-ec5b-4eb7-936c-460bbd516be1"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:23Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:23Z",
+        "name": "shipping-5f9f5c5d95-l2rhx.18cb5267ef90f6c4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186310",
+        "uid": "4a014b8f-c2b9-4e24-a1b3-77f2e9b7ba8b"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:23Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{shipping}",
+        "kind": "Pod",
+        "name": "shipping-5f9f5c5d95-l2rhx",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186008",
+        "uid": "22d159bd-ec5b-4eb7-936c-460bbd516be1"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:23Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:23Z",
+        "name": "shipping-5f9f5c5d95-l2rhx.18cb5267f688d598",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186311",
+        "uid": "ce694d91-7db0-4b57-b5a7-3ea978826025"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "shipping-5f9f5c5d95",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186005",
+        "uid": "7c39d8a1-98fb-4a0e-9f51-1bc9feea492c"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Created pod: shipping-5f9f5c5d95-l2rhx",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:29Z",
+        "name": "shipping-5f9f5c5d95.18cb524d73f926e1",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186014",
+        "uid": "0f55f06a-6034-4765-8126-0c9f7f1bc73c"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "shipping",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185948",
+        "uid": "ac93dd0f-b5cf-4310-ae05-b1a6b3d6aa85"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Scaled up replica set shipping-5f9f5c5d95 from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "shipping.18cb524d7065e91e",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186058",
+        "uid": "aec2f903-08a9-48f3-af63-13d771a7569f"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:16:51Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187067",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:16:51Z",
+      "message": "Finalizer has been inited",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/type": "finalizer-inited"
+        },
+        "creationTimestamp": "2026-08-13T09:16:51Z",
+        "name": "sockshop-front-end-pod-kill.18cb52b45741d2e3",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187069",
+        "uid": "5aaaad74-317c-489f-85ed-8a2315b02c18"
+      },
+      "reason": "FinalizerInited",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "initFinalizers"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:16:51Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187067",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:16:51Z",
+      "message": "Successfully update finalizer of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "finalizer",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:16:51Z",
+        "name": "sockshop-front-end-pod-kill.18cb52b458292eec",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187070",
+        "uid": "306ec72d-3692-4399-bfd8-d173a68162eb"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "initFinalizers"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:16:51Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187068",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:16:51Z",
+      "message": "Successfully update desiredPhase of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "desiredPhase",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:16:51Z",
+        "name": "sockshop-front-end-pod-kill.18cb52b45908eac4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187072",
+        "uid": "45f307ce-2936-4f9d-85de-bce3496e130e"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "desiredphase"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:16:51Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187073",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:16:51Z",
+      "message": "Successfully apply chaos for sock-shop/front-end-65888758d4-mtdx2",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/id": "sock-shop/front-end-65888758d4-mtdx2",
+          "chaos-mesh.org/type": "applied"
+        },
+        "creationTimestamp": "2026-08-13T09:16:51Z",
+        "name": "sockshop-front-end-pod-kill.18cb52b45ba1280d",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187076",
+        "uid": "810de313-7b5b-459e-a42e-e36c203ebbbb"
+      },
+      "reason": "Applied",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "records"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:16:51Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187073",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:16:51Z",
+      "message": "Successfully update records of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "records",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:16:51Z",
+        "name": "sockshop-front-end-pod-kill.18cb52b45c3aa8c7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187078",
+        "uid": "b0382d52-02f8-4020-b81b-bd109c878db0"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "records"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:17:29Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187151",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:17:29Z",
+      "message": "Experiment has been deleted",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/type": "deleted"
+        },
+        "creationTimestamp": "2026-08-13T09:17:29Z",
+        "name": "sockshop-front-end-pod-kill.18cb52bd2f052e35",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187152",
+        "uid": "fc397f5c-6f95-4409-8f02-9a7a0895bc1b"
+      },
+      "reason": "Deleted",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "desiredphase"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:17:29Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187151",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:17:29Z",
+      "message": "Successfully update desiredPhase of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "desiredPhase",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:17:29Z",
+        "name": "sockshop-front-end-pod-kill.18cb52bd321e0b69",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187154",
+        "uid": "bde6c255-9a6a-482f-9ae3-e9a25dda9878"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "desiredphase"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:17:29Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187153",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:17:29Z",
+      "message": "Successfully recover chaos for sock-shop/front-end-65888758d4-mtdx2",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/id": "sock-shop/front-end-65888758d4-mtdx2",
+          "chaos-mesh.org/type": "recovered"
+        },
+        "creationTimestamp": "2026-08-13T09:17:29Z",
+        "name": "sockshop-front-end-pod-kill.18cb52bd3231f9a8",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187155",
+        "uid": "ff08f993-7c5a-46d2-891c-52b3f02f3e8f"
+      },
+      "reason": "Recovered",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "records"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:17:29Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187153",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:17:29Z",
+      "message": "Successfully update records of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "records",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:17:29Z",
+        "name": "sockshop-front-end-pod-kill.18cb52bd3338c8a4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187157",
+        "uid": "9a5d40b9-44a9-4548-85ac-718d147c7df1"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "records"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:17:29Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187156",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:17:29Z",
+      "message": "Finalizer has been removed",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/type": "finalizer-removed"
+        },
+        "creationTimestamp": "2026-08-13T09:17:29Z",
+        "name": "sockshop-front-end-pod-kill.18cb52bd333dfe83",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187158",
+        "uid": "b0ac941b-3b19-4cfe-a0ff-0cbdecca2e2b"
+      },
+      "reason": "FinalizerInited",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "initFinalizers"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:17:29Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187156",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:17:29Z",
+      "message": "Successfully update finalizer of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "finalizer",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:17:29Z",
+        "name": "sockshop-front-end-pod-kill.18cb52bd340135fd",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187160",
+        "uid": "222db1c3-4e23-45cc-b14f-4983264b44d8"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "initFinalizers"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:17:29Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187156",
+        "uid": "67e11376-43b0-4d45-a112-993f5c7a9565"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:17:29Z",
+      "message": "Failed to update conditions: podchaos.chaos-mesh.org \"sockshop-front-end-pod-kill\" not found",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:17:29Z",
+        "name": "sockshop-front-end-pod-kill.18cb52bd351b40bc",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187161",
+        "uid": "f9e38b58-1b3c-4e29-91fe-814feb4fa6eb"
+      },
+      "reason": "Failed",
+      "reportingComponent": "condition",
+      "reportingInstance": "",
+      "source": {
+        "component": "condition"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:18:26Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187236",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:18:26Z",
+      "message": "Finalizer has been inited",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/type": "finalizer-inited"
+        },
+        "creationTimestamp": "2026-08-13T09:18:26Z",
+        "name": "sockshop-front-end-pod-kill.18cb52ca86cd6e61",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187238",
+        "uid": "50571842-5242-443b-a920-405c5b0c1137"
+      },
+      "reason": "FinalizerInited",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "initFinalizers"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:18:27Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187236",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:18:27Z",
+      "message": "Successfully update finalizer of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "finalizer",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:18:27Z",
+        "name": "sockshop-front-end-pod-kill.18cb52ca87f58afe",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187239",
+        "uid": "2afc6dda-149b-4bb5-969b-8f2268b1be2f"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "initFinalizers"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:18:27Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187237",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:18:27Z",
+      "message": "Successfully update desiredPhase of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "desiredPhase",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:18:27Z",
+        "name": "sockshop-front-end-pod-kill.18cb52ca88cf66a0",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187241",
+        "uid": "e907768e-3dbc-463f-879a-102809412273"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "desiredphase"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:18:27Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187242",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:18:27Z",
+      "message": "Successfully apply chaos for sock-shop/front-end-65888758d4-vv5x2",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/id": "sock-shop/front-end-65888758d4-vv5x2",
+          "chaos-mesh.org/type": "applied"
+        },
+        "creationTimestamp": "2026-08-13T09:18:27Z",
+        "name": "sockshop-front-end-pod-kill.18cb52ca8bf3bae4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187245",
+        "uid": "af035a9b-55ae-48e2-818b-be279e86a60f"
+      },
+      "reason": "Applied",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "records"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:18:27Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187242",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:18:27Z",
+      "message": "Successfully update records of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "records",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:18:27Z",
+        "name": "sockshop-front-end-pod-kill.18cb52ca918a1507",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187248",
+        "uid": "0aca1fa0-a99d-47d7-b19b-017b998b5166"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "records"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:19:05Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187318",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:19:05Z",
+      "message": "Experiment has been deleted",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/type": "deleted"
+        },
+        "creationTimestamp": "2026-08-13T09:19:05Z",
+        "name": "sockshop-front-end-pod-kill.18cb52d36333e42b",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187320",
+        "uid": "da7b0d38-8b13-4e86-81be-ee2e077355d1"
+      },
+      "reason": "Deleted",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "desiredphase"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:19:05Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187318",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:19:05Z",
+      "message": "Successfully update desiredPhase of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "desiredPhase",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:19:05Z",
+        "name": "sockshop-front-end-pod-kill.18cb52d36653cd18",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187322",
+        "uid": "55b524d5-cab8-4564-b133-47c43bf48a1e"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "desiredphase"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:19:05Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187321",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:19:05Z",
+      "message": "Successfully recover chaos for sock-shop/front-end-65888758d4-vv5x2",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/id": "sock-shop/front-end-65888758d4-vv5x2",
+          "chaos-mesh.org/type": "recovered"
+        },
+        "creationTimestamp": "2026-08-13T09:19:05Z",
+        "name": "sockshop-front-end-pod-kill.18cb52d366770f3f",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187323",
+        "uid": "3d048e77-f3df-4335-ba5c-9cb7689ffe9a"
+      },
+      "reason": "Recovered",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "records"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:19:05Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187321",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:19:05Z",
+      "message": "Successfully update records of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "records",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:19:05Z",
+        "name": "sockshop-front-end-pod-kill.18cb52d367489263",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187326",
+        "uid": "43db98c2-09ff-4e9f-89a1-0d016e61d615"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "records"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:19:05Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187324",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:19:05Z",
+      "message": "Finalizer has been removed",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/type": "finalizer-removed"
+        },
+        "creationTimestamp": "2026-08-13T09:19:05Z",
+        "name": "sockshop-front-end-pod-kill.18cb52d36749f678",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187325",
+        "uid": "f9debf80-7306-4cc2-a915-f776709aa941"
+      },
+      "reason": "FinalizerInited",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "initFinalizers"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:19:05Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187324",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:19:05Z",
+      "message": "Successfully update finalizer of resource",
+      "metadata": {
+        "annotations": {
+          "chaos-mesh.org/field": "finalizer",
+          "chaos-mesh.org/type": "updated"
+        },
+        "creationTimestamp": "2026-08-13T09:19:05Z",
+        "name": "sockshop-front-end-pod-kill.18cb52d367f3b71c",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187328",
+        "uid": "4a2b5c74-eb6e-4fae-b7d5-dd5c5baedc25"
+      },
+      "reason": "Updated",
+      "reportingComponent": "",
+      "reportingInstance": "",
+      "source": {
+        "component": "initFinalizers"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:19:05Z",
+      "involvedObject": {
+        "apiVersion": "chaos-mesh.org/v1alpha1",
+        "kind": "PodChaos",
+        "name": "sockshop-front-end-pod-kill",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187324",
+        "uid": "872b4e51-686f-47a6-b614-dfa093fb3e2f"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:19:05Z",
+      "message": "Failed to update conditions: podchaos.chaos-mesh.org \"sockshop-front-end-pod-kill\" not found",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:19:05Z",
+        "name": "sockshop-front-end-pod-kill.18cb52d36874ee17",
+        "namespace": "sock-shop",
+        "resourceVersion": "2187329",
+        "uid": "ae74dfc5-3a5c-4aea-be25-ffd828408660"
+      },
+      "reason": "Failed",
+      "reportingComponent": "condition",
+      "reportingInstance": "",
+      "source": {
+        "component": "condition"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "user-db-6b98fc6cb7-cc5tt",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186027",
+        "uid": "652ecd62-e1d0-44b0-9270-09be3dccfd9b"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Successfully assigned sock-shop/user-db-6b98fc6cb7-cc5tt to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "user-db-6b98fc6cb7-cc5tt.18cb524d8484a2ac",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186032",
+        "uid": "a347648b-3287-4474-a763-8ab04fad3d09"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{user-db}",
+        "kind": "Pod",
+        "name": "user-db-6b98fc6cb7-cc5tt",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186030",
+        "uid": "652ecd62-e1d0-44b0-9270-09be3dccfd9b"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Pulling image \"weaveworksdemos/user-db:0.3.0\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "user-db-6b98fc6cb7-cc5tt.18cb524dae3f28a4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186061",
+        "uid": "32299269-93c7-4693-af4b-755a6e53e747"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:46Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{user-db}",
+        "kind": "Pod",
+        "name": "user-db-6b98fc6cb7-cc5tt",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186030",
+        "uid": "652ecd62-e1d0-44b0-9270-09be3dccfd9b"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:46Z",
+      "message": "Successfully pulled image \"weaveworksdemos/user-db:0.3.0\" in 16.799s (2m15.813s including waiting). Image size: 657263278 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:46Z",
+        "name": "user-db-6b98fc6cb7-cc5tt.18cb526d4d09dbb5",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186365",
+        "uid": "663384fc-1206-42ba-8181-097c5aa2d338"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:47Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{user-db}",
+        "kind": "Pod",
+        "name": "user-db-6b98fc6cb7-cc5tt",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186030",
+        "uid": "652ecd62-e1d0-44b0-9270-09be3dccfd9b"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:47Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:48Z",
+        "name": "user-db-6b98fc6cb7-cc5tt.18cb526da1222eb3",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186368",
+        "uid": "ee0b72c3-e255-4451-ab2f-132d36be198e"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:48Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{user-db}",
+        "kind": "Pod",
+        "name": "user-db-6b98fc6cb7-cc5tt",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186030",
+        "uid": "652ecd62-e1d0-44b0-9270-09be3dccfd9b"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:48Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:48Z",
+        "name": "user-db-6b98fc6cb7-cc5tt.18cb526dacc68bf6",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186370",
+        "uid": "86d6ceec-099f-48b3-9b30-abfe5fe33328"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "user-db-6b98fc6cb7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186013",
+        "uid": "8f242f44-da17-4f1c-9027-2e15f7ed9b00"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Created pod: user-db-6b98fc6cb7-cc5tt",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "user-db-6b98fc6cb7.18cb524d83b6ba8c",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186046",
+        "uid": "02e6add8-b964-44f6-b71e-01583c872039"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "user-db",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185966",
+        "uid": "9ce010ed-2aa9-46e0-be4f-a2112beae236"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Scaled up replica set user-db-6b98fc6cb7 from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "user-db.18cb524d7994d44a",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186065",
+        "uid": "f2a3d9d6-3ebf-4d80-baae-0b7594a2803e"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "kind": "Pod",
+        "name": "user-fd45b47d7-pfr69",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186021",
+        "uid": "c539784f-2b1c-4c5b-9117-215423d65cc4"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Successfully assigned sock-shop/user-fd45b47d7-pfr69 to minikube",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "user-fd45b47d7-pfr69.18cb524d80bbd9b4",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186024",
+        "uid": "b78c1723-520f-40c1-8d74-cdb457660882"
+      },
+      "reason": "Scheduled",
+      "reportingComponent": "default-scheduler",
+      "reportingInstance": "",
+      "source": {
+        "component": "default-scheduler"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{user}",
+        "kind": "Pod",
+        "name": "user-fd45b47d7-pfr69",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186023",
+        "uid": "c539784f-2b1c-4c5b-9117-215423d65cc4"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Pulling image \"weaveworksdemos/user:0.4.7\"",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "user-fd45b47d7-pfr69.18cb524dad44b59d",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186060",
+        "uid": "c8c6d718-26c5-4edf-b6f1-a7815da2ab71"
+      },
+      "reason": "Pulling",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{user}",
+        "kind": "Pod",
+        "name": "user-fd45b47d7-pfr69",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186023",
+        "uid": "c539784f-2b1c-4c5b-9117-215423d65cc4"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:29Z",
+      "message": "Successfully pulled image \"weaveworksdemos/user:0.4.7\" in 6.325s (1m59.03s including waiting). Image size: 35704702 bytes.",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:29Z",
+        "name": "user-fd45b47d7-pfr69.18cb526963ad4486",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186331",
+        "uid": "ee40de6e-ec6b-46b5-833f-ae679895562d"
+      },
+      "reason": "Pulled",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:29Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{user}",
+        "kind": "Pod",
+        "name": "user-fd45b47d7-pfr69",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186023",
+        "uid": "c539784f-2b1c-4c5b-9117-215423d65cc4"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:29Z",
+      "message": "Container created",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:29Z",
+        "name": "user-fd45b47d7-pfr69.18cb52696ab3d006",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186333",
+        "uid": "302eacac-187a-44b2-b629-a8553e853e8f"
+      },
+      "reason": "Created",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:11:30Z",
+      "involvedObject": {
+        "apiVersion": "v1",
+        "fieldPath": "spec.containers{user}",
+        "kind": "Pod",
+        "name": "user-fd45b47d7-pfr69",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186023",
+        "uid": "c539784f-2b1c-4c5b-9117-215423d65cc4"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:11:30Z",
+      "message": "Container started",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:11:30Z",
+        "name": "user-fd45b47d7-pfr69.18cb526974c9ca45",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186334",
+        "uid": "19dfbd59-a9ec-4154-b642-903c3844796e"
+      },
+      "reason": "Started",
+      "reportingComponent": "kubelet",
+      "reportingInstance": "minikube",
+      "source": {
+        "component": "kubelet",
+        "host": "minikube"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:30Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "user-fd45b47d7",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186010",
+        "uid": "9a0d4d5e-8279-4113-944a-f555b82ada4e"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:30Z",
+      "message": "Created pod: user-fd45b47d7-pfr69",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "user-fd45b47d7.18cb524d80821fa1",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186038",
+        "uid": "9ab3e1b8-58f2-4ddb-8925-8158dbbf49c8"
+      },
+      "reason": "SuccessfulCreate",
+      "reportingComponent": "replicaset-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "replicaset-controller"
+      },
+      "type": "Normal"
+    },
+    {
+      "apiVersion": "v1",
+      "count": 1,
+      "eventTime": null,
+      "firstTimestamp": "2026-08-13T09:09:29Z",
+      "involvedObject": {
+        "apiVersion": "apps/v1",
+        "kind": "Deployment",
+        "name": "user",
+        "namespace": "sock-shop",
+        "resourceVersion": "2185956",
+        "uid": "33b4a9bd-4ee2-4122-afd7-3b6f7ac75726"
+      },
+      "kind": "Event",
+      "lastTimestamp": "2026-08-13T09:09:29Z",
+      "message": "Scaled up replica set user-fd45b47d7 from 0 to 1",
+      "metadata": {
+        "creationTimestamp": "2026-08-13T09:09:30Z",
+        "name": "user.18cb524d789865d0",
+        "namespace": "sock-shop",
+        "resourceVersion": "2186064",
+        "uid": "d39b99fb-7303-47f9-adbf-8d7f44f9b393"
+      },
+      "reason": "ScalingReplicaSet",
+      "reportingComponent": "deployment-controller",
+      "reportingInstance": "",
+      "source": {
+        "component": "deployment-controller"
+      },
+      "type": "Normal"
+    }
+  ]
+}
