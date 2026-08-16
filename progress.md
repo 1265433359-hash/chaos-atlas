@@ -805,3 +805,4 @@
 - Final live check: context `minikube`, all 14 Sock Shop Pods Ready, and no PodChaos/NetworkChaos/StressChaos/HTTPChaos/DNSChaos/Schedule/Workflow resources remain.
 - Independent reviewer reported no Critical issues and two Important issues. Fixed the sub-millisecond deadline escape and stale `15 vs 2 vs 2` wording; also fixed terminal checkpoint resume and added explicit source paths.
 - Review-fix regression: 19 passed. Updated affected suite: 99 passed plus 5 subtests. Updated full suite: 643 passed plus 5 subtests, with only the same 2 historical pinned-hash drift failures.
+- Created commit `d72a2c1` with the explicit 2,013-file Sock Shop R5/YAML15 whitelist. Cleared 96 post-commit index-only log normalization entries without changing working files; unrelated existing modifications and untracked directories remain untouched.

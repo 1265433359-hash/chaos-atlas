@@ -443,4 +443,4 @@ Constraints:
 - [x] Freeze the Full canonical 38-family batch with 76 report SHA-256 entries and combine it with the audited route-aware 50-family batch.
 - [x] Correct protocol metadata, source hashes, sensitive-scan status, and Chinese review wording while keeping human review pending.
 - [x] Verify affected tests, full-suite residual failures, cluster readiness, empty Chaos residue, JSON/SHA consistency, and Git diff hygiene.
-- [in_progress] Selectively stage, commit, and push only the YAML15 closure and necessary review fixes.
+- [complete] Selectively stage and commit only the YAML15 closure and necessary review fixes; push follows in the final repository handoff.
