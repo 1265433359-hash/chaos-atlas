@@ -1,0 +1,2831 @@
+{
+  "schema_version": "sock-shop-route-aware-remaining-v1",
+  "selection_rule": "one first-seen candidate per method + target + kind + action; prior completed identities excluded",
+  "source_runtime_plan": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/runtime_plan.json",
+  "source_runtime_plan_sha256": "a5d1feb9f0d3f0f33a73ae38882c2f40f542bf373e6f0b7d76fa9fccf398deb7",
+  "route_mapping_source": "tools/run_sock_shop_confidence_runtime.py",
+  "previous_completed_identity_count": 38,
+  "fresh_candidate_count": 58,
+  "fresh_candidates": [
+    {
+      "hypothesis_id": "sock-cpu-shipping-009",
+      "target_service": "shipping",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "cpu",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-shipping-009-abd6f67b.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-shipping-009-abd6f67b.yaml",
+      "mutation_sha256": "34e85a5782c3a19670be5b240907d82e916060502a6412357ed707ae47ad19b7",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-cpu-shipping-009",
+        "target_service": "shipping",
+        "action_or_target": "cpu",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=cpu",
+          "duration_bucket=medium",
+          "mode=one",
+          "selector_shape=app-label",
+          "intensity_bucket=medium"
+        ],
+        "rationale": "shipping is a single-replica service with no PDB or probes (static prediction: kill = total outage) and is called synchronously by orders with a 5s Future.get timeout (SOCK-orders->shipping contract: explicit_timeout, loss_bounded=true). CPU pressure on shipping will degrade the /orders POST path, and while the timeout bounds the hang, it converts the degradation into a 500 after 5s, directly failing the golden journey order submission. This tests resource pressure at a data-dependency position, and the single-replica no-PDB availability amplifies impact.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 9,
+          "novel_count": 8,
+          "duplicate_count": 1,
+          "upper95": 1.0,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-mem-carts-010",
+      "target_service": "carts",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "memory",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-carts-010-6c46e9b6.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-carts-010-6c46e9b6.yaml",
+      "mutation_sha256": "30db0014c617d938538520f32c3e3af09df1e99a51902a740687d7316c2133ed",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-mem-carts-010",
+        "target_service": "carts",
+        "action_or_target": "memory",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "action_or_target=memory",
+          "intensity_bucket=unknown",
+          "selector_shape=app-label",
+          "mode=one",
+          "duration_bucket=medium"
+        ],
+        "rationale": "carts is a single-replica service with no PDB (static prediction: kill = total outage) and is called synchronously by front-end with no timeout (SOCK-frontend->carts contract: no_timeout, loss_bounded=false). Memory pressure on carts will cause OOMKill or severe slowdown, and since front-end has no timeout on this call, any degradation directly hangs user-facing /cart requests. This tests the uncovered action_or_target=memory motif at a business-service position, and the no-timeout contract amplifies impact. The intensity_bucket=unknown is chosen to explore the uncovered motif while keeping the injection realistic for a memory stress test.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 10,
+          "novel_count": 8,
+          "duplicate_count": 2,
+          "upper95": 0.947541,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-mem-user-011",
+      "target_service": "user",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "memory",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-user-011-149d8f8f.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-user-011-149d8f8f.yaml",
+      "mutation_sha256": "5a9d6d558381b073ba4295c41a1256bd9391969fdd48d57c8fd91c46ab0eeb09",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-mem-user-011",
+        "target_service": "user",
+        "action_or_target": "memory",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "action_or_target=memory",
+          "intensity_bucket=unknown",
+          "selector_shape=app-label",
+          "mode=one",
+          "duration_bucket=medium"
+        ],
+        "rationale": "user is a single-replica service with no PDB (static prediction: kill = total outage) and is called synchronously by front-end during the /login golden journey path. Memory pressure on user will cause OOMKill or severe slowdown, and since front-end has no timeout on this call (SOCK-frontend->catalogue contract is no_timeout, but user is also a synchronous dependency), any degradation directly hangs user-facing login. This tests the uncovered action_or_target=memory motif at a business-service position, and the single-replica no-PDB availability amplifies impact. The intensity_bucket=unknown is chosen to explore the uncovered motif while keeping the injection realistic for a memory stress test.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 11,
+          "novel_count": 8,
+          "duplicate_count": 3,
+          "upper95": 0.895203,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-mem-payment-012",
+      "target_service": "payment",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "memory",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-payment-012-f1f928d4.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-payment-012-f1f928d4.yaml",
+      "mutation_sha256": "072902746d3c03cca84c18fafa90544c2c06d349ec7ca585f7c6b3fc6f17d9b0",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-mem-payment-012",
+        "target_service": "payment",
+        "action_or_target": "memory",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=memory",
+          "intensity_bucket=unknown",
+          "selector_shape=app-label",
+          "mode=one",
+          "duration_bucket=medium"
+        ],
+        "rationale": "payment is a single-replica service with no PDB (static prediction: kill = total outage) and is called synchronously by orders with a 5s Future.get timeout (SOCK-orders->payment contract: explicit_timeout, loss_bounded=true). Memory pressure on payment will cause OOMKill or severe slowdown, and while the timeout bounds the hang, it converts the degradation into a 500 after 5s, directly failing the golden journey order submission. This tests the uncovered action_or_target=memory motif at a data-dependency position, and the single-replica no-PDB availability amplifies impact. The intensity_bucket=unknown is chosen to explore the uncovered motif while keeping the injection realistic for a memory stress test.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 12,
+          "novel_count": 8,
+          "duplicate_count": 4,
+          "upper95": 0.846355,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-cpu-queue-master-013",
+      "target_service": "queue-master",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "cpu",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-queue-master-013-2597ee44.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-queue-master-013-2597ee44.yaml",
+      "mutation_sha256": "7f602d490b0438c424f2761af95a6afbaee9b1a8f10521735d485e8c8b196a2f",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-cpu-queue-master-013",
+        "target_service": "queue-master",
+        "action_or_target": "cpu",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=cpu",
+          "duration_bucket=medium",
+          "mode=one",
+          "selector_shape=app-label",
+          "intensity_bucket=medium"
+        ],
+        "rationale": "queue-master is a single-replica service with no PDB (static prediction: kill = total outage) and is a supporting service that processes order messages asynchronously. CPU pressure on queue-master will delay order processing, and since it has no redundancy, resource exhaustion can cause total outage of the order pipeline. This tests resource pressure at a supporting-service position, which is a high-value target given the single-replica no-PDB availability and the asynchronous dependency on orders.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service",
+          "new_call_chain_position"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 13,
+          "novel_count": 9,
+          "duplicate_count": 4,
+          "upper95": 0.860515,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-mem-queue-master-014",
+      "target_service": "queue-master",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "memory",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-queue-master-014-78384b1f.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-queue-master-014-78384b1f.yaml",
+      "mutation_sha256": "463697528e56ad8504bcdde51974ac992c298080d5195f2c6463dc33163927ee",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-mem-queue-master-014",
+        "target_service": "queue-master",
+        "action_or_target": "memory",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=memory",
+          "intensity_bucket=unknown",
+          "selector_shape=app-label",
+          "mode=one",
+          "duration_bucket=medium"
+        ],
+        "rationale": "queue-master is a single-replica service with no PDB (static prediction: kill = total outage) and is a supporting service that processes order messages asynchronously. Memory pressure on queue-master will cause OOMKill or severe slowdown, and since it has no redundancy, resource exhaustion can cause total outage of the order pipeline. This tests the uncovered action_or_target=memory motif at a supporting-service position, which is a high-value target given the single-replica no-PDB availability and the asynchronous dependency on orders. The intensity_bucket=unknown is chosen to explore the uncovered motif while keeping the injection realistic for a memory stress test.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 14,
+          "novel_count": 9,
+          "duplicate_count": 5,
+          "upper95": 0.818134,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-cpu-catalogue-db-015",
+      "target_service": "catalogue-db",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "cpu",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-catalogue-db-015-6f264a93.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-catalogue-db-015-6f264a93.yaml",
+      "mutation_sha256": "dbf869ccabf3f507c9bf4776cc39991a1467e37f67f28e9938c1313dd3607500",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-cpu-catalogue-db-015",
+        "target_service": "catalogue-db",
+        "action_or_target": "cpu",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=cpu",
+          "duration_bucket=medium",
+          "mode=one",
+          "selector_shape=app-label",
+          "intensity_bucket=medium"
+        ],
+        "rationale": "catalogue-db is a single-replica MongoDB with no resource limits (static prediction: kill = total outage) and is a data dependency for the /catalogue golden journey path. CPU pressure on catalogue-db will degrade catalogue reads, and since front-end has no timeout on its synchronous call to catalogue (SOCK-frontend->catalogue contract: no_timeout, loss_bounded=false), any slowdown directly hangs user-facing /catalogue requests. This tests resource pressure at a data-dependency position, and the single-replica no-PDB availability amplifies impact.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 15,
+          "novel_count": 10,
+          "duplicate_count": 5,
+          "upper95": 0.832333,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-mem-catalogue-db-016",
+      "target_service": "catalogue-db",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "memory",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-catalogue-db-016-9b78c7f1.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-catalogue-db-016-9b78c7f1.yaml",
+      "mutation_sha256": "171bed19744df23d4b6151cc707ec59b47bb30c0de41e95b4493560ca515e862",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-mem-catalogue-db-016",
+        "target_service": "catalogue-db",
+        "action_or_target": "memory",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=memory",
+          "intensity_bucket=unknown",
+          "selector_shape=app-label",
+          "mode=one",
+          "duration_bucket=medium"
+        ],
+        "rationale": "catalogue-db is a single-replica MongoDB with no resource limits (static prediction: kill = total outage) and is a data dependency for the /catalogue golden journey path. Memory pressure on catalogue-db will cause OOMKill or severe slowdown, and since front-end has no timeout on its synchronous call to catalogue (SOCK-frontend->catalogue contract: no_timeout, loss_bounded=false), any slowdown directly hangs user-facing /catalogue requests. This tests the uncovered action_or_target=memory motif at a data-dependency position, and the single-replica no-PDB availability amplifies impact. The intensity_bucket=unknown is chosen to explore the uncovered motif while keeping the injection realistic for a memory stress test.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 16,
+          "novel_count": 10,
+          "duplicate_count": 6,
+          "upper95": 0.795071,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-cpu-carts-db-017",
+      "target_service": "carts-db",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "cpu",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-carts-db-017-8fb64e14.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-carts-db-017-8fb64e14.yaml",
+      "mutation_sha256": "7065312590cb1491778fdb389f98cb71975ea5f19e5e8a9a91f279b17dbeda57",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-cpu-carts-db-017",
+        "target_service": "carts-db",
+        "action_or_target": "cpu",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=cpu",
+          "duration_bucket=medium",
+          "mode=one",
+          "selector_shape=app-label",
+          "intensity_bucket=medium"
+        ],
+        "rationale": "carts-db is a single-replica MongoDB with no resource limits (static prediction: kill = total outage) and is a data dependency for the /cart golden journey path. CPU pressure on carts-db will degrade cart reads/writes, and since front-end has no timeout on its synchronous call to carts (SOCK-frontend->carts contract: no_timeout, loss_bounded=false), any slowdown directly hangs user-facing /cart requests. This tests resource pressure at a data-dependency position, and the single-replica no-PDB availability amplifies impact.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 17,
+          "novel_count": 11,
+          "duplicate_count": 6,
+          "upper95": 0.808997,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-cpu-orders-db-020",
+      "target_service": "orders-db",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "cpu",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-orders-db-020-086427cd.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-orders-db-020-086427cd.yaml",
+      "mutation_sha256": "dad036e29da402f0316ea919d916d572bd8d03d2dd742f4aee539e5f9b687f53",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-cpu-orders-db-020",
+        "target_service": "orders-db",
+        "action_or_target": "cpu",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=cpu",
+          "duration_bucket=medium",
+          "mode=one",
+          "selector_shape=app-label",
+          "intensity_bucket=medium"
+        ],
+        "rationale": "orders-db is a single-replica MongoDB with no resource limits (static prediction: kill = total outage) and is a data dependency for the authenticated /orders golden journey path. CPU pressure on orders-db will degrade order reads/writes, and since orders has no redundancy, resource exhaustion can cause total outage of the orders path. This tests resource pressure at a data-dependency position, and the single-replica no-PDB availability amplifies impact.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 20,
+          "novel_count": 12,
+          "duplicate_count": 8,
+          "upper95": 0.759539,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-mem-carts-db-021",
+      "target_service": "carts-db",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "memory",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-carts-db-021-d5aad9bb.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-carts-db-021-d5aad9bb.yaml",
+      "mutation_sha256": "74c24a99f7f04ab1ff371507f912bff535e1494f86eefe472f70976cb30d99ad",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-mem-carts-db-021",
+        "target_service": "carts-db",
+        "action_or_target": "memory",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=memory",
+          "intensity_bucket=unknown",
+          "selector_shape=app-label",
+          "mode=one",
+          "duration_bucket=medium"
+        ],
+        "rationale": "carts-db is a single-replica MongoDB with no resource limits (static prediction: kill = total outage) and is a data dependency for the /cart golden journey path. Memory pressure on carts-db will cause OOMKill or severe slowdown, and since front-end has no timeout on its synchronous call to carts (SOCK-frontend->carts contract: no_timeout, loss_bounded=false), any slowdown directly hangs user-facing /cart requests. This tests the uncovered action_or_target=memory motif at a data-dependency position, and the single-replica no-PDB availability amplifies impact. The intensity_bucket=unknown is chosen to explore the uncovered motif while keeping the injection realistic for a memory stress test.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 21,
+          "novel_count": 12,
+          "duplicate_count": 9,
+          "upper95": 0.73166,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-cpu-rabbitmq-022",
+      "target_service": "rabbitmq",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "cpu",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-rabbitmq-022-de980e9f.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-rabbitmq-022-de980e9f.yaml",
+      "mutation_sha256": "0b83f46e7900bf8b91a32c1153a5c1da5f0ef8b7edcd5364a58d94e9218ee894",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-cpu-rabbitmq-022",
+        "target_service": "rabbitmq",
+        "action_or_target": "cpu",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=cpu",
+          "duration_bucket=medium",
+          "mode=one",
+          "selector_shape=app-label",
+          "intensity_bucket=medium"
+        ],
+        "rationale": "rabbitmq is a single-replica message broker with no PDB (static prediction: kill = total outage) and is a supporting service that decouples orders from queue-master. CPU pressure on rabbitmq will delay message delivery, and since queue-master has no redundancy, resource exhaustion can cause total outage of the order pipeline. This tests resource pressure at a supporting-service position, which is a high-value target given the single-replica no-PDB availability and the asynchronous dependency on orders.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 22,
+          "novel_count": 13,
+          "duplicate_count": 9,
+          "upper95": 0.745518,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-mem-orders-db-023",
+      "target_service": "orders-db",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "memory",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-orders-db-023-092ce436.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-orders-db-023-092ce436.yaml",
+      "mutation_sha256": "1898c7ba11abcb237b30348b64087718352e6cf830a34c2afe99941765143381",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-mem-orders-db-023",
+        "target_service": "orders-db",
+        "action_or_target": "memory",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=memory",
+          "intensity_bucket=unknown",
+          "selector_shape=app-label",
+          "mode=one",
+          "duration_bucket=medium"
+        ],
+        "rationale": "orders-db is a single-replica MongoDB with no resource limits (static prediction: kill = total outage) and is a data dependency for the authenticated /orders golden journey path. Memory pressure on orders-db will cause OOMKill or severe slowdown, and since orders has no redundancy, resource exhaustion can cause total outage of the orders path. This tests the uncovered action_or_target=memory motif at a data-dependency position, and the single-replica no-PDB availability amplifies impact. The intensity_bucket=unknown is chosen to explore the uncovered motif while keeping the injection realistic for a memory stress test.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 23,
+          "novel_count": 13,
+          "duplicate_count": 10,
+          "upper95": 0.720126,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-mem-session-db-024",
+      "target_service": "session-db",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "memory",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-session-db-024-961e95a0.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-session-db-024-961e95a0.yaml",
+      "mutation_sha256": "60bc4ff56f1aa68747243acfc25c06dad2ca51dbecec34ee061e55273765432d",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-mem-session-db-024",
+        "target_service": "session-db",
+        "action_or_target": "memory",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=memory",
+          "intensity_bucket=unknown",
+          "selector_shape=app-label",
+          "mode=one",
+          "duration_bucket=medium"
+        ],
+        "rationale": "session-db is a single-replica Redis with no resource limits (static prediction: kill = total outage) and is a data dependency for the /login golden journey path. Memory pressure on session-db will cause OOMKill or severe slowdown, and since front-end has no timeout on its synchronous call to user (SOCK-frontend->catalogue contract is no_timeout, but user is also a synchronous dependency), any degradation directly hangs user-facing login. This tests the uncovered action_or_target=memory motif at a data-dependency position, and the single-replica no-PDB availability amplifies impact. The intensity_bucket=unknown is chosen to explore the uncovered motif while keeping the injection realistic for a memory stress test.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 24,
+          "novel_count": 14,
+          "duplicate_count": 10,
+          "upper95": 0.733315,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-cpu-user-db-025",
+      "target_service": "user-db",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "cpu",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-user-db-025-a5f32a4e.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-user-db-025-a5f32a4e.yaml",
+      "mutation_sha256": "ae020c813bb6a3798e794211542c5bb5cf37fb3108b3f38a79b2bbfc1f9a949b",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-cpu-user-db-025",
+        "target_service": "user-db",
+        "action_or_target": "cpu",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=cpu",
+          "duration_bucket=medium",
+          "mode=one",
+          "selector_shape=app-label",
+          "intensity_bucket=medium"
+        ],
+        "rationale": "user-db is a single-replica MongoDB with no resource limits (static prediction: kill = total outage) and is a data dependency for the /login golden journey path. CPU pressure on user-db will degrade login requests, and since front-end has no timeout on its synchronous call to user (SOCK-frontend->catalogue contract is no_timeout, but user is also a synchronous dependency), any slowdown directly hangs user-facing login. This tests resource pressure at a data-dependency position, and the single-replica no-PDB availability amplifies impact.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 25,
+          "novel_count": 15,
+          "duplicate_count": 10,
+          "upper95": 0.745328,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-mem-shipping-026",
+      "target_service": "shipping",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "memory",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-shipping-026-fd044a19.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-shipping-026-fd044a19.yaml",
+      "mutation_sha256": "e1f41383e53db3b1fbd27a6fc5e636576f2650f6065a9c7d7d180bc8aaf12d03",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-mem-shipping-026",
+        "target_service": "shipping",
+        "action_or_target": "memory",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=memory",
+          "intensity_bucket=unknown",
+          "selector_shape=app-label",
+          "mode=one",
+          "duration_bucket=medium"
+        ],
+        "rationale": "shipping is a single-replica service with no PDB or probes (static prediction: kill = total outage) and is called synchronously by orders with a 5s Future.get timeout (SOCK-orders->shipping contract: explicit_timeout, loss_bounded=true). Memory pressure on shipping will cause OOMKill or severe slowdown, and while the timeout bounds the hang, it converts the degradation into a 500 after 5s, directly failing the golden journey order submission. This tests the uncovered action_or_target=memory motif at a data-dependency position, and the single-replica no-PDB availability amplifies impact. The intensity_bucket=unknown is chosen to explore the uncovered motif while keeping the injection realistic for a memory stress test.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 26,
+          "novel_count": 15,
+          "duplicate_count": 11,
+          "upper95": 0.722583,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-mem-rabbitmq-027",
+      "target_service": "rabbitmq",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "memory",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-rabbitmq-027-22010b45.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-rabbitmq-027-22010b45.yaml",
+      "mutation_sha256": "f285109ac5445d943fb78038c79307d95f69f888686895435375b11dacbf355e",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-mem-rabbitmq-027",
+        "target_service": "rabbitmq",
+        "action_or_target": "memory",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=memory",
+          "intensity_bucket=unknown",
+          "selector_shape=app-label",
+          "mode=one",
+          "duration_bucket=medium"
+        ],
+        "rationale": "rabbitmq is a single-replica message broker with no PDB (static prediction: kill = total outage) and is a supporting service that decouples orders from queue-master. Memory pressure on rabbitmq will cause OOMKill or severe slowdown, and since queue-master has no redundancy, resource exhaustion can cause total outage of the order pipeline. This tests the uncovered action_or_target=memory motif at a supporting-service position, which is a high-value target given the single-replica no-PDB availability and the asynchronous dependency on orders. The intensity_bucket=unknown is chosen to explore the uncovered motif while keeping the injection realistic for a memory stress test.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 27,
+          "novel_count": 15,
+          "duplicate_count": 12,
+          "upper95": 0.701072,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-cpu-session-db-028",
+      "target_service": "session-db",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "cpu",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-session-db-028-58b12cfc.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-session-db-028-58b12cfc.yaml",
+      "mutation_sha256": "cbbaf1dbe7053ce5c2b3709f662a99889ea7fa2cd8f99757999b448cc4f1e7d9",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-cpu-session-db-028",
+        "target_service": "session-db",
+        "action_or_target": "cpu",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=cpu",
+          "duration_bucket=medium",
+          "mode=one",
+          "selector_shape=app-label",
+          "intensity_bucket=medium"
+        ],
+        "rationale": "session-db is a single-replica Redis with no resource limits (static prediction: kill = total outage) and is a data dependency for the /login golden journey path. CPU pressure on session-db will degrade login requests, and since front-end has no timeout on its synchronous call to user (SOCK-frontend->catalogue contract is no_timeout, but user is also a synchronous dependency), any slowdown directly hangs user-facing login. This tests resource pressure at a data-dependency position, and the single-replica no-PDB availability amplifies impact.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 28,
+          "novel_count": 15,
+          "duplicate_count": 13,
+          "upper95": 0.680717,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-mem-user-db-029",
+      "target_service": "user-db",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "memory",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-user-db-029-a182f7a7.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-mem-user-db-029-a182f7a7.yaml",
+      "mutation_sha256": "5b7628627a9d4855f8c663baff6f5e0cf08cb839b82758f8a109e827626734dc",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-mem-user-db-029",
+        "target_service": "user-db",
+        "action_or_target": "memory",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=memory",
+          "intensity_bucket=unknown",
+          "selector_shape=app-label",
+          "mode=one",
+          "duration_bucket=medium"
+        ],
+        "rationale": "user-db is a single-replica MongoDB with no resource limits (static prediction: kill = total outage) and is a data dependency for the /login golden journey path. Memory pressure on user-db will cause OOMKill or severe slowdown, and since front-end has no timeout on its synchronous call to user (SOCK-frontend->catalogue contract is no_timeout, but user is also a synchronous dependency), any degradation directly hangs user-facing login. This tests the uncovered action_or_target=memory motif at a data-dependency position, and the single-replica no-PDB availability amplifies impact. The intensity_bucket=unknown is chosen to explore the uncovered motif while keeping the injection realistic for a memory stress test.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 29,
+          "novel_count": 15,
+          "duplicate_count": 14,
+          "upper95": 0.661439,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-cpu-catalogue-030",
+      "target_service": "catalogue",
+      "kind": "StressChaos",
+      "category": "Resource pressure",
+      "action_or_target": "cpu",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-catalogue-030-04da33ff.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-cpu-catalogue-030-04da33ff.yaml",
+      "mutation_sha256": "06f55ab421688ecab38534c2fc93643cd941c825072eaa0631d9a76bfa47bada",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-cpu-catalogue-030",
+        "target_service": "catalogue",
+        "action_or_target": "cpu",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "action_or_target=cpu",
+          "duration_bucket=medium",
+          "mode=one",
+          "selector_shape=app-label",
+          "intensity_bucket=high"
+        ],
+        "rationale": "catalogue is a single-replica service with no resource limits (static prediction: kill = total outage) and is called synchronously by front-end with no timeout (SOCK-frontend->catalogue contract: no_timeout, loss_bounded=false). CPU pressure at high intensity on catalogue will degrade catalogue reads, and since front-end has no timeout on this call, any slowdown directly hangs user-facing /catalogue requests. This tests the uncovered intensity_bucket=high motif at a business-service position, and the no-timeout contract amplifies impact.",
+        "method": "native-full",
+        "category": "Resource pressure",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 30,
+          "novel_count": 15,
+          "duplicate_count": 15,
+          "upper95": 0.643166,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-abort-front-end",
+      "target_service": "front-end",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "abort",
+      "call_chain_position": "entry",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-front-end-f8d2bd35.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-front-end-f8d2bd35.yaml",
+      "mutation_sha256": "4459641f39e148314d58fe86a0615041868ef30fd5fd739131ad11564ff53e34",
+      "http_route": {
+        "port": 8079,
+        "path": "*",
+        "source": "sock-shop-call-chain:front-end-golden-journeys-live-probe"
+      },
+      "hypothesis": {
+        "id": "sock-http-abort-front-end",
+        "target_service": "front-end",
+        "action_or_target": "abort",
+        "call_chain_position": "entry",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject HTTPChaos abort faults (connection reset) on front-end, the entry point of the golden journey. This targets the unprotected front-end->carts and front-end->catalogue edges (no_timeout contract) and the single-replica front-end with no PDB. Abort is a realistic HTTP fault (connection reset) that can cause immediate errors, aligning with the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (abort) on a previously tested target. Using app-label selector and one pod aligns with high-support motifs.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 21,
+          "novel_count": 15,
+          "duplicate_count": 6,
+          "upper95": 0.850143,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-abort-catalogue",
+      "target_service": "catalogue",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "abort",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-catalogue-df420e4b.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-catalogue-df420e4b.yaml",
+      "mutation_sha256": "a29616bdca28cb275f06dd37547804072562f36e1b6ab4b19019426b61939cf8",
+      "http_route": {
+        "port": 80,
+        "path": "/catalogue*",
+        "source": "sock-shop-call-chain:front-end->catalogue"
+      },
+      "hypothesis": {
+        "id": "sock-http-abort-catalogue",
+        "target_service": "catalogue",
+        "action_or_target": "abort",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject HTTPChaos abort faults (connection reset) on catalogue, a business-service in the golden journey (front-end->catalogue edge has no_timeout contract). Catalogue is single-replica with no PDB, so an abort here directly breaks the browse path. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (abort) on a previously tested target (catalogue) not yet tested with abort in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 22,
+          "novel_count": 15,
+          "duplicate_count": 7,
+          "upper95": 0.821745,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-abort-carts",
+      "target_service": "carts",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "abort",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-carts-a189a3ad.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-carts-a189a3ad.yaml",
+      "mutation_sha256": "2e2aaf8d430034df51d8868658771efc91700da0d3ab141547e9b654886b80d8",
+      "http_route": {
+        "port": 80,
+        "path": "/carts*",
+        "source": "sock-shop-call-chain:front-end->carts"
+      },
+      "hypothesis": {
+        "id": "sock-http-abort-carts",
+        "target_service": "carts",
+        "action_or_target": "abort",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject HTTPChaos abort faults (connection reset) on carts, a business-service in the golden journey (front-end->carts edge has no_timeout contract). Carts is single-replica with no PDB, so an abort here directly breaks the user-facing cart operations. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (abort) on a previously tested target (carts) not yet tested with abort in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 23,
+          "novel_count": 15,
+          "duplicate_count": 8,
+          "upper95": 0.79484,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-abort-orders",
+      "target_service": "orders",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "abort",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-orders-3b4af8f6.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-orders-3b4af8f6.yaml",
+      "mutation_sha256": "c500d247d635c5a9f58ce80cb6e04eb9329f5ac4fcdc618e23929714cebfb828",
+      "http_route": {
+        "port": 80,
+        "path": "/orders*",
+        "source": "sock-shop-call-chain:front-end->orders"
+      },
+      "hypothesis": {
+        "id": "sock-http-abort-orders",
+        "target_service": "orders",
+        "action_or_target": "abort",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject HTTPChaos abort faults (connection reset) on orders, a business-service in the golden journey (front-end->orders edge has no_timeout contract). Orders is single-replica with no PDB, so an abort here directly breaks the authenticated orders read-only path. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (abort) on a previously tested target (orders) not yet tested with abort in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 24,
+          "novel_count": 15,
+          "duplicate_count": 9,
+          "upper95": 0.769389,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-abort-payment",
+      "target_service": "payment",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "abort",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-payment-29fe242d.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-payment-29fe242d.yaml",
+      "mutation_sha256": "e11ff68ac47d06dba7e6e9b7c80ad2c635be4cab567cd15f3736b8f8396a0e36",
+      "http_route": {
+        "port": 80,
+        "path": "/paymentAuth*",
+        "source": "sock-shop-call-chain:orders->payment"
+      },
+      "hypothesis": {
+        "id": "sock-http-abort-payment",
+        "target_service": "payment",
+        "action_or_target": "abort",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject HTTPChaos abort faults (connection reset) on payment, a data-dependency in the orders path. Payment is single-replica with no PDB, and the orders->payment edge has a 5s Future.get timeout (loss_bounded), so an abort here could trigger the timeout and degrade order placement. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (abort) on a previously tested target (payment) not yet tested with abort in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 25,
+          "novel_count": 15,
+          "duplicate_count": 10,
+          "upper95": 0.745328,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-abort-user",
+      "target_service": "user",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "abort",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-user-cf11db8a.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-user-cf11db8a.yaml",
+      "mutation_sha256": "e95ab6231888b32aabf7afd39aad1f035abd15dd404ca2cd1d3ccc13a6dd1cd5",
+      "http_route": {
+        "port": 80,
+        "path": "/login*",
+        "source": "sock-shop-call-chain:front-end->user"
+      },
+      "hypothesis": {
+        "id": "sock-http-abort-user",
+        "target_service": "user",
+        "action_or_target": "abort",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject HTTPChaos abort faults (connection reset) on user, a supporting service in the login path. User is single-replica with no PDB, and the front-end->user edge has no timeout contract, so an abort here could break the demo login flow. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (abort) on a previously tested target (user) not yet tested with abort in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 28,
+          "novel_count": 15,
+          "duplicate_count": 13,
+          "upper95": 0.680717,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-abort-queue-master",
+      "target_service": "queue-master",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "abort",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-queue-master-89265115.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-queue-master-89265115.yaml",
+      "mutation_sha256": "6ff912a6008f99a7b4264cbe1deb2a14ab997ca76cb3c548f88bc86da7bcecc1",
+      "http_route": {
+        "port": 80,
+        "path": "/",
+        "source": "sock-shop-supporting-service:live-probe-root"
+      },
+      "hypothesis": {
+        "id": "sock-http-abort-queue-master",
+        "target_service": "queue-master",
+        "action_or_target": "abort",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject HTTPChaos abort faults (connection reset) on queue-master, a supporting service in the orders path. Queue-master is single-replica with no PDB, and it consumes from RabbitMQ; an abort here could disrupt order processing and is a realistic fault (connection reset). This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (abort) on a previously tested target (queue-master) not yet tested with abort in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 29,
+          "novel_count": 15,
+          "duplicate_count": 14,
+          "upper95": 0.661439,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-abort-shipping",
+      "target_service": "shipping",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "abort",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-shipping-f5c8e2b4.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-abort-shipping-f5c8e2b4.yaml",
+      "mutation_sha256": "339a8f92d03fb3ca4a5fd7d05e7619b1a6e9ecefb1bf837e6ef5354480941460",
+      "http_route": {
+        "port": 80,
+        "path": "/shipping*",
+        "source": "sock-shop-call-chain:orders->shipping"
+      },
+      "hypothesis": {
+        "id": "sock-http-abort-shipping",
+        "target_service": "shipping",
+        "action_or_target": "abort",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject HTTPChaos abort faults (connection reset) on shipping, a supporting service in the orders path. Shipping is single-replica with no PDB, and the orders->shipping edge has a 5s Future.get timeout (loss_bounded), so an abort here could trigger the timeout and degrade order placement. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (abort) on a previously tested target (shipping) not yet tested with abort in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 33,
+          "novel_count": 15,
+          "duplicate_count": 18,
+          "upper95": 0.59371,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-dns-error-front-end",
+      "target_service": "front-end",
+      "kind": "DNSChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "dns",
+      "call_chain_position": "entry",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-front-end-ae004705.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-front-end-ae004705.yaml",
+      "mutation_sha256": "0ce18c3b2aef9d4c4734f97b019e584a6b0fb4300a819345183d97f5f5643d4f",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-http-dns-error-front-end",
+        "target_service": "front-end",
+        "action_or_target": "dns",
+        "call_chain_position": "entry",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject DNSChaos error (e.g., NXDOMAIN) on front-end, the entry point of the golden journey. This targets the unprotected front-end->carts and front-end->catalogue edges (no_timeout contract) and the single-replica front-end with no PDB. DNS errors are a realistic HTTP fault (service discovery failure) that can cause immediate errors, aligning with the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (dns) on a previously tested target. Using app-label selector and one pod aligns with high-support motifs.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_action_or_target"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 36,
+          "novel_count": 16,
+          "duplicate_count": 20,
+          "upper95": 0.57833,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-dns-error-catalogue",
+      "target_service": "catalogue",
+      "kind": "DNSChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "dns",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-catalogue-9c18d477.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-catalogue-9c18d477.yaml",
+      "mutation_sha256": "96726d4ea4cc5b0acdc879a53346db514d5154f76f9c9ad491de03d67f56189d",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-http-dns-error-catalogue",
+        "target_service": "catalogue",
+        "action_or_target": "dns",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject DNSChaos error (e.g., NXDOMAIN) on catalogue, a business-service in the golden journey (front-end->catalogue edge has no_timeout contract). Catalogue is single-replica with no PDB, so a DNS error here directly breaks the browse path. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (dns) on a previously tested target (catalogue) not yet tested with DNS in this session. Using app-label selector and one pod aligns with high-support motifs.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 37,
+          "novel_count": 16,
+          "duplicate_count": 21,
+          "upper95": 0.564861,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-dns-error-carts",
+      "target_service": "carts",
+      "kind": "DNSChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "dns",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-carts-f3848171.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-carts-f3848171.yaml",
+      "mutation_sha256": "ca341f2bbdd48db075f7ec3cfd05cefbbff741340f7d05a6143e72fafb95748b",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-http-dns-error-carts",
+        "target_service": "carts",
+        "action_or_target": "dns",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject DNSChaos error (e.g., NXDOMAIN) on carts, a business-service in the golden journey (front-end->carts edge has no_timeout contract). Carts is single-replica with no PDB, so a DNS error here directly breaks the user-facing cart operations. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (dns) on a previously tested target (carts) not yet tested with DNS in this session. Using app-label selector and one pod aligns with high-support motifs.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 39,
+          "novel_count": 16,
+          "duplicate_count": 23,
+          "upper95": 0.539674,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-dns-error-orders",
+      "target_service": "orders",
+      "kind": "DNSChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "dns",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-orders-32d6b4cb.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-orders-32d6b4cb.yaml",
+      "mutation_sha256": "00bd1feac9b149ce937b3f044ef357278b3577428353493c847ef1cdb1a221e6",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-http-dns-error-orders",
+        "target_service": "orders",
+        "action_or_target": "dns",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject DNSChaos error (e.g., NXDOMAIN) on orders, a business-service in the golden journey (front-end->orders edge has no_timeout contract). Orders is single-replica with no PDB, so a DNS error here directly breaks the authenticated orders read-only path. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (dns) on a previously tested target (orders) not yet tested with DNS in this session. Using app-label selector and one pod aligns with high-support motifs.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 40,
+          "novel_count": 16,
+          "duplicate_count": 24,
+          "upper95": 0.527885,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-dns-error-payment",
+      "target_service": "payment",
+      "kind": "DNSChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "dns",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-payment-65152b16.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-payment-65152b16.yaml",
+      "mutation_sha256": "cbb5edbc2a841c9216ee0144b16bc634b7792810d9d1fff840f09a0a16c247bf",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-http-dns-error-payment",
+        "target_service": "payment",
+        "action_or_target": "dns",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject DNSChaos error (e.g., NXDOMAIN) on payment, a data-dependency in the orders path. Payment is single-replica with no PDB, and the orders->payment edge has a 5s Future.get timeout (loss_bounded), so a DNS error here could trigger the timeout and degrade order placement. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (dns) on a previously tested target (payment) not yet tested with DNS in this session. Using app-label selector and one pod aligns with high-support motifs.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 41,
+          "novel_count": 16,
+          "duplicate_count": 25,
+          "upper95": 0.516588,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-dns-error-shipping",
+      "target_service": "shipping",
+      "kind": "DNSChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "dns",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-shipping-d65d948c.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-shipping-d65d948c.yaml",
+      "mutation_sha256": "61dec2146331ef29d38a538bcdb1263128a6591063fbad1c75d85298177a53db",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-http-dns-error-shipping",
+        "target_service": "shipping",
+        "action_or_target": "dns",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject DNSChaos error (e.g., NXDOMAIN) on shipping, a supporting service in the orders path. Shipping is single-replica with no PDB, and the orders->shipping edge has a 5s Future.get timeout (loss_bounded), so a DNS error here could trigger the timeout and degrade order placement. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (dns) on a previously tested target (shipping) not yet tested with DNS in this session. Using app-label selector and one pod aligns with high-support motifs.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 44,
+          "novel_count": 16,
+          "duplicate_count": 28,
+          "upper95": 0.485375,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-dns-error-user",
+      "target_service": "user",
+      "kind": "DNSChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "dns",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-user-09cbd19d.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-user-09cbd19d.yaml",
+      "mutation_sha256": "39ed9c5c28c227489cff5432fd49993479fb48dfbe84149f7be64c12418a00f2",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-http-dns-error-user",
+        "target_service": "user",
+        "action_or_target": "dns",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject DNSChaos error (e.g., NXDOMAIN) on user, a supporting service in the login path. User is single-replica with no PDB, and the front-end->user edge has no timeout contract, so a DNS error here could break the demo login flow. This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (dns) on a previously tested target (user) not yet tested with DNS in this session. Using app-label selector and one pod aligns with high-support motifs.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 46,
+          "novel_count": 16,
+          "duplicate_count": 30,
+          "upper95": 0.466548,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-dns-error-queue-master",
+      "target_service": "queue-master",
+      "kind": "DNSChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "dns",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-queue-master-2c2e7aaa.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-dns-error-queue-master-2c2e7aaa.yaml",
+      "mutation_sha256": "9318e06e09acd12b49d9c6fd94168d105a66ad68ac364b20ef592a8040d1a26a",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-http-dns-error-queue-master",
+        "target_service": "queue-master",
+        "action_or_target": "dns",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=error",
+          "duration_bucket=short",
+          "selector_shape=app-label",
+          "mode=one"
+        ],
+        "rationale": "Inject DNSChaos error (e.g., NXDOMAIN) on queue-master, a supporting service in the orders path. Queue-master is single-replica with no PDB, and it consumes from RabbitMQ; a DNS error here could disrupt order processing and is a realistic fault (service discovery failure). This covers the high-support action_or_target=error and duration_bucket=short motifs while exploring a new action (dns) on a previously tested target (queue-master) not yet tested with DNS in this session. Using app-label selector and one pod aligns with high-support motifs.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 47,
+          "novel_count": 16,
+          "duplicate_count": 31,
+          "upper95": 0.457664,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-delay-catalogue",
+      "target_service": "catalogue",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "delay",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-catalogue-74a282cb.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-catalogue-74a282cb.yaml",
+      "mutation_sha256": "7959155cf6fd53a809e499b1956a0c07aacc8d5603a6cf7b246a02b1547f6f02",
+      "http_route": {
+        "port": 80,
+        "path": "/catalogue*",
+        "source": "sock-shop-call-chain:front-end->catalogue"
+      },
+      "hypothesis": {
+        "id": "sock-http-delay-catalogue",
+        "target_service": "catalogue",
+        "action_or_target": "delay",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "duration_bucket=medium",
+          "selector_shape=app-label",
+          "mode=all"
+        ],
+        "rationale": "Inject HTTPChaos delay on catalogue, a business-service in the golden journey (front-end->catalogue edge has no_timeout contract). Catalogue is single-replica with no PDB, so a delay here directly amplifies to the user-facing browse path. Medium duration aligns with the high-support duration_bucket=medium motif, and using app-label selector with mode=all covers the high-support mode=all motif while exploring a new action (delay) not yet tested in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_action_or_target"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 52,
+          "novel_count": 17,
+          "duplicate_count": 35,
+          "upper95": 0.437887,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-delay-front-end",
+      "target_service": "front-end",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "delay",
+      "call_chain_position": "entry",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-front-end-8ff565c9.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-front-end-8ff565c9.yaml",
+      "mutation_sha256": "38e15be87a7bd37d141aeeb8ef57bc428ac1749c60f0c7020d32051226684a2f",
+      "http_route": {
+        "port": 8079,
+        "path": "*",
+        "source": "sock-shop-call-chain:front-end-golden-journeys-live-probe"
+      },
+      "hypothesis": {
+        "id": "sock-http-delay-front-end",
+        "target_service": "front-end",
+        "action_or_target": "delay",
+        "call_chain_position": "entry",
+        "motifs": [
+          "duration_bucket=medium",
+          "selector_shape=app-label",
+          "mode=all"
+        ],
+        "rationale": "Inject HTTPChaos delay on front-end, the entry point of the golden journey. Front-end has no timeout on its downstream calls to carts/catalogue (no_timeout contract), so a delay here directly amplifies to the user-facing browse path. Medium duration aligns with the high-support duration_bucket=medium motif, and using app-label selector with mode=all covers the high-support mode=all motif while exploring a new action (delay) on a previously tested target.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 53,
+          "novel_count": 17,
+          "duplicate_count": 36,
+          "upper95": 0.430408,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-delay-carts",
+      "target_service": "carts",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "delay",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-carts-e1de0081.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-carts-e1de0081.yaml",
+      "mutation_sha256": "de303a38e902a71024c2e95a776acf39fc2e8cfec0baf19ab550bd47e3a69584",
+      "http_route": {
+        "port": 80,
+        "path": "/carts*",
+        "source": "sock-shop-call-chain:front-end->carts"
+      },
+      "hypothesis": {
+        "id": "sock-http-delay-carts",
+        "target_service": "carts",
+        "action_or_target": "delay",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "duration_bucket=medium",
+          "selector_shape=app-label",
+          "mode=all"
+        ],
+        "rationale": "Inject HTTPChaos delay on carts, a business-service in the golden journey (front-end->carts edge has no_timeout contract). Carts is single-replica with no PDB, so a delay here directly amplifies to the user-facing cart operations. Medium duration aligns with the high-support duration_bucket=medium motif, and using app-label selector with mode=all covers the high-support mode=all motif while exploring a new target service (carts) not yet tested with delay in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 55,
+          "novel_count": 17,
+          "duplicate_count": 38,
+          "upper95": 0.416183,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-delay-orders",
+      "target_service": "orders",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "delay",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-orders-3cbdd3ff.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-orders-3cbdd3ff.yaml",
+      "mutation_sha256": "598ecdd87ce91134343eba5baf0d124cbd103d8328d7778cc4642ca2dc92667c",
+      "http_route": {
+        "port": 80,
+        "path": "/orders*",
+        "source": "sock-shop-call-chain:front-end->orders"
+      },
+      "hypothesis": {
+        "id": "sock-http-delay-orders",
+        "target_service": "orders",
+        "action_or_target": "delay",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "duration_bucket=medium",
+          "selector_shape=app-label",
+          "mode=all"
+        ],
+        "rationale": "Inject HTTPChaos delay on orders, a business-service in the golden journey (front-end->orders edge has no_timeout contract). Orders is single-replica with no PDB, so a delay here directly amplifies to the user-facing authenticated orders read-only path. Medium duration aligns with the high-support duration_bucket=medium motif, and using app-label selector with mode=all covers the high-support mode=all motif while exploring a new target service (orders) not yet tested with delay in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 57,
+          "novel_count": 17,
+          "duplicate_count": 40,
+          "upper95": 0.40286,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-delay-payment",
+      "target_service": "payment",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "delay",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-payment-49745f1b.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-payment-49745f1b.yaml",
+      "mutation_sha256": "c5671d58988d0d1876507de469c62a2fea36e2a616a40bf2dac1600bc0681f89",
+      "http_route": {
+        "port": 80,
+        "path": "/paymentAuth*",
+        "source": "sock-shop-call-chain:orders->payment"
+      },
+      "hypothesis": {
+        "id": "sock-http-delay-payment",
+        "target_service": "payment",
+        "action_or_target": "delay",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "duration_bucket=medium",
+          "selector_shape=app-label",
+          "mode=all"
+        ],
+        "rationale": "Inject HTTPChaos delay on payment, a data-dependency in the orders path. Payment is single-replica with no PDB, and the orders->payment edge has a 5s Future.get timeout (loss_bounded), so a delay here could trigger the timeout and degrade order placement. Medium duration aligns with the high-support duration_bucket=medium motif, and using app-label selector with mode=all covers the high-support mode=all motif while exploring a new target service (payment) not yet tested with delay in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 59,
+          "novel_count": 17,
+          "duplicate_count": 42,
+          "upper95": 0.390355,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-delay-shipping",
+      "target_service": "shipping",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "delay",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-shipping-f38303c4.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-shipping-f38303c4.yaml",
+      "mutation_sha256": "c5672f0f3d52fabcb25125c173adaf5f141d7c3cba21af106a3199dd8f0840e2",
+      "http_route": {
+        "port": 80,
+        "path": "/shipping*",
+        "source": "sock-shop-call-chain:orders->shipping"
+      },
+      "hypothesis": {
+        "id": "sock-http-delay-shipping",
+        "target_service": "shipping",
+        "action_or_target": "delay",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "duration_bucket=medium",
+          "selector_shape=app-label",
+          "mode=all"
+        ],
+        "rationale": "Inject HTTPChaos delay on shipping, a supporting service in the orders path. Shipping is single-replica with no PDB, and the orders->shipping edge has a 5s Future.get timeout (loss_bounded), so a delay here could trigger the timeout and degrade order placement. Medium duration aligns with the high-support duration_bucket=medium motif, and using app-label selector with mode=all covers the high-support mode=all motif while exploring a new target service (shipping) not yet tested with delay in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 60,
+          "novel_count": 17,
+          "duplicate_count": 43,
+          "upper95": 0.384388,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-delay-user",
+      "target_service": "user",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "delay",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-user-67ec5ee1.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-user-67ec5ee1.yaml",
+      "mutation_sha256": "3666210d1790fa1518a2d02f440ac09ccb8db694e110e016ba1c07b99d772c40",
+      "http_route": {
+        "port": 80,
+        "path": "/login*",
+        "source": "sock-shop-call-chain:front-end->user"
+      },
+      "hypothesis": {
+        "id": "sock-http-delay-user",
+        "target_service": "user",
+        "action_or_target": "delay",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "duration_bucket=medium",
+          "selector_shape=app-label",
+          "mode=all"
+        ],
+        "rationale": "Inject HTTPChaos delay on user, a supporting service in the login path. User is single-replica with no PDB, and the front-end->user edge has no timeout contract, so a delay here directly amplifies to the demo login flow. Medium duration aligns with the high-support duration_bucket=medium motif, and using app-label selector with mode=all covers the high-support mode=all motif while exploring a new target service (user) not yet tested with delay in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 61,
+          "novel_count": 17,
+          "duplicate_count": 44,
+          "upper95": 0.378598,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-http-delay-queue-master",
+      "target_service": "queue-master",
+      "kind": "HTTPChaos",
+      "category": "Protocol/HTTP fault",
+      "action_or_target": "delay",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-queue-master-b68f7126.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-http-delay-queue-master-b68f7126.yaml",
+      "mutation_sha256": "b88be0ae225d399f85a6fad56dc279734146b336304ec42fd88dfb4b3ed71c8a",
+      "http_route": {
+        "port": 80,
+        "path": "/",
+        "source": "sock-shop-supporting-service:live-probe-root"
+      },
+      "hypothesis": {
+        "id": "sock-http-delay-queue-master",
+        "target_service": "queue-master",
+        "action_or_target": "delay",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "duration_bucket=medium",
+          "selector_shape=app-label",
+          "mode=all"
+        ],
+        "rationale": "Inject HTTPChaos delay on queue-master, a supporting service in the orders path. Queue-master is single-replica with no PDB, and it consumes from RabbitMQ; a delay here could disrupt order processing and is a realistic fault (message broker latency). Medium duration aligns with the high-support duration_bucket=medium motif, and using app-label selector with mode=all covers the high-support mode=all motif while exploring a new target service (queue-master) not yet tested with delay in this session.",
+        "method": "native-full",
+        "category": "Protocol/HTTP fault",
+        "novel": false,
+        "novelty_reasons": [],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 62,
+          "novel_count": 17,
+          "duplicate_count": 45,
+          "upper95": 0.372979,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-frontend-catalogue",
+      "target_service": "front-end",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "entry",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-frontend-catalogue-80b5634f.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-frontend-catalogue-80b5634f.yaml",
+      "mutation_sha256": "12d20960ee0d2ac06146a6cdc08209835f982d50176c283b8593144206010731",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-frontend-catalogue",
+        "target_service": "front-end",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "entry",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The front-end->catalogue edge has no timeout (loss_bounded=false), so a scheduled delay on the entry point (front-end) will amplify 1:1 and hang the caller during the scheduled window, exposing the missing timeout. This aligns with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and SE-NETWORK-FAMILY-001 (network faults are highest-value).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service",
+          "new_action_or_target",
+          "new_call_chain_position",
+          "new_required_motif"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 1,
+          "novel_count": 1,
+          "duplicate_count": 0,
+          "upper95": 1.0,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-catalogue-frontend",
+      "target_service": "catalogue",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-catalogue-frontend-66765b99.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-catalogue-frontend-66765b99.yaml",
+      "mutation_sha256": "23f72dcd4192582ff906d3c99e09ea0e04861f930b41a0512b5a28745cf4f681",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-catalogue-frontend",
+        "target_service": "catalogue",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The front-end->catalogue edge has no timeout (loss_bounded=false), so a scheduled delay on the data dependency (catalogue) will amplify 1:1 and hang the caller during the scheduled window, exposing the missing timeout. This aligns with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and SE-NETWORK-FAMILY-001 (network faults are highest-value).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service",
+          "new_call_chain_position"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 6,
+          "novel_count": 2,
+          "duplicate_count": 4,
+          "upper95": 0.640437,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-carts-frontend",
+      "target_service": "carts",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-carts-frontend-202b1062.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-carts-frontend-202b1062.yaml",
+      "mutation_sha256": "f7220f6cc911f7797ae57e3f72eb85f4d8b4540a8174f36bbec842ede69499e9",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-carts-frontend",
+        "target_service": "carts",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The front-end->carts edge has no timeout (loss_bounded=false), so a scheduled delay on the data dependency (carts) will amplify 1:1 and hang the caller during the scheduled window, exposing the missing timeout. This aligns with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and SE-NETWORK-FAMILY-001 (network faults are highest-value).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 20,
+          "novel_count": 3,
+          "duplicate_count": 17,
+          "upper95": 0.314102,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-orders-payment",
+      "target_service": "orders",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "business-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-orders-payment-bc6dad26.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-orders-payment-bc6dad26.yaml",
+      "mutation_sha256": "7a35c8dbe799134d4cbb7791e3e63229a5447b9bd875bfa5dd2767ba4f8776cf",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-orders-payment",
+        "target_service": "orders",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "business-service",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The orders->payment edge has an explicit 5s Future.get timeout (loss_bounded=true), so a scheduled delay on the business service (orders) will trigger the timeout during the scheduled window, exposing the bounded-timeout defense and its behavior under a composite/scheduled fault. This aligns with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and DP-BOUNDED-TIMEOUT-FUTUREGET-001 (Future.get bounds delay and loss).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service",
+          "new_call_chain_position"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 41,
+          "novel_count": 4,
+          "duplicate_count": 37,
+          "upper95": 0.195768,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-payment-orders",
+      "target_service": "payment",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-payment-orders-d5646d84.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-payment-orders-d5646d84.yaml",
+      "mutation_sha256": "29fa082a755db2a7b3691678d4d8b3e633d1accc0f7db6a9a188d4488f4d6db7",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-payment-orders",
+        "target_service": "payment",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The orders->payment edge has an explicit 5s Future.get timeout (loss_bounded=true), so a scheduled delay on the data dependency (payment) will trigger the timeout during the scheduled window, exposing the bounded-timeout defense and its behavior under a composite/scheduled fault. This aligns with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and DP-BOUNDED-TIMEOUT-FUTUREGET-001 (Future.get bounds delay and loss).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 45,
+          "novel_count": 5,
+          "duplicate_count": 40,
+          "upper95": 0.206887,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-shipping-orders",
+      "target_service": "shipping",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-shipping-orders-0118a376.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-shipping-orders-0118a376.yaml",
+      "mutation_sha256": "f0f1220b3367b5401dc434f5ab4d50d86b9e4184527bdbf1253a8fcce3cb4010",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-shipping-orders",
+        "target_service": "shipping",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The orders->shipping edge has an explicit 5s Future.get timeout (loss_bounded=true), so a scheduled delay on the data dependency (shipping) will trigger the timeout during the scheduled window, exposing the bounded-timeout defense and its behavior under a composite/scheduled fault. This aligns with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and DP-BOUNDED-TIMEOUT-FUTUREGET-001 (Future.get bounds delay and loss).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 46,
+          "novel_count": 6,
+          "duplicate_count": 40,
+          "upper95": 0.228767,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-user-frontend",
+      "target_service": "user",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-user-frontend-14d78f64.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-user-frontend-14d78f64.yaml",
+      "mutation_sha256": "59a714475431682eaa0e7b043fe54822c70610b17f58faaac3eceffa12638177",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-user-frontend",
+        "target_service": "user",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The user service is a supporting service for the login golden journey; a scheduled delay here will expose whether the front-end's synchronous login call has a timeout (likely no_timeout, unprotected), aligning with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and SE-NETWORK-FAMILY-001 (network faults are highest-value).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service",
+          "new_call_chain_position"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 47,
+          "novel_count": 7,
+          "duplicate_count": 40,
+          "upper95": 0.249242,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-queue-master-rabbitmq",
+      "target_service": "queue-master",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-queue-master-rabbitmq-40238ec8.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-queue-master-rabbitmq-40238ec8.yaml",
+      "mutation_sha256": "dbd0763923fc15b3a13605c904e60b234868ab6e71c6f0c6ba9fcc56ca26d946",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-queue-master-rabbitmq",
+        "target_service": "queue-master",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The queue-master is a supporting service that consumes from RabbitMQ and processes orders asynchronously; a scheduled delay here will expose whether the orders service's synchronous call to queue-master (via RabbitMQ) has a timeout (likely no_timeout, unprotected), aligning with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and SE-NETWORK-FAMILY-001 (network faults are highest-value).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 48,
+          "novel_count": 8,
+          "duplicate_count": 40,
+          "upper95": 0.268488,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-catalogue-db-catalogue",
+      "target_service": "catalogue-db",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-catalogue-db-catalogue-3c5657c9.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-catalogue-db-catalogue-3c5657c9.yaml",
+      "mutation_sha256": "ab84f9fa87bd79bb4fb2c995a0fb7e726b726e6286a93164cc74c45df4ab2d13",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-catalogue-db-catalogue",
+        "target_service": "catalogue-db",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The catalogue-db is a data dependency for the catalogue service; a scheduled delay here will expose whether the catalogue service's synchronous DB call has a timeout (likely no_timeout, unprotected), aligning with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and SE-NETWORK-FAMILY-001 (network faults are highest-value).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 49,
+          "novel_count": 9,
+          "duplicate_count": 40,
+          "upper95": 0.286641,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-carts-db-carts",
+      "target_service": "carts-db",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-carts-db-carts-9326a711.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-carts-db-carts-9326a711.yaml",
+      "mutation_sha256": "fe88105f205f242054dc868272a632b1968d9b08b9f984bfaf0f93a71e41f056",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-carts-db-carts",
+        "target_service": "carts-db",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The carts-db is a data dependency for the carts service; a scheduled delay here will expose whether the carts service's synchronous DB call has a timeout (likely no_timeout, unprotected), aligning with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and SE-NETWORK-FAMILY-001 (network faults are highest-value).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 50,
+          "novel_count": 10,
+          "duplicate_count": 40,
+          "upper95": 0.303811,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-orders-db-orders",
+      "target_service": "orders-db",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "data-dependency",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-orders-db-orders-10cd6345.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-orders-db-orders-10cd6345.yaml",
+      "mutation_sha256": "11dba1cc503d61c38c9d9a03ee14a131ab90de47381cc29a193a15075e06adee",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-orders-db-orders",
+        "target_service": "orders-db",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "data-dependency",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The orders-db is a data dependency for the orders service; a scheduled delay here will expose whether the orders service's synchronous DB call has a timeout (likely no_timeout, unprotected), aligning with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and SE-NETWORK-FAMILY-001 (network faults are highest-value).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 51,
+          "novel_count": 11,
+          "duplicate_count": 40,
+          "upper95": 0.320093,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-rabbitmq-queue-master",
+      "target_service": "rabbitmq",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-rabbitmq-queue-master-65048814.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-rabbitmq-queue-master-65048814.yaml",
+      "mutation_sha256": "b4a02cb548457cfc114a6858976db7c74ffc1f856e92712cae0ca8a728c4eeb6",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-rabbitmq-queue-master",
+        "target_service": "rabbitmq",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The queue-master consumes from RabbitMQ and processes orders asynchronously; a scheduled delay on the supporting service (rabbitmq) will expose whether the orders service's synchronous call to queue-master (via RabbitMQ) has a timeout (likely no_timeout, unprotected), aligning with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and SE-NETWORK-FAMILY-001 (network faults are highest-value).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 52,
+          "novel_count": 12,
+          "duplicate_count": 40,
+          "upper95": 0.335564,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-session-db-frontend",
+      "target_service": "session-db",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-session-db-frontend-da044452.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-session-db-frontend-da044452.yaml",
+      "mutation_sha256": "8435a640d4530593ea0bd0db1a3f366183ed9ae4f3599da421f993fc5f502827",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-session-db-frontend",
+        "target_service": "session-db",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The session-db is a supporting service for the demo login golden journey; a scheduled delay here will expose whether the front-end's synchronous login session lookup has a timeout (likely no_timeout, unprotected), aligning with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and SE-NETWORK-FAMILY-001 (network faults are highest-value).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 53,
+          "novel_count": 13,
+          "duplicate_count": 40,
+          "upper95": 0.350293,
+          "feature_coverage": 1.0
+        }
+      }
+    },
+    {
+      "hypothesis_id": "sock-sched-delay-user-db-frontend",
+      "target_service": "user-db",
+      "kind": "Schedule",
+      "category": "Composite/scheduled fault",
+      "action_or_target": "scheduled-delay",
+      "call_chain_position": "supporting-service",
+      "source_mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-http-routes-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-user-db-frontend-fb0298c8.yaml",
+      "mutation_path": "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-remaining-route-aware-2026-08-15-r1/methods/native-full/mutations/yc-sock-sched-delay-user-db-frontend-fb0298c8.yaml",
+      "mutation_sha256": "c73a9dd0e03ff4c60054e7bf4875dca3d5da312aa08489f9a41a2e8d1dc7c418",
+      "http_route": null,
+      "hypothesis": {
+        "id": "sock-sched-delay-user-db-frontend",
+        "target_service": "user-db",
+        "action_or_target": "scheduled-delay",
+        "call_chain_position": "supporting-service",
+        "motifs": [
+          "action_or_target=unknown",
+          "mode=unknown",
+          "selector_shape=empty-or-high-risk",
+          "duration_bucket=unknown",
+          "intensity_bucket=unknown"
+        ],
+        "rationale": "The category is Composite/scheduled fault, and the uncovered motifs are all 'unknown' placeholders. The user-db is a supporting service for the demo login golden journey; a scheduled delay here will expose whether the front-end's synchronous login user lookup has a timeout (likely no_timeout, unprotected), aligning with SE-CROSSPROJECT-CONTRACT-SYNC-WAIT-001 (delay severity depends on sync no-timeout) and SE-NETWORK-FAMILY-001 (network faults are highest-value).",
+        "method": "native-full",
+        "category": "Composite/scheduled fault",
+        "novel": true,
+        "novelty_reasons": [
+          "new_target_service"
+        ],
+        "stop_snapshot": {
+          "stop": false,
+          "reason": "continue",
+          "generated": 54,
+          "novel_count": 14,
+          "duplicate_count": 40,
+          "upper95": 0.364338,
+          "feature_coverage": 1.0
+        }
+      }
+    }
+  ],
+  "skipped_completed": [
+    {
+      "hypothesis_id": "sock-pod-kill-front-end-001",
+      "kind": "PodChaos",
+      "target_service": "front-end",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-front-end-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-front-end-001-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-front-end-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-front-end-001-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-execution/methods/native-full/runtime_reports/sock-pod-kill-front-end-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-execution/methods/native-full/runtime_reports/sock-pod-kill-front-end-001-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-pod-kill-front-end-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-pod-kill-front-end-001-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-pod-kill-front-end-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-pod-kill-front-end-001-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-failure-catalogue-002",
+      "kind": "PodChaos",
+      "target_service": "catalogue",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-failure-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-failure-catalogue-002-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-failure-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-failure-catalogue-002-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-execution/methods/native-full/runtime_reports/sock-pod-failure-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-execution/methods/native-full/runtime_reports/sock-pod-failure-catalogue-002-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-pod-failure-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-pod-failure-catalogue-002-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-pod-failure-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-pod-failure-catalogue-002-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-orders-003",
+      "kind": "PodChaos",
+      "target_service": "orders",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-orders-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-orders-003-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-orders-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-orders-003-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-execution/methods/native-full/runtime_reports/sock-pod-kill-orders-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-execution/methods/native-full/runtime_reports/sock-pod-kill-orders-003-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-pod-kill-orders-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-pod-kill-orders-003-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-pod-kill-orders-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-pod-kill-orders-003-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-carts-db-004",
+      "kind": "PodChaos",
+      "target_service": "carts-db",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-carts-db-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-carts-db-004-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-carts-db-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-carts-db-004-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-execution/methods/native-full/runtime_reports/sock-pod-kill-carts-db-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-execution/methods/native-full/runtime_reports/sock-pod-kill-carts-db-004-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-pod-kill-carts-db-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-pod-kill-carts-db-004-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-pod-kill-carts-db-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-pod-kill-carts-db-004-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-payment-005",
+      "kind": "PodChaos",
+      "target_service": "payment",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-payment-005-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-payment-005-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-payment-005-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-payment-005-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-pod-kill-payment-005-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-pod-kill-payment-005-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-pod-kill-payment-005-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-pod-kill-payment-005-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-carts-006",
+      "kind": "PodChaos",
+      "target_service": "carts",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-carts-006-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-carts-006-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-carts-006-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-carts-006-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-shipping-007",
+      "kind": "PodChaos",
+      "target_service": "shipping",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-shipping-007-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-shipping-007-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-shipping-007-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-shipping-007-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-user-008",
+      "kind": "PodChaos",
+      "target_service": "user",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-user-008-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-user-008-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-user-008-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-user-008-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-queue-master-009",
+      "kind": "PodChaos",
+      "target_service": "queue-master",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-queue-master-009-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-queue-master-009-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-queue-master-009-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-queue-master-009-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-rabbitmq-010",
+      "kind": "PodChaos",
+      "target_service": "rabbitmq",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-rabbitmq-010-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-rabbitmq-010-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-rabbitmq-010-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-rabbitmq-010-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-catalogue-db-011",
+      "kind": "PodChaos",
+      "target_service": "catalogue-db",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-catalogue-db-011-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-catalogue-db-011-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-catalogue-db-011-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-catalogue-db-011-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-orders-db-012",
+      "kind": "PodChaos",
+      "target_service": "orders-db",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-orders-db-012-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-orders-db-012-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-orders-db-012-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-orders-db-012-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-session-db-013",
+      "kind": "PodChaos",
+      "target_service": "session-db",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-session-db-013-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-session-db-013-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-session-db-013-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-session-db-013-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-user-db-014",
+      "kind": "PodChaos",
+      "target_service": "user-db",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-user-db-014-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-user-db-014-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-user-db-014-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-user-db-014-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-kill-catalogue-024",
+      "kind": "PodChaos",
+      "target_service": "catalogue",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-catalogue-024-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-kill-catalogue-024-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-catalogue-024-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-kill-catalogue-024-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-failure-front-end-025",
+      "kind": "PodChaos",
+      "target_service": "front-end",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-failure-front-end-025-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-failure-front-end-025-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-failure-front-end-025-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-failure-front-end-025-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-pod-failure-orders-026",
+      "kind": "PodChaos",
+      "target_service": "orders",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-failure-orders-026-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/sock-pod-failure-orders-026-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-failure-orders-026-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-pod-failure-orders-026-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-delay-frontend-catalogue-001",
+      "kind": "NetworkChaos",
+      "target_service": "catalogue",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-delay-frontend-catalogue-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-delay-frontend-catalogue-001-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-delay-frontend-catalogue-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-delay-frontend-catalogue-001-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/net-delay-frontend-catalogue-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/net-delay-frontend-catalogue-001-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/net-delay-frontend-catalogue-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/net-delay-frontend-catalogue-001-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-loss-frontend-catalogue-002",
+      "kind": "NetworkChaos",
+      "target_service": "catalogue",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-loss-frontend-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-loss-frontend-catalogue-002-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-loss-frontend-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-loss-frontend-catalogue-002-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/net-loss-frontend-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/net-loss-frontend-catalogue-002-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/net-loss-frontend-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/net-loss-frontend-catalogue-002-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-partition-frontend-catalogue-003",
+      "kind": "NetworkChaos",
+      "target_service": "catalogue",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-partition-frontend-catalogue-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-partition-frontend-catalogue-003-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-partition-frontend-catalogue-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-partition-frontend-catalogue-003-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/net-partition-frontend-catalogue-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/net-partition-frontend-catalogue-003-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/net-partition-frontend-catalogue-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/net-partition-frontend-catalogue-003-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-delay-frontend-carts-004",
+      "kind": "NetworkChaos",
+      "target_service": "carts",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-delay-frontend-carts-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-delay-frontend-carts-004-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-delay-frontend-carts-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-delay-frontend-carts-004-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/net-delay-frontend-carts-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/net-delay-frontend-carts-004-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/net-delay-frontend-carts-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/net-delay-frontend-carts-004-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-loss-frontend-carts-006",
+      "kind": "NetworkChaos",
+      "target_service": "carts",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-loss-frontend-carts-006-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-loss-frontend-carts-006-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-loss-frontend-carts-006-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-loss-frontend-carts-006-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/net-loss-frontend-carts-006-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/net-loss-frontend-carts-006-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/net-loss-frontend-carts-006-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/net-loss-frontend-carts-006-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-delay-frontend-orders-007",
+      "kind": "NetworkChaos",
+      "target_service": "orders",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-delay-frontend-orders-007-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-delay-frontend-orders-007-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-delay-frontend-orders-007-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-delay-frontend-orders-007-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-loss-frontend-orders-013",
+      "kind": "NetworkChaos",
+      "target_service": "orders",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-loss-frontend-orders-013-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-loss-frontend-orders-013-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-loss-frontend-orders-013-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-loss-frontend-orders-013-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-delay-orders-payment-034",
+      "kind": "NetworkChaos",
+      "target_service": "payment",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-delay-orders-payment-034-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-delay-orders-payment-034-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-delay-orders-payment-034-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-delay-orders-payment-034-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-loss-orders-shipping-035",
+      "kind": "NetworkChaos",
+      "target_service": "shipping",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-loss-orders-shipping-035-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-loss-orders-shipping-035-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-loss-orders-shipping-035-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-loss-orders-shipping-035-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-loss-orders-payment-037",
+      "kind": "NetworkChaos",
+      "target_service": "payment",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-loss-orders-payment-037-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-loss-orders-payment-037-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-loss-orders-payment-037-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-loss-orders-payment-037-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-delay-orders-shipping-038",
+      "kind": "NetworkChaos",
+      "target_service": "shipping",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-delay-orders-shipping-038-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-delay-orders-shipping-038-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-delay-orders-shipping-038-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-delay-orders-shipping-038-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-partition-orders-payment-042",
+      "kind": "NetworkChaos",
+      "target_service": "payment",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan/methods/native-full/runtime_reports/net-partition-orders-payment-042-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-partition-orders-payment-042-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-partition-orders-payment-042-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "net-partition-orders-shipping-065",
+      "kind": "NetworkChaos",
+      "target_service": "shipping",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-partition-orders-shipping-065-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/net-partition-orders-shipping-065-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-cpu-front-end-001",
+      "kind": "StressChaos",
+      "target_service": "front-end",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-cpu-front-end-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-cpu-front-end-001-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-cpu-front-end-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-cpu-front-end-001-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-cpu-front-end-001-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-cpu-front-end-001-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-mem-catalogue-002",
+      "kind": "StressChaos",
+      "target_service": "catalogue",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-mem-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-mem-catalogue-002-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-mem-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-mem-catalogue-002-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-mem-catalogue-002-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-mem-catalogue-002-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-cpu-orders-003",
+      "kind": "StressChaos",
+      "target_service": "orders",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-cpu-orders-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-cpu-orders-003-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-cpu-orders-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-cpu-orders-003-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-cpu-orders-003-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-cpu-orders-003-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-cpu-carts-004",
+      "kind": "StressChaos",
+      "target_service": "carts",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-cpu-carts-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-cpu-carts-004-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-cpu-carts-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-cpu-carts-004-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-cpu-carts-004-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-cpu-carts-004-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-cpu-user-005",
+      "kind": "StressChaos",
+      "target_service": "user",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-cpu-user-005-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-cpu-user-005-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-cpu-user-005-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r1/methods/native-full/runtime_reports/sock-cpu-user-005-rep-2.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-cpu-user-005-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-stratified-runtime-r2/methods/native-full/runtime_reports/sock-cpu-user-005-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-mem-front-end-006",
+      "kind": "StressChaos",
+      "target_service": "front-end",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-mem-front-end-006-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-mem-front-end-006-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-mem-orders-007",
+      "kind": "StressChaos",
+      "target_service": "orders",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-mem-orders-007-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-mem-orders-007-rep-2.json"
+      ]
+    },
+    {
+      "hypothesis_id": "sock-cpu-payment-008",
+      "kind": "StressChaos",
+      "target_service": "payment",
+      "prior_reports": [
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-cpu-payment-008-rep-1.json",
+        "artifacts/experiments/chaosatlas_sockshop_yaml_confidence_2026-08-15-r5-r4/runtime-canonical-plan-r2/methods/native-full/runtime_reports/sock-cpu-payment-008-rep-2.json"
+      ]
+    }
+  ],
+  "human_review": "pending",
+  "knowledge_base_updated": false
+}
