@@ -1,4 +1,10 @@
-"""Execute a Sock Shop two-arm mutation in the isolated runtime namespace."""
+"""Execute one Sock Shop mutation with the paper lifecycle contract.
+
+The runner owns the business oracle and the full baseline -> injection ->
+observation -> recovery -> cleanup -> washout sequence.  It is deliberately
+namespace-local and records pending human review instead of promoting a
+runtime symptom into the knowledge base.
+"""
 
 from __future__ import annotations
 
@@ -309,16 +315,23 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
         selector_query = ",".join(f"{key}={value}" for key, value in sorted(labels.items()))
         process = start_port_forward(NAMESPACE, "front-end", 18081, 80)
         wait_for_port("127.0.0.1", 18081, process, 30)
+        # Establish a failure-free oracle immediately before injection.  A
+        # failed baseline invalidates the mutation result rather than becoming
+        # evidence of a weakness.
         baseline = [run_journey() for _ in range(baseline_count)]
         report["baseline"] = {"pass": len(baseline) == baseline_count and all(item["pass"] for item in baseline), "journeys": baseline, "successes_required": baseline_count}
         if not report["baseline"]["pass"]:
             raise RuntimeError("Sock Shop baseline was not failure-free")
+        # Apply only after static and runtime gates pass; the lifecycle report
+        # must distinguish an accepted YAML from an actually injected fault.
         code, out, err = run_kubectl(["apply", "-f", str(mutation)])
         report["injection"]["apply"] = {"return_code": code, "stdout": out.strip(), "stderr": err.strip()}
         if code != 0:
             raise RuntimeError("Chaos apply failed")
         applied = True
         report["injection"]["applied"] = True
+        # Scheduled faults create child Chaos resources.  Remove parent and
+        # child objects together before judging recovery or washout.
         if kind == "Schedule":
             injected, lifecycle, errors = wait_for_scheduled_lifecycle(NAMESPACE, name, "injected", 90, 0.5)
             schedule_children = [str(lifecycle.get("selected_child"))] if lifecycle.get("selected_child") else []
@@ -339,6 +352,8 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
             if not cleanup.get("absent_confirmed") or residuals or residual_errors:
                 raise RuntimeError("cleanup/global residual gate failed")
 
+        # PodKill recovery is verified through replacement Pod identity and
+        # readiness; other kinds use the Chaos Mesh recovered lifecycle state.
         if kind in {"PodChaos", "Schedule"}:
             pre_uids = {str(item.get("uid")) for item in targets if item.get("uid")}
             recovered, state, errors = wait_for_target_ready(NAMESPACE, {"labelSelectors": labels}, 240, 1, expected_pod_count=len(targets) or None, pre_kill_uids=pre_uids)
@@ -385,6 +400,9 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
         report["recovery"].update({"journeys": recovery_journeys, "recovered": bool(recovered and consecutive_successes(recovery_journeys) >= baseline_count)})
         if not report["recovery"]["recovered"]:
             raise RuntimeError("business recovery failed")
+        # Washout is a separate stability window: recovery proves the fault
+        # ended, while washout proves no residual fault or stale port-forward
+        # continues to affect the next mutation.
         washout_started = time.monotonic()
         journeys: list[dict[str, Any]] = []
         report["washout"] = {

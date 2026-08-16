@@ -4,6 +4,27 @@ This guide is the code-comment index for the repository. Python modules carry
 their detailed docstrings; this file records the intended ownership and side
 effects so a future contributor can choose the correct entry point.
 
+## Current Paper-Mainline Entry Points
+
+The current evidence path is intentionally split by responsibility:
+
+| Stage | Entry points | Boundary |
+|---|---|---|
+| Raw corpus and five-category projection | `yaml_confidence_categories.py`, `yaml_confidence_stopping.py` | Static counts and stopping parameters; no runtime weakness claim |
+| Full discovery | `run_sock_shop_confidence_discovery.py` | Category-scoped knowledge/confidence discovery; emits hypotheses only |
+| Ablation discovery | `run_sock_shop_ablation_discovery.py` | Independent LLM self-stop; YAML15 exposes only frozen category examples |
+| Hypothesis compilation | `open_discovery_compiler.py`, `open_discovery_mutation_compiler.py` | Fail-closed JSON/YAML compilation; no cluster mutation |
+| Applicability gate | `runtime_applicability_gate.py` | Read-only namespace, target, CRD, workload, and platform checks |
+| Runtime lifecycle | `run_chaos_experiment.py`, `run_sock_shop_two_arm.py` | Baseline, injection, observation, recovery, cleanup, washout |
+| Result interpretation | `classify_runtime_result.py` | Evidence classification; does not auto-create knowledge cards |
+
+The authoritative narrative and evidence boundary are in
+`docs/CHAOSATLAS_PAPER_MAINLINE.md`; the current Sock Shop machine-backed
+review is in `docs/SOCK_SHOP_THREE_METHOD_STAGE_REVIEW_2026-08-16.md`.
+Same-pool, preselected-candidate, superseded Ablation, early pilot, and
+`ChaosEater-adapter` paths remain available for audit but are not current
+mainline entry points.
+
 ## Read-Only and Build Tools
 
 | Tool | Purpose | Writes |

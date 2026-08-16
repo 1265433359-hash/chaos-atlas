@@ -15,13 +15,32 @@
 | Protocol/ablation | `artifacts/experiments/` | Frozen prompts, pools, snapshots, ledgers, and analysis outputs |
 | Session memory | `task_plan.md`, `findings.md`, `progress.md` | Decisions and discoveries; not a substitute for run evidence |
 
+## Current Archive Checkpoint
+
+The current repository checkpoint is organized around one paper-mainline
+document and one machine-backed Sock Shop review. Use these in order:
+
+1. `docs/CHAOSATLAS_PAPER_MAINLINE.md` for what belongs in the paper;
+2. `docs/PROJECT_SUMMARY.md` for the repository-wide handoff;
+3. `docs/SOCK_SHOP_THREE_METHOD_STAGE_REVIEW_2026-08-16.md` for current Full,
+   YAML15 Ablation, and ChaosEater stage evidence;
+4. `docs/EXPERIMENT_CATALOG.md` for experiment-by-experiment evidence paths;
+5. `docs/ARCHIVE_MAP.md` for retention, provenance, and status rules.
+
+The current Sock Shop headline is `Full: 15 stable weakness families` and
+`YAML15 Ablation: 9 stable weakness families`, both pending human review. The
+official ChaosEater native replay is a separately labeled measurement-layer
+reference, not a same-layer superiority comparison.
+
 ## Project-Level Review Snapshots
 
 | Snapshot | Scope | Use |
 |---|---|---|
-| `docs/CHAOSATLAS_PROJECT_ARCHIVE_2026-08-13.md` | 2026-08-13 project-stage archive | Broad project status, P09/P02/Sock Shop history, queue and evidence boundaries |
+| `docs/CHAOSATLAS_PAPER_MAINLINE.md` | Confirmed four-stage paper narrative | Canonical mainline, evidence boundary, and frozen-track classification |
+| `docs/CHAOSATLAS_PROJECT_ARCHIVE_2026-08-13.md` | 2026-08-13 project-stage archive | Historical P09/P02/Sock Shop status, queue and evidence boundaries |
 | `docs/CHAOSATLAS_STAGE_SUMMARY_2026-08-14.md` | 2026-08-14 project-stage summary | Current method scope, real-project evidence, ten-project boundary, paper narrative, and next-stage tasks |
 | `docs/CHAOSATLAS_REAL_PROJECT_REVIEW_2026-08-14.md` | Online Boutique, OpenTelemetry Demo, Sock Shop | Native-full vs ablation end-to-end capability and same-candidate-pool selection capability; includes `[CONFIRMED]`, `[PENDING]`, `[BOUNDARY]`, `[DO-NOT-CLAIM]` labels |
+| `docs/SOCK_SHOP_THREE_METHOD_STAGE_REVIEW_2026-08-16.md` | Current Sock Shop Full/YAML15/ChaosEater stage | Current machine-backed headline and measurement-layer boundary; `human_review=pending` |
 | `docs/ChaosAtlas_three_project_experiment_report_2026-08-14.docx` | Word report for the two key three-project comparisons | Human-facing report explaining project choice, original full-vs-ablation workflow, same-pool selection workflow, results, percentages, and interpretation boundaries |
 | `docs/CHAOSATLAS_UPLOAD_PREP_2026-08-14.md` | Git upload preparation checklist | Current local commit state, included/excluded paths, verification commands, sensitive-data boundary, and push readiness |
 
@@ -57,6 +76,25 @@ Use the following vocabulary consistently:
 `blocked_by_platform_prerequisite` and `not_reachable` are useful findings but
 are not evidence that the application defended itself.
 
+## Paper-Mainline Classification
+
+This classification is independent of runtime result labels and controls whether
+an artifact can be used in the current paper narrative:
+
+| Paper status | Meaning | Current use |
+|---|---|---|
+| `mainline` | Current real-project capability evidence under the confirmed research story | May support the paper after its review state and machine ledger are cited |
+| `frozen_historical` | Superseded, preselected, same-pool, adapter, or old pilot material | Retain for audit and reproducibility; do not include in current mainline statistics |
+| `future_work` | Planned experiment not yet completed, such as a same-layer three-method comparison or new project queue | Describe as a next step, never as completed evidence |
+
+The current mainline is: initial ChaosAtlas architecture; Online Boutique,
+OpenTelemetry Demo and Train Ticket real-project issue discovery; Sock Shop
+improved-method Full-versus-YAML15-Ablation discovery and runtime evidence; and
+the official ChaosEater native replay as a separately labeled measurement-layer
+reference. Same-pool/preselected-candidate tracks, the superseded Ablation,
+early pilots and `ChaosEater-adapter` are `frozen_historical`. A same-layer,
+machine-ledgered three-method comparison remains `future_work`.
+
 ## Naming and Pairing
 
 - Keep a stable card ID across JSON and Markdown, for example
@@ -66,6 +104,14 @@ are not evidence that the application defended itself.
 - Keep generated snapshots immutable once they enter a frozen ablation arm.
 - Put issue drafts in `reporting/<project>/issues/`; record submission state in
   `reporting/tracking.md` and `reporting/submission_index.md`.
+
+## Logical Freeze Rule
+
+Freezing is metadata-only. Do not move, rename, delete, or rewrite the original
+experiment directories when changing their paper status. Preserve all paths,
+hashes, prompts, ledgers, reports, and diagnostic files so existing evidence
+links remain valid. Add the status to an index or human-readable summary and
+link the artifact from the canonical mainline document when needed.
 
 ## New Run Checklist
 

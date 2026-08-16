@@ -1,8 +1,20 @@
 # 实验归档总入口（ARCHIVE INDEX）
 
-> 日期：2026-08-09
+> 日期：2026-08-16
 > 目的：四项目、三条方法轴、统一实验台账、证据等级、报告入口——使项目可审计、可复现、可写入论文。
 > 原则：只新增状态说明，不删除/不覆盖任何历史 JSON/YAML/日志真值。
+
+## 当前论文主线（2026-08-15）
+
+以 `docs/CHAOSATLAS_PAPER_MAINLINE.md` 为唯一主线入口：
+
+1. 初始 TestNode/局部影响子图/门禁/证据链/知识库架构；
+2. Online Boutique、OpenTelemetry Demo、Train Ticket 三个真实项目的 issue 发现能力；
+3. Sock Shop 改进后的 ChaosAtlas-full 与 YAML15 Ablation 真实比较；
+4. 官方 ChaosEater 原生流程复现，作为不同测量层的阶段参照。
+
+same-pool、预选候选池、旧 pilot 和 `ChaosEater-adapter` 统一标记为
+`frozen_historical`：原始路径、hash、报告和日志保留，但不进入当前主线统计。
 
 ## 归档清单
 
@@ -47,13 +59,17 @@
 4. 引"结论" → 用 `claim_evidence_matrix.md`（状态枚举）
 5. 引"项目" → 用 `project_registry_archive.json`（四项目）
 
-## 当前论文冻结边界（2026-08-11）
+## 当前论文冻结边界（2026-08-15）
 
-- 当前论文版本使用主线运行证据、Train Ticket/Online Boutique/OTel Demo
-  语义对照、Sock Shop 分层验证和已验证知识卡。
-- 知识库 selection-only 消融和最终方法 head-to-head 对比标记为
-  `parked_future_work`。协议、快照、prompt、选择记录和中间结果全部保留，
-  但 formal runtime、独立 oracle、剩余审查门禁、共同候选池和项目聚类统计
-  尚未完成。
-- 暂不从这两个轨道写正式效果量、superiority 或跨项目统计结论；后续恢复时
-  必须重新核对 claim-evidence matrix 和冻结协议。
+- 当前论文版本使用初始方法架构、三个真实项目的 issue 发现证据，以及 Sock
+  Shop 改进方法/知识库消融的真实 discovery/runtime 证据。
+- 当前 Sock Shop headline 由主线文档记录：Full 114 个去重 family 已全部经过
+  静态适用性处理；96 个进入 runtime cohort，其中 88 个完成两次注入、8 个
+  DNSChaos 被平台 gate 阻断，另 18 个被静态 gate 拒绝；完成注入的 family 中
+  15 个稳定、3 个不稳定、70 个未观察到业务
+  弱点。当前 YAML15 Ablation 458 个原始假设去重为 51 个 family，46 个完成两次
+  注入，确认 9 个稳定弱点、0 个不稳定和 37 个 no-impact；旧版 12/2 仅作历史记录。
+  阶段入口为 `docs/SOCK_SHOP_THREE_METHOD_STAGE_REVIEW_2026-08-16.md`。
+- same-pool/预选候选池效果量、旧 pilot 和 adapter 结果不进入主线统计。
+  ChaosEater 原生结果当前只作 availability/readiness 层的阶段对照；具备统一机器
+  台账、同测量层和同协议的三方法公平比较仍为 `future_work`。

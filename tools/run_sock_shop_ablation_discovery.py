@@ -1,4 +1,11 @@
-"""Run the no-classification/no-confidence Ablation discovery arm."""
+"""Run the independent Sock Shop Ablation discovery arm.
+
+The default arm exposes no classification, confidence, knowledge projection,
+or Full stopping trace.  The YAML15 variant adds only five category labels and
+three real YAML examples per category; it keeps the LLM self-stop policy and
+uses the Full discovery wall-clock as a hard cap.  This module records model
+and token accounting but never applies a mutation.
+"""
 
 from __future__ import annotations
 

@@ -1,15 +1,15 @@
 # ChaosAtlas 三真实项目实验汇报
 
-原始项目完整能力 vs 消融方法；同候选池选择能力对比
+原始项目完整能力 vs 消融方法；同候选池选择能力为冻结历史附录
 
 归档日期：2026-08-14
 实验项目：Online Boutique、OpenTelemetry Demo、Sock Shop
 实验一：原始项目完整能力，native-full vs ChaosAtlas-ablation
-实验二：同候选池选择能力，ChaosAtlas-full vs ChaosAtlas-ablation
+实验二：同候选池选择能力，ChaosAtlas-full vs ChaosAtlas-ablation（冻结，不进入当前主线）
 审核状态：human_review=pending
 知识库更新：knowledge_base_updated=false
 
-> 一句话结论：native-full 在三个真实项目上确认 10 个稳定真实弱点，ablation 确认 9 个；同候选池中 full 和 ablation 都选中 12 个稳定真实弱点，但 full 用 15 个候选完成，ablation 用 17 个候选完成，因此 full 的选择命中率更高，80.0% 对 70.6%。
+> 当前主线提示：本报告保留两种历史比较口径，但论文主线只使用三个真实项目的端到端能力和 Sock Shop 改进方法/消融结果；同候选池的 80.0%/70.6% 结果不再作为主线统计。
 
 本报告只总结当前阶段已经闭环的实验现象。业务弱点确认不等于内部根因确认；除非后续人工 RCA 给出服务日志、trace、代码或配置证据，否则不能猜测缓存、服务发现、注册中心、重试等具体机制。
 

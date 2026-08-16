@@ -1,5 +1,10 @@
 # ChaosAtlas 三真实项目阶段复盘归档
 
+> **冻结历史分析文档（2026-08-16）**：本文中的 native-full/旧 Ablation 和 same-pool
+> 数字保持原样用于审计，不替代当前论文主线。当前 Sock Shop 主线结果见
+> `docs/SOCK_SHOP_THREE_METHOD_STAGE_REVIEW_2026-08-16.md`，当前总主线见
+> `docs/CHAOSATLAS_PAPER_MAINLINE.md`。
+
 归档日期：2026-08-14  
 分支：`remediation/2026-08-09-review`  
 本地证据提交：`bbfb5c4`  
@@ -8,6 +13,8 @@
 知识库更新：`false`
 
 本文归档 Online Boutique、OpenTelemetry Demo、Sock Shop 三个真实项目上的当前阶段结果。它区分两类能力：
+
+> 论文主线现在只采用真实项目端到端能力比较：初始架构验证，以及方法改进后的 Sock Shop 完整方法/消融。下文 same-pool 选择能力部分是冻结历史材料，不再用于当前论文主线统计。详见 `docs/CHAOSATLAS_PAPER_MAINLINE.md`。
 
 1. 原始项目完整能力：`native-full` 与 `ChaosAtlas-ablation` 各自按自己的流程理解项目、生成候选、选择故障并注入。
 2. 同候选池选择能力：`ChaosAtlas-full` 与 `ChaosAtlas-ablation` 面对同一冻结候选池，只比较候选选择质量。

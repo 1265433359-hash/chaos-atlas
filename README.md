@@ -11,27 +11,50 @@ versioned knowledge card.
 环境部署仓库，也不把“注入成功”自动解释成“系统有韧性”。所有结论都必须
 绑定源码、固定版本、运行时证据、恢复证据和明确的适用边界。
 
+## Paper Mainline
+
+当前论文主线见 [`docs/CHAOSATLAS_PAPER_MAINLINE.md`](docs/CHAOSATLAS_PAPER_MAINLINE.md)：
+
+1. 构建 TestNode、局部影响子图、适用性门禁、证据链和知识库的初始架构；
+2. 在 Online Boutique、OpenTelemetry Demo 和 Train Ticket 三个真实项目中验证真实 issue 发现能力；
+3. 在方法改进后，于 Sock Shop 上比较使用知识库的完整方法与知识库消融方法；
+4. 复现官方 ChaosEater 原生流程，作为不同测量层的阶段参照。
+
+same-pool、预选候选池和 `ChaosEater-adapter` 结果均为冻结历史材料，不进入当前论文主线统计。实验原始目录保持原路径不变。
+
 ## Research Scope
 
-The current archive contains four case-study families:
+The archive retains four case-study families, but the paper mainline assigns
+them different roles:
 
 | Case study | Pinned source | Role in the study | Knowledge cards |
 |---|---|---|---:|
-| Train Ticket | `FudanSELab/train-ticket` @ `313886e99befb94be6cd45f085c98e0019f59829` | First end-to-end test-node-centered workflow; CPU and network delay boundary cases | 7 |
+| Train Ticket | `FudanSELab/train-ticket` @ `313886e99befb94be6cd45f085c98e0019f59829` | Stage-two real-project capability validation; timeout/deadline, call-contract and reachability boundaries | 7 |
 | Online Boutique | `GoogleCloudPlatform/microservices-demo` @ `9a4616e77f0f9cbcbecaf27d711c38890dda1404` | Cross-project comparison of delay, loss, probe restart, and multi-fault semantics | 8 |
 | OpenTelemetry Demo | `open-telemetry/opentelemetry-demo` @ `2e72d8bcdf754603e956406808630bc9663c992c` | Observability-aware comparison and repeated no-timeout behavior | 2 |
-| Sock Shop | `markfink/sock-shop` (pinned artifacts and lab manifest) | Held-out transfer evidence plus frozen ChaosEater comparison material; current two-arm pilot is archived separately | 0 formal cards; project evidence archived |
+| Sock Shop | `markfink/sock-shop` (pinned artifacts and lab manifest) | Stage-three improved-method comparison: ChaosAtlas-full versus YAML15 Ablation; historical comparison material retained separately | 0 formal cards; project evidence archived |
 
-The held-out and knowledge-ablation tracks under `artifacts/experiments/` are
-supplementary evaluation material. They are not merged into the case-study
-claims unless their protocol gates and independent oracle checks pass.
+The old held-out, same-pool, and preselected-candidate tracks under
+`artifacts/experiments/` are frozen supplementary material. The current Sock
+Shop full-versus-ablation discovery/runtime track is part of the paper mainline;
+its exact denominators and review state remain governed by the machine ledgers.
 
-### Sock Shop: the fourth project and frozen comparison material
+### Sock Shop: improved-method ablation
 
-Sock Shop is the external-transfer project for the method, not just another
-case study. It tests whether rules learned from the first three projects move
-to a new service distribution and whether the same evidence chain can cover
-both application call contracts and deployment availability.
+Sock Shop is the controlled real-project stage for the improved-method
+comparison. It tests whether the knowledge view changes autonomous hypothesis
+generation and stable weakness discovery under the same business oracle,
+runtime lifecycle, and evidence rules.
+
+The current paper-facing headline is recorded in
+`docs/SOCK_SHOP_THREE_METHOD_STAGE_REVIEW_2026-08-16.md`: all 114 Full families
+have an applicability disposition; 96 entered the runtime cohort, 88 completed
+two injections, 8 route-aware DNSChaos families were platform-blocked, and 18
+families were rejected by the static gate. The 88 injected families contain 15 stable weaknesses, 3 mixed
+results, and 70 no-impact results. The final YAML15 Ablation generated 458 raw
+hypotheses, reduced them to 51 families, completed 46 families, and confirmed
+9 stable weaknesses. The superseded 12-hypothesis / 2-weakness Ablation is
+retained only as historical evidence.
 
 The final HTTP-edge result is **6/8 weakness and 2/8 defended**. The two
 defended edges are `orders -> payment` and `orders -> shipping`, where the
@@ -45,7 +68,8 @@ summary reports 4/8 + 4/8 because the two loss variants are inferred from the
 shared timeout contract rather than independently re-run. These denominators
 must not be mixed in a manuscript.
 
-Against historical ChaosEater material (`47c4e44`), the comparison is intentionally layered:
+Against historical ChaosEater material (`47c4e44`), the comparison is
+intentionally layered and is not the pending official full-method experiment:
 ChaosEater's Sock Shop run identified deployment availability risks such as
 single-replica services and missing PDB/HPA/probe coverage, while this method
 also verified request-level delay/loss behavior, source-level timeout
@@ -53,9 +77,11 @@ contracts, business responses, recovery, and cleanup. The contribution is
 therefore a frozen comparison hypothesis, not a completed current three-method
 head-to-head or a claim of overall superiority.
 
-The latest Sock Shop Minikube pilot completed `ChaosAtlas-full` and
+An older Sock Shop Minikube pilot completed `ChaosAtlas-full` and
 `ChaosAtlas-ablation` only. Both used the same front-end PodKill mutation and
 passed lifecycle cleanup; the official ChaosEater arm was environment-blocked.
+That pilot is frozen and must not replace the current autonomous discovery and
+ablation evidence.
 See `docs/CHAOSATLAS_PROJECT_ARCHIVE_2026-08-13.md` for the exact boundary.
 
 ### Next four-project queue
@@ -151,10 +177,14 @@ available (`.json`, `.csv`, or a run ledger) and then the human-readable report.
 The limitations section must state the fixed commit, project count, sample
 size, observation budget, missing trace/production SLO, and any platform block.
 
-The knowledge-base ablation and final method head-to-head comparison are
-currently parked future work. Their files are retained for continuation, but
-their incomplete intermediate results must not be presented as final paper
-evidence or a superiority claim.
+The current Sock Shop real-project ablation has completed under the YAML15
+protocol and remains subject to `human_review=pending`; it is part of the
+mainline, while older ablation runs are frozen. ChaosEater native evidence is
+retained as a different-measurement-layer stage reference; a same-layer,
+machine-ledgered three-method comparison remains future work.
+Same-pool/preselected-candidate results and the adapter comparison remain
+frozen historical material and must not be presented as the mainline result or
+as a superiority claim.
 
 ## Private GitHub Handoff
 

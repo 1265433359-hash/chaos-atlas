@@ -1,9 +1,13 @@
 # Archive and Cleanup Record
 
-更新日期：2026-08-11
+更新日期：2026-08-15
 
 本次整理采用“证据保留、工作草稿清理”的原则。实验真值和可复现输入不删除；
 只清理明确属于代理操作指令或测试临时目录的内容。
+
+本轮主线整理采用“逻辑冻结、路径不动”：same-pool/预选候选池、旧 pilot 和
+ChaosEater-adapter 等历史实验只改变纸面分类，不移动、重命名或删除原始证据。
+当前主线入口为 `docs/CHAOSATLAS_PAPER_MAINLINE.md`。
 
 ## 保留范围
 
@@ -36,6 +40,7 @@
 - 总归档索引：`artifacts/experiments/archive/ARCHIVE_INDEX.md`
 - 文件归档规则：`docs/ARCHIVE_MAP.md`
 - 项目总览：`docs/PROJECT_SUMMARY.md`
+- 论文主线与证据冻结：`docs/CHAOSATLAS_PAPER_MAINLINE.md`
 - GitHub 上传前清单：`docs/GITHUB_PRIVATE_HANDOFF.md`
 
 本次清理没有删除任何实验数据，没有配置 Git remote，也没有执行 GitHub 上传。

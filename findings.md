@@ -447,6 +447,13 @@ Artifact checks found nine classification-index mismatches rather than three; al
 - YAML15 只补充故障语法和动作示例，不提供知识库、历史弱点、Sock Shop 调用链、Full 假设、置信度、停止轨迹或 runtime outcome。
 - 权威语料入口是 `raw_yaml/`：总数 1935，五类 runtime scope 共 1506；现有分类器可提取 kind、action、mode、selector、duration 和 intensity 静态特征。
 - 样本选择必须确定性且与结果无关；冻结原始与结构化去敏文本的 SHA-256。
+
+# 2026-08-16 主线整理发现
+
+- README、PROJECT_SUMMARY、ARCHIVE_MAP 和 EXPERIMENT_CATALOG 曾分别保留不同阶段的项目角色或 ChaosEater 状态；当前统一为论文主线四阶段，旧日期文档改为冻结历史入口。
+- 当前 Sock Shop 主线 headline 是 Full 15 个稳定 weakness、YAML15 Ablation 9 个稳定 weakness；同候选池、旧 Ablation 和问题面归并不进入主线 headline。
+- 关键工具的执行责任已明确分层：静态分类/停止规则不等于 runtime 结果，编译器不调用 kubectl，gate 只做只读适用性判断，runner 才负责完整生命周期。
+- 首次 focused pytest 的 17 个错误均发生在 Windows 系统临时目录权限 setup 阶段；改用工作区隔离 basetemp 后 focused suite 通过，未修改生产逻辑。
 # 2026-08-16 Sock Shop YAML15 Ablation findings
 
 - DeepSeek self-stopped after 734.188 seconds and 458 calls, below the frozen 1419.047-second Full cap.

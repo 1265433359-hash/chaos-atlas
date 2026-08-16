@@ -806,3 +806,12 @@
 - Independent reviewer reported no Critical issues and two Important issues. Fixed the sub-millisecond deadline escape and stale `15 vs 2 vs 2` wording; also fixed terminal checkpoint resume and added explicit source paths.
 - Review-fix regression: 19 passed. Updated affected suite: 99 passed plus 5 subtests. Updated full suite: 643 passed plus 5 subtests, with only the same 2 historical pinned-hash drift failures.
 - Created commit `d72a2c1` with the explicit 2,013-file Sock Shop R5/YAML15 whitelist. Cleared 96 post-commit index-only log normalization entries without changing working files; unrelated existing modifications and untracked directories remain untouched.
+
+# 2026-08-16 ChaosAtlas 主线整理归档
+
+- 当前整理范围冻结为：论文主线入口、项目总览、README、归档地图、实验目录和主线关键工具注释；历史实验产物保持原路径不动。
+- 已核对主线：初始 TestNode/局部影响子图/门禁/证据链架构；Online Boutique、OpenTelemetry Demo、Train Ticket 三项目及 6 个已提交 issue；Sock Shop Full 15 个稳定 weakness 与 YAML15 Ablation 9 个稳定 weakness；ChaosEater 官方原生流程作为不同测量层的阶段参照。
+- 已确认冻结历史材料：same-pool、预选池、旧 Ablation、早期 Sock Shop pilot、ChaosEater-adapter；这些材料保留审计价值，不进入当前主线统计。
+- 归档整理不运行 Kubernetes、不调用模型、不读取密钥，不更新知识库，不暂存无关未跟踪实验目录。
+- 最终验证：主线关键工具 `py_compile` 通过；focused suite `66 passed, 5 subtests passed`；全量 suite `643 passed, 2 failed, 5 subtests passed`，两个失败均为既有 generic-rules/mutation-map pinned-hash drift；文档 `git diff --check` 通过，归档入口断言通过，敏感模式扫描无命中。
+- 本轮创建的两个 pytest 隔离临时目录已删除；已有 `.pytest_cache` 和其他用户目录未处理。整理结果未提交、未推送。

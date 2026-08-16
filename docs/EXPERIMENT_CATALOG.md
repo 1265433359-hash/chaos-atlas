@@ -4,6 +4,12 @@ This is the paper-facing index of comparison experiments. It intentionally
 summarizes evidence without duplicating every run file. Follow the artifact
 links for exact values, hashes, and raw logs.
 
+Paper-mainline status is defined by
+[`docs/CHAOSATLAS_PAPER_MAINLINE.md`](CHAOSATLAS_PAPER_MAINLINE.md). This
+catalog preserves historical rows for audit, but same-pool and
+preselected-candidate results are frozen and must not be used as the current
+method comparison.
+
 ## Case-Study Matrix
 
 | Project | Fault family | Main workload/oracle | Result class | Evidence location |
@@ -20,9 +26,10 @@ links for exact values, hashes, and raw logs.
 | Online Boutique | Payment + email multi-fault | Checkout | Sequential downstream delays add approximately linearly | `artifacts/online-boutique/knowledge_base/KB-OB-CHECKOUT-MULTI-FAULT-001.json`, `artifacts/online-boutique/mixed_pool_results.json` |
 | OpenTelemetry Demo | Payment delay/loss | Checkout PlaceOrder | Delay propagates through the path; loss reaches the caller deadline | `artifacts/opentelemetry-demo/experiment_results.md` |
 | OpenTelemetry Demo | Email delay/loss | Checkout email path | Runtime behavior differs from Online Boutique and is retained as a comparison, not generalized | `artifacts/opentelemetry-demo/knowledge_base/KB-OTEL-CHECKOUT-EMAIL-FAILURE-001.json` |
-| Sock Shop | HTTP delay/loss on eight core edges | Orders and front-end business paths | Paper-facing edge-level result: 6/8 weakness, 2/8 defended; the machine ledger separately reports delay/loss variants and inferred loss defenses | `artifacts/sock-shop/sock_shop_cross_project_validation.md`, `artifacts/sock-shop/sock_orders_future_get_verified.md`, `artifacts/sock-shop/sock_shop_verdicts.json` |
-| Sock Shop current two-arm pilot | `front-end` PodKill | Front-end HTTP 200 oracle | `ChaosAtlas-full` and `ChaosAtlas-ablation` both completed lifecycle checks; no business weakness or specific root cause confirmed; official ChaosEater arm blocked | `artifacts/experiments/chaosatlas_sockshop_three_method/runtime_results/sock-shop/teacher-minikube-three-method-r1/` |
-| Sock Shop historical ChaosEater comparison | Deployment availability and recovery | Service replicas, probes, and kill/recovery paths | Frozen supplementary material only; not a current third-arm result | `artifacts/experiments/chaos_eater_deployed_vs_ours.md`, `artifacts/experiments/chaos_eater_vs_evidence_chain.md` |
+| Sock Shop | HTTP delay/loss on eight core edges (frozen historical) | Orders and front-end business paths | Historical edge-level result: 6/8 weakness, 2/8 defended; not the current autonomous full-vs-ablation denominator | `artifacts/sock-shop/sock_shop_cross_project_validation.md`, `artifacts/sock-shop/sock_orders_future_get_verified.md`, `artifacts/sock-shop/sock_shop_verdicts.json` |
+| Sock Shop improved-method ablation | Autonomous hypothesis generation and real injection | Sock Shop business oracle | Mainline stage: complete method and knowledge-free ablation; current headline is recorded in the paper-mainline summary and final ledgers | `artifacts/experiments/chaosatlas_sockshop_ablation_discovery_2026-08-15-r1/`, `artifacts/experiments/chaosatlas_sockshop_r5_runtime_2026-08-15-r1/` |
+| Sock Shop older two-arm pilot (frozen) | `front-end` PodKill | Front-end HTTP 200 oracle | Historical descriptive pilot; no business weakness or specific root cause confirmed; official ChaosEater arm blocked | `artifacts/experiments/chaosatlas_sockshop_three_method/runtime_results/sock-shop/teacher-minikube-three-method-r1/` |
+| Sock Shop historical ChaosEater comparison (frozen) | Deployment availability and recovery | Service replicas, probes, and kill/recovery paths | Frozen supplementary material only; not a current third-arm result | `artifacts/experiments/chaos_eater_deployed_vs_ours.md`, `artifacts/experiments/chaos_eater_vs_evidence_chain.md` |
 | P09 current two-arm runtime | API/Redis PodKill, API delay/loss/CPU stress | P09 `/health` oracle | 10/10 lifecycle-complete reports; API PodKill caused transient health interruption; Redis PodKill produced worker connection symptoms; no business weakness, root cause, or method-superiority claim | `artifacts/experiments/chaosatlas_10_projects/runtime_results/P09/teacher-minikube-two-arm-r4/P09_TWO_ARM_REVIEW.json` |
 
 ## Comparison Dimensions
@@ -42,7 +49,7 @@ Do not rank projects by raw latency across different languages, deployments, or
 workloads. Use paired deltas within a project and report project-clustered
 uncertainty for cross-project claims.
 
-## Sock Shop Comparison Contribution
+## Sock Shop Historical Comparison Contribution
 
 Sock Shop historical evidence is a transfer study with bounded claims:
 
@@ -60,30 +67,30 @@ Sock Shop historical evidence is a transfer study with bounded claims:
    and reusable knowledge entries. This supports a research hypothesis about
    coverage and output form, not a completed current head-to-head or superiority claim.
 
-The new Sock Shop two-arm PodKill pilot is descriptive only. It used the same
+The older Sock Shop two-arm PodKill pilot is descriptive only. It used the same
 mutation for both arms and the official ChaosEater execution was
 `environment_blocked`; therefore it is not a completed three-method experiment.
 
-## LLM and Knowledge Ablation
+## Frozen Same-Pool and Knowledge Selection Material
 
-The supplementary ablation compares `LLM-blind`, `LLM-generic`, and
+The archived selection track compares `LLM-blind`, `LLM-generic`, and
 `LLM-full-pre` under the same candidate pool, model, prompt, seed, runner, and
 oracle rules. The frozen protocol is
 [`artifacts/experiments/llm_knowledge_ablation_protocol_v1.md`](../artifacts/experiments/llm_knowledge_ablation_protocol_v1.md).
 
-This ablation isolates knowledge contribution to the LLM decision component. It
-does not establish superiority over another method, and its metrics must not be
-collapsed into the case-study results.
+This track is frozen historical material. It does not establish superiority over
+another method, and its metrics must not be collapsed into the real-project
+case-study or Sock Shop autonomous ablation results.
 
-Current status: **parked for later continuation**. The protocol and partial
-selection artifacts are preserved, but the formal runtime execution, remaining
-review gates, independent oracle, and clustered statistical analysis are not
-complete. Do not cite its intermediate metrics as a finished ablation result.
+Current status: **frozen and excluded from the paper mainline**. The protocol,
+selection artifacts, and partial analysis are preserved for audit. Do not cite
+same-pool percentages as the current knowledge-base effectiveness result.
 
-The final method head-to-head comparison is also **parked**. Existing
-ChaosEater, M0/M1, and comparison-ledger outputs support descriptive coverage
-and output-form observations only. A future continuation must freeze one common
-candidate pool and oracle before producing any superiority claim.
+The official ChaosEater native replay is now a **stage reference** with a
+different measurement layer and is included only with that boundary. A formal
+same-layer comparison against the complete official ChaosEater method remains
+**future work**. Existing adapter, M0/M1, and comparison-ledger outputs support
+descriptive historical background only.
 
 ## Reproduction Status
 
@@ -92,16 +99,20 @@ candidate pool and oracle before producing any superiority claim.
 | Train Ticket first loop | complete with explicit limits | Strongest current paper example |
 | Online Boutique comparison | runtime and statistical evidence archived | Cross-project semantics, not a universal law |
 | OpenTelemetry Demo comparison | runtime evidence archived | Observability and implementation contrast |
-| Held-out knowledge ablation | parked; protocol/bring-up/selection artifacts preserved | Runtime execution, remaining gates, independent oracle, and clustered statistics are incomplete |
-| Final method head-to-head comparison | parked; descriptive artifacts preserved | Not a completed superiority evaluation; common pool/oracle/statistical closure remains |
+| Sock Shop autonomous full-vs-ablation | active paper mainline; review state in ledgers | Real-project hypothesis generation and runtime issue/weakness evidence; exact denominators remain ledger-defined |
+| Same-pool/preselected selection | frozen historical | Preserved for audit, excluded from current mainline statistics |
+| Official ChaosEater native replay | stage reference | Five native runs are archived; measurement layer and model differ from ChaosAtlas |
+| Same-layer official ChaosEater comparison | future work | A machine-ledgered, same-oracle, same-layer comparison is not completed |
 | HTTPChaos on current WSL2 kernel | blocked | Requires non-WSL2 or a compatible kernel/controller prerequisite |
 
-## Active Four-Project Queue
+## Separate Future Project Queue
 
-The next active queue is Online Boutique, OpenTelemetry Demo, Train Ticket, and
-TeaStore. Sock Shop is retained as an archived two-arm comparison pilot.
+The next execution queue is separate from the current paper mainline. It
+contains Online Boutique, OpenTelemetry Demo, Train Ticket, and TeaStore;
+Sock Shop's improved-method ablation is recorded in the mainline above, while
+older pilots remain frozen.
 Each active project runs only `ChaosAtlas-full` and `ChaosAtlas-ablation`;
-ChaosEater remains deferred. Online Boutique now has a fresh namespace-isolated
+ChaosEater remains deferred as a same-layer formal comparison. Online Boutique now has a fresh namespace-isolated
 manifest with loadgenerator excluded and offline oracle-contract validation, but
 still requires immutable image digests, an authorized namespace-first dry-run,
 and fresh baseline/oracle validation. The other two reusable projects require
