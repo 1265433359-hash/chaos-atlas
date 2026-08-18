@@ -99,7 +99,8 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/petclinic?allowPublicKeyRetrieval=true&useSSL=false
     username: root
-    password: petclinic
+    # Required locally; do not commit a database password to the profile.
+    password: ${CHAOSATLAS_P02_DB_PASSWORD}
   sql:
     init:
       schema-locations: classpath*:db/mysql/schema.sql

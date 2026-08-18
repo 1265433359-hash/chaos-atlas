@@ -39,6 +39,18 @@ chaos-mesh-*.tgz
 !*.env.example
 .secrets/
 
+# Private keys, certificates, kubeconfigs, and credential files.
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.kubeconfig
+kubeconfig
+credentials.json
+credentials.yaml
+credentials.yml
+
 # Full upstream repositories are local experiment inputs, not ChaosAtlas source.
 /artifacts/experiments/chaosatlas_10_projects/sources/
 /artifacts/experiments/chaosatlas_10_projects/sources_restored/*
