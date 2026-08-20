@@ -374,12 +374,71 @@ def contract_hard_filter(candidate: dict[str, Any], contract_snapshot: dict[str,
     return {}
 
 
-def score_candidate(candidate: dict[str, Any], knowledge_snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
+RCA_SNAPSHOT_SCHEMA_VERSION = 1
+RCA_REUSABLE_BONUS = 20.0
+
+
+def _rca_cards(rca_snapshot: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if rca_snapshot is None:
+        return []
+    if rca_snapshot.get("schema_version") != RCA_SNAPSHOT_SCHEMA_VERSION:
+        raise ValueError("rca_snapshot schema_version must be 1")
+    cards = rca_snapshot.get("cards")
+    if not isinstance(cards, list):
+        raise ValueError("rca_snapshot.cards must be a list")
+    return cards
+
+
+def _rca_card_matches(card: dict[str, Any], candidate: dict[str, Any]) -> bool:
+    edge = str(card.get("edge") or "")
+    if edge and edge == candidate.get("edge"):
+        return True
+    tn = card.get("test_node") or {}
+    cid = str(candidate.get("candidate_id") or "").upper()
+    family = str(tn.get("family") or "").upper().replace("CHAOS", "")
+    operation = str(tn.get("operation") or "").upper()
+    return bool(family and operation and operation in cid and family in cid)
+
+
+def _rca_influence(candidate: dict[str, Any], rca_snapshot: dict[str, Any] | None) -> dict[str, Any]:
+    """Minimal compatible RCA-loop integration (2026-08-20 design, section 10).
+
+    Only knowledge_status=local_reusable cards without a contested flag may
+    change scoring; provisional/cross_project_pending cards contribute an
+    explanation note only and must not alter hard filters, protected skips or
+    the ranking.
+    """
+    reasons: list[str] = []
+    bonus = 0.0
+    diagnostics: list[str] = []
+    for card in _rca_cards(rca_snapshot):
+        if not _rca_card_matches(card, candidate):
+            continue
+        card_id = card.get("id", "<unknown>")
+        status = card.get("knowledge_status")
+        if status == "local_reusable" and not card.get("contested"):
+            bonus += RCA_REUSABLE_BONUS
+            reasons.append(f"RCA {card_id}: local_reusable boundary knowledge raises priority")
+            diagnostics.extend(str(item) for item in card.get("next_evidence", []))
+        elif status == "contested" or card.get("contested"):
+            reasons.append(f"RCA {card_id}: contested card ignored as a strong prior")
+        else:
+            reasons.append(f"RCA {card_id}: {status} card noted for context only (no score change)")
+    return {"reasons": reasons, "bonus": bonus, "diagnostics": diagnostics}
+
+
+def score_candidate(
+    candidate: dict[str, Any],
+    knowledge_snapshot: dict[str, Any] | None = None,
+    rca_snapshot: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Score a candidate from the three libraries (no LLM).
 
     knowledge_snapshot=None -> historical live behavior.
     knowledge_snapshot given -> pass the SAME snapshot to every downstream
     helper so the engine reads nothing from live files/module registries.
+    rca_snapshot (optional) -> local_reusable RCA cards may boost the score;
+    provisional/contested cards only add explanation notes.
     """
     if knowledge_snapshot is not None:
         validate_knowledge_snapshot(knowledge_snapshot)
@@ -436,20 +495,33 @@ def score_candidate(candidate: dict[str, Any], knowledge_snapshot: dict[str, Any
         score += 30.0
         priority = "high"
         reasons.append("execution override: behavior shows weakness")
+    rca = _rca_influence(candidate, rca_snapshot)
+    if rca["bonus"]:
+        score += rca["bonus"]
+        priority = "high"
+    reasons.extend(rca["reasons"])
     return {
         "candidate_id": candidate.get("candidate_id"),
         "edge": candidate.get("edge"),
         "score": round(score, 1),
         "priority": priority,
         "reasons": reasons,
+        "required_diagnostics": rca["diagnostics"],
     }
 
 
-def rank(candidates: list[dict[str, Any]], knowledge_snapshot: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+def rank(
+    candidates: list[dict[str, Any]],
+    knowledge_snapshot: dict[str, Any] | None = None,
+    rca_snapshot: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
     """Rank candidates; when a snapshot is given it is forwarded to EVERY
     score_candidate call so the replay reads nothing from live knowledge."""
     ranked = sorted(
-        (score_candidate(c, knowledge_snapshot=knowledge_snapshot) for c in candidates),
+        (
+            score_candidate(c, knowledge_snapshot=knowledge_snapshot, rca_snapshot=rca_snapshot)
+            for c in candidates
+        ),
         key=lambda r: (-r["score"], r["candidate_id"]),
     )
     for i, r in enumerate(ranked, 1):

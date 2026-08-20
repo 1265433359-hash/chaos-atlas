@@ -26,8 +26,17 @@ KB_DIRS = [
 ]
 
 
-def load_cards() -> list[dict]:
+def load_cards(rca_root: Path | None = None) -> list[dict]:
     cards = []
+    if rca_root is not None:
+        # RCA loop knowledge drafts are investigation artifacts, NOT formal
+        # knowledge-base cards; they are only loaded with an explicit --rca-root.
+        for path in sorted(Path(rca_root).glob("KB-*.json")):
+            try:
+                cards.append(json.loads(path.read_text(encoding="utf-8")))
+            except (json.JSONDecodeError, OSError):
+                continue
+        return cards
     for kb in KB_DIRS:
         if not kb.is_dir():
             continue
@@ -77,17 +86,23 @@ def matches(card: dict, args) -> bool:
             tn.get("latency"),
         ]
     ).lower()
-    if args.query:
+    if getattr(args, "query", None):
         for token in args.query.lower().split():
             if token not in text:
                 return False
-    if args.family and args.family.lower() not in (tn.get("family") or "").lower():
+    if getattr(args, "family", None) and args.family.lower() not in (tn.get("family") or "").lower():
         return False
-    if args.operation and args.operation.lower() not in (tn.get("operation") or "").lower():
+    if getattr(args, "operation", None) and args.operation.lower() not in (tn.get("operation") or "").lower():
         return False
-    if args.project and args.project.lower() not in (card.get("project") or "").lower():
+    if getattr(args, "project", None) and args.project.lower() not in (card.get("project") or "").lower():
         return False
-    if args.root_cause and args.root_cause.lower() not in (card.get("root_cause") or "").lower():
+    if getattr(args, "root_cause", None) and args.root_cause.lower() not in (card.get("root_cause") or "").lower():
+        return False
+    if getattr(args, "rca_status", None) and card.get("rca_status") != args.rca_status:
+        return False
+    if getattr(args, "knowledge_status", None) and card.get("knowledge_status") != args.knowledge_status:
+        return False
+    if getattr(args, "weakness_id", None) and card.get("weakness_id") != args.weakness_id:
         return False
     return True
 
@@ -99,6 +114,10 @@ def main() -> int:
     parser.add_argument("--operation", help="test node operation, e.g. delay")
     parser.add_argument("--project", help="substring of project repo")
     parser.add_argument("--root-cause", help="root cause label, e.g. missing_timeout")
+    parser.add_argument("--rca-root", type=Path, help="query RCA loop knowledge drafts (e.g. artifacts/sock-shop/rca_loop/knowledge_drafts) instead of the formal knowledge base")
+    parser.add_argument("--rca-status", choices=("pending", "bounded", "confirmed", "rejected"), help="filter RCA loop cards by rca_status")
+    parser.add_argument("--knowledge-status", choices=("none", "provisional", "local_reusable", "cross_project_pending", "cross_project_reusable", "contested"), help="filter RCA loop cards by knowledge_status")
+    parser.add_argument("--weakness-id", help="filter RCA loop cards by weakness_id")
     parser.add_argument("--list", action="store_true", help="list all cards")
     parser.add_argument("--json", action="store_true", help="raw JSON output")
     parser.add_argument(
@@ -120,18 +139,19 @@ def main() -> int:
     if args.selection:
         return query_selection(args)
 
-    cards = load_cards()
+    cards = load_cards(rca_root=args.rca_root)
+    scope = "RCA drafts" if args.rca_root else "formal knowledge base"
     if args.list:
         for c in sorted(cards, key=lambda c: c.get("id", "")):
             if not matches(c, args):
                 continue
             print(f'{c.get("id")}: {c.get("project")} | {c.get("test_node", {}).get("family")} {c.get("test_node", {}).get("operation")} | {c.get("status")}')
-        print(f"\nTotal: {len(cards)} cards")
+        print(f"\nTotal: {len(cards)} cards ({scope})")
         return 0
 
     hits = [c for c in cards if matches(c, args)]
     if not hits:
-        print(f"No cards match (total {len(cards)} loaded)")
+        print(f"No cards match (total {len(cards)} loaded from {scope})")
         return 1
 
     summaries = [card_summary(c) for c in sorted(hits, key=lambda c: c.get("id", ""))]
@@ -141,7 +161,7 @@ def main() -> int:
         for s in summaries:
             print(json.dumps(s, indent=2, ensure_ascii=False))
             print("-" * 60)
-        print(f"Matched {len(hits)} card(s) from {len(cards)} total")
+        print(f"Matched {len(hits)} card(s) from {len(cards)} total ({scope})")
     return 0
 
 

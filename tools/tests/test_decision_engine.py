@@ -65,3 +65,50 @@ class DecisionEngineTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RcaSnapshotTests(unittest.TestCase):
+    def _card(self, status):
+        return {
+            "id": "KB-RCA-SOCK-ABORT-001",
+            "knowledge_status": status,
+            "contested": False,
+            "weakness_id": "WS-sock-shop-front-end-catalogue-httpchaos-abort",
+            "test_node": {"family": "HTTPChaos", "operation": "abort"},
+            "edge": "front-end->catalogue",
+            "next_evidence": ["scoped_front_end_logs"],
+        }
+
+    def _snapshot(self, status):
+        return {"schema_version": 1, "cards": [self._card(status)]}
+
+    def test_local_reusable_card_boosts_matching_candidate(self):
+        cand = {"candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100", "edge": "front-end->catalogue"}
+        base = score_candidate(dict(cand))
+        scored = score_candidate(dict(cand), rca_snapshot=self._snapshot("local_reusable"))
+        self.assertGreater(scored["score"], base["score"])
+        self.assertTrue(any("KB-RCA-SOCK-ABORT-001" in r for r in scored["reasons"]))
+        self.assertIn("scoped_front_end_logs", scored.get("required_diagnostics", []))
+
+    def test_provisional_card_never_changes_score_or_order(self):
+        cand = {"candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100", "edge": "front-end->catalogue"}
+        base = score_candidate(dict(cand))
+        scored = score_candidate(dict(cand), rca_snapshot=self._snapshot("provisional"))
+        self.assertEqual(scored["score"], base["score"])
+        self.assertTrue(any("provisional" in r.lower() for r in scored["reasons"]))
+
+    def test_contested_card_is_ignored_as_strong_prior(self):
+        cand = {"candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100", "edge": "front-end->catalogue"}
+        base = score_candidate(dict(cand))
+        scored = score_candidate(dict(cand), rca_snapshot=self._snapshot("contested"))
+        self.assertEqual(scored["score"], base["score"])
+        self.assertTrue(any("contested" in r.lower() for r in scored["reasons"]))
+
+    def test_rank_forwards_rca_snapshot(self):
+        candidates = [
+            {"candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100", "edge": "front-end->catalogue"},
+            {"candidate_id": "SOCK-FRONTEND-CARTS-DELAY-2000", "edge": "front-end->carts"},
+        ]
+        ranked = rank(candidates, rca_snapshot=self._snapshot("local_reusable"))
+        self.assertEqual(ranked[0]["candidate_id"], "SOCK-FRONTEND-CATALOGUE-LOSS-100")
+        self.assertIn("KB-RCA-SOCK-ABORT-001", json.dumps(ranked))
