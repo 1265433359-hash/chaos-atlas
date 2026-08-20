@@ -1,0 +1,78 @@
+{
+  "schema_version": "chaosatlas-rca-knowledge-draft-v1",
+  "id": "KB-RCA-sock-shop-front-end-catalogue-httpchaos-abort",
+  "version": 1,
+  "status": "provisional",
+  "evidence_state": {
+    "supports": 1,
+    "contradicts": 0,
+    "unavailable": 1,
+    "neutral": 0
+  },
+  "project": "sock-shop",
+  "project_commit": "sock-shop-fixture-commit",
+  "round_id": "pilot-r1",
+  "weakness_id": "WS-sock-shop-front-end-catalogue-httpchaos-abort",
+  "case_family": "http_abort_propagation",
+  "weakness_status": "confirmed",
+  "rca_status": "bounded",
+  "knowledge_status": "provisional",
+  "mechanism_claim": "transport abort at the edge is propagated into the business response at the service boundary",
+  "mechanism_level": "service_boundary",
+  "test_node": {
+    "family": "HTTPChaos",
+    "operation": "abort",
+    "target_role": "front-end->catalogue",
+    "source_ref": "artifacts/sock-shop/sock_shop_verdicts.json"
+  },
+  "test_node_centered_graph": {
+    "edge": "front-end->catalogue",
+    "scope": {
+      "services": [
+        "front-end",
+        "catalogue"
+      ],
+      "edge": "front-end->catalogue"
+    }
+  },
+  "four_layer_validation": {
+    "availability": false,
+    "contract": true,
+    "business_path": true,
+    "recovery": false
+  },
+  "applicability_conditions": [
+    "abort or loss fault families on a measured service edge",
+    "real business path crossing the same edge"
+  ],
+  "exclusion_conditions": [
+    "cross_project_transfer_requires_existing_feedback_protocol",
+    "must_not_be_promoted_to_timeout_mechanism_without_source_evidence"
+  ],
+  "counter_evidence": [],
+  "evidence_refs": [
+    {
+      "evidence_id": "EV-SS-ABORT-DIRECT-001",
+      "kind": "oracle",
+      "polarity": "supports",
+      "source_ref": "artifacts/sock-shop/sock_shop_verdicts.json"
+    },
+    {
+      "evidence_id": "EV-SS-ABORT-REALPATH-001",
+      "kind": "business_path_replay",
+      "polarity": "unavailable",
+      "source_ref": "artifacts/sock-shop/sock_shop_verdicts.json"
+    }
+  ],
+  "regression_recipe": {
+    "oracle": "edge response contract",
+    "selected_next_action": "A-SS-ABORT-CONFIG-001"
+  },
+  "next_evidence": [
+    "downstream_diagnostic_or_source_mapping",
+    "recovery_after_fault_removal",
+    "runtime_business_path"
+  ],
+  "regression_intents": [],
+  "stop_rule": "stop after two valid reproductions or one clean falsification"
+}

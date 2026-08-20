@@ -1,0 +1,38 @@
+{
+  "hypothesis_id": "RCA-WS-sock-shop-front-end-podchaos-pod-kill-01",
+  "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill",
+  "scope": {
+    "services": [
+      "front-end deployment"
+    ],
+    "edge": "front-end deployment"
+  },
+  "unsupported_claims": [
+    "isolated_scale_to_two_counterfactual"
+  ],
+  "status": "bounded",
+  "confidence": 0.0,
+  "next_action": "A-SS-SINGLETON-CONFIG-001",
+  "claim": "the front-end workload is a singleton with no redundancy, so any pod kill produces a full-outage window",
+  "mechanism_class": "singleton_workload_no_redundancy",
+  "mechanism_level": "deployment",
+  "expected_observations": [
+    "manifest shows replicas=1 and no pod disruption budget",
+    "Ready drops to zero for the whole replacement window on kill",
+    "business requests fail during the same window"
+  ],
+  "falsifiers": [
+    "a second ready replica absorbs the kill with no outage",
+    "a pod disruption budget keeps capacity during the kill"
+  ],
+  "required_evidence": [
+    "static_manifest_replica_facts",
+    "ready_transition_runtime",
+    "business_impact_in_window"
+  ],
+  "evidence_for": [
+    "EV-SS-SINGLETON-MANIFEST-001",
+    "EV-SS-SINGLETON-READY-001"
+  ],
+  "evidence_against": []
+}

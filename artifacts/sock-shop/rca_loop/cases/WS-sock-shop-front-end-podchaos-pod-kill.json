@@ -1,0 +1,151 @@
+{
+  "schema_version": "chaosatlas-weakness-case-v1",
+  "case_family": "single_replica_podkill",
+  "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill",
+  "project_id": "sock-shop",
+  "project_commit": "sock-shop-fixture-commit",
+  "round_id": "pilot-r1",
+  "test_node": {
+    "family": "PodChaos",
+    "operation": "pod-kill",
+    "target_role": "front-end deployment",
+    "source_ref": "artifacts/sock-shop/avail_frontend_kill.json"
+  },
+  "symptom": {
+    "oracle": "deployment availability (Ready replicas)",
+    "baseline_contract": "1/1 ready replicas, service available",
+    "injected_contract": "0/1 ready replicas, total outage during replacement window",
+    "observed_change": "ready drop for 130s during pod kill"
+  },
+  "weakness_status": "confirmed",
+  "rca_status": "bounded",
+  "knowledge_status": "provisional",
+  "evidence_refs": [
+    {
+      "evidence_id": "EV-SS-SINGLETON-MANIFEST-001",
+      "kind": "manifest",
+      "polarity": "supports",
+      "claim_scope": "front-end deployment redundancy",
+      "source_ref": "artifacts/sock-shop/sock-shop-lab-manifest.yaml",
+      "collected_at": "2026-08-09T00:00:00Z",
+      "window": {},
+      "sha256": null,
+      "interpretation": "static manifest shows the front-end deployment runs a single replica with no pod disruption budget, so there is no redundancy to absorb a pod kill"
+    },
+    {
+      "evidence_id": "EV-SS-SINGLETON-READY-001",
+      "kind": "runtime_log",
+      "polarity": "supports",
+      "claim_scope": "front-end deployment redundancy",
+      "source_ref": "artifacts/sock-shop/avail_frontend_kill.json",
+      "collected_at": "2026-08-09T00:00:00Z",
+      "window": {},
+      "sha256": null,
+      "interpretation": "pod-kill moved Ready 1->0 for the whole replacement window, confirming the singleton deployment loses all capacity until a new pod is ready"
+    },
+    {
+      "evidence_id": "EV-SS-SINGLETON-COUNTERFACTUAL-001",
+      "kind": "counterfactual",
+      "polarity": "unavailable",
+      "claim_scope": "front-end deployment redundancy",
+      "source_ref": "artifacts/sock-shop/sock_availability_layer_verified.md",
+      "collected_at": "2026-08-09T00:00:00Z",
+      "window": {},
+      "sha256": null,
+      "interpretation": "no replicas>1 counterfactual exists in the archived evidence because the lab had no multi-replica service; recorded as unavailable, not as refutation"
+    }
+  ],
+  "hypothesis_ids": [
+    "RCA-WS-sock-shop-front-end-podchaos-pod-kill-01"
+  ],
+  "next_actions": [
+    {
+      "status": "planned",
+      "selected": {
+        "action_id": "A-SS-SINGLETON-CONFIG-001",
+        "kind": "config_lookup",
+        "target_scope": "front-end deployment manifest",
+        "hypotheses_separated": 1,
+        "evidence_gain": 2,
+        "cost": 0,
+        "risk": 0,
+        "environment_uncertainty": 0,
+        "preconditions": [
+          "frozen_manifest"
+        ],
+        "cleanup": [
+          "none"
+        ],
+        "output_schema": "manifest_facts",
+        "stop_conditions": [
+          "manifest replica facts already recorded"
+        ],
+        "score": {
+          "action_id": "A-SS-SINGLETON-CONFIG-001",
+          "information_gain": 3,
+          "total_cost": 0,
+          "priority": 3,
+          "errors": []
+        }
+      },
+      "rejected": [
+        {
+          "action_id": "A-SS-SINGLETON-COUNTERFACTUAL-001",
+          "errors": [],
+          "missing_preconditions": [
+            "runner_allows_replica_scaling"
+          ]
+        }
+      ],
+      "selection_reason": "highest priority (information gain minus cost, risk and environment uncertainty) with read-only kinds preferred on ties"
+    }
+  ],
+  "replicates": [],
+  "rca_audit": [
+    {
+      "allowed": true,
+      "next_status": "bounded",
+      "reason": "stable_boundary_with_supporting_evidence"
+    }
+  ],
+  "hypotheses": [
+    {
+      "hypothesis_id": "RCA-WS-sock-shop-front-end-podchaos-pod-kill-01",
+      "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill",
+      "scope": {
+        "services": [
+          "front-end deployment"
+        ],
+        "edge": "front-end deployment"
+      },
+      "unsupported_claims": [
+        "isolated_scale_to_two_counterfactual"
+      ],
+      "status": "bounded",
+      "confidence": 0.0,
+      "next_action": "A-SS-SINGLETON-CONFIG-001",
+      "claim": "the front-end workload is a singleton with no redundancy, so any pod kill produces a full-outage window",
+      "mechanism_class": "singleton_workload_no_redundancy",
+      "mechanism_level": "deployment",
+      "expected_observations": [
+        "manifest shows replicas=1 and no pod disruption budget",
+        "Ready drops to zero for the whole replacement window on kill",
+        "business requests fail during the same window"
+      ],
+      "falsifiers": [
+        "a second ready replica absorbs the kill with no outage",
+        "a pod disruption budget keeps capacity during the kill"
+      ],
+      "required_evidence": [
+        "static_manifest_replica_facts",
+        "ready_transition_runtime",
+        "business_impact_in_window"
+      ],
+      "evidence_for": [
+        "EV-SS-SINGLETON-MANIFEST-001",
+        "EV-SS-SINGLETON-READY-001"
+      ],
+      "evidence_against": []
+    }
+  ]
+}

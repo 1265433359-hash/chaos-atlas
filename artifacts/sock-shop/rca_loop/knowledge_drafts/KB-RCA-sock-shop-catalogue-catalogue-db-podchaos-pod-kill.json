@@ -1,0 +1,84 @@
+{
+  "schema_version": "chaosatlas-rca-knowledge-draft-v1",
+  "id": "KB-RCA-sock-shop-catalogue-catalogue-db-podchaos-pod-kill",
+  "version": 1,
+  "status": "provisional",
+  "evidence_state": {
+    "supports": 1,
+    "contradicts": 0,
+    "unavailable": 2,
+    "neutral": 0
+  },
+  "project": "sock-shop",
+  "project_commit": "sock-shop-fixture-commit",
+  "round_id": "pilot-r1",
+  "weakness_id": "WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill",
+  "case_family": "catalogue_db_podkill",
+  "weakness_status": "confirmed",
+  "rca_status": "bounded",
+  "knowledge_status": "provisional",
+  "mechanism_claim": "catalogue requests fail because the database connection itself is unavailable while catalogue-db is down",
+  "mechanism_level": "dependency",
+  "test_node": {
+    "family": "PodChaos",
+    "operation": "pod-kill",
+    "target_role": "catalogue-db deployment",
+    "source_ref": "artifacts/sock-shop/catalogue-db-reset.yaml"
+  },
+  "test_node_centered_graph": {
+    "edge": "catalogue-db deployment",
+    "scope": {
+      "services": [
+        "catalogue-db deployment"
+      ],
+      "edge": "catalogue-db deployment"
+    }
+  },
+  "four_layer_validation": {
+    "availability": false,
+    "contract": false,
+    "business_path": true,
+    "recovery": false
+  },
+  "applicability_conditions": [
+    "stateful dependency with a single instance",
+    "business path crossing the dependency boundary"
+  ],
+  "exclusion_conditions": [
+    "cross_project_transfer_requires_existing_feedback_protocol",
+    "must_not_be_promoted_to_timeout_mechanism_without_source_evidence"
+  ],
+  "counter_evidence": [],
+  "evidence_refs": [
+    {
+      "evidence_id": "EV-SS-CATDB-MANIFEST-001",
+      "kind": "manifest",
+      "polarity": "supports",
+      "source_ref": "artifacts/sock-shop/catalogue-db-reset.yaml"
+    },
+    {
+      "evidence_id": "EV-SS-CATDB-LOGS-001",
+      "kind": "runtime_log",
+      "polarity": "unavailable",
+      "source_ref": "artifacts/sock-shop/sock_availability_layer_verified.md"
+    },
+    {
+      "evidence_id": "EV-SS-CATDB-SOURCE-001",
+      "kind": "source_span",
+      "polarity": "unavailable",
+      "source_ref": "artifacts/sock-shop/sock_shop_verdicts.json"
+    }
+  ],
+  "regression_recipe": {
+    "oracle": "catalogue business path",
+    "selected_next_action": "A-SS-CATDB-CONFIG-001"
+  },
+  "next_evidence": [
+    "connection_failure_to_request_error_link",
+    "discriminating_replay",
+    "scoped_catalogue_logs",
+    "source_or_config_mapping"
+  ],
+  "regression_intents": [],
+  "stop_rule": "stop after two valid reproductions or one clean falsification"
+}

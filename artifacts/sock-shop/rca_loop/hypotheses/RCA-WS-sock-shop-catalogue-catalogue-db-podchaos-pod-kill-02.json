@@ -1,0 +1,34 @@
+{
+  "hypothesis_id": "RCA-WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill-02",
+  "weakness_id": "WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill",
+  "scope": {
+    "services": [
+      "catalogue-db deployment"
+    ],
+    "edge": "catalogue-db deployment"
+  },
+  "unsupported_claims": [
+    "source_or_config_mapping",
+    "discriminating_replay"
+  ],
+  "status": "pending",
+  "confidence": 0.0,
+  "next_action": "A-SS-CATDB-CONFIG-001",
+  "claim": "catalogue fails because it propagates database errors into its own error responses without an isolating fallback",
+  "mechanism_class": "catalogue_error_propagation",
+  "mechanism_level": "service_internal",
+  "expected_observations": [
+    "catalogue returns explicit error responses tied to downstream database failures",
+    "source or config shows no fallback or circuit breaker for the database call"
+  ],
+  "falsifiers": [
+    "catalogue returns a fallback contract while the database is down",
+    "errors only appear after an internal timeout unrelated to database state"
+  ],
+  "required_evidence": [
+    "source_or_config_mapping",
+    "discriminating_replay"
+  ],
+  "evidence_for": [],
+  "evidence_against": []
+}

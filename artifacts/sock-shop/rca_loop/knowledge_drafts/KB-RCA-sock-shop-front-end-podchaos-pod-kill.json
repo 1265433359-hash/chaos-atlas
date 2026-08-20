@@ -1,0 +1,81 @@
+{
+  "schema_version": "chaosatlas-rca-knowledge-draft-v1",
+  "id": "KB-RCA-sock-shop-front-end-podchaos-pod-kill",
+  "version": 1,
+  "status": "provisional",
+  "evidence_state": {
+    "supports": 2,
+    "contradicts": 0,
+    "unavailable": 1,
+    "neutral": 0
+  },
+  "project": "sock-shop",
+  "project_commit": "sock-shop-fixture-commit",
+  "round_id": "pilot-r1",
+  "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill",
+  "case_family": "single_replica_podkill",
+  "weakness_status": "confirmed",
+  "rca_status": "bounded",
+  "knowledge_status": "provisional",
+  "mechanism_claim": "the front-end workload is a singleton with no redundancy, so any pod kill produces a full-outage window",
+  "mechanism_level": "deployment",
+  "test_node": {
+    "family": "PodChaos",
+    "operation": "pod-kill",
+    "target_role": "front-end deployment",
+    "source_ref": "artifacts/sock-shop/avail_frontend_kill.json"
+  },
+  "test_node_centered_graph": {
+    "edge": "front-end deployment",
+    "scope": {
+      "services": [
+        "front-end deployment"
+      ],
+      "edge": "front-end deployment"
+    }
+  },
+  "four_layer_validation": {
+    "availability": true,
+    "contract": false,
+    "business_path": true,
+    "recovery": false
+  },
+  "applicability_conditions": [
+    "single-replica deployment without pod disruption budget",
+    "kill or cpu fault families"
+  ],
+  "exclusion_conditions": [
+    "cross_project_transfer_requires_existing_feedback_protocol",
+    "must_not_be_promoted_to_timeout_mechanism_without_source_evidence"
+  ],
+  "counter_evidence": [],
+  "evidence_refs": [
+    {
+      "evidence_id": "EV-SS-SINGLETON-MANIFEST-001",
+      "kind": "manifest",
+      "polarity": "supports",
+      "source_ref": "artifacts/sock-shop/sock-shop-lab-manifest.yaml"
+    },
+    {
+      "evidence_id": "EV-SS-SINGLETON-READY-001",
+      "kind": "runtime_log",
+      "polarity": "supports",
+      "source_ref": "artifacts/sock-shop/avail_frontend_kill.json"
+    },
+    {
+      "evidence_id": "EV-SS-SINGLETON-COUNTERFACTUAL-001",
+      "kind": "counterfactual",
+      "polarity": "unavailable",
+      "source_ref": "artifacts/sock-shop/sock_availability_layer_verified.md"
+    }
+  ],
+  "regression_recipe": {
+    "oracle": "deployment availability (Ready replicas)",
+    "selected_next_action": "A-SS-SINGLETON-CONFIG-001"
+  },
+  "next_evidence": [
+    "isolated_scale_to_two_counterfactual"
+  ],
+  "regression_intents": [],
+  "stop_rule": "stop after two valid reproductions or one clean falsification"
+}

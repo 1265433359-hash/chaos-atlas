@@ -16,6 +16,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 from tools.rca_loop import (
     RCA_STATES,
     _contains_sensitive_value,

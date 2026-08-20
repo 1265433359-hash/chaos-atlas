@@ -1,0 +1,192 @@
+{
+  "schema_version": "chaosatlas-weakness-case-v1",
+  "case_family": "catalogue_db_podkill",
+  "weakness_id": "WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill",
+  "project_id": "sock-shop",
+  "project_commit": "sock-shop-fixture-commit",
+  "round_id": "pilot-r1",
+  "test_node": {
+    "family": "PodChaos",
+    "operation": "pod-kill",
+    "target_role": "catalogue-db deployment",
+    "source_ref": "artifacts/sock-shop/catalogue-db-reset.yaml"
+  },
+  "symptom": {
+    "oracle": "catalogue business path",
+    "baseline_contract": "catalogue requests served from the database",
+    "injected_contract": "database dependency removed while pod is down",
+    "observed_change": "business dependency on a single database instance is exposed during kill"
+  },
+  "weakness_status": "confirmed",
+  "rca_status": "bounded",
+  "knowledge_status": "provisional",
+  "evidence_refs": [
+    {
+      "evidence_id": "EV-SS-CATDB-MANIFEST-001",
+      "kind": "manifest",
+      "polarity": "supports",
+      "claim_scope": "catalogue-db dependency boundary",
+      "source_ref": "artifacts/sock-shop/catalogue-db-reset.yaml",
+      "collected_at": "2026-08-09T00:00:00Z",
+      "window": {},
+      "sha256": null,
+      "interpretation": "catalogue-db is a single-replica deployment that the catalogue service depends on; killing it removes the entire database dependency at once"
+    },
+    {
+      "evidence_id": "EV-SS-CATDB-LOGS-001",
+      "kind": "runtime_log",
+      "polarity": "unavailable",
+      "claim_scope": "catalogue-db dependency boundary",
+      "source_ref": "artifacts/sock-shop/sock_availability_layer_verified.md",
+      "collected_at": "2026-08-09T00:00:00Z",
+      "window": {},
+      "sha256": null,
+      "interpretation": "no scoped catalogue pod log linking connection failures to request errors was captured during the catalogue-db disruption; recorded as unavailable"
+    },
+    {
+      "evidence_id": "EV-SS-CATDB-SOURCE-001",
+      "kind": "source_span",
+      "polarity": "unavailable",
+      "claim_scope": "catalogue-db dependency boundary",
+      "source_ref": "artifacts/sock-shop/sock_shop_verdicts.json",
+      "collected_at": "2026-08-09T00:00:00Z",
+      "window": {},
+      "sha256": null,
+      "interpretation": "no source-level mapping of catalogue database connection handling was archived for this boundary; recorded as unavailable"
+    }
+  ],
+  "hypothesis_ids": [
+    "RCA-WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill-01",
+    "RCA-WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill-02"
+  ],
+  "next_actions": [
+    {
+      "status": "planned",
+      "selected": {
+        "action_id": "A-SS-CATDB-CONFIG-001",
+        "kind": "config_lookup",
+        "target_scope": "catalogue and catalogue-db deployment configuration",
+        "hypotheses_separated": 1,
+        "evidence_gain": 2,
+        "cost": 0,
+        "risk": 0,
+        "environment_uncertainty": 0,
+        "preconditions": [
+          "frozen_manifest"
+        ],
+        "cleanup": [
+          "none"
+        ],
+        "output_schema": "manifest_facts",
+        "stop_conditions": [
+          "configuration facts already recorded"
+        ],
+        "score": {
+          "action_id": "A-SS-CATDB-CONFIG-001",
+          "information_gain": 3,
+          "total_cost": 0,
+          "priority": 3,
+          "errors": []
+        }
+      },
+      "rejected": [
+        {
+          "action_id": "A-SS-CATDB-LOGS-001",
+          "errors": [],
+          "missing_preconditions": [
+            "captured_catalogue_logs"
+          ]
+        },
+        {
+          "action_id": "A-SS-CATDB-REPLAY-001",
+          "errors": [],
+          "missing_preconditions": [
+            "business_oracle_available",
+            "runner_allows_bounded_kill"
+          ]
+        }
+      ],
+      "selection_reason": "highest priority (information gain minus cost, risk and environment uncertainty) with read-only kinds preferred on ties"
+    }
+  ],
+  "replicates": [],
+  "rca_audit": [
+    {
+      "allowed": true,
+      "next_status": "bounded",
+      "reason": "stable_boundary_with_supporting_evidence"
+    }
+  ],
+  "hypotheses": [
+    {
+      "hypothesis_id": "RCA-WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill-01",
+      "weakness_id": "WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill",
+      "scope": {
+        "services": [
+          "catalogue-db deployment"
+        ],
+        "edge": "catalogue-db deployment"
+      },
+      "unsupported_claims": [
+        "scoped_catalogue_logs",
+        "connection_failure_to_request_error_link"
+      ],
+      "status": "pending",
+      "confidence": 0.0,
+      "next_action": "A-SS-CATDB-CONFIG-001",
+      "claim": "catalogue requests fail because the database connection itself is unavailable while catalogue-db is down",
+      "mechanism_class": "database_connection_unavailable",
+      "mechanism_level": "dependency",
+      "expected_observations": [
+        "catalogue logs show connection or pool failures in the kill window",
+        "request errors start and end with the database availability window"
+      ],
+      "falsifiers": [
+        "catalogue keeps serving cached data during the kill window",
+        "request errors persist after the database is reachable again"
+      ],
+      "required_evidence": [
+        "scoped_catalogue_logs",
+        "connection_failure_to_request_error_link"
+      ],
+      "evidence_for": [
+        "EV-SS-CATDB-MANIFEST-001"
+      ],
+      "evidence_against": []
+    },
+    {
+      "hypothesis_id": "RCA-WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill-02",
+      "weakness_id": "WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill",
+      "scope": {
+        "services": [
+          "catalogue-db deployment"
+        ],
+        "edge": "catalogue-db deployment"
+      },
+      "unsupported_claims": [
+        "source_or_config_mapping",
+        "discriminating_replay"
+      ],
+      "status": "pending",
+      "confidence": 0.0,
+      "next_action": "A-SS-CATDB-CONFIG-001",
+      "claim": "catalogue fails because it propagates database errors into its own error responses without an isolating fallback",
+      "mechanism_class": "catalogue_error_propagation",
+      "mechanism_level": "service_internal",
+      "expected_observations": [
+        "catalogue returns explicit error responses tied to downstream database failures",
+        "source or config shows no fallback or circuit breaker for the database call"
+      ],
+      "falsifiers": [
+        "catalogue returns a fallback contract while the database is down",
+        "errors only appear after an internal timeout unrelated to database state"
+      ],
+      "required_evidence": [
+        "source_or_config_mapping",
+        "discriminating_replay"
+      ],
+      "evidence_for": [],
+      "evidence_against": []
+    }
+  ]
+}
