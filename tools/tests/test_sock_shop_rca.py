@@ -166,3 +166,28 @@ def test_actions_for_case_are_schema_complete(tmp_path: Path) -> None:
             ):
                 assert field in action, field
             assert action["stop_conditions"]
+
+
+# ---------------------------------------------------------------------------
+# Task 8: closed-loop end-to-end over the real pilot artifacts
+# ---------------------------------------------------------------------------
+
+
+def test_pilot_round_trip_is_stable_with_validation(tmp_path: Path) -> None:
+    from tools.compile_rca_regression import compile_regression_intents, project_knowledge_draft
+    from tools.validate_rca_loop import validate_artifact
+
+    output = _build(tmp_path)
+    root = tmp_path / "rca_loop"
+    report = validate_artifact(root)
+    assert report["valid"] is True, report["errors"]
+    drafts = [
+        project_knowledge_draft(case, case["hypotheses"], case["next_actions"])
+        for case in output["cases"]
+    ]
+    compiled = compile_regression_intents(drafts, snapshot={"cards": drafts})
+    assert compiled["snapshot_sha256"] == sha256_json({"cards": drafts})
+    assert all(intent["kind"] == "discriminate" for intent in compiled["intents"])
+    # every provisional draft plans follow-up evidence rather than reuse
+    assert all(draft["next_evidence"] for draft in drafts)
+    assert all(draft["knowledge_status"] == "provisional" for draft in drafts)

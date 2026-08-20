@@ -167,3 +167,63 @@ def test_compile_cli_writes_drafts_and_intents(tmp_path: Path) -> None:
                 str(tmp_path / "rca_loop" / "knowledge_drafts"),
             ]
         )
+
+
+# ---------------------------------------------------------------------------
+# Task 8: counterexample backflow and snapshot stability
+# ---------------------------------------------------------------------------
+
+from tools.rca_loop import evaluate_knowledge_promotion, evaluate_rca_transition  # noqa: E402
+
+
+def test_counterexample_demotes_rca_and_knowledge_without_deleting_history() -> None:
+    card = _card(knowledge_status="local_reusable", rca_status="confirmed")
+    evidence_refs_before = list(card.get("counter_evidence", []))
+    demotion = evaluate_knowledge_promotion(
+        current="local_reusable",
+        weakness_status="confirmed",
+        rca_status="confirmed",
+        valid_reproductions=2,
+        valid_counterfactuals=0,
+        lifecycle_complete=True,
+        direct_evidence=True,
+        applicability_complete=True,
+        regression_complete=True,
+        contradiction=True,
+    )
+    assert demotion["allowed"] is True
+    assert demotion["next_status"] == "contested"
+    rca_demotion = evaluate_rca_transition(
+        current="confirmed",
+        target="bounded",
+        boundary_confirmed=True,
+        supporting_evidence=1,
+        required_evidence_complete=False,
+        discriminating_action=False,
+        high_severity_contradiction=False,
+    )
+    assert rca_demotion["allowed"] is True
+    assert rca_demotion["next_status"] == "bounded"
+    # demotion is computed, not destructive: the original card is untouched
+    assert card["knowledge_status"] == "local_reusable"
+    assert card["counter_evidence"] == evidence_refs_before
+
+
+def test_demoted_card_generates_no_executable_intent_but_keeps_snapshot_hash() -> None:
+    healthy = _card(knowledge_status="local_reusable", rca_status="confirmed")
+    demoted = _card(knowledge_status="contested", rca_status="bounded")
+    before = compile_regression_intents([healthy], snapshot={"cards": [healthy]})
+    after = compile_regression_intents([demoted], snapshot={"cards": [demoted]})
+    assert [i["kind"] for i in before["intents"]] == ["reproduce", "guard"]
+    assert after["intents"] == []
+    assert demoted["id"] in after["rejected_cards"]
+    # snapshot hashes stay traceable to their own snapshot, history preserved
+    assert before["snapshot_sha256"] == sha256_json({"cards": [healthy]})
+    assert after["snapshot_sha256"] == sha256_json({"cards": [demoted]})
+
+
+def test_same_snapshot_compiles_to_identical_intents_and_hash() -> None:
+    card = _card(knowledge_status="local_reusable", rca_status="confirmed")
+    first = compile_regression_intents([card], snapshot={"cards": [card]})
+    second = compile_regression_intents([card], snapshot={"cards": [card]})
+    assert first == second

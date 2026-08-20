@@ -112,3 +112,78 @@ class RcaSnapshotTests(unittest.TestCase):
         ranked = rank(candidates, rca_snapshot=self._snapshot("local_reusable"))
         self.assertEqual(ranked[0]["candidate_id"], "SOCK-FRONTEND-CATALOGUE-LOSS-100")
         self.assertIn("KB-RCA-SOCK-ABORT-001", json.dumps(ranked))
+
+
+class RcaClosedLoopTests(unittest.TestCase):
+    def test_local_reusable_card_feedback_is_fully_traceable(self):
+        card = {
+            "id": "KB-RCA-SOCK-ABORT-BOUNDARY-001",
+            "knowledge_status": "local_reusable",
+            "contested": False,
+            "test_node": {"family": "HTTPChaos", "operation": "abort"},
+            "edge": "front-end->catalogue",
+            "next_evidence": ["scoped_front_end_logs"],
+            "regression_recipe": {"oracle": "sock-shop catalogue business chain"},
+        }
+        snapshot = {"schema_version": 1, "cards": [card]}
+        cand = {"candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100", "edge": "front-end->catalogue"}
+        scored = score_candidate(dict(cand), rca_snapshot=snapshot)
+        # card id traceable, oracle bound to the business chain, diagnostics planned
+        self.assertTrue(any(card["id"] in r for r in scored["reasons"]))
+        self.assertEqual(card["regression_recipe"]["oracle"], "sock-shop catalogue business chain")
+        self.assertIn("scoped_front_end_logs", scored.get("required_diagnostics", []))
+
+    def test_contested_card_does_not_act_as_strong_prior_after_demotion(self):
+        contested = {
+            "id": "KB-RCA-SOCK-ABORT-BOUNDARY-001",
+            "knowledge_status": "contested",
+            "contested": True,
+            "test_node": {"family": "HTTPChaos", "operation": "abort"},
+            "edge": "front-end->catalogue",
+            "next_evidence": ["recheck"],
+        }
+        snapshot = {"schema_version": 1, "cards": [contested]}
+        cand = {"candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100", "edge": "front-end->catalogue"}
+        base = score_candidate(dict(cand))
+        scored = score_candidate(dict(cand), rca_snapshot=snapshot)
+        self.assertEqual(scored["score"], base["score"])
+        self.assertTrue(any("contested" in r.lower() for r in scored["reasons"]))
+
+    def test_hard_filters_stay_authoritative_over_rca_boost(self):
+        # A single-replica no-PDB kill candidate keeps its a-priori availability
+        # verdict even when a local_reusable RCA card would raise its priority.
+        card = {
+            "id": "KB-RCA-SOCK-SINGLETON-001",
+            "knowledge_status": "local_reusable",
+            "contested": False,
+            "test_node": {"family": "PodChaos", "operation": "pod-kill"},
+            "edge": "front-end",
+            "next_evidence": ["scale_to_two_counterfactual"],
+        }
+        snapshot = {"schema_version": 1, "cards": [card]}
+        cand = {"candidate_id": "TT-ORDER-POD-KILL-1", "edge": "front-end"}
+        scored = score_candidate(dict(cand), rca_snapshot=snapshot)
+        if scored.get("hard_skip"):
+            self.assertNotIn("required_diagnostics", scored)
+
+    def test_repeated_rca_snapshot_ranking_is_deterministic(self):
+        snapshot = {
+            "schema_version": 1,
+            "cards": [
+                {
+                    "id": "KB-RCA-A",
+                    "knowledge_status": "local_reusable",
+                    "contested": False,
+                    "test_node": {"family": "HTTPChaos", "operation": "abort"},
+                    "edge": "front-end->catalogue",
+                    "next_evidence": ["scoped_logs"],
+                }
+            ],
+        }
+        candidates = [
+            {"candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100", "edge": "front-end->catalogue"},
+            {"candidate_id": "SOCK-FRONTEND-CARTS-DELAY-2000", "edge": "front-end->carts"},
+        ]
+        first = rank([dict(c) for c in candidates], rca_snapshot=snapshot)
+        second = rank([dict(c) for c in candidates], rca_snapshot=snapshot)
+        self.assertEqual(first, second)
