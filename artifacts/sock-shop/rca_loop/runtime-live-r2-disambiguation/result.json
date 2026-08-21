@@ -1,0 +1,397 @@
+{
+  "cleanup_error": null,
+  "injection_status": {
+    "apiVersion": "chaos-mesh.org/v1alpha1",
+    "kind": "PodChaos",
+    "metadata": {
+      "annotations": {
+        "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"chaos-mesh.org/v1alpha1\",\"kind\":\"PodChaos\",\"metadata\":{\"annotations\":{},\"labels\":{\"chaosatlas.dev/owner\":\"chaosatlas\",\"chaosatlas.dev/pilot\":\"sock-shop-front-end-podkill-r2\"},\"name\":\"chaosatlas-sock-shop-front-end-podkill-r2\",\"namespace\":\"sock-shop-lab\"},\"spec\":{\"action\":\"pod-kill\",\"mode\":\"one\",\"selector\":{\"labelSelectors\":{\"name\":\"front-end\"},\"namespaces\":[\"sock-shop-lab\"]}}}\n"
+      },
+      "creationTimestamp": "2026-08-20T15:52:58Z",
+      "finalizers": [
+        "chaos-mesh/records"
+      ],
+      "generation": 5,
+      "labels": {
+        "chaosatlas.dev/owner": "chaosatlas",
+        "chaosatlas.dev/pilot": "sock-shop-front-end-podkill-r2"
+      },
+      "name": "chaosatlas-sock-shop-front-end-podkill-r2",
+      "namespace": "sock-shop-lab",
+      "resourceVersion": "3014218",
+      "uid": "4f663e98-5755-4a1a-8edb-8e0f44e65ff5"
+    },
+    "spec": {
+      "action": "pod-kill",
+      "mode": "one",
+      "selector": {
+        "labelSelectors": {
+          "name": "front-end"
+        },
+        "namespaces": [
+          "sock-shop-lab"
+        ]
+      }
+    },
+    "status": {
+      "conditions": [
+        {
+          "status": "True",
+          "type": "AllInjected"
+        },
+        {
+          "status": "False",
+          "type": "AllRecovered"
+        },
+        {
+          "status": "False",
+          "type": "Paused"
+        },
+        {
+          "status": "True",
+          "type": "Selected"
+        }
+      ],
+      "experiment": {
+        "containerRecords": [
+          {
+            "events": [
+              {
+                "operation": "Apply",
+                "timestamp": "2026-08-20T15:52:58Z",
+                "type": "Succeeded"
+              }
+            ],
+            "id": "sock-shop-lab/front-end-87ff7b849-mdwz4",
+            "injectedCount": 1,
+            "phase": "Injected",
+            "recoveredCount": 0,
+            "selectorKey": "."
+          }
+        ],
+        "desiredPhase": "Run"
+      }
+    }
+  },
+  "mutation_name": "chaosatlas-sock-shop-front-end-podkill-r2",
+  "namespace": "sock-shop-lab",
+  "residual_podchaos": [],
+  "round_id": "pilot-r3-disambiguation-r2",
+  "sample_count": 19,
+  "schema_version": "chaosatlas-sock-shop-disambiguation-runtime-v1",
+  "summary": {
+    "classification": "observation_inconclusive",
+    "deterministic": false,
+    "per_sample": [
+      {
+        "business_success": true,
+        "classification": "observation_inconclusive",
+        "deterministic": false,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": true,
+        "old_pod_serving": [],
+        "reason": "HTTP 200 lacks a Ready replacement Pod present in Service endpoints",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": true,
+        "classification": "observation_inconclusive",
+        "deterministic": false,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": true,
+        "old_pod_serving": [],
+        "reason": "HTTP 200 lacks a Ready replacement Pod present in Service endpoints",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": true,
+        "classification": "observation_inconclusive",
+        "deterministic": false,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": true,
+        "old_pod_serving": [],
+        "reason": "HTTP 200 lacks a Ready replacement Pod present in Service endpoints",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [],
+        "endpoint_not_ready_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": false
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_not_ready_addresses": [],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": true
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_not_ready_addresses": [],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": true
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_not_ready_addresses": [],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": true
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_addresses": [
+          "10.244.2.228"
+        ],
+        "endpoint_not_ready_addresses": [],
+        "endpoint_observed": true,
+        "observation_phase": "during_injection",
+        "observation_window_artifact": false,
+        "old_pod_serving": [],
+        "reason": "business path was unavailable at the platform boundary",
+        "replacement_ready_in_endpoints": true
+      }
+    ],
+    "reason": "synchronized samples do not consistently identify a serving Pod",
+    "sample_classifications": [
+      "observation_inconclusive",
+      "observation_inconclusive",
+      "observation_inconclusive",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked"
+    ],
+    "sample_count": 19
+  },
+  "target": "deployment:front-end",
+  "window": {
+    "end": "2026-08-20T15:53:41.042165Z",
+    "start": "2026-08-20T15:52:58.637130Z"
+  }
+}

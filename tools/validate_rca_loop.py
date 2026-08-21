@@ -20,6 +20,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from tools.rca_loop import (
+    CLAIM_LEVELS,
     RCA_STATES,
     _contains_sensitive_value,
     _path_errors,
@@ -83,7 +84,16 @@ def _source_ref_unresolved(evidence: dict[str, Any], anchors: list[Path]) -> boo
     ref = str(evidence.get("source_ref") or "")
     if not ref:
         return False
-    return not any((anchor / ref).is_file() for anchor in anchors)
+    for anchor in anchors:
+        anchor_root = anchor.resolve()
+        candidate = (anchor_root / ref).resolve()
+        try:
+            candidate.relative_to(anchor_root)
+        except ValueError:
+            continue
+        if candidate.is_file():
+            return False
+    return True
 
 
 def validate_case(case: dict[str, Any], root: Path) -> list[str]:
@@ -101,9 +111,28 @@ def validate_case(case: dict[str, Any], root: Path) -> list[str]:
         errors.append(f"case {case.get('weakness_id')}: invalid knowledge_status {case.get('knowledge_status')!r}")
 
     anchors = _resolve_anchors(root)
+    test_node = case.get("test_node")
+    if isinstance(test_node, dict) and test_node.get("source_ref"):
+        node_ref = test_node.get("source_ref")
+        node_path_errors = _path_errors(node_ref)
+        errors.extend(
+            f"case {case.get('weakness_id')}: test_node.source_ref: {detail}"
+            for detail in node_path_errors
+        )
+        if not node_path_errors and _source_ref_unresolved(
+            {"source_ref": node_ref},
+            anchors,
+        ):
+            errors.append(
+                f"case {case.get('weakness_id')}: unresolved test_node.source_ref {node_ref}"
+            )
     supports = 0
     for evidence in case.get("evidence_refs", []):
         errors.extend(_source_ref_errors(evidence))
+        if evidence.get("kind") == "dry_run" and evidence.get("polarity") == "supports":
+            errors.append(
+                f"evidence {evidence.get('evidence_id')}: dry_run evidence cannot support a claim"
+            )
         if evidence.get("polarity") == "supports":
             supports += 1
         if evidence.get("polarity") != "unavailable" and _source_ref_unresolved(evidence, anchors):
@@ -128,6 +157,22 @@ def validate_case(case: dict[str, Any], root: Path) -> list[str]:
                 f"({transition['reason']}; supports={supports})"
             )
 
+    if case.get("rca_status") == "confirmed":
+        hypotheses = case.get("hypotheses") or []
+        if not hypotheses:
+            errors.append(f"case {case.get('weakness_id')}: confirmed RCA requires hypotheses")
+        for hypothesis in hypotheses:
+            if hypothesis.get("status") != "confirmed":
+                errors.append(
+                    f"case {case.get('weakness_id')}: confirmed RCA requires every hypothesis "
+                    "to be confirmed or explicitly rejected"
+                )
+            if hypothesis.get("unsupported_claims"):
+                errors.append(
+                    f"case {case.get('weakness_id')}: confirmed hypothesis "
+                    f"{hypothesis.get('hypothesis_id')} has incomplete evidence"
+                )
+
     if _contains_sensitive_value(json.dumps(case, ensure_ascii=True)):
         errors.append(f"case {case.get('weakness_id')}: sensitive values detected")
     return errors
@@ -145,6 +190,8 @@ def validate_hypothesis(hypothesis: dict[str, Any], case: dict[str, Any]) -> lis
         errors.append(f"hypothesis {hid}: weakness_id does not match case {case.get('weakness_id')}")
     if hypothesis.get("status") not in RCA_STATES:
         errors.append(f"hypothesis {hid}: invalid status {hypothesis.get('status')!r}")
+    if "claim_level" in hypothesis and hypothesis.get("claim_level") not in CLAIM_LEVELS:
+        errors.append(f"hypothesis {hid}: invalid claim_level {hypothesis.get('claim_level')!r}")
     for list_field in ("expected_observations", "falsifiers", "required_evidence"):
         if not hypothesis.get(list_field):
             errors.append(f"hypothesis {hid}: {list_field} must not be empty")
@@ -193,15 +240,28 @@ def validate_action_plan(plan: dict[str, Any], cases: list[dict[str, Any]]) -> l
             continue
         seen.add(str(weak_id))
         sub_plan = entry.get("plan", {})
-        actions = actions_for_case(case, hypotheses_for_case(case))
-        recomputed = plan_next_action(
-            actions,
-            available_preconditions={
+        completed_action_ids = {
+            str(item.get("action_id"))
+            for item in case.get("action_history", [])
+            if item.get("action_id") and item.get("status") in {"dry_run", "executed"}
+        }
+        actions = [
+            action
+            for action in actions_for_case(case, hypotheses_for_case(case))
+            if str(action.get("action_id")) not in completed_action_ids
+        ]
+        available_preconditions = set(
+            plan.get("available_preconditions")
+            or {
                 "frozen_verdicts",
                 "frozen_manifest",
                 "captured_ready_samples",
                 "captured_window",
-            },
+            }
+        )
+        recomputed = plan_next_action(
+            actions,
+            available_preconditions=available_preconditions,
         )
         selected = sub_plan.get("selected") or {}
         if sub_plan.get("status") == "planned":
@@ -220,8 +280,8 @@ def validate_action_plan(plan: dict[str, Any], cases: list[dict[str, Any]]) -> l
     return errors
 
 
-def validate_artifact(root: Path) -> dict[str, Any]:
-    """Validate the whole RCA artifact tree and write validation_report.json."""
+def validate_artifact(root: Path, *, write_report: bool = False) -> dict[str, Any]:
+    """Validate the whole RCA artifact tree without mutating it by default."""
 
     root = Path(root)
     errors: list[str] = []
@@ -259,9 +319,10 @@ def validate_artifact(root: Path) -> dict[str, Any]:
         warnings.append("manifest must keep knowledge_base_updated=false for provisional pilots")
 
     report = {"valid": not errors, "errors": errors, "warnings": warnings}
-    (root / "validation_report.json").write_text(
-        json.dumps(report, indent=2, ensure_ascii=True) + "\n", encoding="utf-8"
-    )
+    if write_report:
+        (root / "validation_report.json").write_text(
+            json.dumps(report, indent=2, ensure_ascii=True) + "\n", encoding="utf-8"
+        )
     return report
 
 
@@ -269,7 +330,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
     args = parser.parse_args(argv)
-    report = validate_artifact(args.root)
+    report = validate_artifact(args.root, write_report=True)
     for error in report["errors"]:
         print(f"ERROR: {error}", file=sys.stderr)
     for warning in report["warnings"]:

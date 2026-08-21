@@ -1,0 +1,40 @@
+{
+    "apiVersion": "v1",
+    "kind": "Endpoints",
+    "metadata": {
+        "annotations": {
+            "endpoints.kubernetes.io/last-change-trigger-time": "2026-08-20T14:55:08Z"
+        },
+        "creationTimestamp": "2026-08-20T14:48:27Z",
+        "labels": {
+            "endpoints.kubernetes.io/managed-by": "endpoint-controller",
+            "name": "front-end"
+        },
+        "name": "front-end",
+        "namespace": "sock-shop-lab",
+        "resourceVersion": "3009596",
+        "uid": "3df44f0d-dc6a-44ee-8aae-55c3183a16c8"
+    },
+    "subsets": [
+        {
+            "addresses": [
+                {
+                    "ip": "10.244.2.227",
+                    "nodeName": "minikube",
+                    "targetRef": {
+                        "kind": "Pod",
+                        "name": "front-end-87ff7b849-mdwz4",
+                        "namespace": "sock-shop-lab",
+                        "uid": "d471ef93-58b4-45af-8079-28cf7eabbaae"
+                    }
+                }
+            ],
+            "ports": [
+                {
+                    "port": 8079,
+                    "protocol": "TCP"
+                }
+            ]
+        }
+    ]
+}

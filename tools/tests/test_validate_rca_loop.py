@@ -34,7 +34,7 @@ def _load_case(root: Path) -> dict:
 
 
 def test_valid_pilot_artifact_passes(pilot_root: Path) -> None:
-    report = validate_artifact(pilot_root)
+    report = validate_artifact(pilot_root, write_report=True)
     assert report["valid"] is True, report["errors"]
     assert report["errors"] == []
     assert (pilot_root / "validation_report.json").is_file()
@@ -54,6 +54,19 @@ def test_case_with_absolute_source_ref_fails(pilot_root: Path) -> None:
     case["evidence_refs"][0]["source_ref"] = "C:/secrets/catalogue.log"
     errors = validate_case(case, pilot_root)
     assert any("source_ref" in e for e in errors)
+
+
+def test_test_node_with_absolute_source_ref_fails(pilot_root: Path) -> None:
+    case = _load_case(pilot_root)
+    case["test_node"]["source_ref"] = "C:/secrets/manifest.yaml"
+    errors = validate_case(case, pilot_root)
+    assert any("test_node" in e and "source_ref" in e for e in errors)
+
+
+def test_validate_artifact_is_pure_by_default(pilot_root: Path) -> None:
+    report = validate_artifact(pilot_root)
+    assert report["valid"] is True
+    assert not (pilot_root / "validation_report.json").exists()
 
 
 def test_case_with_parent_escape_source_ref_fails(pilot_root: Path) -> None:
@@ -84,6 +97,19 @@ def test_unavailable_evidence_must_not_support_bounded(pilot_root: Path) -> None
         evidence["polarity"] = "unavailable"
     errors = validate_case(case, pilot_root)
     assert any("bounded" in e for e in errors)
+
+
+def test_confirmed_case_requires_complete_hypothesis_evidence(pilot_root: Path) -> None:
+    case = _load_case(pilot_root)
+    case["rca_status"] = "confirmed"
+    for hypothesis in case.get("hypotheses", []):
+        hypothesis["status"] = "confirmed"
+        hypothesis["evidence_for"] = []
+        hypothesis["unsupported_claims"] = list(hypothesis.get("required_evidence", []))
+
+    errors = validate_case(case, pilot_root)
+
+    assert any("confirmed" in error and "evidence" in error for error in errors)
 
 
 def test_hypothesis_weakness_id_mismatch_fails(pilot_root: Path) -> None:

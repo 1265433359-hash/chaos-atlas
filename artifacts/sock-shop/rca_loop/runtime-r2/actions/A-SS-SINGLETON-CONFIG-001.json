@@ -1,0 +1,42 @@
+{
+  "action_id": "A-SS-SINGLETON-CONFIG-001",
+  "action_ref": "actions/A-SS-SINGLETON-CONFIG-001.json",
+  "applicability_complete": false,
+  "cleanup": [
+    "none"
+  ],
+  "collected_at": "2026-08-20T09:24:01.525181Z",
+  "direct_evidence": false,
+  "discriminating_action": false,
+  "errors": [],
+  "evidence": [
+    {
+      "claim_scope": "front-end deployment manifest",
+      "collected_at": "2026-08-20T09:24:01.525181Z",
+      "evidence_id": "EV-A-SS-SINGLETON-CONFIG-001-UNAVAILABLE",
+      "interpretation": "dry-run validated the action contract but did not execute the action; runtime evidence is unavailable",
+      "kind": "dry_run",
+      "polarity": "unavailable",
+      "satisfies": [],
+      "sha256": null,
+      "source_ref": "actions/A-SS-SINGLETON-CONFIG-001.json",
+      "window": {}
+    }
+  ],
+  "high_severity_contradiction": false,
+  "lifecycle_complete": false,
+  "missing_preconditions": [],
+  "output_schema": "manifest_facts",
+  "preconditions": [
+    "frozen_manifest"
+  ],
+  "reason": "contract_checked_without_live_execution",
+  "regression_complete": false,
+  "round_id": "pilot-r2",
+  "schema_version": "chaosatlas-rca-runtime-loop-v1",
+  "status": "dry_run",
+  "target_scope": "front-end deployment manifest",
+  "valid_counterfactuals": 0,
+  "valid_reproductions": 0,
+  "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill"
+}

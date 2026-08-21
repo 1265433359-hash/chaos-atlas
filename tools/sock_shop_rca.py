@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -384,6 +385,13 @@ def hypotheses_for_case(case: dict[str, Any]) -> list[dict[str, Any]]:
                 ),
             },
         ]
+    elif str(family or "").startswith("native_"):
+        native_hypotheses = case.get("hypotheses")
+        if not isinstance(native_hypotheses, list) or not native_hypotheses:
+            raise ValueError(f"native case_family requires hypotheses: {family}")
+        templates = [dict(item) for item in native_hypotheses if isinstance(item, dict)]
+        if len(templates) != len(native_hypotheses):
+            raise ValueError(f"native case_family hypotheses must be objects: {family}")
     else:
         raise ValueError(f"unknown case_family: {family}")
 
@@ -411,6 +419,38 @@ def hypotheses_for_case(case: dict[str, Any]) -> list[dict[str, Any]]:
     return hypotheses
 
 
+def _with_execution_context(
+    case: dict[str, Any],
+    actions: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    snapshot = {
+        "project_id": case.get("project_id"),
+        "project_commit": case.get("project_commit"),
+        "weakness_id": case.get("weakness_id"),
+        "test_node": case.get("test_node"),
+        "symptom": case.get("symptom"),
+    }
+    snapshot_sha256 = sha256_json(snapshot)
+    baseline_contract = str((case.get("symptom") or {}).get("baseline_contract") or "")
+    enriched: list[dict[str, Any]] = []
+    for action in actions:
+        item = dict(action)
+        item.update(
+            {
+                "namespace": str(case.get("namespace") or "chaosatlas-sock-shop"),
+                "project_snapshot_sha256": snapshot_sha256,
+                "baseline_contract": baseline_contract,
+                "budget": {
+                    "max_seconds": 60 if item.get("kind") in {"business_replay", "isolated_counterfactual"} else 30,
+                    "max_retries": 0,
+                },
+                "cleanup_contract": list(item.get("cleanup") or []),
+            }
+        )
+        enriched.append(item)
+    return enriched
+
+
 def actions_for_case(
     case: dict[str, Any], hypotheses: list[dict[str, Any]]
 ) -> list[dict[str, Any]]:
@@ -418,11 +458,11 @@ def actions_for_case(
 
     family = case.get("case_family")
     if family == "single_replica_podkill":
-        return [
+        return _with_execution_context(case, [
             {
                 "action_id": "A-SS-SINGLETON-CONFIG-001",
                 "kind": "config_lookup",
-                "target_scope": "front-end deployment manifest",
+                "target_scope": "front-end deployment",
                 "hypotheses_separated": 1,
                 "evidence_gain": 2,
                 "cost": 0,
@@ -436,7 +476,7 @@ def actions_for_case(
             {
                 "action_id": "A-SS-SINGLETON-READY-001",
                 "kind": "log_lookup",
-                "target_scope": "captured Ready sampling window",
+                "target_scope": "front-end deployment",
                 "hypotheses_separated": 1,
                 "evidence_gain": 2,
                 "cost": 1,
@@ -450,7 +490,7 @@ def actions_for_case(
             {
                 "action_id": "A-SS-SINGLETON-COUNTERFACTUAL-001",
                 "kind": "isolated_counterfactual",
-                "target_scope": "scale front-end to two replicas then bounded pod-kill",
+                "target_scope": "front-end deployment",
                 "hypotheses_separated": 1,
                 "evidence_gain": 3,
                 "cost": 2,
@@ -464,13 +504,13 @@ def actions_for_case(
                     "abort after one bounded kill with full recovery",
                 ],
             },
-        ]
+        ])
     if family == "catalogue_db_podkill":
-        return [
+        return _with_execution_context(case, [
             {
                 "action_id": "A-SS-CATDB-CONFIG-001",
                 "kind": "config_lookup",
-                "target_scope": "catalogue and catalogue-db deployment configuration",
+                "target_scope": "catalogue-db deployment",
                 "hypotheses_separated": 1,
                 "evidence_gain": 2,
                 "cost": 0,
@@ -484,7 +524,7 @@ def actions_for_case(
             {
                 "action_id": "A-SS-CATDB-LOGS-001",
                 "kind": "log_lookup",
-                "target_scope": "catalogue pod logs during the catalogue-db kill window",
+                "target_scope": "catalogue-db deployment",
                 "hypotheses_separated": 2,
                 "evidence_gain": 3,
                 "cost": 1,
@@ -500,7 +540,7 @@ def actions_for_case(
             {
                 "action_id": "A-SS-CATDB-REPLAY-001",
                 "kind": "business_replay",
-                "target_scope": "catalogue business path during a bounded catalogue-db restart",
+                "target_scope": "catalogue-db deployment",
                 "hypotheses_separated": 2,
                 "evidence_gain": 3,
                 "cost": 2,
@@ -514,13 +554,13 @@ def actions_for_case(
                     "abort when the oracle is unavailable",
                 ],
             },
-        ]
+        ])
     if family == "http_abort_propagation":
-        return [
+        return _with_execution_context(case, [
             {
                 "action_id": "A-SS-ABORT-CONFIG-001",
                 "kind": "config_lookup",
-                "target_scope": "front-end catalogue client timeout configuration",
+                "target_scope": "front-end->catalogue",
                 "hypotheses_separated": 1,
                 "evidence_gain": 2,
                 "cost": 0,
@@ -536,7 +576,7 @@ def actions_for_case(
             {
                 "action_id": "A-SS-ABORT-LOGS-001",
                 "kind": "log_lookup",
-                "target_scope": "front-end logs in the captured abort window",
+                "target_scope": "front-end->catalogue",
                 "hypotheses_separated": 1,
                 "evidence_gain": 2,
                 "cost": 1,
@@ -550,7 +590,7 @@ def actions_for_case(
             {
                 "action_id": "A-SS-ABORT-REALPATH-001",
                 "kind": "business_replay",
-                "target_scope": "real business path replay of the front-end->catalogue abort",
+                "target_scope": "front-end->catalogue",
                 "hypotheses_separated": 1,
                 "evidence_gain": 3,
                 "cost": 2,
@@ -563,8 +603,81 @@ def actions_for_case(
                     "stop after two valid reproductions or one clean falsification",
                     "abort when the real business path cannot be exercised",
                 ],
+                },
+            ])
+    if str(family or "").startswith("native_"):
+        target_scope = str(
+            (case.get("test_node") or {}).get("target")
+            or (case.get("test_node") or {}).get("target_role")
+            or "native target"
+        )
+        action_suffix = re.sub(r"[^A-Za-z0-9]+", "-", target_scope).strip("-").upper() or "TARGET"
+        actions = [
+            {
+                "action_id": f"A-NATIVE-{action_suffix}-CONFIG-001",
+                "kind": "config_lookup",
+                "target_scope": target_scope,
+                "hypotheses_separated": max(1, len(hypotheses)),
+                "evidence_gain": 2,
+                "cost": 0,
+                "risk": 0,
+                "environment_uncertainty": 0,
+                "preconditions": ["frozen_manifest"],
+                "cleanup": ["none"],
+                "output_schema": "config_facts",
+                "stop_conditions": ["frozen deployment facts are recorded"],
+            },
+            {
+                "action_id": f"A-NATIVE-{action_suffix}-LOGS-001",
+                "kind": "log_lookup",
+                "target_scope": target_scope,
+                "workload": target_scope.replace(":", "/", 1),
+                "hypotheses_separated": max(1, len(hypotheses)),
+                "evidence_gain": 3,
+                "cost": 1,
+                "risk": 0,
+                "environment_uncertainty": 1,
+                "preconditions": ["captured_window"],
+                "cleanup": ["none"],
+                "output_schema": "runtime_log",
+                "stop_conditions": ["bounded log window is captured"],
+            },
+            {
+                "action_id": f"A-NATIVE-{action_suffix}-EVENTS-001",
+                "kind": "event_lookup",
+                "target_scope": target_scope,
+                "hypotheses_separated": max(1, len(hypotheses)),
+                "evidence_gain": 2,
+                "cost": 1,
+                "risk": 0,
+                "environment_uncertainty": 1,
+                "preconditions": ["captured_window"],
+                "cleanup": ["none"],
+                "output_schema": "kubernetes_events",
+                "stop_conditions": ["bounded event window is captured"],
+            },
+            {
+                "action_id": f"A-NATIVE-{action_suffix}-INJECT-001",
+                "kind": "native_fault_injection",
+                "target_scope": target_scope,
+                "hypotheses_separated": max(1, len(hypotheses)),
+                "evidence_gain": 4,
+                "cost": 3,
+                "risk": 2,
+                "environment_uncertainty": 2,
+                "preconditions": ["native_executor_ready", "business_oracle_available"],
+                "cleanup": ["remove_mutation", "recovery_check", "washout_verification"],
+                "output_schema": "native_runtime_result",
+                "stop_conditions": [
+                    "stop when injection confirmation is unavailable",
+                    "stop after recovery deadline or cleanup failure",
+                ],
             },
         ]
+        mutation_manifest = (case.get("test_node") or {}).get("mutation_manifest")
+        if isinstance(mutation_manifest, dict):
+            actions[1]["mutation_manifest"] = mutation_manifest
+        return _with_execution_context(case, actions)
     raise ValueError(f"unknown case_family: {family}")
 
 
@@ -657,6 +770,7 @@ def build_sock_shop_pilot(
         "schema_version": SCHEMA_VERSION,
         "tool": "sock_shop_rca",
         "round_id": round_id,
+        "available_preconditions": sorted(_AVAILABLE_PRECONDITIONS),
         "case_plans": case_plans,
     }
     _write_json(output_root / "action_plan.json", action_plan)

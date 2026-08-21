@@ -57,6 +57,7 @@ def project_knowledge_draft(
         plan = entry if entry.get("status") == "planned" else None
         if plan:
             selected = plan.get("selected") or {}
+    selected = selected or {}
     next_evidence = sorted(
         {
             claim

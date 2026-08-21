@@ -1,0 +1,16 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: chaosatlas-sock-shop-front-end-podkill-r2
+  namespace: sock-shop-lab
+  labels:
+    chaosatlas.dev/owner: chaosatlas
+    chaosatlas.dev/pilot: sock-shop-front-end-podkill-r2
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+    - sock-shop-lab
+    labelSelectors:
+      name: front-end

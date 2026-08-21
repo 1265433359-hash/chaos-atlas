@@ -1,0 +1,97 @@
+{
+  "action_id": "A-SS-SINGLETON-READY-001",
+  "action_ref": "actions/A-SS-SINGLETON-READY-001.json",
+  "applicability_complete": true,
+  "attestation": {
+    "baseline": true,
+    "cleanup": true,
+    "comparison_eligible": true,
+    "independent_oracle": true,
+    "injection": true,
+    "observation": true,
+    "recovery": true,
+    "schema_version": "chaosatlas-runtime-result-v1",
+    "valid": true
+  },
+  "cleanup": [
+    "none"
+  ],
+  "collected_at": "2026-08-20T15:00:45.972520Z",
+  "direct_evidence": true,
+  "discriminating_action": true,
+  "errors": [],
+  "evidence": [
+    {
+      "claim_scope": "front-end deployment",
+      "collected_at": "2026-08-20T15:00:45.975519Z",
+      "evidence_id": "EV-LIVE-INJECTION-001",
+      "interpretation": "server-side PodChaos status reports AllInjected=True and injectedCount=1",
+      "kind": "kubernetes_event",
+      "polarity": "supports",
+      "satisfies": [
+        "injection_confirmation"
+      ],
+      "sha256": "fc5947a197686355bf38496c15c8f4b6feaf2c20181dbdb0ed9a0a37eab32288",
+      "source_ref": "evidence/podchaos-injection.json",
+      "window": {}
+    },
+    {
+      "claim_scope": "front-end deployment",
+      "collected_at": "2026-08-20T15:00:45.975519Z",
+      "evidence_id": "EV-LIVE-REPLACEMENT-001",
+      "interpretation": "post-injection snapshot shows a new Ready front-end Pod UID",
+      "kind": "config",
+      "polarity": "supports",
+      "satisfies": [
+        "ready_transition_runtime"
+      ],
+      "sha256": "21d5bb2b3877e3ae402a0baaee7e78f3fbe6fcef2da46bae7b9c78b7e329306a",
+      "source_ref": "evidence/pods-recovery.json",
+      "window": {}
+    },
+    {
+      "claim_scope": "front-end deployment",
+      "collected_at": "2026-08-20T15:00:45.978515Z",
+      "evidence_id": "EV-LIVE-BUSINESS-001",
+      "interpretation": "all eight GET / samples returned HTTP 200 during the injection window",
+      "kind": "business_path_replay",
+      "polarity": "contradicts",
+      "satisfies": [],
+      "severity": "medium",
+      "sha256": "f309c8f733c14178a63015875edd8f3ce1d9fb421b8cf23ae0b2a14c6f347bba",
+      "source_ref": "evidence/injection-http.json",
+      "window": {}
+    },
+    {
+      "claim_scope": "front-end deployment",
+      "collected_at": "2026-08-20T15:00:45.980521Z",
+      "evidence_id": "EV-LIVE-RECOVERY-001",
+      "interpretation": "five consecutive GET / samples returned HTTP 200 after replacement and cleanup",
+      "kind": "business_path_replay",
+      "polarity": "supports",
+      "satisfies": [
+        "recovery_business_probe"
+      ],
+      "sha256": "ab97fa5aea81d8eeb64d716f12938886680040852881ef000ca74bc67272d722",
+      "source_ref": "evidence/recovery-http.json",
+      "window": {}
+    }
+  ],
+  "high_severity_contradiction": false,
+  "lifecycle_complete": true,
+  "missing_preconditions": [],
+  "outcome_status": "observed",
+  "output_schema": "runtime_log",
+  "preconditions": [
+    "captured_ready_samples"
+  ],
+  "reason": "executor_completed",
+  "regression_complete": false,
+  "round_id": "pilot-r3",
+  "schema_version": "chaosatlas-rca-runtime-loop-v1",
+  "status": "executed",
+  "target_scope": "front-end deployment",
+  "valid_counterfactuals": 0,
+  "valid_reproductions": 1,
+  "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill"
+}

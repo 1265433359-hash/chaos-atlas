@@ -1,0 +1,58 @@
+{
+  "cleanup": {
+    "must_be_absent": true,
+    "namespace": "sock-shop-lab",
+    "resource_kind": "podchaos",
+    "resource_name": "chaosatlas-sock-shop-front-end-podkill-r1"
+  },
+  "live_execution": {
+    "apply_allowed": false,
+    "approval_required": true
+  },
+  "mutation_manifest": {
+    "apiVersion": "chaos-mesh.org/v1alpha1",
+    "kind": "PodChaos",
+    "metadata": {
+      "labels": {
+        "chaosatlas.dev/owner": "chaosatlas",
+        "chaosatlas.dev/pilot": "sock-shop-front-end-podkill-r1"
+      },
+      "name": "chaosatlas-sock-shop-front-end-podkill-r1",
+      "namespace": "sock-shop-lab"
+    },
+    "spec": {
+      "action": "pod-kill",
+      "mode": "one",
+      "selector": {
+        "labelSelectors": {
+          "name": "front-end"
+        },
+        "namespaces": [
+          "sock-shop-lab"
+        ]
+      }
+    }
+  },
+  "namespace": "sock-shop-lab",
+  "oracle": {
+    "entrypoint": "/",
+    "id": "sock-shop-homepage",
+    "success_contract": "HTTP 200",
+    "timeout_s": 5
+  },
+  "project_commit": "sock-shop-fixture-commit",
+  "project_id": "sock-shop",
+  "recovery": {
+    "deadline_s": 180,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "schema_version": "chaosatlas-sock-shop-podkill-pilot-v1",
+  "source_manifest": "C:/Users/23741/Desktop/XIAO/ChaosAtlas/artifacts/sock-shop/sock-shop-lab-manifest.yaml",
+  "source_manifest_sha256": "ae545e54ca2a0402c2497a334168b2c85d31def86aba0399682ead1bc38d8253",
+  "status": "static_ready",
+  "target": "deployment:front-end",
+  "target_selector": {
+    "name": "front-end"
+  }
+}

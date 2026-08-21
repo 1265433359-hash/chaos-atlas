@@ -1,0 +1,23 @@
+{
+  "intents": [
+    {
+      "applicability_conditions": [
+        "single-replica deployment without pod disruption budget",
+        "kill or cpu fault families"
+      ],
+      "kind": "discriminate",
+      "oracle": "deployment availability (Ready replicas)",
+      "required_evidence": [
+        "business_impact_in_window",
+        "static_manifest_replica_facts"
+      ],
+      "snapshot_sha256": "a9c5cd6f159be6d5f0d50a527b3d0b3bc4a077e2d9c49eb977bf23313c11e45f",
+      "source_card_id": "KB-RCA-sock-shop-front-end-podchaos-pod-kill",
+      "stop_rule": "stop after two valid reproductions or one clean falsification",
+      "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill"
+    }
+  ],
+  "rejected_cards": [],
+  "schema_version": "chaosatlas-rca-regression-intents-v1",
+  "snapshot_sha256": "a9c5cd6f159be6d5f0d50a527b3d0b3bc4a077e2d9c49eb977bf23313c11e45f"
+}

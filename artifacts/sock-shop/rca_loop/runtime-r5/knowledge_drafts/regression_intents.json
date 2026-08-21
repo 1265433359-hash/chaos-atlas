@@ -1,0 +1,59 @@
+{
+  "intents": [
+    {
+      "applicability_conditions": [
+        "stateful dependency with a single instance",
+        "business path crossing the dependency boundary"
+      ],
+      "kind": "discriminate",
+      "oracle": "catalogue business path",
+      "required_evidence": [
+        "connection_failure_to_request_error_link",
+        "discriminating_replay",
+        "scoped_catalogue_logs",
+        "source_or_config_mapping"
+      ],
+      "snapshot_sha256": "338ae0aa215f561b23680f711794f8ef8cdc8437801b75591b0d94bdbb47274f",
+      "source_card_id": "KB-RCA-sock-shop-catalogue-catalogue-db-podchaos-pod-kill",
+      "stop_rule": "stop after two valid reproductions or one clean falsification",
+      "weakness_id": "WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill"
+    },
+    {
+      "applicability_conditions": [
+        "abort or loss fault families on a measured service edge",
+        "real business path crossing the same edge"
+      ],
+      "kind": "discriminate",
+      "oracle": "edge response contract",
+      "required_evidence": [
+        "downstream_diagnostic_or_source_mapping",
+        "recovery_after_fault_removal",
+        "runtime_business_path"
+      ],
+      "snapshot_sha256": "338ae0aa215f561b23680f711794f8ef8cdc8437801b75591b0d94bdbb47274f",
+      "source_card_id": "KB-RCA-sock-shop-front-end-catalogue-httpchaos-abort",
+      "stop_rule": "stop after two valid reproductions or one clean falsification",
+      "weakness_id": "WS-sock-shop-front-end-catalogue-httpchaos-abort"
+    },
+    {
+      "applicability_conditions": [
+        "single-replica deployment without pod disruption budget",
+        "kill or cpu fault families"
+      ],
+      "kind": "discriminate",
+      "oracle": "deployment availability (Ready replicas)",
+      "required_evidence": [
+        "business_impact_in_window",
+        "ready_transition_runtime",
+        "static_manifest_replica_facts"
+      ],
+      "snapshot_sha256": "338ae0aa215f561b23680f711794f8ef8cdc8437801b75591b0d94bdbb47274f",
+      "source_card_id": "KB-RCA-sock-shop-front-end-podchaos-pod-kill",
+      "stop_rule": "stop after two valid reproductions or one clean falsification",
+      "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill"
+    }
+  ],
+  "rejected_cards": [],
+  "schema_version": "chaosatlas-rca-regression-intents-v1",
+  "snapshot_sha256": "338ae0aa215f561b23680f711794f8ef8cdc8437801b75591b0d94bdbb47274f"
+}

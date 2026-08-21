@@ -1,0 +1,522 @@
+{
+  "evidence": [
+    {
+      "claim_scope": "deployment:front-end",
+      "collected_at": "2026-08-20T15:55:56.766456Z",
+      "collector": "config",
+      "evidence_id": "EV-DISAMBIG-PODS-001",
+      "interpretation": "Current front-end Pod snapshot for PodKill readiness disambiguation",
+      "kind": "config",
+      "polarity": "supports",
+      "satisfies": [
+        "pod_snapshot"
+      ],
+      "sha256": "f4e651847d96bfce0d21f4efaf3150fe00aa5cd47ad08617a4706c37b7cd17c4",
+      "source_ref": "runtime/disambiguation/pods.json",
+      "window": {}
+    },
+    {
+      "claim_scope": "deployment:front-end",
+      "collected_at": "2026-08-20T15:55:56.819456Z",
+      "collector": "config",
+      "evidence_id": "EV-DISAMBIG-ENDPOINTS-001",
+      "interpretation": "Service Endpoint addresses observed for the bounded PodKill analysis",
+      "kind": "config",
+      "polarity": "supports",
+      "satisfies": [
+        "service_endpoint_snapshot"
+      ],
+      "sha256": "1da2a4994c733b96a07edb41c8675ed019d24fe58a6769f1a8d836af20c3ef0d",
+      "source_ref": "runtime/disambiguation/endpoints.json",
+      "window": {}
+    },
+    {
+      "claim_scope": "deployment:front-end",
+      "collected_at": "2026-08-20T15:55:56.871148Z",
+      "collector": "config",
+      "evidence_id": "EV-DISAMBIG-DEPLOYMENT-001",
+      "interpretation": "Deployment strategy and readiness probe configuration",
+      "kind": "config",
+      "polarity": "supports",
+      "satisfies": [
+        "deployment_strategy",
+        "readiness_probe_configuration"
+      ],
+      "sha256": "6fcf963542d688c7dcee21e8bb373a66d9272f3108391bd7fb8de09119fbd3c9",
+      "source_ref": "runtime/disambiguation/deployment.json",
+      "window": {}
+    },
+    {
+      "claim_scope": "deployment:front-end",
+      "collected_at": "2026-08-20T15:55:56.933001Z",
+      "collector": "kubernetes_event",
+      "evidence_id": "EV-DISAMBIG-EVENTS-001",
+      "interpretation": "Kubernetes events filtered to the explicit RCA observation window",
+      "kind": "kubernetes_event",
+      "polarity": "supports",
+      "satisfies": [
+        "kubernetes_event_window"
+      ],
+      "sha256": "8f42dc46880481195e9c36896deda5c6407b2311acaab8b79fa0baa3a6dd8141",
+      "source_ref": "runtime/kubernetes/events/EV-DISAMBIG-EVENTS-001.json",
+      "window": {
+        "end": "2026-08-20T15:53:41.042165Z",
+        "start": "2026-08-20T15:52:58.637130Z"
+      }
+    }
+  ],
+  "observations": {
+    "deployment": {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "annotations": {
+          "deployment.kubernetes.io/revision": "1"
+        },
+        "creationTimestamp": "2026-08-20T14:48:27Z",
+        "generation": 1,
+        "name": "front-end",
+        "namespace": "sock-shop-lab",
+        "resourceVersion": "3014276",
+        "uid": "41cbe721-de8d-4cd8-bcd5-5967e3c9b630"
+      },
+      "spec": {
+        "progressDeadlineSeconds": 600,
+        "replicas": 1,
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "name": "front-end"
+          }
+        },
+        "strategy": {
+          "rollingUpdate": {
+            "maxSurge": "25%",
+            "maxUnavailable": "25%"
+          },
+          "type": "RollingUpdate"
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "name": "front-end"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "SESSION_REDIS",
+                    "value": "true"
+                  }
+                ],
+                "image": "weaveworksdemos/front-end:0.3.12",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/",
+                    "port": 8079,
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 300,
+                  "periodSeconds": 3,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "front-end",
+                "ports": [
+                  {
+                    "containerPort": 8079,
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/",
+                    "port": 8079,
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 30,
+                  "periodSeconds": 3,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "300m",
+                    "memory": "1000Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "300Mi"
+                  }
+                },
+                "securityContext": {
+                  "capabilities": {
+                    "drop": [
+                      "all"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 10001
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "nodeSelector": {
+              "beta.kubernetes.io/os": "linux"
+            },
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "terminationGracePeriodSeconds": 30
+          }
+        }
+      },
+      "status": {
+        "availableReplicas": 1,
+        "conditions": [
+          {
+            "lastTransitionTime": "2026-08-20T14:48:27Z",
+            "lastUpdateTime": "2026-08-20T14:48:58Z",
+            "message": "ReplicaSet \"front-end-87ff7b849\" has successfully progressed.",
+            "reason": "NewReplicaSetAvailable",
+            "status": "True",
+            "type": "Progressing"
+          },
+          {
+            "lastTransitionTime": "2026-08-20T15:53:31Z",
+            "lastUpdateTime": "2026-08-20T15:53:31Z",
+            "message": "Deployment has minimum availability.",
+            "reason": "MinimumReplicasAvailable",
+            "status": "True",
+            "type": "Available"
+          }
+        ],
+        "observedGeneration": 1,
+        "readyReplicas": 1,
+        "replicas": 1,
+        "terminatingReplicas": 0,
+        "updatedReplicas": 1
+      }
+    },
+    "endpoints": {
+      "apiVersion": "v1",
+      "kind": "Endpoints",
+      "metadata": {
+        "annotations": {
+          "endpoints.kubernetes.io/last-change-trigger-time": "2026-08-20T15:53:31Z"
+        },
+        "creationTimestamp": "2026-08-20T14:48:27Z",
+        "labels": {
+          "endpoints.kubernetes.io/managed-by": "endpoint-controller",
+          "name": "front-end"
+        },
+        "name": "front-end",
+        "namespace": "sock-shop-lab",
+        "resourceVersion": "3014273",
+        "uid": "3df44f0d-dc6a-44ee-8aae-55c3183a16c8"
+      },
+      "subsets": [
+        {
+          "addresses": [
+            {
+              "ip": "10.244.2.228",
+              "nodeName": "minikube",
+              "targetRef": {
+                "kind": "Pod",
+                "name": "front-end-87ff7b849-9rpxl",
+                "namespace": "sock-shop-lab",
+                "uid": "e6183197-23e6-4d89-a85d-82f1815690fa"
+              }
+            }
+          ],
+          "ports": [
+            {
+              "port": 8079,
+              "protocol": "TCP"
+            }
+          ]
+        }
+      ]
+    },
+    "pods": {
+      "apiVersion": "v1",
+      "items": [
+        {
+          "apiVersion": "v1",
+          "kind": "Pod",
+          "metadata": {
+            "creationTimestamp": "2026-08-20T15:52:58Z",
+            "generateName": "front-end-87ff7b849-",
+            "generation": 1,
+            "labels": {
+              "name": "front-end",
+              "pod-template-hash": "87ff7b849"
+            },
+            "name": "front-end-87ff7b849-9rpxl",
+            "namespace": "sock-shop-lab",
+            "ownerReferences": [
+              {
+                "apiVersion": "apps/v1",
+                "blockOwnerDeletion": true,
+                "controller": true,
+                "kind": "ReplicaSet",
+                "name": "front-end-87ff7b849",
+                "uid": "bec6803b-a125-443b-b1fe-25bbaf78d23b"
+              }
+            ],
+            "resourceVersion": "3014272",
+            "uid": "e6183197-23e6-4d89-a85d-82f1815690fa"
+          },
+          "spec": {
+            "containers": [
+              {
+                "env": [
+                  {
+                    "name": "SESSION_REDIS",
+                    "value": "true"
+                  }
+                ],
+                "image": "weaveworksdemos/front-end:0.3.12",
+                "imagePullPolicy": "IfNotPresent",
+                "livenessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/",
+                    "port": 8079,
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 300,
+                  "periodSeconds": 3,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "name": "front-end",
+                "ports": [
+                  {
+                    "containerPort": 8079,
+                    "protocol": "TCP"
+                  }
+                ],
+                "readinessProbe": {
+                  "failureThreshold": 3,
+                  "httpGet": {
+                    "path": "/",
+                    "port": 8079,
+                    "scheme": "HTTP"
+                  },
+                  "initialDelaySeconds": 30,
+                  "periodSeconds": 3,
+                  "successThreshold": 1,
+                  "timeoutSeconds": 1
+                },
+                "resources": {
+                  "limits": {
+                    "cpu": "300m",
+                    "memory": "1000Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "300Mi"
+                  }
+                },
+                "securityContext": {
+                  "capabilities": {
+                    "drop": [
+                      "all"
+                    ]
+                  },
+                  "readOnlyRootFilesystem": true,
+                  "runAsNonRoot": true,
+                  "runAsUser": 10001
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File",
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-sslzm",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "enableServiceLinks": true,
+            "nodeName": "minikube",
+            "nodeSelector": {
+              "beta.kubernetes.io/os": "linux"
+            },
+            "preemptionPolicy": "PreemptLowerPriority",
+            "priority": 0,
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "serviceAccount": "default",
+            "serviceAccountName": "default",
+            "terminationGracePeriodSeconds": 30,
+            "tolerations": [
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/not-ready",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              },
+              {
+                "effect": "NoExecute",
+                "key": "node.kubernetes.io/unreachable",
+                "operator": "Exists",
+                "tolerationSeconds": 300
+              }
+            ],
+            "volumes": [
+              {
+                "name": "kube-api-access-sslzm",
+                "projected": {
+                  "defaultMode": 420,
+                  "sources": [
+                    {
+                      "serviceAccountToken": {
+                        "expirationSeconds": 3607,
+                        "path": "token"
+                      }
+                    },
+                    {
+                      "configMap": {
+                        "items": [
+                          {
+                            "key": "ca.crt",
+                            "path": "ca.crt"
+                          }
+                        ],
+                        "name": "kube-root-ca.crt"
+                      }
+                    },
+                    {
+                      "downwardAPI": {
+                        "items": [
+                          {
+                            "fieldRef": {
+                              "apiVersion": "v1",
+                              "fieldPath": "metadata.namespace"
+                            },
+                            "path": "namespace"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "status": {
+            "conditions": [
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-20T15:53:00Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodReadyToStartContainers"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-20T15:52:58Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Initialized"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-20T15:53:31Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "Ready"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-20T15:53:31Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "ContainersReady"
+              },
+              {
+                "lastProbeTime": null,
+                "lastTransitionTime": "2026-08-20T15:52:58Z",
+                "observedGeneration": 1,
+                "status": "True",
+                "type": "PodScheduled"
+              }
+            ],
+            "containerStatuses": [
+              {
+                "allocatedResources": {
+                  "cpu": "100m",
+                  "memory": "300Mi"
+                },
+                "containerID": "docker://932dc8c886a4fe0e8baafd1337c8b45c2c85e56e235c2f9f2776e230a660d921",
+                "image": "weaveworksdemos/front-end:0.3.12",
+                "imageID": "docker-pullable://weaveworksdemos/front-end@sha256:26a2d9b6b291dee2dca32fca3f5bff6c2fa07bb5954359afcbc8001cc70eac71",
+                "lastState": {},
+                "name": "front-end",
+                "ready": true,
+                "resources": {
+                  "limits": {
+                    "cpu": "300m",
+                    "memory": "1000Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "300Mi"
+                  }
+                },
+                "restartCount": 0,
+                "started": true,
+                "state": {
+                  "running": {
+                    "startedAt": "2026-08-20T15:52:59Z"
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                    "name": "kube-api-access-sslzm",
+                    "readOnly": true,
+                    "recursiveReadOnly": "Disabled"
+                  }
+                ]
+              }
+            ],
+            "hostIP": "192.168.49.2",
+            "hostIPs": [
+              {
+                "ip": "192.168.49.2"
+              }
+            ],
+            "observedGeneration": 1,
+            "phase": "Running",
+            "podIP": "10.244.2.228",
+            "podIPs": [
+              {
+                "ip": "10.244.2.228"
+              }
+            ],
+            "qosClass": "Burstable",
+            "startTime": "2026-08-20T15:52:58Z"
+          }
+        }
+      ],
+      "kind": "List",
+      "metadata": {
+        "resourceVersion": ""
+      }
+    }
+  }
+}

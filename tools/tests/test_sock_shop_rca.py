@@ -168,6 +168,27 @@ def test_actions_for_case_are_schema_complete(tmp_path: Path) -> None:
             assert action["stop_conditions"]
 
 
+def test_sock_shop_actions_include_execution_context(tmp_path: Path) -> None:
+    output = _build(tmp_path)
+
+    for case in output["cases"]:
+        for action in actions_for_case(case, case["hypotheses"]):
+            assert action["namespace"] == "chaosatlas-sock-shop"
+            assert len(action["project_snapshot_sha256"]) == 64
+            assert action["baseline_contract"] == case["symptom"]["baseline_contract"]
+            assert action["budget"]["max_seconds"] > 0
+            assert action["cleanup_contract"] == action["cleanup"]
+
+
+def test_sock_shop_action_scope_matches_case_claim_scope(tmp_path: Path) -> None:
+    output = _build(tmp_path)
+
+    for case in output["cases"]:
+        expected_scope = case["hypotheses"][0]["scope"]["edge"]
+        for action in actions_for_case(case, case["hypotheses"]):
+            assert action["target_scope"] == expected_scope
+
+
 # ---------------------------------------------------------------------------
 # Task 8: closed-loop end-to-end over the real pilot artifacts
 # ---------------------------------------------------------------------------

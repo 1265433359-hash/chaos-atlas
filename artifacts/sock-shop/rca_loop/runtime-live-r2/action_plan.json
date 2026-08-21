@@ -1,0 +1,79 @@
+{
+  "available_preconditions": [
+    "captured_ready_samples",
+    "captured_window",
+    "frozen_manifest",
+    "frozen_verdicts"
+  ],
+  "case_plans": [
+    {
+      "case_family": "single_replica_podkill",
+      "plan": {
+        "completed_action": {
+          "action_id": "A-SS-SINGLETON-READY-001",
+          "baseline_contract": "1/1 ready replicas, service available",
+          "budget": {
+            "max_retries": 0,
+            "max_seconds": 30
+          },
+          "cleanup": [
+            "none"
+          ],
+          "cleanup_contract": [
+            "none"
+          ],
+          "cost": 1,
+          "environment_uncertainty": 0,
+          "evidence_gain": 2,
+          "hypotheses_separated": 1,
+          "kind": "log_lookup",
+          "namespace": "chaosatlas-sock-shop",
+          "output_schema": "runtime_log",
+          "preconditions": [
+            "captured_ready_samples"
+          ],
+          "project_snapshot_sha256": "1b9a2ff18724c153577848438b35840c1b072c143a3abf7275aca27a7d198af7",
+          "risk": 0,
+          "score": {
+            "action_id": "A-SS-SINGLETON-READY-001",
+            "errors": [],
+            "information_gain": 3,
+            "priority": 2,
+            "total_cost": 1
+          },
+          "stop_conditions": [
+            "window already captured in avail_frontend_kill.json"
+          ],
+          "target_scope": "front-end deployment"
+        },
+        "promotion": {
+          "allowed": true,
+          "next_status": "provisional",
+          "reason": "meaningful_counterexample"
+        },
+        "rejected": [
+          {
+            "action_id": "A-SS-SINGLETON-COUNTERFACTUAL-001",
+            "errors": [],
+            "missing_preconditions": [
+              "runner_allows_replica_scaling"
+            ]
+          }
+        ],
+        "result_ref": "actions/A-SS-SINGLETON-READY-001.json",
+        "result_status": "executed",
+        "selected": null,
+        "status": "pending",
+        "transition": {
+          "allowed": true,
+          "next_status": "bounded",
+          "reason": "state_unchanged"
+        }
+      },
+      "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill"
+    }
+  ],
+  "round_id": "pilot-r3",
+  "schema_version": "chaosatlas-rca-runtime-loop-v1",
+  "tool": "rca_runtime_loop"
+}

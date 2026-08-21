@@ -1,0 +1,13 @@
+Forwarding from 127.0.0.1:18088 -> 8079
+Forwarding from [::1]:18088 -> 8079
+Handling connection for 18088
+Handling connection for 18088
+Handling connection for 18088
+Handling connection for 18088
+Handling connection for 18088
+E0820 23:52:59.274840   21912 portforward.go:404] "Unhandled Error" err="error copying from local connection to remote stream: writeto tcp4 127.0.0.1:18088->127.0.0.1:53720: read tcp4 127.0.0.1:18088->127.0.0.1:53720: wsarecv: An existing connection was forcibly closed by the remote host."
+E0820 23:53:00.495815   21912 portforward.go:404] "Unhandled Error" err="error copying from local connection to remote stream: writeto tcp4 127.0.0.1:18088->127.0.0.1:53728: read tcp4 127.0.0.1:18088->127.0.0.1:53728: wsarecv: An existing connection was forcibly closed by the remote host."
+E0820 23:53:01.100077   21912 portforward.go:424] "Unhandled Error" err=<
+	an error occurred forwarding 18088 -> 8079: error forwarding port 8079 to pod a79ea3cce525814ea9086bbdfd01b969584fb6dd5128037177c18c4b4d8e7f4f, uid : exit status 1: 2026/08/20 15:53:01 socat[32174] E connect(5, AF=2 127.0.0.1:8079, 16): Connection refused
+ >
+error: lost connection to pod

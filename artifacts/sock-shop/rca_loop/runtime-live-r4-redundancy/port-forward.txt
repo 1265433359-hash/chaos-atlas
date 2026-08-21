@@ -1,0 +1,14 @@
+Forwarding from 127.0.0.1:18089 -> 8079
+Forwarding from [::1]:18089 -> 8079
+Handling connection for 18089
+Handling connection for 18089
+Handling connection for 18089
+Handling connection for 18089
+Handling connection for 18089
+E0821 02:35:40.611687   12136 portforward.go:404] "Unhandled Error" err="error copying from local connection to remote stream: writeto tcp4 127.0.0.1:18089->127.0.0.1:58703: read tcp4 127.0.0.1:18089->127.0.0.1:58703: wsarecv: An existing connection was forcibly closed by the remote host."
+E0821 02:35:41.249263   12136 portforward.go:404] "Unhandled Error" err="error copying from local connection to remote stream: writeto tcp4 127.0.0.1:18089->127.0.0.1:58706: read tcp4 127.0.0.1:18089->127.0.0.1:58706: wsarecv: An existing connection was forcibly closed by the remote host."
+E0821 02:35:41.866402   12136 portforward.go:404] "Unhandled Error" err="error copying from local connection to remote stream: writeto tcp4 127.0.0.1:18089->127.0.0.1:58711: read tcp4 127.0.0.1:18089->127.0.0.1:58711: wsarecv: An existing connection was forcibly closed by the remote host."
+E0821 02:35:42.486191   12136 portforward.go:424] "Unhandled Error" err=<
+	an error occurred forwarding 18089 -> 8079: error forwarding port 8079 to pod b5de4ce0ebc9e22165c235d3ee7800cbd1828913013eee1300924a6ec8043f01, uid : exit status 1: nsenter: cannot open /proc/32026/ns/net: No such file or directory
+ >
+error: lost connection to pod

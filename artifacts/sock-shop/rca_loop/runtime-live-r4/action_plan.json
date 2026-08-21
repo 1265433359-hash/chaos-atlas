@@ -1,0 +1,47 @@
+{
+  "available_preconditions": [
+    "captured_ready_samples",
+    "captured_window",
+    "frozen_manifest",
+    "frozen_verdicts"
+  ],
+  "case_plans": [
+    {
+      "case_family": "single_replica_podkill",
+      "plan": {
+        "completed_action": {
+          "action_id": "A-SS-SINGLETON-COUNTERFACTUAL-001",
+          "result_ref": "evidence/redundancy-r1/result.json",
+          "result_status": "executed"
+        },
+        "promotion": {
+          "allowed": true,
+          "next_status": "local_reusable",
+          "reason": "local_reuse_gates_passed"
+        },
+        "rejected": [
+          {
+            "action_id": "A-SS-SINGLETON-COUNTERFACTUAL-001",
+            "errors": [],
+            "missing_preconditions": [
+              "runner_allows_replica_scaling"
+            ]
+          }
+        ],
+        "result_ref": "actions/A-SS-SINGLETON-READY-001.json",
+        "result_status": "executed",
+        "selected": null,
+        "status": "completed",
+        "transition": {
+          "allowed": true,
+          "next_status": "bounded",
+          "reason": "state_unchanged"
+        }
+      },
+      "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill"
+    }
+  ],
+  "round_id": "pilot-r4-redundancy-r1",
+  "schema_version": "chaosatlas-rca-runtime-loop-v1",
+  "tool": "rca_runtime_loop"
+}

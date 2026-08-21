@@ -11,6 +11,7 @@ from typing import Any
 
 
 RCA_STATES = {"pending", "bounded", "confirmed", "rejected"}
+CLAIM_LEVELS = {"symptom", "boundary", "mechanism", "source", "rejected"}
 KNOWLEDGE_STATES = {
     "none",
     "provisional",
@@ -20,6 +21,15 @@ KNOWLEDGE_STATES = {
     "contested",
 }
 EVIDENCE_POLARITIES = {"supports", "contradicts", "unavailable", "neutral"}
+NON_EVIDENT_OUTCOMES = {
+    "environment_blocked",
+    "injection_not_confirmed",
+    "business_not_reachable",
+    "effect_unobserved",
+    "recovery_timeout",
+    "cleanup_failed",
+    "not_run",
+}
 _WEAKNESS_STATUSES = {
     "candidate",
     "confirmed",
@@ -278,6 +288,18 @@ def evidence_polarity_counts(evidence_list: Iterable[Mapping[str, Any]]) -> dict
     return {polarity: counts[polarity] for polarity in ("supports", "contradicts", "unavailable", "neutral")}
 
 
+def claim_level_for_status(status: str, mechanism_level: str | None = None) -> str:
+    """Map RCA state to the strongest claim level the state permits."""
+
+    if status == "rejected":
+        return "rejected"
+    if status == "confirmed":
+        return "source" if mechanism_level == "source" else "mechanism"
+    if status == "bounded":
+        return "boundary"
+    return "symptom"
+
+
 def canonical_json(value: Any) -> str:
     return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=True, allow_nan=False)
 
@@ -379,14 +401,14 @@ def evaluate_knowledge_promotion(
     if current == "local_reusable":
         if weakness_status in {"unsupported", "environment_blocked", "rejected"}:
             return {"allowed": False, "reason": "weakness_status_not_eligible"}
-        if rca_status == "rejected":
-            return {"allowed": False, "reason": "rca_status_not_reusable"}
         if contradiction:
             return {
                 "allowed": True,
                 "next_status": "contested",
                 "reason": "meaningful_counterexample",
             }
+        if rca_status == "rejected":
+            return {"allowed": False, "reason": "rca_status_not_reusable"}
         return {
             "allowed": True,
             "next_status": "cross_project_pending",
@@ -473,6 +495,7 @@ _ACTION_REQUIRED_FIELDS = {
 # deterministic priority ties (spec section 8 ordering).
 _KIND_PREFERENCE = {
     "evidence_lookup": 0,
+    "event_lookup": 1,
     "source_lookup": 0,
     "config_lookup": 0,
     "log_lookup": 1,

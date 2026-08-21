@@ -1,0 +1,39 @@
+{
+  "intents": [
+    {
+      "applicability_conditions": [
+        "single-replica deployment without pod disruption budget",
+        "kill or cpu fault families"
+      ],
+      "kind": "reproduce",
+      "oracle": "deployment availability (Ready replicas)",
+      "required_evidence": [
+        "business_impact_in_window",
+        "static_manifest_replica_facts"
+      ],
+      "snapshot_sha256": "7fba2fe1f0aeddb562fe4c39c6f3654aa98572a0b470a3b59754b0466a7770bf",
+      "source_card_id": "KB-RCA-sock-shop-front-end-podchaos-pod-kill",
+      "stop_rule": "stop after two valid reproductions or one clean falsification",
+      "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill"
+    },
+    {
+      "applicability_conditions": [
+        "single-replica deployment without pod disruption budget",
+        "kill or cpu fault families"
+      ],
+      "kind": "guard",
+      "oracle": "deployment availability (Ready replicas)",
+      "required_evidence": [
+        "business_impact_in_window",
+        "static_manifest_replica_facts"
+      ],
+      "snapshot_sha256": "7fba2fe1f0aeddb562fe4c39c6f3654aa98572a0b470a3b59754b0466a7770bf",
+      "source_card_id": "KB-RCA-sock-shop-front-end-podchaos-pod-kill",
+      "stop_rule": "guard: closed_runtime_boundary_no_reinjection; stop after two valid reproductions or one clean falsification",
+      "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill"
+    }
+  ],
+  "rejected_cards": [],
+  "schema_version": "chaosatlas-rca-regression-intents-v1",
+  "snapshot_sha256": "7fba2fe1f0aeddb562fe4c39c6f3654aa98572a0b470a3b59754b0466a7770bf"
+}

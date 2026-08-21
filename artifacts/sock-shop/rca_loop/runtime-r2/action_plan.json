@@ -1,0 +1,142 @@
+{
+  "case_plans": [
+    {
+      "case_family": "catalogue_db_podkill",
+      "plan": {
+        "promotion": {
+          "allowed": false,
+          "reason": "reproduction_gate_incomplete"
+        },
+        "result_ref": "actions/A-SS-CATDB-CONFIG-001.json",
+        "result_status": "dry_run",
+        "selected": {
+          "action_id": "A-SS-CATDB-CONFIG-001",
+          "cleanup": [
+            "none"
+          ],
+          "cost": 0,
+          "environment_uncertainty": 0,
+          "evidence_gain": 2,
+          "hypotheses_separated": 1,
+          "kind": "config_lookup",
+          "output_schema": "manifest_facts",
+          "preconditions": [
+            "frozen_manifest"
+          ],
+          "risk": 0,
+          "score": {
+            "action_id": "A-SS-CATDB-CONFIG-001",
+            "errors": [],
+            "information_gain": 3,
+            "priority": 3,
+            "total_cost": 0
+          },
+          "stop_conditions": [
+            "configuration facts already recorded"
+          ],
+          "target_scope": "catalogue and catalogue-db deployment configuration"
+        },
+        "status": "completed",
+        "transition": {
+          "allowed": true,
+          "next_status": "bounded",
+          "reason": "state_unchanged"
+        }
+      },
+      "weakness_id": "WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill"
+    },
+    {
+      "case_family": "http_abort_propagation",
+      "plan": {
+        "promotion": {
+          "allowed": false,
+          "reason": "reproduction_gate_incomplete"
+        },
+        "result_ref": "actions/A-SS-ABORT-CONFIG-001.json",
+        "result_status": "dry_run",
+        "selected": {
+          "action_id": "A-SS-ABORT-CONFIG-001",
+          "cleanup": [
+            "none"
+          ],
+          "cost": 0,
+          "environment_uncertainty": 0,
+          "evidence_gain": 2,
+          "hypotheses_separated": 1,
+          "kind": "config_lookup",
+          "output_schema": "config_facts",
+          "preconditions": [
+            "frozen_manifest"
+          ],
+          "risk": 0,
+          "score": {
+            "action_id": "A-SS-ABORT-CONFIG-001",
+            "errors": [],
+            "information_gain": 3,
+            "priority": 3,
+            "total_cost": 0
+          },
+          "stop_conditions": [
+            "stop when timeout configuration is either found or confirmed absent"
+          ],
+          "target_scope": "front-end catalogue client timeout configuration"
+        },
+        "status": "completed",
+        "transition": {
+          "allowed": true,
+          "next_status": "bounded",
+          "reason": "state_unchanged"
+        }
+      },
+      "weakness_id": "WS-sock-shop-front-end-catalogue-httpchaos-abort"
+    },
+    {
+      "case_family": "single_replica_podkill",
+      "plan": {
+        "promotion": {
+          "allowed": false,
+          "reason": "reproduction_gate_incomplete"
+        },
+        "result_ref": "actions/A-SS-SINGLETON-CONFIG-001.json",
+        "result_status": "dry_run",
+        "selected": {
+          "action_id": "A-SS-SINGLETON-CONFIG-001",
+          "cleanup": [
+            "none"
+          ],
+          "cost": 0,
+          "environment_uncertainty": 0,
+          "evidence_gain": 2,
+          "hypotheses_separated": 1,
+          "kind": "config_lookup",
+          "output_schema": "manifest_facts",
+          "preconditions": [
+            "frozen_manifest"
+          ],
+          "risk": 0,
+          "score": {
+            "action_id": "A-SS-SINGLETON-CONFIG-001",
+            "errors": [],
+            "information_gain": 3,
+            "priority": 3,
+            "total_cost": 0
+          },
+          "stop_conditions": [
+            "manifest replica facts already recorded"
+          ],
+          "target_scope": "front-end deployment manifest"
+        },
+        "status": "completed",
+        "transition": {
+          "allowed": true,
+          "next_status": "bounded",
+          "reason": "state_unchanged"
+        }
+      },
+      "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill"
+    }
+  ],
+  "round_id": "pilot-r2",
+  "schema_version": "chaosatlas-rca-runtime-loop-v1",
+  "tool": "rca_runtime_loop"
+}

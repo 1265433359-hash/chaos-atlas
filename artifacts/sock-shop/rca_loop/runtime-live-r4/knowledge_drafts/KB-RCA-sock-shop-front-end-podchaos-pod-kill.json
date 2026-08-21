@@ -1,0 +1,151 @@
+{
+  "applicability_conditions": [
+    "single-replica deployment without pod disruption budget",
+    "kill or cpu fault families"
+  ],
+  "case_family": "single_replica_podkill",
+  "counter_evidence": [
+    "EV-LIVE-BUSINESS-001",
+    "EV-LIVE-R2-HTTP-ARTIFACT-001"
+  ],
+  "evidence_refs": [
+    {
+      "evidence_id": "EV-SS-SINGLETON-MANIFEST-001",
+      "kind": "manifest",
+      "polarity": "supports",
+      "source_ref": "artifacts/sock-shop/sock-shop-lab-manifest.yaml"
+    },
+    {
+      "evidence_id": "EV-SS-SINGLETON-READY-001",
+      "kind": "runtime_log",
+      "polarity": "supports",
+      "source_ref": "artifacts/sock-shop/avail_frontend_kill.json"
+    },
+    {
+      "evidence_id": "EV-SS-SINGLETON-COUNTERFACTUAL-001",
+      "kind": "counterfactual",
+      "polarity": "unavailable",
+      "source_ref": "artifacts/sock-shop/sock_availability_layer_verified.md"
+    },
+    {
+      "evidence_id": "EV-A-SS-SINGLETON-CONFIG-001-UNAVAILABLE",
+      "kind": "dry_run",
+      "polarity": "unavailable",
+      "source_ref": "actions/A-SS-SINGLETON-CONFIG-001.json"
+    },
+    {
+      "evidence_id": "EV-LIVE-INJECTION-001",
+      "kind": "kubernetes_event",
+      "polarity": "supports",
+      "source_ref": "evidence/podchaos-injection.json"
+    },
+    {
+      "evidence_id": "EV-LIVE-REPLACEMENT-001",
+      "kind": "config",
+      "polarity": "supports",
+      "source_ref": "evidence/pods-recovery.json"
+    },
+    {
+      "evidence_id": "EV-LIVE-BUSINESS-001",
+      "kind": "business_path_replay",
+      "polarity": "contradicts",
+      "source_ref": "evidence/injection-http.json"
+    },
+    {
+      "evidence_id": "EV-LIVE-RECOVERY-001",
+      "kind": "business_path_replay",
+      "polarity": "supports",
+      "source_ref": "evidence/recovery-http.json"
+    },
+    {
+      "evidence_id": "EV-LIVE-R2-TIMELINE-001",
+      "kind": "config",
+      "polarity": "supports",
+      "source_ref": "evidence/disambiguation-r2/timeline.jsonl"
+    },
+    {
+      "evidence_id": "EV-LIVE-R2-HTTP-ARTIFACT-001",
+      "kind": "business_path_replay",
+      "polarity": "neutral",
+      "source_ref": "evidence/disambiguation-r2/result.json"
+    },
+    {
+      "evidence_id": "EV-LIVE-R2-INJECTION-001",
+      "kind": "kubernetes_event",
+      "polarity": "supports",
+      "source_ref": "evidence/disambiguation-r2/manifest.json"
+    },
+    {
+      "evidence_id": "EV-LIVE-R4-COUNTERFACTUAL-001",
+      "kind": "business_path_replay",
+      "polarity": "supports",
+      "source_ref": "evidence/redundancy-r1/result.json"
+    },
+    {
+      "evidence_id": "EV-LIVE-R4-SCALE-001",
+      "kind": "config",
+      "polarity": "supports",
+      "source_ref": "evidence/redundancy-r1/scale_events.json"
+    },
+    {
+      "evidence_id": "EV-LIVE-R4-CLEANUP-001",
+      "kind": "kubernetes_event",
+      "polarity": "supports",
+      "source_ref": "evidence/redundancy-r1/after.json"
+    }
+  ],
+  "evidence_state": {
+    "contradicts": 1,
+    "neutral": 1,
+    "supports": 10,
+    "unavailable": 2
+  },
+  "exclusion_conditions": [
+    "cross_project_transfer_requires_existing_feedback_protocol",
+    "must_not_be_promoted_to_timeout_mechanism_without_source_evidence"
+  ],
+  "four_layer_validation": {
+    "availability": true,
+    "business_path": true,
+    "contract": false,
+    "recovery": false
+  },
+  "id": "KB-RCA-sock-shop-front-end-podchaos-pod-kill",
+  "knowledge_status": "local_reusable",
+  "mechanism_claim": "the front-end workload is a singleton with no redundancy, so any pod kill produces a full-outage window",
+  "mechanism_level": "deployment",
+  "next_evidence": [
+    "business_impact_in_window",
+    "static_manifest_replica_facts"
+  ],
+  "project": "sock-shop",
+  "project_commit": "sock-shop-fixture-commit",
+  "rca_status": "bounded",
+  "regression_intents": [],
+  "regression_recipe": {
+    "oracle": "deployment availability (Ready replicas)",
+    "selected_next_action": null
+  },
+  "round_id": "pilot-r4-redundancy-r1",
+  "schema_version": "chaosatlas-rca-knowledge-draft-v1",
+  "status": "local_reusable",
+  "stop_rule": "stop after two valid reproductions or one clean falsification",
+  "test_node": {
+    "family": "PodChaos",
+    "operation": "pod-kill",
+    "source_ref": "artifacts/sock-shop/avail_frontend_kill.json",
+    "target_role": "front-end deployment"
+  },
+  "test_node_centered_graph": {
+    "edge": "front-end deployment",
+    "scope": {
+      "edge": "front-end deployment",
+      "services": [
+        "front-end deployment"
+      ]
+    }
+  },
+  "version": 1,
+  "weakness_id": "WS-sock-shop-front-end-podchaos-pod-kill",
+  "weakness_status": "confirmed"
+}

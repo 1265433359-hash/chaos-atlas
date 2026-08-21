@@ -1,0 +1,314 @@
+{
+  "cleanup_error": null,
+  "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+  "mutation_name": "chaosatlas-sock-shop-front-end-podkill-redundancy-r1",
+  "namespace": "sock-shop-lab",
+  "original_replicas": 1,
+  "residual_podchaos": [],
+  "restored_replicas": 1,
+  "round_id": "pilot-r4-redundancy-r1",
+  "run_error": null,
+  "sample_count": 15,
+  "scale_events": [
+    {
+      "at": "2026-08-20T18:35:06.373856Z",
+      "from": 1,
+      "operation": "scale_up",
+      "to": 2
+    },
+    {
+      "at": "2026-08-20T18:36:12.065456Z",
+      "from": 2,
+      "operation": "scale_restore",
+      "to": 1
+    }
+  ],
+  "schema_version": "chaosatlas-sock-shop-redundancy-runtime-v1",
+  "summary": {
+    "baseline_pod_uids": [
+      "e6183197-23e6-4d89-a85d-82f1815690fa"
+    ],
+    "classification": "defended",
+    "defended_sample_count": 3,
+    "deterministic": true,
+    "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+    "per_sample": [
+      {
+        "business_success": true,
+        "classification": "defended",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "HTTP 200 persisted through a non-killed Ready Pod UID in Service endpoints",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": true,
+        "classification": "defended",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "HTTP 200 persisted through a non-killed Ready Pod UID in Service endpoints",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": true,
+        "classification": "defended",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "HTTP 200 persisted through a non-killed Ready Pod UID in Service endpoints",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      },
+      {
+        "business_success": false,
+        "classification": "platform_blocked",
+        "deterministic": true,
+        "endpoint_observed": true,
+        "endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "killed_uid": "e6183197-23e6-4d89-a85d-82f1815690fa",
+        "ready_pod_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ],
+        "reason": "business path was unavailable at the platform boundary",
+        "surviving_ready_endpoint_uids": [
+          "50438b9e-0e1c-46b3-8e77-a6ef3238595e"
+        ]
+      }
+    ],
+    "reason": "at least one synchronized sample proves redundant service capacity",
+    "sample_classifications": [
+      "defended",
+      "defended",
+      "defended",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked",
+      "platform_blocked"
+    ],
+    "sample_count": 15
+  },
+  "target": "deployment:front-end",
+  "target_replicas": 2
+}

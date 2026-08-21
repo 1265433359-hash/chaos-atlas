@@ -1,0 +1,31 @@
+{
+  "claim_scope": "deployment:front-end",
+  "deterministic": false,
+  "evidence_ids": [
+    "EV-DISAMBIG-PODS-001",
+    "EV-DISAMBIG-ENDPOINTS-001",
+    "EV-DISAMBIG-DEPLOYMENT-001",
+    "EV-DISAMBIG-EVENTS-001"
+  ],
+  "knowledge_status": "provisional",
+  "notes": [
+    "Synchronized samples captured HTTP response, Pod identity/Ready state, and Service Endpoints during the confirmed PodChaos injection window.",
+    "Three samples returned HTTP 200 while the replacement Pod was not Ready and the Endpoints object had no ready address; these are marked observation_window_artifact and are not defense evidence.",
+    "Later samples observed transport failure while the old address was notReady; about 30 seconds later the replacement Pod became Ready.",
+    "No deterministic defense claim was promoted."
+  ],
+  "observation_phase": "during_injection",
+  "project_id": "sock-shop",
+  "result_ref": "result.json",
+  "round_id": "pilot-r3-disambiguation-r2",
+  "sample_count": 19,
+  "schema_version": "chaosatlas-sock-shop-disambiguation-runtime-v1",
+  "source_round_id": "runtime-live-r1",
+  "status": "observation_inconclusive",
+  "timeline_ref": "timeline.jsonl",
+  "window": {
+    "end": "2026-08-20T15:53:41.042165Z",
+    "start": "2026-08-20T15:52:58.637130Z"
+  },
+  "window_evidence_ref": "window-evidence/result.json"
+}
