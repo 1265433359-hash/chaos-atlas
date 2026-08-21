@@ -1,0 +1,75 @@
+{
+  "apiVersion": "chaos-mesh.org/v1alpha1",
+  "kind": "PodChaos",
+  "metadata": {
+    "annotations": {
+      "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"chaos-mesh.org/v1alpha1\",\"kind\":\"PodChaos\",\"metadata\":{\"annotations\":{},\"labels\":{\"chaosatlas.dev/owner\":\"chaosatlas\",\"chaosatlas.dev/pilot\":\"ob-prior-validation\"},\"name\":\"chaosatlas-ob-prior-arm-a\",\"namespace\":\"chaosatlas-online-boutique\"},\"spec\":{\"action\":\"pod-kill\",\"mode\":\"one\",\"selector\":{\"pods\":{\"chaosatlas-online-boutique\":[\"productcatalogservice-9667b5c79-bx45n\"]}}}}\n"
+    },
+    "creationTimestamp": "2026-08-21T02:39:54Z",
+    "finalizers": [
+      "chaos-mesh/records"
+    ],
+    "generation": 5,
+    "labels": {
+      "chaosatlas.dev/owner": "chaosatlas",
+      "chaosatlas.dev/pilot": "ob-prior-validation"
+    },
+    "name": "chaosatlas-ob-prior-arm-a",
+    "namespace": "chaosatlas-online-boutique",
+    "resourceVersion": "3065865",
+    "uid": "75a8c212-a44c-4d39-b261-eaf242d4f12a"
+  },
+  "spec": {
+    "action": "pod-kill",
+    "mode": "one",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-online-boutique"
+      ],
+      "pods": {
+        "chaosatlas-online-boutique": [
+          "productcatalogservice-9667b5c79-bx45n"
+        ]
+      }
+    }
+  },
+  "status": {
+    "conditions": [
+      {
+        "status": "False",
+        "type": "Paused"
+      },
+      {
+        "status": "True",
+        "type": "Selected"
+      },
+      {
+        "status": "True",
+        "type": "AllInjected"
+      },
+      {
+        "status": "False",
+        "type": "AllRecovered"
+      }
+    ],
+    "experiment": {
+      "containerRecords": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-21T02:39:54Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-online-boutique/productcatalogservice-9667b5c79-bx45n",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "desiredPhase": "Run"
+    }
+  }
+}

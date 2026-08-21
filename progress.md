@@ -1,5 +1,14 @@
 # Progress
 
+## 2026-08-21 OB 先验验证闭环（跨项目复用完成）
+
+- 用户授权集群操作后执行两臂对照验证（`tools/run_ob_prior_validation.py` + `tools/ob_prior_validation.py` 归约器，10 个单测）：目标 `chaosatlas-online-boutique/productcatalogservice`（单副本无 PDB），oracle 为 frontend `/product/<id>`（经 productcatalog + currency）。
+- r1/r2 失败保留为证据：冷启动窗口 5xx（runner 增加有界基线重试与 HTTP 状态码记录）、`/api/products` 在该 frontend 构建中不存在（404，改用 `/product/OLJCESPC7Z`）。
+- r3 发现真实竞态：替代 Pod 在被杀同一秒创建并抢先重新注册 endpoints，但业务 gRPC 预热仍失败——中断窗口存在而旧判据（业务失败 AND endpoints 空）漏检。归约器改为"业务失败且注入前 Ready 的 Pod 已消失"共证判据（带 4 个新测试）。
+- r4 最终结果 `prior_validated`：arm A 7 个中断共证样本、arm B 64/64 存活 Pod UID/IP 共证防御样本、生命周期干净（PodChaos 全局无残留、副本还原、namespace 缩回 parked 状态 replicas=0）。
+- `ob_validation_decision.json` 记录先验从 provisional 晋级 `validated_on_target_project`；正式 OB 知识库目录仍未改动。
+- 全量 `tools/tests` 1027 passed + 5 subtests，仅剩 2 个既有 pinned-hash 漂移。
+
 ## 2026-08-21 跨项目知识投影（sock-shop -> Online Boutique）
 
 - 人工审核完成：项目所有者阅读 `runtime-live-r4-final/HUMAN_REVIEW.zh-CN.md` 后决定 `approved_local_reuse_with_cross_project_projection`，记录于 `human_review_decision.json`；跨项目模式为 `provisional_prior_pending_target_project_validation`。

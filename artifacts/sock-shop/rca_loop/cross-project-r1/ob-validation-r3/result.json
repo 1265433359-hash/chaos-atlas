@@ -1,0 +1,54 @@
+{
+  "arm_a": {
+    "classification": "observation_inconclusive",
+    "deterministic": false,
+    "observation_window_artifact_count": 0,
+    "outage_sample_count": 0,
+    "reason": "no synchronized outage sample was captured; the prior is not validated by this arm",
+    "sample_count": 37
+  },
+  "arm_a_killed_uid": "73b7d340-4431-4561-a7c6-b73f66a5591b",
+  "arm_a_sample_count": 37,
+  "arm_b": {
+    "classification": "defended",
+    "defended_sample_count": 30,
+    "deterministic": true,
+    "reason": "HTTP 200 persisted through a non-killed Ready pod IP in Service endpoints",
+    "sample_count": 37
+  },
+  "arm_b_killed_uid": "645c4eef-1b76-4a40-8c7f-e701964dded4",
+  "arm_b_sample_count": 37,
+  "cleanup_errors": [],
+  "namespace": "chaosatlas-online-boutique",
+  "oracle": "frontend /product/OLJCESPC7Z",
+  "residual_podchaos": [],
+  "restored_replicas": 1,
+  "round_id": "cross-project-r1-ob-validation",
+  "run_error": null,
+  "schema_version": "chaosatlas-ob-prior-validation-v1",
+  "summary": {
+    "arm_a": {
+      "classification": "observation_inconclusive",
+      "deterministic": false,
+      "observation_window_artifact_count": 0,
+      "outage_sample_count": 0,
+      "reason": "no synchronized outage sample was captured; the prior is not validated by this arm",
+      "sample_count": 37
+    },
+    "arm_b": {
+      "classification": "defended",
+      "defended_sample_count": 30,
+      "deterministic": true,
+      "reason": "HTTP 200 persisted through a non-killed Ready pod IP in Service endpoints",
+      "sample_count": 37
+    },
+    "lifecycle": {
+      "cleanup_ok": true,
+      "residual_chaos_count": 0,
+      "restored_replicas": 1
+    },
+    "reason": "at least one arm failed to reproduce the expected mechanism; the prior stays provisional",
+    "verdict": "not_validated"
+  },
+  "target": "deployment:productcatalogservice"
+}

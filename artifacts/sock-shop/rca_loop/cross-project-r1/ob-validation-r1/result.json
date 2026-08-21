@@ -1,0 +1,54 @@
+{
+  "arm_a": {
+    "classification": "observation_inconclusive",
+    "deterministic": false,
+    "observation_window_artifact_count": 0,
+    "outage_sample_count": 0,
+    "reason": "no synchronized outage sample was captured; the prior is not validated by this arm",
+    "sample_count": 0
+  },
+  "arm_a_killed_uid": "",
+  "arm_a_sample_count": 0,
+  "arm_b": {
+    "classification": "observation_inconclusive",
+    "defended_sample_count": 0,
+    "deterministic": false,
+    "reason": "no synchronized sample proved surviving-replica service; the prior is not validated by this arm",
+    "sample_count": 0
+  },
+  "arm_b_killed_uid": "",
+  "arm_b_sample_count": 0,
+  "cleanup_errors": [],
+  "namespace": "chaosatlas-online-boutique",
+  "oracle": "frontend /api/products",
+  "residual_podchaos": [],
+  "restored_replicas": 1,
+  "round_id": "cross-project-r1-ob-validation",
+  "run_error": "RuntimeError: business oracle baseline failed: [{'observed_at': '2026-08-21T02:33:15.996741Z', 'status_code': None, 'error': 'HTTPError', 'contract_ok': False}, {'observed_at': '2026-08-21T02:33:16.029960Z', 'status_code': None, 'error': 'HTTPError', 'contract_ok': False}, {'observed_at': '2026-08-21T02:33:16.035781Z', 'status_code': None, 'error': 'HTTPError', 'contract_ok': False}]",
+  "schema_version": "chaosatlas-ob-prior-validation-v1",
+  "summary": {
+    "arm_a": {
+      "classification": "observation_inconclusive",
+      "deterministic": false,
+      "observation_window_artifact_count": 0,
+      "outage_sample_count": 0,
+      "reason": "no synchronized outage sample was captured; the prior is not validated by this arm",
+      "sample_count": 0
+    },
+    "arm_b": {
+      "classification": "observation_inconclusive",
+      "defended_sample_count": 0,
+      "deterministic": false,
+      "reason": "no synchronized sample proved surviving-replica service; the prior is not validated by this arm",
+      "sample_count": 0
+    },
+    "lifecycle": {
+      "cleanup_ok": false,
+      "residual_chaos_count": 0,
+      "restored_replicas": 1
+    },
+    "reason": "cleanup, replica restoration, or residual-chaos checks failed; no knowledge claim may be derived",
+    "verdict": "lifecycle_invalid"
+  },
+  "target": "deployment:productcatalogservice"
+}
