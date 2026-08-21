@@ -7,6 +7,7 @@
 - 新增 `tools/run_sock_shop_rca_retrieval_replay.py`：固定 5 个 Sock Shop 候选的同项目离线重放。真实快照结果：2 个 front-end pod-kill 候选被 guard 卡命中且不加分，3 个无关候选排名与无快照基线完全一致；产物在 `artifacts/sock-shop/rca_loop/retrieval-replay-r1/`。
 - 验证：新增/相关测试 79 passed；全量 `tools/tests` 1012 passed + 5 subtests，仅剩 2 个既有 pinned-hash 漂移失败（历史消融产物，未触碰）。py_compile 通过。无集群操作、无模型调用、无知识库正式写入。
 - 边界：跨项目复用仍需人工审核与既有 feedback protocol；正式 KB 未更新。
+- 后续收尾（同日）：提交了上一轮 RCA disambiguation/redundancy 代码与产物链（commit `9ba36d2`，225 个文件，敏感扫描仅命中 serviceaccount 挂载元数据）；生成 `runtime-live-r4-final/HUMAN_REVIEW.zh-CN.md` 人工审核材料，明确列出 r4 的 3 defended + 12 platform_blocked 样本构成、1 条已降级反对证据和三项待审决定（local_reuse 批准 / 跨项目投影授权 / 驳回处置）。审核决定写入 `human_review_decision.json` 前跨项目迁移保持阻塞。
 
 ## Phase 2 native discovery space (2026-08-20)
 
