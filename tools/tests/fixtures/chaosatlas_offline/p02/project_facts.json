@@ -1,0 +1,13 @@
+{
+  "schema_version": "chaosatlas-offline-facts-v1",
+  "project_id": "p02",
+  "project_commit": "p02-fixture-commit",
+  "namespace": "p02-lab",
+  "services": ["api-gateway", "customers-service", "visits-service"],
+  "deployments": [
+    {"name": "api-gateway", "selector": {"app": "api-gateway"}, "desired_replicas": 2},
+    {"name": "visits-service", "selector": {"app": "visits-service"}, "desired_replicas": 1}
+  ],
+  "dependencies": [{"source": "api-gateway", "target": "visits-service", "relation": "http"}],
+  "business_oracles": [{"id": "p02-homepage", "kind": "http", "entrypoint": "/", "success_contract": "http_200"}]
+}
