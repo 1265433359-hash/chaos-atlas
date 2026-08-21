@@ -1,0 +1,75 @@
+{
+  "apiVersion": "chaos-mesh.org/v1alpha1",
+  "kind": "PodChaos",
+  "metadata": {
+    "annotations": {
+      "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"chaos-mesh.org/v1alpha1\",\"kind\":\"PodChaos\",\"metadata\":{\"annotations\":{},\"labels\":{\"chaosatlas.dev/owner\":\"chaosatlas\",\"chaosatlas.dev/pilot\":\"p02-prior-validation\"},\"name\":\"chaosatlas-p02-prior-arm-a\",\"namespace\":\"chaosatlas-p02\"},\"spec\":{\"action\":\"pod-kill\",\"mode\":\"one\",\"selector\":{\"pods\":{\"chaosatlas-p02\":[\"customers-service-6979fc9974-8cksw\"]}}}}\n"
+    },
+    "creationTimestamp": "2026-08-21T03:39:12Z",
+    "finalizers": [
+      "chaos-mesh/records"
+    ],
+    "generation": 5,
+    "labels": {
+      "chaosatlas.dev/owner": "chaosatlas",
+      "chaosatlas.dev/pilot": "p02-prior-validation"
+    },
+    "name": "chaosatlas-p02-prior-arm-a",
+    "namespace": "chaosatlas-p02",
+    "resourceVersion": "3072385",
+    "uid": "71ebeb85-4ade-4c4c-87e1-15b9fab2fc47"
+  },
+  "spec": {
+    "action": "pod-kill",
+    "mode": "one",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-p02"
+      ],
+      "pods": {
+        "chaosatlas-p02": [
+          "customers-service-6979fc9974-8cksw"
+        ]
+      }
+    }
+  },
+  "status": {
+    "conditions": [
+      {
+        "status": "False",
+        "type": "Paused"
+      },
+      {
+        "status": "True",
+        "type": "Selected"
+      },
+      {
+        "status": "True",
+        "type": "AllInjected"
+      },
+      {
+        "status": "False",
+        "type": "AllRecovered"
+      }
+    ],
+    "experiment": {
+      "containerRecords": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-08-21T03:39:12Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-p02/customers-service-6979fc9974-8cksw",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "desiredPhase": "Run"
+    }
+  }
+}

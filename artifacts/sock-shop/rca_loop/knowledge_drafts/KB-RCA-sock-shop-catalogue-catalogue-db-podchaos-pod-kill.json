@@ -1,53 +1,9 @@
 {
-  "schema_version": "chaosatlas-rca-knowledge-draft-v1",
-  "id": "KB-RCA-sock-shop-catalogue-catalogue-db-podchaos-pod-kill",
-  "version": 1,
-  "status": "provisional",
-  "evidence_state": {
-    "supports": 1,
-    "contradicts": 0,
-    "unavailable": 2,
-    "neutral": 0
-  },
-  "project": "sock-shop",
-  "project_commit": "sock-shop-fixture-commit",
-  "round_id": "pilot-r1",
-  "weakness_id": "WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill",
-  "case_family": "catalogue_db_podkill",
-  "weakness_status": "confirmed",
-  "rca_status": "bounded",
-  "knowledge_status": "provisional",
-  "mechanism_claim": "catalogue requests fail because the database connection itself is unavailable while catalogue-db is down",
-  "mechanism_level": "dependency",
-  "test_node": {
-    "family": "PodChaos",
-    "operation": "pod-kill",
-    "target_role": "catalogue-db deployment",
-    "source_ref": "artifacts/sock-shop/catalogue-db-reset.yaml"
-  },
-  "test_node_centered_graph": {
-    "edge": "catalogue-db deployment",
-    "scope": {
-      "services": [
-        "catalogue-db deployment"
-      ],
-      "edge": "catalogue-db deployment"
-    }
-  },
-  "four_layer_validation": {
-    "availability": false,
-    "contract": false,
-    "business_path": true,
-    "recovery": false
-  },
   "applicability_conditions": [
     "stateful dependency with a single instance",
     "business path crossing the dependency boundary"
   ],
-  "exclusion_conditions": [
-    "cross_project_transfer_requires_existing_feedback_protocol",
-    "must_not_be_promoted_to_timeout_mechanism_without_source_evidence"
-  ],
+  "case_family": "catalogue_db_podkill",
   "counter_evidence": [],
   "evidence_refs": [
     {
@@ -67,18 +23,74 @@
       "kind": "source_span",
       "polarity": "unavailable",
       "source_ref": "artifacts/sock-shop/sock_shop_verdicts.json"
+    },
+    {
+      "evidence_id": "EV-SS-CATDB-CLOSURE-ARM-A-001",
+      "interpretation": "killing the only catalogue-db pod broke the front-end /catalogue oracle for 54 synchronized samples while no pre-injection Ready pod was serving",
+      "kind": "business_path_replay",
+      "polarity": "supports",
+      "source_ref": "artifacts/sock-shop/rca_loop/card-closure/catalogue-db-r2/result.json#arm_a"
+    },
+    {
+      "evidence_id": "EV-SS-CATDB-CLOSURE-ARM-B-001",
+      "interpretation": "with two self-seeding catalogue-db replicas the same kill left the business oracle served by the surviving Ready pod (co-proof samples)",
+      "kind": "counterfactual",
+      "polarity": "supports",
+      "source_ref": "artifacts/sock-shop/rca_loop/card-closure/catalogue-db-r2/result.json#arm_b"
     }
   ],
-  "regression_recipe": {
-    "oracle": "catalogue business path",
-    "selected_next_action": "A-SS-CATDB-CONFIG-001"
+  "evidence_state": {
+    "supports": 3,
+    "unavailable": 2
   },
+  "exclusion_conditions": [
+    "cross_project_transfer_requires_existing_feedback_protocol",
+    "must_not_be_promoted_to_timeout_mechanism_without_source_evidence"
+  ],
+  "four_layer_validation": {
+    "availability": false,
+    "business_path": true,
+    "contract": false,
+    "recovery": false
+  },
+  "id": "KB-RCA-sock-shop-catalogue-catalogue-db-podchaos-pod-kill",
+  "knowledge_status": "local_reusable",
+  "mechanism_claim": "catalogue requests fail because the database connection itself is unavailable while catalogue-db is down",
+  "mechanism_level": "dependency",
   "next_evidence": [
     "connection_failure_to_request_error_link",
     "discriminating_replay",
     "scoped_catalogue_logs",
     "source_or_config_mapping"
   ],
+  "project": "sock-shop",
+  "project_commit": "sock-shop-fixture-commit",
+  "rca_status": "bounded",
   "regression_intents": [],
-  "stop_rule": "stop after two valid reproductions or one clean falsification"
+  "regression_recipe": {
+    "oracle": "catalogue business path",
+    "selected_next_action": "A-SS-CATDB-CONFIG-001"
+  },
+  "round_id": "card-closure-catalogue-db-r1",
+  "schema_version": "chaosatlas-rca-knowledge-draft-v1",
+  "status": "local_reusable",
+  "stop_rule": "stop after two valid reproductions or one clean falsification",
+  "test_node": {
+    "family": "PodChaos",
+    "operation": "pod-kill",
+    "source_ref": "artifacts/sock-shop/catalogue-db-reset.yaml",
+    "target_role": "catalogue-db deployment"
+  },
+  "test_node_centered_graph": {
+    "edge": "catalogue-db deployment",
+    "scope": {
+      "edge": "catalogue-db deployment",
+      "services": [
+        "catalogue-db deployment"
+      ]
+    }
+  },
+  "version": 2,
+  "weakness_id": "WS-sock-shop-catalogue-catalogue-db-podchaos-pod-kill",
+  "weakness_status": "confirmed"
 }

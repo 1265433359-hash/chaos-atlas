@@ -1,0 +1,52 @@
+{
+  "arm_a": {
+    "classification": "weakness_reproduced",
+    "deterministic": true,
+    "observation_window_artifact_count": 0,
+    "outage_sample_count": 13,
+    "reason": "business oracle failed while no pre-injection Ready pod was still serving",
+    "sample_count": 13
+  },
+  "arm_a_killed_uid": "abdd3c1b-a31f-4147-8bd0-1ccfb8c035b2",
+  "arm_b": {
+    "classification": "defended",
+    "defended_sample_count": 70,
+    "deterministic": true,
+    "reason": "HTTP 200 persisted through a non-killed Ready pod IP in Service endpoints",
+    "sample_count": 70
+  },
+  "arm_b_killed_uid": "8fa96e17-de49-4d95-a3b3-f3ee1f281a04",
+  "cleanup_errors": [],
+  "namespace": "chaosatlas-p02",
+  "oracle": "api-gateway /api/gateway/owners/1",
+  "residual_podchaos": [],
+  "restored_replicas": 1,
+  "round_id": "cross-project-r1-p02-validation",
+  "run_error": null,
+  "schema_version": "chaosatlas-p02-prior-validation-v1",
+  "summary": {
+    "arm_a": {
+      "classification": "weakness_reproduced",
+      "deterministic": true,
+      "observation_window_artifact_count": 0,
+      "outage_sample_count": 13,
+      "reason": "business oracle failed while no pre-injection Ready pod was still serving",
+      "sample_count": 13
+    },
+    "arm_b": {
+      "classification": "defended",
+      "defended_sample_count": 70,
+      "deterministic": true,
+      "reason": "HTTP 200 persisted through a non-killed Ready pod IP in Service endpoints",
+      "sample_count": 70
+    },
+    "lifecycle": {
+      "cleanup_ok": true,
+      "residual_chaos_count": 0,
+      "restored_replicas": 1
+    },
+    "reason": "both arms reproduced their expected mechanism and the lifecycle was restored cleanly",
+    "verdict": "prior_validated"
+  },
+  "target": "deployment:customers-service"
+}

@@ -1,5 +1,14 @@
 # Findings
 
+## Prior consumption, reproduction, and third migration (2026-08-21 evening)
+
+- The validated prior is now a live decision input, not just an archived verdict: OB kill candidates matching the card get the local_reusable boost plus the observation-window-artifact diagnostic, and unrelated candidates are byte-identical with/without the snapshot. Fail-closed gate: an un-validated verdict cannot produce a retrieval snapshot at all.
+- Two independent OB runs (r4/r5) and a third migration to P02 Spring Petclinic (Java/Spring Cloud, gateway oracle) all reached `prior_validated`. The mechanism held across Go/Node and Java stacks; arm B co-proof was 30/37, 31/38, and 70/70 respectively.
+- Oracle fidelity decides card closure: the Sock Shop `/` page returns HTTP 200 with an empty product grid while the catalogue chain is broken, so the home page cannot detect a catalogue-db outage. Switching to the `/catalogue` JSON oracle (contract = product array marker) turned an inconclusive run into 54 synchronized outage samples. Closure r1 is retained as evidence of this trap.
+- The stateful-singlet case (catalogue-db, mongo) still validated the redundancy mechanism because each replica self-seeds at startup; the closure runner was built to accept the honest opposite outcome (`naive_scale_out_not_a_defense`) rather than forcing promotion.
+- The HTTP abort card closed with `transport_abort_propagates`: confirmed Response abort on the front-end->catalogue edge surfaced as HTTP 500 at the oracle with no graceful degradation; no redundancy counterfactual applies to an edge fault, recorded as an explicit exclusion.
+- Spring Cloud cold start is an environment fact, not a method failure: the P02 gateway route needed >5 minutes after pod Ready; r1's 300-second baseline window is retained as failed evidence and the runner's window was extended to 1800 seconds.
+
 ## Cross-project RCA knowledge projection (2026-08-21)
 
 - The human review decision is now machine-consumable: `project_sock_shop_rca_cross_project.py` refuses to run unless `human_review_decision.json` authorizes projection, and re-derives every evidence claim from the archived artifacts (AllInjected condition, outage timeline sample, empty residue, counterfactual co-proof, replica restoration) instead of trusting the review summary.

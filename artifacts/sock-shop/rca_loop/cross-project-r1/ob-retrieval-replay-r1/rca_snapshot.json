@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "tool": "build_ob_rca_snapshot",
+  "project": "online-boutique",
+  "cards": [
+    {
+      "id": "FA-7ff5b1794a0758d4",
+      "knowledge_status": "local_reusable",
+      "contested": false,
+      "closed_boundary": false,
+      "weakness_id": null,
+      "project": "online-boutique",
+      "edge": null,
+      "test_node": {
+        "family": "PodChaos",
+        "operation": "pod-kill",
+        "target_role": "single-replica deployment"
+      },
+      "mechanism_claim": "single-replica deployment without a pod disruption budget under kill or cpu fault families: full outage window until a replacement pod becomes Ready and enters Service endpoints",
+      "applicability_conditions": [
+        "single-replica deployment without a pod disruption budget under kill or cpu fault families"
+      ],
+      "stop_rule": null,
+      "next_evidence": [
+        "ob single-replica kill/cpu candidates carry the observation-window-artifact caveat"
+      ],
+      "source": {
+        "source_card": "KB-RCA-sock-shop-front-end-podchaos-pod-kill",
+        "cross_project_dir": "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\artifacts\\sock-shop\\rca_loop\\cross-project-r1",
+        "validation_run": "ob-validation-r4",
+        "validation_verdict": "prior_validated"
+      }
+    }
+  ]
+}

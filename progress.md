@@ -1,5 +1,14 @@
 # Progress
 
+## 2026-08-21 三步推进：检索接入、二次复现、第三迁移（2026-08-21 晚）
+
+- 步骤 1（OB 检索接入）：新增 `build_ob_rca_snapshot.py`（读 `ob_validation_decision.json`，verdict 非 `prior_validated` 即 fail-closed；只投影 abstraction + provenance）和 `run_ob_rca_retrieval_replay.py`。真实重放：两个 OB kill 候选被先验卡命中并加分、携带 observation-window-artifact 诊断，两个无关候选分数不变；产物 `cross-project-r1/ob-retrieval-replay-r1/`。
+- 步骤 2（二次复现）：`ob-validation-r5` 独立复现同样 `prior_validated`（arm A 7 中断共证、arm B 31 防御共证、生命周期干净）。
+- 步骤 3a（sock-shop 两张 provisional 卡闭合）：`run_sock_shop_card_closure.py` 双臂闭合 catalogue-db（r1 因 `/` oracle 不穿透 catalogue 链路而无差异，保留为证据；r2 改用 `/catalogue` JSON oracle 后 arm A 54 中断共证、arm B 10 防御共证 → `redundancy_mechanism_confirmed`）；http-abort 单臂确认（`transport_abort_propagates`，500、无优雅降级）。`apply_card_closure.py` 按闭合 disposition 确定性晋级两张卡至 v2 `local_reusable`，RCA 验证器 `valid=True errors=0 warnings=0`。
+- 步骤 3b（第三迁移，P02 Spring Petclinic 替代无 HTTP 入口的 OTel）：`run_p02_prior_validation.py` 双臂验证 customers-service（oracle `/api/gateway/owners/1`）。r1 保留为失败证据（Spring 冷启动网关路由解析 >300s，基线窗口不足）；r2 在预热栈上 `prior_validated`（arm A 13 中断共证、arm B 70/70 防御共证、生命周期干净）。Java/Spring 栈与 Go/Node 栈的第三次迁移成立，台账见 `cross-project-r1/migration_ledger.json`。
+- 集群收尾：sock-shop 保持原状；OB 与 P02 namespace 均缩回 parked replicas=0；全局 PodChaos/HTTPChaos 为空。
+- 验证：全量 `tools/tests` 1033 passed + 5 subtests，仅剩 2 个既有 pinned-hash 漂移；新增 12 个测试（OB snapshot/replay 6 + card closure 门禁 2 + reducers 增补 4 在既有文件内）。
+
 ## 2026-08-21 OB 先验验证闭环（跨项目复用完成）
 
 - 用户授权集群操作后执行两臂对照验证（`tools/run_ob_prior_validation.py` + `tools/ob_prior_validation.py` 归约器，10 个单测）：目标 `chaosatlas-online-boutique/productcatalogservice`（单副本无 PDB），oracle 为 frontend `/product/<id>`（经 productcatalog + currency）。
