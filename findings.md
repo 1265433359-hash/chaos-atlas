@@ -1,5 +1,18 @@
 # Findings
 
+## RCA local_reusable retrieval + decision guard (2026-08-21)
+
+- The closed front-end pod-kill line now reaches the decision engine as a guard, not a boost: a matching `local_reusable` card with `closed_boundary=true` (derived from the kind=guard regression intent `closed_runtime_boundary_no_reinjection`) keeps the baseline score and blocks re-injection while preserving next-evidence diagnostics.
+- The rca_snapshot projection is deliberately lossy: only engine-consumed fields plus source path/SHA-256 provenance are exported. Evidence dumps stay in the round directory, so retrieval cannot leak raw evidence into ranking inputs.
+- Same-project replay on the real r4-final round: both front-end pod-kill candidates are retrieved by family/operation and edge, and all three unrelated candidates rank identically with and without the snapshot — the guard changes only the closed line's decision context.
+- Boundary: this is project-local retrieval only. Cross-project reuse still requires human review plus the existing feedback protocol; the formal KB remains untouched.
+
+## Phase 0 project onboarding (2026-08-20)
+
+- A project profile is now a schema/input contract, not proof that a project is runtime-ready. The CLI reports `ready_for_static_analysis` and explicitly leaves runtime as `not_checked`.
+- Result claims are normalized independently from existing classifier labels. `response_observed` maps to `response_preserved`, while `defended` requires confirmed injection, evidence, recovery and cleanup.
+- Existing gate and knowledge validator behavior remains compatible; focused phase-0 tests passed. Windows pytest cache warnings remain environmental and do not affect assertions.
+
 ## Git upload preparation pass (2026-08-14)
 - Current branch is `remediation/2026-08-09-review`, local HEAD `f4242b9`, ahead of `origin/remediation/2026-08-09-review` by 5 commits.
 - The worktree had 176 visible status entries before cleanup: 26 tracked modifications and 150 untracked entries. The untracked set included many `.tmp-*` verification directories, so upload preparation must not use `git add .`.

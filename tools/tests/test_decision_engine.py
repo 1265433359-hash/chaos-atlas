@@ -104,6 +104,16 @@ class RcaSnapshotTests(unittest.TestCase):
         self.assertEqual(scored["score"], base["score"])
         self.assertTrue(any("contested" in r.lower() for r in scored["reasons"]))
 
+    def test_closed_boundary_card_guards_instead_of_boosting(self):
+        card = self._card("local_reusable")
+        card["closed_boundary"] = True
+        cand = {"candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100", "edge": "front-end->catalogue"}
+        base = score_candidate(dict(cand))
+        scored = score_candidate(dict(cand), rca_snapshot={"schema_version": 1, "cards": [card]})
+        self.assertEqual(scored["score"], base["score"])
+        self.assertTrue(any("closed runtime boundary" in r.lower() for r in scored["reasons"]))
+        self.assertIn("scoped_front_end_logs", scored.get("required_diagnostics", []))
+
     def test_rank_forwards_rca_snapshot(self):
         candidates = [
             {"candidate_id": "SOCK-FRONTEND-CATALOGUE-LOSS-100", "edge": "front-end->catalogue"},
@@ -187,3 +197,33 @@ class RcaClosedLoopTests(unittest.TestCase):
         first = rank([dict(c) for c in candidates], rca_snapshot=snapshot)
         second = rank([dict(c) for c in candidates], rca_snapshot=snapshot)
         self.assertEqual(first, second)
+
+
+class NativeCandidateTests(unittest.TestCase):
+    def test_rank_accepts_native_deployment_candidates_without_legacy_service_parsing(self):
+        candidates = [
+            {"candidate_id": "deployment:api", "target": "deployment:api", "target_kind": "deployment", "fault_family": "pod_kill", "status": "eligible", "validation_plan": "baseline inject observe recover cleanup"},
+            {"candidate_id": "dependency_edge:api->db", "target": "api->db", "target_kind": "dependency_edge", "fault_family": "network_loss", "status": "eligible", "validation_plan": "baseline inject observe recover cleanup"},
+        ]
+        result = rank(candidates)
+        self.assertEqual({item["candidate_id"] for item in result}, {"deployment:api", "dependency_edge:api->db"})
+        self.assertTrue(all("runtime verdict" not in " ".join(item["reasons"]).lower() for item in result))
+
+    def test_native_knowledge_changes_priority_and_adds_diagnostic_only(self):
+        candidates = [
+            {"candidate_id": "deployment:api", "target": "deployment:api", "target_kind": "deployment", "fault_family": "pod_kill", "status": "eligible", "validation_plan": "baseline inject observe recover cleanup"},
+            {"candidate_id": "deployment:db", "target": "deployment:db", "target_kind": "deployment", "fault_family": "network_loss", "status": "eligible", "validation_plan": "baseline inject observe recover cleanup"},
+        ]
+        snapshot = {
+            "schema_version": 1,
+            "provenance": {"kind": "test", "provenance_completeness": "complete", "sha256": {"x": "a"}},
+            "source_provenance": {key: "pre_experiment_commit" for key in ("contract", "availability", "selection_experience", "defense_pattern_library", "judgment_experience")},
+            "contract": {"contracts": {}, "availability": {}, "candidate_map": {}},
+            "selection_experience": {"entries": [{"id": "SE-NATIVE-POD-KILL", "confidence": "high", "fault_family": "pod_kill"}]},
+            "defense_pattern_library": {"patterns": []},
+            "judgment_experience": {"entries": []},
+        }
+        result = rank(candidates, knowledge_snapshot=snapshot)
+        self.assertEqual(result[0]["candidate_id"], "deployment:api")
+        self.assertTrue(any("native" in reason.lower() for reason in result[0]["reasons"]))
+        self.assertIsInstance(result[0]["required_diagnostics"], list)

@@ -288,6 +288,21 @@ def availability_hard_filter(candidate: dict[str, Any], contract_snapshot: dict[
     """
     from project_registry import project_of, normalize_service, fault_of
 
+    # Native deployment nodes are preferred when supplied.  Their static
+    # prior is a routing hint only; runtime availability/recovery oracles still
+    # decide the outcome.  The legacy candidate path below remains compatible
+    # with existing contract-inventory snapshots.
+    native_node = candidate.get("deployment_node") if isinstance(candidate.get("deployment_node"), dict) else None
+    if native_node:
+        deployment = native_node.get("deployment") or {}
+        profile = native_node.get("availability_profile") or {}
+        replicas = deployment.get("desired_replicas")
+        if isinstance(replicas, bool) or not isinstance(replicas, int):
+            return {"availability_status": "static_blocked", "runtime_required": True, "reason": "deployment replica fact unavailable; no static prior"}
+        if replicas == 1 and not profile.get("pdb"):
+            return {"availability_static_prior": True, "runtime_required": True, "availability_status": "static_prior", "reason": "single-replica no-PDB deployment requires runtime availability/recovery validation"}
+        return {"availability_static_prior": False, "runtime_required": True, "availability_status": "redundant", "reason": "deployment manifest shows redundancy; runtime oracle remains authoritative"}
+
     cid = candidate.get("candidate_id", "")
     if not cid:
         return {}
@@ -374,6 +389,58 @@ def contract_hard_filter(candidate: dict[str, Any], contract_snapshot: dict[str,
     return {}
 
 
+def _score_native_candidate(
+    candidate: dict[str, Any],
+    knowledge_snapshot: dict[str, Any] | None,
+) -> dict[str, Any]:
+    """Score manifest-derived candidates without invoking legacy project rules.
+
+    Native deployment/edge/scenario candidates have no historical project
+    prefix.  Knowledge can raise priority or add diagnostics, but this path
+    never emits a runtime verdict and never turns static facts into weakness.
+    """
+    candidate_id = candidate.get("candidate_id") or candidate.get("target")
+    target_kind = str(candidate.get("target_kind") or "")
+    family = str(candidate.get("fault_family") or "")
+    base = float(candidate.get("base_score", BASE))
+    score = base
+    reasons = [f"native {target_kind} candidate", f"static applicability: {candidate.get('status', 'unknown')}"]
+    diagnostics = [
+        "confirm namespace-local selector and target readiness",
+        "use independent business oracle and recovery evidence",
+    ]
+    if candidate.get("status") == "blocked":
+        reasons.extend(f"blocked: {reason}" for reason in candidate.get("blocked_reasons", []))
+        return {
+            "candidate_id": candidate_id,
+            "edge": candidate.get("edge"),
+            "score": -999.0,
+            "priority": "static_blocked",
+            "reasons": reasons,
+            "required_diagnostics": diagnostics,
+            "runtime_verdict": None,
+        }
+    if knowledge_snapshot is not None:
+        entries = _snapshot_se(knowledge_snapshot, "_score_native_candidate").get("entries", [])
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("fault_family") == family or entry.get("target_kind") == target_kind:
+                weight = _se_weight(entry)
+                score += weight * 10.0
+                reasons.append(f"native knowledge {entry.get('id', '<unknown>')} (w={weight:.2f})")
+                diagnostics.extend(str(item) for item in entry.get("diagnostics", []))
+    return {
+        "candidate_id": candidate_id,
+        "edge": candidate.get("edge"),
+        "score": round(score, 1),
+        "priority": "high" if score > base else "normal",
+        "reasons": reasons,
+        "required_diagnostics": sorted(set(diagnostics)),
+        "runtime_verdict": None,
+    }
+
+
 RCA_SNAPSHOT_SCHEMA_VERSION = 1
 RCA_REUSABLE_BONUS = 20.0
 
@@ -417,9 +484,17 @@ def _rca_influence(candidate: dict[str, Any], rca_snapshot: dict[str, Any] | Non
         card_id = card.get("id", "<unknown>")
         status = card.get("knowledge_status")
         if status == "local_reusable" and not card.get("contested"):
-            bonus += RCA_REUSABLE_BONUS
-            reasons.append(f"RCA {card_id}: local_reusable boundary knowledge raises priority")
-            diagnostics.extend(str(item) for item in card.get("next_evidence", []))
+            if card.get("closed_boundary"):
+                # The runtime line was closed by its guard regression intent
+                # (closed_runtime_boundary_no_reinjection): the knowledge is a
+                # guard, not a priority boost. Re-injection stays blocked while
+                # the next-evidence diagnostics remain retrievable.
+                reasons.append(f"RCA {card_id}: local_reusable closed runtime boundary; re-injection guarded (no score change)")
+                diagnostics.extend(str(item) for item in card.get("next_evidence", []))
+            else:
+                bonus += RCA_REUSABLE_BONUS
+                reasons.append(f"RCA {card_id}: local_reusable boundary knowledge raises priority")
+                diagnostics.extend(str(item) for item in card.get("next_evidence", []))
         elif status == "contested" or card.get("contested"):
             reasons.append(f"RCA {card_id}: contested card ignored as a strong prior")
         else:
@@ -442,6 +517,8 @@ def score_candidate(
     """
     if knowledge_snapshot is not None:
         validate_knowledge_snapshot(knowledge_snapshot)
+    if str(candidate.get("target_kind") or "") in {"dependency_edge", "deployment", "scenario"}:
+        return _score_native_candidate(candidate, knowledge_snapshot)
     # Hard constraint 1: availability layer — single-replica no-PDB kill/cpu
     # verdict is known a priori (AD-REDUNDANCY-001), route to availability track.
     avail = availability_hard_filter(candidate, contract_snapshot=knowledge_snapshot)

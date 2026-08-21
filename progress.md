@@ -1,5 +1,30 @@
 # Progress
 
+## 2026-08-21 Sock Shop RCA local_reusable 检索与决策 guard 闭环
+
+- 新增 `tools/build_sock_shop_rca_snapshot.py`：把 `runtime-live-r4-final` 的知识草稿投影为决策引擎消费的 `rca_snapshot`（schema_version=1）。只投影引擎字段（无 evidence dump），记录来源路径与 SHA-256；schema 漂移、未知 knowledge_status、缺 regression intents 全部 fail-closed。
+- `closed_boundary` 从该轮 kind=guard 回归意图（`closed_runtime_boundary_no_reinjection`）推导：`tools/decision_engine.py` 中匹配的 `local_reusable` 闭合卡不再加分，而是输出"closed runtime boundary; re-injection guarded"并保留 next-evidence 诊断；provisional/contested 行为不变。
+- 新增 `tools/run_sock_shop_rca_retrieval_replay.py`：固定 5 个 Sock Shop 候选的同项目离线重放。真实快照结果：2 个 front-end pod-kill 候选被 guard 卡命中且不加分，3 个无关候选排名与无快照基线完全一致；产物在 `artifacts/sock-shop/rca_loop/retrieval-replay-r1/`。
+- 验证：新增/相关测试 79 passed；全量 `tools/tests` 1012 passed + 5 subtests，仅剩 2 个既有 pinned-hash 漂移失败（历史消融产物，未触碰）。py_compile 通过。无集群操作、无模型调用、无知识库正式写入。
+- 边界：跨项目复用仍需人工审核与既有 feedback protocol；正式 KB 未更新。
+
+## Phase 2 native discovery space (2026-08-20)
+
+- Added `tools/candidate_coverage_denominator.py` to enumerate static `dependency_edge`, `deployment`, and `scenario` candidates from frozen topology/deployment facts.
+- Added independent `coverage_denominator/seed-*.json` artifacts to `run_native_full_discovery.py`; denominator is `static_only` and contains no runtime results or CE verdicts.
+- Native discovery prompts now receive only bounded candidate facts and explicitly forbid runtime verdicts, runtime observations, mutation paths, and CE-selected hypotheses.
+- Extended `decision_engine.rank()` with a native candidate path that accepts deployment/edge/scenario candidates without legacy project-prefix parsing; knowledge can alter priority and diagnostics only.
+- Missing selector, business oracle, or recovery contract produces `blocked` candidates. Deployment capability nodes now carry a declared recovery contract.
+- Verification: Phase 1 + Phase 2 focused combination `46 passed`; full runtime/cluster execution remains `not_run` and no native capability claim is made from offline tests alone.
+
+## Phase 0 project onboarding (2026-08-20)
+
+- Added `tools/project_onboarding.py` with profile schema validation, local-input inspection, unified result mapping and defense-claim gates.
+- Added `artifacts/project_profiles/sock-shop/project_profile.json` and `docs/PROJECT_ONBOARDING.md`.
+- Integrated `result_contract` into `runtime_applicability_gate.py` and `classify_runtime_result.py`; integrated optional profile validation into `validate_knowledge_base.py`.
+- Verification: 29 focused tests + 5 subtests passed; 186 RCA/knowledge integration tests passed; profile CLI returned `ready_for_static_analysis`; Python compilation and `git diff --check` passed.
+- Boundary: runtime remains `not_checked`; no cluster, deployment, injection, model call or secret access occurred.
+
 ## Session 4 offline statistics (2026-08-12)
 
 - Added `tools/analyze_chaosatlas_statistics.py` and `docs/CHAOSATLAS_STATISTICS.md`.

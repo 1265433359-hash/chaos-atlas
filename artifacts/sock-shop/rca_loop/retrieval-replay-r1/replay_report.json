@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "tool": "run_sock_shop_rca_retrieval_replay",
+  "source_round": "C:\\Users\\23741\\Desktop\\XIAO\\ChaosAtlas\\artifacts\\sock-shop\\rca_loop\\runtime-live-r4-final",
+  "guard_card": "KB-RCA-sock-shop-front-end-podchaos-pod-kill",
+  "guarded_candidate_ids": [
+    "SOCK-FRONT-END-POD-KILL-1",
+    "SOCK-FRONT-END-POD-KILL-2"
+  ],
+  "guard_active": true,
+  "no_score_boost_on_closed_boundary": true,
+  "unrelated_candidates_unchanged": true,
+  "passed": true,
+  "ranking_with_snapshot": [
+    {
+      "candidate_id": "SOCK-FRONT-END-CARTS-LOSS-100",
+      "edge": "front-end->carts",
+      "score": 70.0,
+      "priority": "high",
+      "reasons": [
+        "base 50",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "required_diagnostics": [],
+      "rank": 1
+    },
+    {
+      "candidate_id": "SOCK-FRONT-END-CATALOGUE-DELAY-500",
+      "edge": "front-end->catalogue",
+      "score": 60.0,
+      "priority": "high",
+      "reasons": [
+        "base 50",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "required_diagnostics": [],
+      "rank": 2
+    },
+    {
+      "candidate_id": "SOCK-FRONT-END-POD-KILL-1",
+      "edge": "front-end deployment",
+      "score": 50.0,
+      "priority": "high",
+      "reasons": [
+        "base 50",
+        "RCA KB-RCA-sock-shop-front-end-podchaos-pod-kill: local_reusable closed runtime boundary; re-injection guarded (no score change)"
+      ],
+      "required_diagnostics": [
+        "next_bounded_evidence"
+      ],
+      "rank": 3
+    },
+    {
+      "candidate_id": "SOCK-FRONT-END-POD-KILL-2",
+      "edge": null,
+      "score": 45.0,
+      "priority": "high",
+      "reasons": [
+        "base 45",
+        "RCA KB-RCA-sock-shop-front-end-podchaos-pod-kill: local_reusable closed runtime boundary; re-injection guarded (no score change)"
+      ],
+      "required_diagnostics": [
+        "next_bounded_evidence"
+      ],
+      "rank": 4
+    },
+    {
+      "candidate_id": "SOCK-CATALOGUE-STRESS-CPU-80",
+      "edge": "catalogue",
+      "score": -999.0,
+      "priority": "availability_known",
+      "reasons": [
+        "service CATALOGUE is single-replica no-PDB (static manifest): SOCK kill/cpu of the only pod = total outage, verdict known a priori (AD-REDUNDANCY-001); execute only for evidence-chain completeness, not for selection"
+      ],
+      "hard_skip": true,
+      "availability_track": true,
+      "rank": 5
+    }
+  ],
+  "ranking_without_snapshot": [
+    {
+      "candidate_id": "SOCK-FRONT-END-CARTS-LOSS-100",
+      "edge": "front-end->carts",
+      "score": 70.0,
+      "priority": "high",
+      "reasons": [
+        "base 50",
+        "SE-LOSS-STRONGEST-001 (w=1.00)",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "required_diagnostics": [],
+      "rank": 1
+    },
+    {
+      "candidate_id": "SOCK-FRONT-END-CATALOGUE-DELAY-500",
+      "edge": "front-end->catalogue",
+      "score": 60.0,
+      "priority": "high",
+      "reasons": [
+        "base 50",
+        "SE-NETWORK-FAMILY-001 (w=1.00)"
+      ],
+      "required_diagnostics": [],
+      "rank": 2
+    },
+    {
+      "candidate_id": "SOCK-FRONT-END-POD-KILL-1",
+      "edge": "front-end deployment",
+      "score": 50.0,
+      "priority": "high",
+      "reasons": [
+        "base 50"
+      ],
+      "required_diagnostics": [],
+      "rank": 3
+    },
+    {
+      "candidate_id": "SOCK-FRONT-END-POD-KILL-2",
+      "edge": null,
+      "score": 45.0,
+      "priority": "high",
+      "reasons": [
+        "base 45"
+      ],
+      "required_diagnostics": [],
+      "rank": 4
+    },
+    {
+      "candidate_id": "SOCK-CATALOGUE-STRESS-CPU-80",
+      "edge": "catalogue",
+      "score": -999.0,
+      "priority": "availability_known",
+      "reasons": [
+        "service CATALOGUE is single-replica no-PDB (static manifest): SOCK kill/cpu of the only pod = total outage, verdict known a priori (AD-REDUNDANCY-001); execute only for evidence-chain completeness, not for selection"
+      ],
+      "hard_skip": true,
+      "availability_track": true,
+      "rank": 5
+    }
+  ]
+}
