@@ -1,5 +1,13 @@
 # Progress
 
+## 2026-08-21 跨项目知识投影（sock-shop -> Online Boutique）
+
+- 人工审核完成：项目所有者阅读 `runtime-live-r4-final/HUMAN_REVIEW.zh-CN.md` 后决定 `approved_local_reuse_with_cross_project_projection`，记录于 `human_review_decision.json`；跨项目模式为 `provisional_prior_pending_target_project_validation`。
+- 新增 `tools/project_sock_shop_rca_cross_project.py`：fail-closed 执行投影。程序化复核证据链（r2 AllInjected、时间轴含中断样本、两轮 residual 为空、r4 冗余对照 defended 共证、副本数还原）而非信任文件名；`classify_outcome` 必须给出 `confirmed_weakness`；经 `build_feedback_card` + `validate_knowledge_card_boundary` + `build_next_kb` 后再次检查投影卡无 evidence/target/classification 字段且无 FORBIDDEN_KB_MARKERS 文本。
+- 投影产物 `artifacts/sock-shop/rca_loop/cross-project-r1/`：审计卡 `FA-7ff5b1794a0758d4`（保留全部证据，留在 sock-shop 侧）、OB KB 快照（只含 abstraction：适用条件、预期效应、"早期成功样本不是防御"、扩容验证配方）。
+- 验证：新增 5 个投影测试（决定门禁、反事实缺失、无中断样本、非 local_reusable 卡、泄漏检查）+ feedback_protocol 回归全绿；全量 `tools/tests` 1017 passed + 5 subtests，仅剩 2 个既有 pinned-hash 漂移。
+- 边界：正式 OB 知识库目录未修改；投影是 provisional prior，须在 OB 单副本服务上完成对照验证后才可晋级。
+
 ## 2026-08-21 Sock Shop RCA local_reusable 检索与决策 guard 闭环
 
 - 新增 `tools/build_sock_shop_rca_snapshot.py`：把 `runtime-live-r4-final` 的知识草稿投影为决策引擎消费的 `rca_snapshot`（schema_version=1）。只投影引擎字段（无 evidence dump），记录来源路径与 SHA-256；schema 漂移、未知 knowledge_status、缺 regression intents 全部 fail-closed。

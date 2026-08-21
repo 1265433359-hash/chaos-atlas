@@ -1,5 +1,12 @@
 # Findings
 
+## Cross-project RCA knowledge projection (2026-08-21)
+
+- The human review decision is now machine-consumable: `project_sock_shop_rca_cross_project.py` refuses to run unless `human_review_decision.json` authorizes projection, and re-derives every evidence claim from the archived artifacts (AllInjected condition, outage timeline sample, empty residue, counterfactual co-proof, replica restoration) instead of trusting the review summary.
+- The projection carries an intentionally lossy abstraction: applicability, expected effect, the observation-window-artifact warning, and a scale-out verification recipe. Pod UIDs, sock-shop service names, HTTP samples, and mutation paths stay in the sock-shop audit card (`FA-7ff5b1794a0758d4`) and never enter the Online Boutique KB snapshot.
+- `classify_outcome` gates the projection: with the r1+r2 reproductions and complete evidence chain the result is `confirmed_weakness`; without them the tool fails closed rather than projecting a weaker claim.
+- The projected prior is provisional by decision. Promotion requires the Online Boutique counterfactual (two-replica kill with surviving-UID proof on one of its single-replica services); until then the OB formal knowledge-base directory is untouched.
+
 ## RCA local_reusable retrieval + decision guard (2026-08-21)
 
 - The closed front-end pod-kill line now reaches the decision engine as a guard, not a boost: a matching `local_reusable` card with `closed_boundary=true` (derived from the kind=guard regression intent `closed_runtime_boundary_no_reinjection`) keeps the baseline score and blocks re-injection while preserving next-evidence diagnostics.

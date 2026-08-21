@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "tool": "project_sock_shop_rca_cross_project",
+  "decision": {
+    "card_id": "KB-RCA-sock-shop-front-end-podchaos-pod-kill",
+    "decision": "approved_local_reuse_with_cross_project_projection",
+    "cross_project_mode": "provisional_prior_pending_target_project_validation",
+    "reviewer": "project-owner",
+    "reviewed_via": "HUMAN_REVIEW.zh-CN.md (2026-08-21) with agent-assisted evidence summary; final decision made by project owner",
+    "date": "2026-08-21",
+    "rationale": "Mechanism-level claim (single-replica no-PDB deployment loses all capacity under pod-kill) is backed by static manifest facts, the r1 live Ready 1->0 window, the r2 disambiguation that downgraded the early HTTP 200 to an observation-window artifact, and the r4 two-replica counterfactual (3 deterministic UID co-proof samples; the 12 platform_blocked samples are observation-channel losses, not business evidence). Cross-project projection is authorized ONLY through feedback_protocol.knowledge_projection as a provisional prior for Online Boutique; it must not carry sock-shop runtime evidence and must be re-validated on Online Boutique single-replica services before any promotion.",
+    "constraints": [
+      "projection must pass validate_knowledge_card_boundary",
+      "projected abstraction must not contain FORBIDDEN_KB_FIELDS or FORBIDDEN_KB_MARKERS",
+      "knowledge_base_updated for the formal KB remains governed by the existing review gates"
+    ]
+  },
+  "classification": "confirmed_weakness",
+  "feedback_card": {
+    "schema_version": "1.0",
+    "card_id": "FA-7ff5b1794a0758d4",
+    "project_id": "sock-shop",
+    "project_commit": "sock-shop-fixture-commit",
+    "source_round_id": "pilot-r4-redundancy-r1",
+    "canonical_signature": "sock-shop:front-end:PodChaos:pod-kill:single-replica-no-pdb",
+    "target": "sock-shop-lab/deployment/front-end",
+    "fault_family": "pod-kill",
+    "classification": "confirmed_weakness",
+    "evidence": {
+      "baseline": {
+        "status": "pass",
+        "source": "evidence/redundancy-r1/before.json"
+      },
+      "injection": {
+        "status": "confirmed",
+        "source": "evidence/disambiguation-r2/result.json#injection_status"
+      },
+      "observation": {
+        "status": "confirmed",
+        "source": "evidence/disambiguation-r2/timeline.jsonl"
+      },
+      "recovery": {
+        "status": "confirmed",
+        "source": "evidence/pods-recovery.json"
+      },
+      "cleanup": {
+        "status": "pass",
+        "source": "evidence/disambiguation-r2/result.json#residual_podchaos"
+      },
+      "independent_oracle": {
+        "status": "confirmed",
+        "source": "evidence/redundancy-r1/result.json"
+      }
+    },
+    "abstraction": {
+      "weakness_family": "pod-kill",
+      "target_role": "single-replica deployment",
+      "applicability": "single-replica deployment without a pod disruption budget under kill or cpu fault families",
+      "expected_effect": "full outage window until a replacement pod becomes Ready and enters Service endpoints",
+      "early_success_samples_are_not_defense": "an HTTP success during the kill window can be an observation-window artifact when no ready endpoint exists",
+      "verification_recipe": "scale the deployment to two replicas, repeat the same kill, and require a surviving Ready pod UID in Service endpoints serving the business oracle"
+    },
+    "review": {
+      "status": "human_reviewed",
+      "reviewer": "project-owner",
+      "note": ""
+    },
+    "feedback_eligible": true,
+    "created_at": "2026-08-21T02:24:04.640623+00:00"
+  },
+  "kb_projection": {
+    "schema_version": "1.0",
+    "kb_version": "v1-after-pilot-r4-redundancy-r1",
+    "round_id": "pilot-r4-redundancy-r1",
+    "cards": [
+      {
+        "card_id": "FA-7ff5b1794a0758d4",
+        "source_project_id": "sock-shop",
+        "source_project_commit": "sock-shop-fixture-commit",
+        "source_round_id": "pilot-r4-redundancy-r1",
+        "abstraction": {
+          "weakness_family": "pod-kill",
+          "target_role": "single-replica deployment",
+          "applicability": "single-replica deployment without a pod disruption budget under kill or cpu fault families",
+          "expected_effect": "full outage window until a replacement pod becomes Ready and enters Service endpoints",
+          "early_success_samples_are_not_defense": "an HTTP success during the kill window can be an observation-window artifact when no ready endpoint exists",
+          "verification_recipe": "scale the deployment to two replicas, repeat the same kill, and require a surviving Ready pod UID in Service endpoints serving the business oracle"
+        }
+      }
+    ],
+    "provenance": {
+      "current_project": "online-boutique",
+      "target_projects": [
+        "online-boutique"
+      ],
+      "accepted_card_ids": [
+        "FA-7ff5b1794a0758d4"
+      ],
+      "rejected": [],
+      "same_round_leakage": false
+    },
+    "snapshot_sha256": "94c698f4206e399a23dac2a25b4520ef7ccbc3c8a582b9f605834965fa0fa758"
+  },
+  "projection_mode": "provisional_prior_pending_target_project_validation",
+  "target_project": "online-boutique"
+}

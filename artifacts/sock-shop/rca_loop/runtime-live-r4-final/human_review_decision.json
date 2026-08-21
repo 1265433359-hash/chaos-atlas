@@ -1,0 +1,14 @@
+{
+  "card_id": "KB-RCA-sock-shop-front-end-podchaos-pod-kill",
+  "decision": "approved_local_reuse_with_cross_project_projection",
+  "cross_project_mode": "provisional_prior_pending_target_project_validation",
+  "reviewer": "project-owner",
+  "reviewed_via": "HUMAN_REVIEW.zh-CN.md (2026-08-21) with agent-assisted evidence summary; final decision made by project owner",
+  "date": "2026-08-21",
+  "rationale": "Mechanism-level claim (single-replica no-PDB deployment loses all capacity under pod-kill) is backed by static manifest facts, the r1 live Ready 1->0 window, the r2 disambiguation that downgraded the early HTTP 200 to an observation-window artifact, and the r4 two-replica counterfactual (3 deterministic UID co-proof samples; the 12 platform_blocked samples are observation-channel losses, not business evidence). Cross-project projection is authorized ONLY through feedback_protocol.knowledge_projection as a provisional prior for Online Boutique; it must not carry sock-shop runtime evidence and must be re-validated on Online Boutique single-replica services before any promotion.",
+  "constraints": [
+    "projection must pass validate_knowledge_card_boundary",
+    "projected abstraction must not contain FORBIDDEN_KB_FIELDS or FORBIDDEN_KB_MARKERS",
+    "knowledge_base_updated for the formal KB remains governed by the existing review gates"
+  ]
+}

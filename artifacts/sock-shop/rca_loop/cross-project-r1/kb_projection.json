@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "kb_version": "v1-after-pilot-r4-redundancy-r1",
+  "round_id": "pilot-r4-redundancy-r1",
+  "cards": [
+    {
+      "card_id": "FA-7ff5b1794a0758d4",
+      "source_project_id": "sock-shop",
+      "source_project_commit": "sock-shop-fixture-commit",
+      "source_round_id": "pilot-r4-redundancy-r1",
+      "abstraction": {
+        "weakness_family": "pod-kill",
+        "target_role": "single-replica deployment",
+        "applicability": "single-replica deployment without a pod disruption budget under kill or cpu fault families",
+        "expected_effect": "full outage window until a replacement pod becomes Ready and enters Service endpoints",
+        "early_success_samples_are_not_defense": "an HTTP success during the kill window can be an observation-window artifact when no ready endpoint exists",
+        "verification_recipe": "scale the deployment to two replicas, repeat the same kill, and require a surviving Ready pod UID in Service endpoints serving the business oracle"
+      }
+    }
+  ],
+  "provenance": {
+    "current_project": "online-boutique",
+    "target_projects": [
+      "online-boutique"
+    ],
+    "accepted_card_ids": [
+      "FA-7ff5b1794a0758d4"
+    ],
+    "rejected": [],
+    "same_round_leakage": false
+  },
+  "snapshot_sha256": "94c698f4206e399a23dac2a25b4520ef7ccbc3c8a582b9f605834965fa0fa758"
+}
