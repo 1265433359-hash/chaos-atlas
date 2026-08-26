@@ -15,6 +15,11 @@ try:
 except ImportError as exc:  # pragma: no cover
     raise SystemExit("PyYAML is required") from exc
 
+try:
+    from project_onboarding import result_contract_from_gate
+except ImportError:  # pragma: no cover - supports package imports
+    from tools.project_onboarding import result_contract_from_gate
+
 
 RESOURCE_BY_KIND = {
     "HTTPChaos": "httpchaos",
@@ -47,10 +52,55 @@ ALLOWED_NAMESPACES = {
 ALLOWED_MODES = {"one"}
 
 
-def run_kubectl(args: list[str], timeout: int = 20) -> tuple[int, str, str]:
+def _call_with_optional_context(function: Any, *args: Any, kube_context: str | None = None, **kwargs: Any) -> Any:
+    """Preserve compatibility with older test doubles and adapters.
+
+    An omitted context means the caller is using the active kubeconfig. In
+    that case, do not add a ``kube_context=None`` keyword: older injected
+    runners intentionally expose only the historical argument list.
+    """
+    if kube_context is None or not str(kube_context).strip():
+        return function(*args, **kwargs)
+    return function(*args, kube_context=kube_context, **kwargs)
+
+
+def validate_scenario_phase(phase: dict[str, Any], *, namespace: str, deployment_nodes: dict[str, dict[str, Any]]) -> list[str]:
+    """Pure preflight for a scenario phase before querying the cluster."""
+    errors: list[str] = []
+    if not isinstance(phase, dict):
+        return ["phase must be an object"]
+    if phase.get("mode") not in {"ordered", "concurrent"}:
+        errors.append("phase mode must be ordered or concurrent")
+    targets = phase.get("target_node_ids")
+    if not isinstance(targets, list) or not targets:
+        errors.append("phase target_node_ids required")
+    for target in targets or []:
+        node = deployment_nodes.get(str(target))
+        if not node:
+            errors.append(f"unknown deployment target: {target}")
+        elif str(node.get("namespace")) != namespace:
+            errors.append(f"cross-namespace deployment target: {target}")
+    faults = phase.get("faults")
+    if not isinstance(faults, list) or not faults:
+        errors.append("phase faults required")
+    if phase.get("mode") == "concurrent" and len(faults or []) < 2 and not phase.get("allow_single_target"):
+        errors.append("concurrent phase requires multiple faults")
+    return errors
+
+
+def _contextual_args(args: list[str], kube_context: str | None) -> list[str]:
+    context = str(kube_context or "").strip()
+    if not context:
+        return list(args)
+    if not re.fullmatch(r"[A-Za-z0-9_.:@/-]+", context):
+        raise ValueError("kube_context contains unsafe characters")
+    return ["--context", context, *args]
+
+
+def run_kubectl(args: list[str], timeout: int = 20, kube_context: str | None = None) -> tuple[int, str, str]:
     try:
         completed = subprocess.run(
-            ["kubectl", *args],
+            ["kubectl", *_contextual_args(args, kube_context)],
             check=False,
             capture_output=True,
             text=True,
@@ -68,8 +118,10 @@ def run_kubectl(args: list[str], timeout: int = 20) -> tuple[int, str, str]:
         return 1, "", f"kubectl invocation failed: {type(exc).__name__}: {exc}"
 
 
-def kubectl_json(args: list[str]) -> tuple[Any | None, str | None]:
-    code, stdout, stderr = run_kubectl([*args, "-o", "json"])
+def kubectl_json(args: list[str], kube_context: str | None = None) -> tuple[Any | None, str | None]:
+    code, stdout, stderr = _call_with_optional_context(
+        run_kubectl, [*args, "-o", "json"], kube_context=kube_context
+    )
     if code != 0:
         return None, (stderr or stdout).strip()
     try:
@@ -132,7 +184,7 @@ def effective_chaos_spec(kind: str, spec: dict[str, Any]) -> dict[str, Any]:
     return spec
 
 
-def target_pods(namespaces: list[str], labels: dict[str, Any]) -> tuple[list[dict[str, Any]], list[str]]:
+def target_pods(namespaces: list[str], labels: dict[str, Any], kube_context: str | None = None) -> tuple[list[dict[str, Any]], list[str]]:
     pods: list[dict[str, Any]] = []
     errors: list[str] = []
     selector = selector_string(labels)
@@ -140,7 +192,7 @@ def target_pods(namespaces: list[str], labels: dict[str, Any]) -> tuple[list[dic
         args = ["get", "pods", "-n", namespace]
         if selector:
             args.extend(["-l", selector])
-        data, error = kubectl_json(args)
+        data, error = kubectl_json(args, kube_context=kube_context)
         if error:
             errors.append(f"{namespace}: {error}")
             continue
@@ -158,8 +210,8 @@ def ports_for_pod(pod: dict[str, Any]) -> set[int]:
     return ports
 
 
-def chaos_components() -> tuple[dict[str, Any], list[str]]:
-    data, error = kubectl_json(["get", "pods", "-n", "chaos-testing"])
+def chaos_components(kube_context: str | None = None) -> tuple[dict[str, Any], list[str]]:
+    data, error = kubectl_json(["get", "pods", "-n", "chaos-testing"], kube_context=kube_context)
     if error:
         return {"ready": False, "controller_pods": [], "daemon_pods": []}, [error]
     controllers: list[dict[str, Any]] = []
@@ -175,14 +227,15 @@ def chaos_components() -> tuple[dict[str, Any], list[str]]:
     ready = bool(controllers) and bool(daemons) and all(
         ready_condition(pod) for pod in [*controllers, *daemons]
     )
-    return {
+    gate_result = {
         "ready": ready,
         "controller_pods": [pod["metadata"]["name"] for pod in controllers],
         "daemon_pods": [pod["metadata"]["name"] for pod in daemons],
     }, []
+    return gate_result
 
 
-def daemon_prerequisite(kind: str, daemon_names: list[str]) -> dict[str, Any]:
+def daemon_prerequisite(kind: str, daemon_names: list[str], kube_context: str | None = None) -> dict[str, Any]:
     result: dict[str, Any] = {
         "status": "pass",
         "evidence": "Chaos Mesh controller and daemon Pods are Ready.",
@@ -193,9 +246,11 @@ def daemon_prerequisite(kind: str, daemon_names: list[str]) -> dict[str, Any]:
     log_fragments: list[str] = []
     successful_logs = 0
     for daemon in daemon_names:
-        code, stdout, stderr = run_kubectl(
+        code, stdout, stderr = _call_with_optional_context(
+            run_kubectl,
             ["logs", "-n", "chaos-testing", daemon, "--since=24h", "--tail=1000"],
             timeout=30,
+            kube_context=kube_context,
         )
         if code == 0:
             log_fragments.append(stdout)
@@ -246,9 +301,11 @@ def daemon_prerequisite(kind: str, daemon_names: list[str]) -> dict[str, Any]:
             )
             probe_results = []
             for daemon in daemon_names:
-                code, stdout, stderr = run_kubectl(
+                code, stdout, stderr = _call_with_optional_context(
+                    run_kubectl,
                     ["exec", "-n", "chaos-testing", daemon, "--", "sh", "-c", probe_script],
                     timeout=30,
+                    kube_context=kube_context,
                 )
                 probe_results.append(
                     {
@@ -278,7 +335,13 @@ def daemon_prerequisite(kind: str, daemon_names: list[str]) -> dict[str, Any]:
     return result
 
 
-def _check_mutation_impl(path: Path) -> dict[str, Any]:
+def _check_mutation_impl(path: Path, *, allowed_namespaces: set[str] | None = None, kube_context: str | None = None) -> dict[str, Any]:
+    policy_namespaces = {
+        str(item).strip() for item in (allowed_namespaces or ALLOWED_NAMESPACES) if str(item).strip()
+    }
+    if not policy_namespaces:
+        policy_namespaces = set(ALLOWED_NAMESPACES)
+    policy_namespace = sorted(policy_namespaces)[0]
     try:
         raw = yaml.safe_load(path.read_text(encoding="utf-8"))
     except yaml.YAMLError as exc:
@@ -306,6 +369,16 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
     if not isinstance(spec, dict):
         spec = {}
     spec = effective_chaos_spec(str(kind or ""), spec)
+    if "selector" not in spec and (
+        isinstance(spec.get("namespaces"), list) or isinstance(spec.get("labelSelectors"), dict)
+    ):
+        spec = {
+            **spec,
+            "selector": {
+                "namespaces": spec.get("namespaces") or [],
+                "labelSelectors": spec.get("labelSelectors") or {},
+            },
+        }
     namespace = metadata.get("namespace")
     selector = spec.get("selector") or {}
     if not isinstance(selector, dict):
@@ -317,11 +390,11 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
     checks: dict[str, Any] = {}
 
     requested_mode = spec.get("mode")
-    namespace_ok = namespace in ALLOWED_NAMESPACES
+    namespace_ok = namespace in policy_namespaces
     selector_namespaces_ok = (
         isinstance(namespaces, list)
         and bool(namespaces)
-        and all(value in ALLOWED_NAMESPACES for value in namespaces)
+        and all(value in policy_namespaces for value in namespaces)
     )
     mode_ok = requested_mode in ALLOWED_MODES
     # Phase-2 remediation (findings #2): an empty labelSelectors would degrade
@@ -329,8 +402,8 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
     # non-deterministic. Reject it as a hard safety boundary.
     selector_labels_ok = not _is_empty_selector(labels if isinstance(labels, dict) else None)
     checks["scope_guard"] = {
-        "allowed_namespace": ALLOWED_NAMESPACE,
-        "allowed_namespaces": sorted(ALLOWED_NAMESPACES),
+        "allowed_namespace": policy_namespace,
+        "allowed_namespaces": sorted(policy_namespaces),
         "metadata_namespace_ok": namespace_ok,
         "selector_namespaces_ok": selector_namespaces_ok,
         "selector_labels_ok": selector_labels_ok,
@@ -340,9 +413,9 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
         "mode_ok": mode_ok,
     }
     if not namespace_ok:
-        errors.append(f"mutation namespace must be one of {sorted(ALLOWED_NAMESPACES)}")
+        errors.append(f"mutation namespace must be one of {sorted(policy_namespaces)}")
     if not selector_namespaces_ok:
-        errors.append(f"selector namespaces must be limited to {sorted(ALLOWED_NAMESPACES)}")
+        errors.append(f"selector namespaces must be limited to {sorted(policy_namespaces)}")
     if not selector_labels_ok:
         errors.append("selector labelSelectors must be non-empty; empty selector degrades to a whole-namespace target")
     if not mode_ok:
@@ -361,14 +434,18 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
     resource = RESOURCE_BY_KIND.get(kind)
     crd_name = f"{resource}.chaos-mesh.org" if resource else ""
     if crd_name:
-        code, stdout, stderr = run_kubectl(["get", "crd", crd_name])
+        code, stdout, stderr = _call_with_optional_context(
+            run_kubectl, ["get", "crd", crd_name], kube_context=kube_context
+        )
         checks["crd_exists"] = code == 0
         if code != 0:
             errors.append((stderr or stdout).strip())
     else:
         checks["crd_exists"] = False
 
-    components, component_errors = chaos_components()
+    components, component_errors = _call_with_optional_context(
+        chaos_components, kube_context=kube_context
+    )
     checks["chaos_components_ready"] = components["ready"]
     if component_errors:
         errors.extend(component_errors)
@@ -378,7 +455,12 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
     # broad-scope lookup, and the target would be non-deterministic anyway.
     # The scope_guard error already records the rejection.
     if selector_labels_ok:
-        pods, pod_errors = target_pods(namespaces, labels if isinstance(labels, dict) else {})
+        pods, pod_errors = _call_with_optional_context(
+            target_pods,
+            namespaces,
+            labels if isinstance(labels, dict) else {},
+            kube_context=kube_context,
+        )
         errors.extend(pod_errors)
     else:
         pods, pod_errors = [], []
@@ -420,7 +502,9 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
     resource_args = ["get", resource or "unknown", str(metadata.get("name") or "")]
     if namespace:
         resource_args.extend(["-n", str(namespace)])
-    resource_code, _, resource_error = run_kubectl(resource_args)
+    resource_code, _, resource_error = _call_with_optional_context(
+        run_kubectl, resource_args, kube_context=kube_context
+    )
     # Phase-2 remediation (findings #2): a mutation name is "available" ONLY when
     # kubectl reports an explicit NotFound. A timeout (124) or RBAC/API error means
     # the existence is UNKNOWN — the gate must fail closed (never treat unknown as
@@ -443,7 +527,12 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
             f"mutation name lookup is {name_status}; cannot confirm availability, failing closed: {resource_error}".strip()
         )
 
-    injector = daemon_prerequisite(kind, components.get("daemon_pods", []))
+    injector = _call_with_optional_context(
+        daemon_prerequisite,
+        kind,
+        components.get("daemon_pods", []),
+        kube_context=kube_context,
+    )
     checks["injector_prerequisite"] = injector
 
     hard_checks = [
@@ -493,9 +582,11 @@ def _check_mutation_impl(path: Path) -> dict[str, Any]:
         },
         "resource_error": resource_error if resource_code != 0 else None,
     }
+    gate_result["result_contract"] = result_contract_from_gate(gate_result)
+    return gate_result
 
 
-def check_mutation(path: Path) -> dict[str, Any]:
+def check_mutation(path: Path, *, allowed_namespaces: set[str] | None = None, kube_context: str | None = None) -> dict[str, Any]:
     """Public entry: never raises on real-world kubectl exceptions.
 
     ``_check_mutation_impl`` already benefits from ``run_kubectl`` swallowing
@@ -504,8 +595,17 @@ def check_mutation(path: Path) -> dict[str, Any]:
     traceback (which would otherwise abort the whole candidate pipeline).
     """
     try:
-        return _check_mutation_impl(path)
+        return _check_mutation_impl(path, allowed_namespaces=allowed_namespaces, kube_context=kube_context)
     except Exception as exc:  # noqa: BLE001 - the gate must fail closed
+        policy_namespaces = sorted(
+            {
+                str(item).strip()
+                for item in (allowed_namespaces or ALLOWED_NAMESPACES)
+                if str(item).strip()
+            }
+            or ALLOWED_NAMESPACES
+        )
+        failure = f"unexpected gate failure: {type(exc).__name__}: {exc}"
         return {
             "checked_at": datetime.now(timezone.utc).isoformat(),
             "mutation": str(path).replace("\\", "/"),
@@ -514,8 +614,35 @@ def check_mutation(path: Path) -> dict[str, Any]:
             "name": None,
             "selector": None,
             "decision": "blocked",
-            "checks": {},
-            "errors": [f"unexpected gate failure: {type(exc).__name__}: {exc}"],
+            "checks": {
+                "scope_guard": {
+                    "allowed_namespace": policy_namespaces[0],
+                    "allowed_namespaces": policy_namespaces,
+                    "metadata_namespace_ok": False,
+                    "selector_namespaces_ok": False,
+                    "selector_labels_ok": False,
+                    "requested_namespaces": [],
+                    "requested_mode": None,
+                    "allowed_modes": sorted(ALLOWED_MODES),
+                    "mode_ok": False,
+                },
+                "yaml_shape": False,
+                "crd_exists": False,
+                "chaos_components_ready": False,
+                "selector_matches": False,
+                "target_pods": [],
+                "target_pods_ready": False,
+                "target_port_exists": False,
+                "mutation_name_available": False,
+                "mutation_name_status": "unknown_error",
+                "mutation_name_error": failure,
+                "injector_prerequisite": {
+                    "status": "blocked",
+                    "evidence": "Gate terminated before all runtime checks completed.",
+                    "blocker": "unexpected_gate_failure",
+                },
+            },
+            "errors": [failure],
             "interpretation": {
                 "selected_is_not_injected": True,
                 "defense_conclusion_allowed": False,

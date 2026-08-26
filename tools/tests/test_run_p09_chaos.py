@@ -10,6 +10,7 @@ import pytest
 import yaml
 
 from tools import run_p09_chaos as runner
+from tools import run_chaos_experiment as lifecycle_runner
 
 
 def test_direct_script_invocation_bootstraps_repository_imports() -> None:
@@ -102,6 +103,35 @@ def test_wait_lifecycle_recovery_requires_recovery_evidence() -> None:
         result = runner.wait_lifecycle("NetworkChaos", "p09-test", "recovered", timeout=1)
     assert result["recovered_count"] == 1
     assert result["all_recovered"] is True
+
+
+def test_wait_lifecycle_recovers_from_recovered_event_after_resource_disappears() -> None:
+    snapshots = iter([
+        ({
+            "metadata": {"uid": "current-uid"},
+            "status": {"experiment": {"containerRecords": [{"injectedCount": 1, "recoveredCount": 0}]}},
+        }, None),
+        (None, "Error from server (NotFound): networkchaos.chaos-mesh.org \\\"p09-test\\\" not found"),
+        ({
+            "items": [{
+                "involvedObject": {"kind": "NetworkChaos", "name": "p09-test", "uid": "current-uid"},
+                "reason": "Recovered",
+                "lastTimestamp": "2026-08-25T06:22:57Z",
+                "metadata": {"annotations": {"chaos-mesh.org/type": "recovered"}},
+                "message": "Successfully recover chaos for chaosatlas-p09/redis-0",
+            }]
+        }, None),
+    ])
+
+    with patch.object(lifecycle_runner, "kubectl_json", side_effect=lambda *args, **kwargs: next(snapshots)):
+        recovered, result, errors = lifecycle_runner.wait_for_lifecycle("NetworkChaos", "chaosatlas-p09", "p09-test", "recovered", timeout=1, interval=0)
+
+    assert recovered is True
+    assert errors == []
+    assert result["all_recovered"] is True
+    assert result["recovered_count"] == 1
+    assert result["recovery_source"] == "event"
+    assert result["recovery_timestamps"] == ["2026-08-25T06:22:57Z"]
 
 
 def test_podchaos_recovery_uses_replacement_identity() -> None:

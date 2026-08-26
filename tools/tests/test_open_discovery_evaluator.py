@@ -13,7 +13,14 @@ def test_evaluator_separates_known_novel_and_protected() -> None:
         "rejected_count": 0,
     }
     evidence = {
-        "known": {"oracle_label": "protected", "evidence": {"independent_oracle": True, "observation": True}},
+        "known": {
+            "oracle_label": "protected",
+            "defense_claim_type": "redundancy",
+            "evidence": {key: True for key in (
+                "baseline", "injection", "observation", "recovery", "cleanup",
+                "independent_oracle", "observation_window", "mechanism_evidence",
+            )},
+        },
         "novel": {"oracle_label": "weakness", "valid_reproductions": 2, "evidence": {key: True for key in ("baseline", "injection", "observation", "recovery", "cleanup", "independent_oracle")}},
     }
     result = evaluate_compiled(compiled, evidence)

@@ -33,6 +33,18 @@ Runtime observation:
 | Pod recreation window | HTTP 500 persisted for approximately 1.5-2 minutes |
 | After recovery | HTTP 200 and baseline latency returned |
 
+### Additional runtime evidence: packet loss
+
+In a separate controlled experiment on the same pinned commit, 100% packet loss
+was applied to `productcatalogservice`. The first `GET /` request remained
+pending for approximately 26.7 seconds and then returned HTTP 500. After fault
+removal and service recovery, the home page returned to its baseline behavior.
+
+This strengthens the existing observation: the frontend-to-product-catalog path
+is fail-closed and does not impose a bounded request deadline on this failure
+mode. The 26.7-second value is an experimental observation boundary, not a
+production SLO claim.
+
 ## Impact
 
 A single dependency failure currently affects the entire home page, including content that might otherwise be served from a cache or rendered with a bounded degraded state. The observed unavailability lasts for the full pod-recreation window rather than being limited to the catalog portion of the response.

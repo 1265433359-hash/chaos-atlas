@@ -28,6 +28,15 @@ chaos-mesh-*.tgz
 # Temporary pytest basetemp directories created for local verification.
 .pytest-tmp-*/
 /.tmp-*/
+/.tmp-*
+/.tmp/
+/.pytest-tmp2/
+/.pytest-cache-disabled/
+/.email-notify-outbox/
+/.venv-otel-runtime/
+
+# Repository inventory is generated locally and contains machine-specific paths.
+/.tmp-repository-inventory.json
 
 # Machine-local Docker, Kubernetes, proxy, and session state.
 /.docker-config-empty/

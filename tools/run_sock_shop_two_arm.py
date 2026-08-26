@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import os
 import http.cookiejar
 import hashlib
 import json
@@ -289,6 +290,62 @@ def capture_diagnostics(report_path: Path, selector: str) -> dict[str, Any]:
     return {"status": "captured", "files": files}
 
 
+STAGES = (
+    "GATE (mutation validation + runtime applicability)",
+    "BASELINE (5 failure-free business journeys)",
+    "INJECTION (apply + injected lifecycle confirm)",
+    "OBSERVATION (business oracle under fault)",
+    "RECOVERY (resource + business recovery)",
+    "CLEANUP (chaos removal + global residual scan)",
+    "WASHOUT (60s stability window) -> REPORT",
+)
+
+
+def stage_banner(index: int) -> None:
+    print(f"\n=== [ {index}/7 ] {STAGES[index - 1]} ===", flush=True)
+
+
+def resolve_api_key(
+    api_key: str | None,
+    api_key_file: Path | None,
+    *,
+    default_file: Path | None = None,
+) -> tuple[str | None, str | None]:
+    """Resolve the optional report-analysis credential without exposing it."""
+    if api_key and api_key.strip():
+        return api_key.strip(), "--api-key"
+
+    if api_key_file is None:
+        configured_file = os.environ.get("CHAOS_EATER_API_KEY_FILE")
+        if configured_file:
+            api_key_file = Path(configured_file)
+
+    if api_key_file is not None and api_key_file.is_file():
+        value = api_key_file.read_text(encoding="utf-8-sig").strip()
+        if value:
+            return value, str(api_key_file)
+
+    environment_key = os.environ.get("CHAOS_EATER_API_KEY")
+    if environment_key and environment_key.strip():
+        return environment_key.strip(), "CHAOS_EATER_API_KEY"
+
+    fallback = default_file or (Path.cwd().parent / "deepseek_api_key.txt")
+    if fallback.is_file():
+        value = fallback.read_text(encoding="utf-8-sig").strip()
+        if value:
+            return value, str(fallback)
+
+    return None, None
+
+
+def configure_console_output() -> None:
+    """Keep live Chinese analysis readable on Windows consoles."""
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is not None:
+            reconfigure(encoding="utf-8", errors="replace")
+
+
 def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_id: str, replicate: int, *, baseline_count: int = 5, recovery_timeout: float = 180, washout_seconds: float = 60, washout_successes: int = 10, washout_timeout: float = 180) -> dict[str, Any]:
     if report_path.exists():
         raise FileExistsError(report_path)
@@ -299,6 +356,7 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
     selector_query = ""
     schedule_children: list[str] = []
     try:
+        stage_banner(1)
         document = yaml.safe_load(mutation.read_text(encoding="utf-8"))
         report["mutation_gate"] = validate_mutation(document)
         if report["mutation_gate"]["status"] != "passed":
@@ -318,12 +376,14 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
         # Establish a failure-free oracle immediately before injection.  A
         # failed baseline invalidates the mutation result rather than becoming
         # evidence of a weakness.
+        stage_banner(2)
         baseline = [run_journey() for _ in range(baseline_count)]
         report["baseline"] = {"pass": len(baseline) == baseline_count and all(item["pass"] for item in baseline), "journeys": baseline, "successes_required": baseline_count}
         if not report["baseline"]["pass"]:
             raise RuntimeError("Sock Shop baseline was not failure-free")
         # Apply only after static and runtime gates pass; the lifecycle report
         # must distinguish an accepted YAML from an actually injected fault.
+        stage_banner(3)
         code, out, err = run_kubectl(["apply", "-f", str(mutation)])
         report["injection"]["apply"] = {"return_code": code, "stdout": out.strip(), "stderr": err.strip()}
         if code != 0:
@@ -341,10 +401,12 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
         report["errors"].extend(errors)
         if not injected:
             raise RuntimeError("injection not confirmed")
+        stage_banner(4)
         observed = [run_journey() for _ in range(baseline_count)]
         report["observation"] = {"journeys": observed, "classification": classify_observation(observed)}
         targets = ((preflight.get("checks") or {}).get("target_pods") or [])
         if kind == "Schedule":
+            stage_banner(6)
             cleanup = delete_schedule_with_children(NAMESPACE, name, schedule_children)
             applied = False
             residuals, residual_errors = global_residuals()
@@ -354,6 +416,7 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
 
         # PodKill recovery is verified through replacement Pod identity and
         # readiness; other kinds use the Chaos Mesh recovered lifecycle state.
+        stage_banner(5)
         if kind in {"PodChaos", "Schedule"}:
             pre_uids = {str(item.get("uid")) for item in targets if item.get("uid")}
             recovered, state, errors = wait_for_target_ready(NAMESPACE, {"labelSelectors": labels}, 240, 1, expected_pod_count=len(targets) or None, pre_kill_uids=pre_uids)
@@ -362,6 +425,7 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
         report["recovery"].update({"resource_recovered": recovered, "state": state})
         report["errors"].extend(errors)
         if kind != "Schedule":
+            stage_banner(6)
             cleanup = delete_resource(kind, NAMESPACE, name)
             applied = False
             residuals, residual_errors = global_residuals()
@@ -403,6 +467,7 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
         # Washout is a separate stability window: recovery proves the fault
         # ended, while washout proves no residual fault or stale port-forward
         # continues to affect the next mutation.
+        stage_banner(7)
         washout_started = time.monotonic()
         journeys: list[dict[str, Any]] = []
         report["washout"] = {
@@ -474,6 +539,7 @@ def run_one(mutation: Path, report_path: Path, arm: str, seed: int, hypothesis_i
 
 
 def main() -> int:
+    configure_console_output()
     parser = argparse.ArgumentParser()
     parser.add_argument("mutation", type=Path)
     parser.add_argument("--report", type=Path, required=True)
@@ -482,6 +548,10 @@ def main() -> int:
     parser.add_argument("--hypothesis-id", required=True)
     parser.add_argument("--replicate", type=int, required=True)
     parser.add_argument("--recovery-timeout", type=float, default=180)
+    parser.add_argument("--api-key", default=None, help="LLM API key for the optional report-analysis stage")
+    parser.add_argument("--api-key-file", type=Path, default=None, help="File containing the LLM API key")
+    parser.add_argument("--base-url", default="https://api.deepseek.com/v1")
+    parser.add_argument("--model", default="deepseek-v4-flash")
     args = parser.parse_args()
     result = run_one(
         args.mutation,
@@ -493,7 +563,173 @@ def main() -> int:
         recovery_timeout=args.recovery_timeout,
     )
     print(json.dumps({"status": result["status"], "classification": (result.get("observation") or {}).get("classification"), "errors": result["errors"]}))
+    if result["status"] == "completed":
+        print(
+            "\n=== CLOSED LOOP COMPLETED (7/7) ===\n"
+            "  [1/7] gate                : passed\n"
+            "  [2/7] baseline            : pass=true\n"
+            f"  [3/7] injection           : applied={result['injection']['applied']} injected={result['injection']['injected']}\n"
+            f"  [4/7] observation         : {(result.get('observation') or {}).get('classification')}\n"
+            f"  [5/7] recovery            : recovered={result['recovery']['recovered']}\n"
+            f"  [6/7] cleanup             : absent_confirmed={result['cleanup']['absent_confirmed']}\n"
+            f"  [7/7] washout             : stable={result['washout']['stable']}\n"
+            f"  report: {args.report}",
+            flush=True,
+        )
+        print_result_block(result, args.report)
+        api_key, api_key_source = resolve_api_key(args.api_key, args.api_key_file)
+        llm_analyze_report(
+            result,
+            args.report,
+            api_key,
+            args.base_url,
+            args.model,
+            api_key_source=api_key_source,
+        )
     return 0 if result["status"] == "completed" else 2
+
+
+def print_result_block(result: dict[str, Any], report_path: Path) -> None:
+    """Show the business-level outcome, then open the report file for review."""
+    def mean_latency(journeys: list[dict[str, Any]], step: str) -> str:
+        values = [
+            sample.get("latency_ms")
+            for journey in journeys
+            for sample in journey.get("samples", [])
+            if sample.get("step") == step and sample.get("latency_ms") is not None
+        ]
+        return f"{sum(values) / len(values):.0f}ms" if values else "n/a"
+
+    baseline = (result.get("baseline") or {}).get("journeys") or []
+    observed = (result.get("observation") or {}).get("journeys") or []
+    print(
+        "\n=== RESULT ===\n"
+        f"  classification : {(result.get('observation') or {}).get('classification')}\n"
+        "  step latency   : baseline -> under fault\n"
+        + "".join(
+            f"    {step:<10}    {mean_latency(baseline, step):>8} -> {mean_latency(observed, step):>8}\n"
+            for step, _path in STEPS
+        )
+        + f"  report file    : {report_path}",
+        flush=True,
+    )
+    try:
+        import os
+
+        os.startfile(str(report_path.resolve()))  # Windows: jump to the result file
+    except Exception:
+        pass
+
+
+def llm_analyze_report(
+    result: dict[str, Any],
+    report_path: Path,
+    api_key: str | None,
+    base_url: str,
+    model: str,
+    *,
+    api_key_source: str | None = None,
+) -> dict[str, Any] | None:
+    """Ask an LLM to interpret the finished report; print and persist its analysis."""
+    print(f"\n=== [ 8 ] LLM REPORT ANALYSIS ({model}) ===", flush=True)
+    if not api_key:
+        print(
+            "  skipped: no API key. Set CHAOS_EATER_API_KEY, pass --api-key, or use --api-key-file.\n"
+            "  The closed-loop result above is complete without this optional stage.",
+            flush=True,
+        )
+        return None
+    print(f"  credential source : {api_key_source or 'resolved'}", flush=True)
+    from chaos_eater_adapter.llm_backend import OpenAICompatBackend
+
+    def step_stats(journeys: list[dict[str, Any]]) -> dict[str, Any]:
+        stats: dict[str, Any] = {}
+        for step, _path in STEPS:
+            values = [
+                sample.get("latency_ms")
+                for journey in journeys
+                for sample in journey.get("samples", [])
+                if sample.get("step") == step and sample.get("latency_ms") is not None
+            ]
+            passes = [
+                sample.get("pass")
+                for journey in journeys
+                for sample in journey.get("samples", [])
+                if sample.get("step") == step
+            ]
+            stats[step] = {
+                "mean_latency_ms": round(sum(values) / len(values), 1) if values else None,
+                "pass_rate": round(sum(1 for p in passes if p) / len(passes), 2) if passes else None,
+            }
+        return stats
+
+    baseline = (result.get("baseline") or {}).get("journeys") or []
+    observed = (result.get("observation") or {}).get("journeys") or []
+    mutation_summary: dict[str, Any] = dict(result.get("mutation") or {})
+    try:
+        document = yaml.safe_load(Path(mutation_summary["path"]).read_text(encoding="utf-8"))
+        spec = document.get("spec") or {}
+        if document.get("kind") == "Schedule":
+            spec = spec.get("podChaos") or {}
+        mutation_summary.update(
+            {
+                "kind": document.get("kind"),
+                "chaos_action": spec.get("action"),
+                "target_labels": (spec.get("selector") or {}).get("labelSelectors"),
+                "delay": spec.get("delay"),
+                "abort": spec.get("abort"),
+            }
+        )
+    except Exception:
+        pass
+    evidence = {
+        "project": "sock-shop",
+        "arm": result.get("arm"),
+        "mutation": mutation_summary,
+        "lifecycle": {
+            "status": result.get("status"),
+            "baseline_pass": (result.get("baseline") or {}).get("pass"),
+            "injection_applied": (result.get("injection") or {}).get("applied"),
+            "injection_injected": (result.get("injection") or {}).get("injected"),
+            "recovery_recovered": (result.get("recovery") or {}).get("recovered"),
+            "cleanup_absent_confirmed": (result.get("cleanup") or {}).get("absent_confirmed"),
+            "washout_stable": (result.get("washout") or {}).get("stable"),
+        },
+        "classification": (result.get("observation") or {}).get("classification"),
+        "baseline_step_stats": step_stats(baseline),
+        "under_fault_step_stats": step_stats(observed),
+    }
+    system = (
+        "你是混沌工程实验的报告分析员。请基于给定证据，写一份简明的实验总结，"
+        "必须包含以下三个小节，小节标题用【我们做了什么】【我们发现了什么】【结论与下一步】：\n"
+        "【我们做了什么】描述完整闭环：对哪个项目哪个服务注入了什么故障（种类、参数、目标），"
+        "并按顺序说明经过的七个阶段（门禁、基线、注入、业务观测、恢复、清理、洗出）各自的判定结果。\n"
+        "【我们发现了什么】对比基线与故障期间的各步骤延迟和通过率，指出哪里退化、退化多少倍；"
+        "解释分类结论（weakness_observed 或 no_business_impact_observed）为什么成立；"
+        "如有性能退化但业务未失败，说明是防御机制还是裕量吸收，并指出证据边界。\n"
+        "【结论与下一步】一句话总结系统的弹性表现，并给出一条后续实验建议。\n"
+        "只依据给定证据，不要编造数字。用中文，全文 300 字以内。"
+    )
+    backend = OpenAICompatBackend(base_url=base_url, api_key=api_key, model=model, json_mode=False, temperature=0.2)
+    try:
+        text, meta = backend.complete(system, json.dumps(evidence, ensure_ascii=True, indent=1), "")
+    except Exception as exc:
+        print(f"  analysis failed: {type(exc).__name__}: {exc}", flush=True)
+        return {"status": "failed", "error": f"{type(exc).__name__}: {exc}"}
+    print(text.strip() + "\n", flush=True)
+    analysis = {
+        "status": "completed",
+        "model": meta.get("model") or model,
+        "backend": meta.get("backend") or "openai-compatible",
+        "credential_source": "api-key-file" if api_key_source and api_key_source.endswith(".txt") else api_key_source,
+        "prompt_evidence": evidence,
+        "analysis_text": text.strip(),
+    }
+    report_path.write_text(
+        json.dumps({**result, "llm_analysis": analysis}, indent=2, ensure_ascii=True) + "\n",
+        encoding="utf-8",
+    )
+    return analysis
 
 
 if __name__ == "__main__":

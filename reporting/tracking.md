@@ -12,6 +12,10 @@
 | 2026-08-10 | GoogleCloudPlatform/microservices-demo | Online Boutique: paymentservice probe restarts the container after a 2-second delay | open | pending | https://github.com/GoogleCloudPlatform/microservices-demo/issues/3475 |
 | 2026-08-10 | GoogleCloudPlatform/microservices-demo | Online Boutique: Checkout waits for delayed or unavailable payment, shipping, and email services | open | pending | https://github.com/GoogleCloudPlatform/microservices-demo/issues/3474 |
 | 2026-08-10 | GoogleCloudPlatform/microservices-demo | Online Boutique: home page returns HTTP 500 while productcatalogservice is unavailable | open | pending | https://github.com/GoogleCloudPlatform/microservices-demo/issues/3473 |
+| 2026-08-23 | open-telemetry/opentelemetry-demo | OpenTelemetry Demo: unavailable emailservice blocks PlaceOrder until the caller deadline | draft | pending | `reporting/opentelemetry-demo/issues/2026-08-23_emailservice-blocks-placeorder.md`; not yet submitted |
+| 2026-08-24 | Sock Shop | Sock Shop: single-replica front-end becomes temporarily unavailable during Pod replacement | draft | pending | `reporting/sock-shop/issues/2026-08-24_front-end-single-replica-availability-degradation.md`; review pack SS-ISSUE-001; not yet submitted |
+| 2026-08-24 | Sock Shop | Sock Shop: a single catalogue-db replica removes the catalogue endpoint during pod replacement | draft | pending | `reporting/sock-shop/issues/2026-08-24_catalogue-db-single-replica-catalogue-outage.md`; review pack SS-ISSUE-002; not yet submitted |
+| 2026-08-24 | Sock Shop | Sock Shop: catalogue transport abort propagates to the front-end without a graceful response contract | draft | pending | `reporting/sock-shop/issues/2026-08-24_front-end-catalogue-abort-no-graceful-degradation.md`; review pack SS-ISSUE-003; not yet submitted |
 
 ## 响应预期参考（2026-08-05 核实）
 

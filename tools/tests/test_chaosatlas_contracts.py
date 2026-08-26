@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 
+import tools.chaosatlas_contracts as contracts
 from tools.chaosatlas_contracts import (
     RunContext,
     StageResult,
@@ -46,3 +47,21 @@ def test_checkpoint_rejects_unknown_stage(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="unknown stage"):
         write_checkpoint(tmp_path, next_stage="not-a-stage", completed_stages=[])
 
+
+def test_atomic_write_retries_transient_windows_replace_permission(monkeypatch, tmp_path: Path) -> None:
+    original_replace = contracts.os.replace
+    attempts = 0
+
+    def flaky_replace(source, destination):
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise PermissionError(5, "access denied")
+        return original_replace(source, destination)
+
+    monkeypatch.setattr(contracts.os, "replace", flaky_replace)
+
+    write_checkpoint(tmp_path, next_stage="inventory", completed_stages=["onboard"])
+
+    assert attempts == 2
+    assert (tmp_path / "checkpoint.json").is_file()

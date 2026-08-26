@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from tools.chaosatlas_adapters import FakeExecutor, OfflineProjectAdapter
+from tools.chaosatlas_adapters import FakeExecutor, KnowledgeProvider, OfflineProjectAdapter
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -61,3 +61,21 @@ def test_fake_executor_marks_outputs_as_synthetic_and_completes_cleanup() -> Non
     assert result["cleanup_confirmed"] is True
     assert result["runtime_verdict"] == "not_run"
 
+
+def test_knowledge_provider_reads_local_provisional_card_snapshot(tmp_path: Path) -> None:
+    card = {
+        "id": "KB-RCA-sock-shop-front-end-pod-kill-intent",
+        "status": "provisional",
+        "project": "sock-shop",
+        "test_node": {"family": "pod_kill", "operation": "pod_kill"},
+    }
+    (tmp_path / f"{card['id']}.json").write_text(json.dumps(card), encoding="utf-8")
+
+    result = KnowledgeProvider().retrieve(
+        project_id="sock-shop",
+        candidate_space={"candidate_count": 1},
+        root=tmp_path,
+    )
+
+    assert result["cards"][0]["id"] == card["id"]
+    assert result["cards"][0]["status"] == "provisional"

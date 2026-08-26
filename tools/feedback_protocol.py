@@ -21,7 +21,18 @@ CLASSIFICATIONS = {
     "environment_blocked",
     "method_invalid",
 }
+DEFENSE_CLAIM_TYPES = {
+    "bounded_timeout",
+    "retry",
+    "fallback",
+    "circuit_breaker",
+    "redundancy",
+    "graceful_degradation",
+    "probe_restart_escape",
+}
 REQUIRED_WEAKNESS_EVIDENCE = ("baseline", "injection", "observation", "recovery", "cleanup", "independent_oracle")
+REQUIRED_AVAILABILITY_EVIDENCE = REQUIRED_WEAKNESS_EVIDENCE
+REQUIRED_DEFENSE_EVIDENCE = REQUIRED_WEAKNESS_EVIDENCE + ("observation_window", "mechanism_evidence")
 FORBIDDEN_KB_FIELDS = {
     "target",
     "evidence",
@@ -32,6 +43,11 @@ FORBIDDEN_KB_FIELDS = {
     "mutation_path",
     "candidate_mutation_path",
     "final_verdict",
+    "runtime_verdict",
+    "pod_uid",
+    "pod_uids",
+    "availableReplicas",
+    "samples",
 }
 COMMON_KNOWLEDGE_KEYS = {
     "project_id", "project_commit", "source_tree_sha", "deployment_summary",
@@ -103,6 +119,28 @@ def validate_knowledge_card_boundary(card: dict[str, Any], common_input: dict[st
     return {"valid": not errors, "errors": errors}
 
 
+def validate_improvement_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
+    """Validate a deployment retest before it can influence knowledge."""
+
+    errors: list[str] = []
+    allowed_statuses = {"improvement_verified", "regression", "deployment_blocked", "not_run"}
+    if evidence.get("schema_version") != "chaosatlas-improvement-evidence-v1":
+        errors.append("schema_version_required")
+    status = evidence.get("status")
+    if status not in allowed_statuses:
+        errors.append("unsupported_status")
+    eligible = (
+        status == "improvement_verified"
+        and evidence.get("same_scenario_contract") is True
+        and evidence.get("cleanup_verified") is True
+    )
+    if evidence.get("knowledge_update_allowed") is not eligible:
+        errors.append("knowledge_update_gate_mismatch")
+    if not eligible and evidence.get("defense_claim") is not None:
+        errors.append("defense_claim_without_verified_improvement")
+    return {"valid": not errors, "errors": errors}
+
+
 def _truthy(evidence: dict[str, Any], key: str) -> bool:
     value = evidence.get(key)
     return value is True or (isinstance(value, dict) and value.get("status") in {"pass", "valid", "confirmed"})
@@ -112,14 +150,25 @@ def classify_outcome(result: dict[str, Any]) -> str:
     """Classify without allowing environment failures to look like defenses."""
     if result.get("method_invalid") or result.get("compiler_status") == "method_invalid":
         return "method_invalid"
-    if result.get("environment_blocked") or result.get("runner_status") == "environment_blocked" or result.get("oracle_label") == "environment_blocked":
+    if result.get("environment_blocked") or result.get("runner_status") == "environment_blocked" or result.get("oracle_label") in {"environment_blocked", "platform_blocked"}:
         return "environment_blocked"
-    if result.get("unsupported") or result.get("oracle_label") == "unsupported":
+    if result.get("unsupported") or result.get("oracle_label") in {"unsupported", "unavailable", "contradictory_evidence"}:
         return "unsupported"
     evidence = result.get("evidence") or {}
+    availability_label = result.get("availability_label") or result.get("oracle_label")
+    evidence_complete = all(_truthy(evidence, key) for key in REQUIRED_AVAILABILITY_EVIDENCE)
+    if availability_label in {"availability_degraded", "recovery_timeout", "probe_restart_escape", "no_readiness_false_recovery"} and evidence_complete and int(result.get("valid_reproductions", 0)) >= 2:
+        return "confirmed_weakness"
     if result.get("oracle_label") == "weakness" and all(_truthy(evidence, key) for key in REQUIRED_WEAKNESS_EVIDENCE) and int(result.get("valid_reproductions", 0)) >= 2:
         return "confirmed_weakness"
-    if result.get("oracle_label") == "protected" and _truthy(evidence, "independent_oracle") and (_truthy(evidence, "observation") or _truthy(evidence, "static_defense")):
+    defense_claim_type = str(result.get("defense_claim_type") or "")
+    defense_complete = (
+        defense_claim_type in DEFENSE_CLAIM_TYPES
+        and all(_truthy(evidence, key) for key in REQUIRED_DEFENSE_EVIDENCE)
+    )
+    if availability_label == "availability_defended" and defense_complete:
+        return "protected"
+    if result.get("oracle_label") == "protected" and defense_complete:
         return "protected"
     if result.get("static_risk") or result.get("oracle_label") == "unverifiable":
         return "latent_risk"
@@ -139,6 +188,8 @@ def build_feedback_card(result: dict[str, Any], review_status: str = "pending") 
     abstraction = dict(result.get("abstraction") or {})
     abstraction.setdefault("weakness_family", result.get("fault_family", "unknown"))
     abstraction.setdefault("target_role", result.get("target_kind", "unknown"))
+    if classification == "protected" and str(result.get("defense_claim_type") or "") in DEFENSE_CLAIM_TYPES:
+        abstraction.setdefault("defense_claim_type", str(result["defense_claim_type"]))
     return {
         "schema_version": "1.0",
         "card_id": card_id,

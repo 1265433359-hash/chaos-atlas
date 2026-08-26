@@ -10,6 +10,7 @@ from typing import Any
 
 from tools.build_deployment_capability_pool import build_pool
 from tools.project_onboarding import validate_project_profile
+from tools.recovery_contract import contract_for_fault
 
 
 def _canonical_hash(value: Any) -> str:
@@ -139,6 +140,7 @@ class OfflineProjectAdapter:
                 item = deepcopy(candidate)
                 item["candidate_id"] = f"{candidate['candidate_id']}:{family}"
                 item["fault_family"] = family
+                item["recovery_contract"] = contract_for_fault(candidate.get("recovery_contract"), family)
                 item["test_node"] = {
                     "target": candidate.get("target"),
                     "target_kind": candidate.get("target_kind"),
@@ -157,21 +159,63 @@ class OfflineProjectAdapter:
 class KnowledgeProvider:
     """Read-only adapter for existing formal knowledge cards."""
 
-    def retrieve(self, *, project_id: str, candidate_space: dict[str, Any], root: Path | None = None) -> dict[str, Any]:
+    def retrieve(
+        self,
+        *,
+        project_id: str,
+        candidate_space: dict[str, Any],
+        root: Path | None = None,
+        project_commit: str | None = None,
+    ) -> dict[str, Any]:
         cards: list[dict[str, Any]] = []
+        rejected_cards: list[dict[str, Any]] = []
         if root is not None and Path(root).is_dir():
             for path in sorted(Path(root).glob("KB-*.json")):
                 try:
                     value = json.loads(path.read_text(encoding="utf-8"))
                 except (OSError, json.JSONDecodeError):
                     continue
-                if isinstance(value, dict) and value.get("status") not in {"contested", "pending"}:
-                    cards.append({"id": value.get("id", path.stem), "status": value.get("status"), "project": value.get("project"), "test_node": value.get("test_node"), "hypothesis": value.get("hypothesis"), "root_cause": value.get("root_cause")})
+                if isinstance(value, dict):
+                    status = value.get("knowledge_status") or value.get("status")
+                    if status in {"contested", "pending"}:
+                        continue
+                    card_project = value.get("project")
+                    card_commit = value.get("project_commit")
+                    if card_project != project_id:
+                        rejected_cards.append({"id": value.get("id", path.stem), "reason": "project_mismatch", "project": card_project})
+                        continue
+                    if project_commit is not None and card_commit != project_commit:
+                        rejected_cards.append({
+                            "id": value.get("id", path.stem),
+                            "reason": "project_identity_missing" if not card_commit else "project_commit_mismatch",
+                            "project": card_project,
+                            "project_commit": card_commit,
+                        })
+                        continue
+                    cards.append({
+                        "id": value.get("id", path.stem),
+                        "schema_version": value.get("schema_version"),
+                        "status": status,
+                        "knowledge_status": status,
+                        "project": value.get("project"),
+                        "project_commit": value.get("project_commit"),
+                        "classification": value.get("classification"),
+                        "target": value.get("target"),
+                        "target_kind": value.get("target_kind"),
+                        "edge": value.get("edge"),
+                        "weakness_id": value.get("weakness_id"),
+                        "rca_status": value.get("rca_status"),
+                        "test_node": value.get("test_node"),
+                        "hypothesis": value.get("hypothesis"),
+                        "root_cause": value.get("root_cause"),
+                        "next_evidence": value.get("next_evidence") or [],
+                    })
         return {
             "schema_version": "chaosatlas-retrieval-v1",
             "project_id": project_id,
             "candidate_count": int(candidate_space.get("candidate_count") or 0),
             "cards": cards,
+            "rejected_cards": rejected_cards,
             "knowledge_status": "read_only",
             "claim_scope": "static",
         }

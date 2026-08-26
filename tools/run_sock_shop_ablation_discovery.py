@@ -248,15 +248,18 @@ def run_ablation_discovery(
             "knowledge_base_updated": False,
         }
 
-    def write_checkpoint(status: str) -> None:
+    def write_checkpoint(status: str) -> dict[str, Any]:
         if checkpoint_path is None:
-            return
+            return result_payload(status)
         checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+        payload = result_payload(status)
         checkpoint_path.write_text(
-            json.dumps(result_payload(status), ensure_ascii=False, indent=2),
+            json.dumps(payload, ensure_ascii=False, indent=2),
             encoding="utf-8",
         )
+        return payload
 
+    completed_payload: dict[str, Any] | None = None
     while True:
         remaining = deadline - time.monotonic()
         if remaining <= 0:
@@ -294,7 +297,7 @@ def run_ablation_discovery(
                 hypotheses.append(
                     _public_hypothesis(dict(response["hypothesis"]), yaml15_enabled=yaml15_enabled)
                 )
-            write_checkpoint("completed")
+            completed_payload = write_checkpoint("completed")
             break
 
         if not isinstance(response.get("hypothesis"), dict):
@@ -307,7 +310,7 @@ def run_ablation_discovery(
             write_checkpoint("time_cap_hit")
             break
 
-    return result_payload("completed" if self_stop else "time_cap_hit")
+    return completed_payload or result_payload("completed" if self_stop else "time_cap_hit")
 
 
 def fake_ablation_model_call(payload: dict[str, Any]) -> dict[str, Any]:

@@ -27,6 +27,7 @@ PROJECTS = [f"P{index:02d}" for index in range(1, 11)]
 SEEDS = [1001, 1002, 1003]
 ATLAS_ARMS = ["ChaosAtlas-KB-open", "ChaosAtlas-noKB-open"]
 CHAOSEATER_ARM = "ChaosEater-official"
+POLICY_MODES = {"legacy", "observe", "shadow", "guarded", "default"}
 ACTIVE_LEDGER = EXPERIMENT / "active_atlas_experiment_ledger.json"
 
 
@@ -120,7 +121,13 @@ def build_run_rows(
     gate: dict[str, Any],
     ce_gate: dict[str, Any],
     include_chaoseater: bool = False,
+    policy_mode: str = "legacy",
+    policy_budget: int = 1,
 ) -> list[dict[str, Any]]:
+    if policy_mode not in POLICY_MODES:
+        raise ValueError(f"unsupported policy mode: {policy_mode}")
+    if int(policy_budget) <= 0:
+        raise ValueError("policy budget must be positive")
     rows: list[dict[str, Any]] = []
     for seed in SEEDS:
         for arm in ATLAS_ARMS:
@@ -146,6 +153,8 @@ def build_run_rows(
                 "llm_called": False,
                 "mutation_applied": False,
                 "evidence_status": "not_started",
+                "policy_mode": policy_mode,
+                "policy_budget": int(policy_budget),
             })
         if include_chaoseater:
             official_status = (
@@ -169,6 +178,8 @@ def build_run_rows(
                 "mutation_applied": False,
                 "evidence_status": "not_started",
                 "improvement_isolated": True,
+                "policy_mode": policy_mode,
+                "policy_budget": int(policy_budget),
             })
     return rows
 
@@ -182,6 +193,8 @@ def main() -> int:
         action="store_true",
         help="explicitly unfreeze the deferred ChaosEater arm for a later unified comparison",
     )
+    parser.add_argument("--policy-mode", choices=sorted(POLICY_MODES), default="legacy")
+    parser.add_argument("--policy-budget", type=int, default=1)
     args = parser.parse_args()
 
     matrix = read_json(EXPERIMENT / "runtime_gate_matrix.json")
@@ -201,7 +214,7 @@ def main() -> int:
             map_path = EXPERIMENT / "runtime_profiles" / project_id / "runtime-map.json"
             map_path.write_text(json.dumps(runtime_map, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
             projects[project_id]["runtime_map"] = str(map_path.relative_to(ROOT)).replace("\\", "/")
-        rows.extend(build_run_rows(project_id, gate, ce_gate, include_chaoseater=args.include_chaoseater))
+        rows.extend(build_run_rows(project_id, gate, ce_gate, include_chaoseater=args.include_chaoseater, policy_mode=args.policy_mode, policy_budget=args.policy_budget))
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     ledger = {
@@ -227,6 +240,7 @@ def main() -> int:
         ),
         "improvement_policy": "ChaosEater improvement/reconfiguration outputs are recorded separately and excluded from first-discovery yield.",
         "secondary_candidate_pool_track": "parked_until_primary_track_review",
+        "policy": {"mode": args.policy_mode, "budget": args.policy_budget, "rollback_mode": "legacy"},
     }
     args.output.write_text(json.dumps(ledger, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
     summary = {

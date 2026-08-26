@@ -70,6 +70,20 @@ def evidence_from_candidate(cid: str, severity: int, verdict: str, contract: str
     }
 
 
+def policy_evidence_reference(result: dict[str, Any]) -> dict[str, Any]:
+    """Return audit-only policy provenance safe to attach to a library update.
+
+    Runtime observations and verdict text remain in the feedback card.  The
+    formal SE/JE/DP entries receive only stable identifiers and hashes.
+    """
+    return {
+        "candidate_id": result.get("candidate_id"),
+        "causal_cluster_id": result.get("causal_cluster_id"),
+        "result_sha256": result.get("result_sha256"),
+        "policy_input_sha256": result.get("policy_input_sha256"),
+    }
+
+
 def match_selection(ev: dict[str, Any]) -> list[tuple[str, str]]:
     """Return (entry_id, reason) pairs this evidence supports (SE library)."""
     hits: list[tuple[str, str]] = []

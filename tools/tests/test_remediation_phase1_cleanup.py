@@ -68,10 +68,27 @@ class DeleteResourceClassificationTests(unittest.TestCase):
 
     def test_resource_still_exists_is_not_absent(self):
         self._patched(0, "")
-        r = rce.delete_resource("NetworkChaos", "train-ticket-lab", "x")
+        r = rce.delete_resource("NetworkChaos", "train-ticket-lab", "x", timeout=0)
         self.assertFalse(r["absent_confirmed"])
         self.assertEqual(r["verify_status"], "exists")
         self.assertTrue(r["delete_failed"])
+
+    def test_async_delete_rechecks_until_not_found(self):
+        patcher = mock.patch.object(rce, "run_kubectl", autospec=True)
+        mocked = patcher.start()
+        self.addCleanup(patcher.stop)
+        mocked.side_effect = [
+            (0, "networkchaos.chaos-mesh.org/x deleted", ""),
+            (0, "x  loss  30s", ""),
+            (1, "", 'Error from server (NotFound): networkchaos.chaos-mesh.org "x" not found'),
+        ]
+        with mock.patch.object(rce.time, "sleep") as sleep, mock.patch.object(rce.time, "monotonic", return_value=0.0):
+            result = rce.delete_resource("NetworkChaos", "train-ticket-lab", "x", timeout=5)
+
+        self.assertTrue(result["absent_confirmed"])
+        self.assertEqual(result["verify_status"], "absent")
+        self.assertFalse(result["delete_failed"])
+        sleep.assert_called_once()
 
     def test_delete_command_failure_is_not_absent(self):
         patcher = mock.patch.object(rce, "run_kubectl", autospec=True)

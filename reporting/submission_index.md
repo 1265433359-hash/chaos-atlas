@@ -13,6 +13,15 @@ These drafts are based on pinned commits and isolated runtime evidence. They are
 | Online Boutique | [GoogleCloudPlatform/microservices-demo#3474](https://github.com/GoogleCloudPlatform/microservices-demo/issues/3474) `Online Boutique: Checkout waits for delayed or unavailable payment, shipping, and email services` | open |
 | Online Boutique | [GoogleCloudPlatform/microservices-demo#3473](https://github.com/GoogleCloudPlatform/microservices-demo/issues/3473) `Online Boutique: home page returns HTTP 500 while productcatalogservice is unavailable` | open |
 
+## Drafts not yet submitted
+
+| Project | Draft | Status |
+|---|---|---|
+| OpenTelemetry Demo | `reporting/opentelemetry-demo/issues/2026-08-23_emailservice-blocks-placeorder.md` | draft / not-submitted |
+| Sock Shop | `reporting/sock-shop/issues/2026-08-24_front-end-single-replica-availability-degradation.md` | draft / not-submitted; review pack SS-ISSUE-001 |
+| Sock Shop | `reporting/sock-shop/issues/2026-08-24_catalogue-db-single-replica-catalogue-outage.md` | draft / not-submitted; review pack SS-ISSUE-002 |
+| Sock Shop | `reporting/sock-shop/issues/2026-08-24_front-end-catalogue-abort-no-graceful-degradation.md` | draft / not-submitted; review pack SS-ISSUE-003 |
+
 ## Recommended order
 
 | Priority | Project | Draft | Classification | Recommendation |
@@ -20,9 +29,11 @@ These drafts are based on pinned commits and isolated runtime evidence. They are
 | P0 | Online Boutique | `reporting/online-boutique/issues/2026-08-10_productcatalog-core-path-no-degradation.md` | Core-path resilience observation | Ask whether the fail-closed behavior is intentional |
 | P0 | Train Ticket | `reporting/train-ticket/issues/2026-08-05_disabled-downstream-call-in-refresh.md` | Potential correctness and benchmark-integrity concern | Ask for design clarification |
 | P1 | OpenTelemetry Demo | `reporting/opentelemetry-demo/issues/2026-08-09_quote-shipping-error-message.md` | Confirmed error-message mismatch | Submit as a focused normal issue |
+| P1 | OpenTelemetry Demo | `reporting/opentelemetry-demo/issues/2026-08-23_emailservice-blocks-placeorder.md` | Checkout resilience concern | Ask whether synchronous email behavior is intentional |
 | P1 | Train Ticket | `reporting/train-ticket/issues/2026-08-05_station-no-timeout-defense.md` | Application timeout/resilience concern | Submit with explicit SLO caveat |
 | P2 | Online Boutique | `reporting/online-boutique/issues/2026-08-10_checkout-downstream-no-timeout.md` | Design/resilience improvement opportunity | Ask whether behavior is intentional |
 | P2 | Online Boutique | `reporting/online-boutique/issues/2026-08-10_payment-probe-too-aggressive.md` | Probe configuration observation | Optional; request owner confirmation |
+| Review | Sock Shop | `reporting/sock-shop/ISSUE_REVIEW.md` | Three bounded resilience/design candidates | User must choose approve-draft, revise, hold-evidence-only, or reject-design-choice |
 
 ## Do not submit as bugs
 

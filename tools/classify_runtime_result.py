@@ -9,6 +9,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+try:
+    from project_onboarding import result_contract_from_classification
+except ImportError:  # pragma: no cover - supports direct script execution
+    from tools.project_onboarding import result_contract_from_classification
+
 
 def load_json(path: Path) -> dict[str, Any]:
     with path.open("r", encoding="utf-8") as handle:
@@ -239,6 +244,27 @@ def classify(
     elif classification == "platform_or_preflight_blocked":
         interpretation["result"] = "The platform or preflight gate blocked execution; this is not an application defense result."
 
+    cleanup_confirmed_value = cleanup_state is True
+    result_contract = result_contract_from_classification(
+        classification,
+        claim_scope=str(run.get("claim_scope") or run.get("mutation") or "runtime-experiment"),
+        evidence_refs=[
+            value
+            for value in [run.get("mutation"), run.get("apply")]
+            if value
+        ],
+        injected=bool(lifecycle.get("injected")),
+        recovered=recovered,
+        cleanup_confirmed=cleanup_confirmed_value,
+        defense_evidence=run.get("defense_evidence") if isinstance(run.get("defense_evidence"), dict) else None,
+    )
+    if result_contract.get("result") == "defended":
+        interpretation["defense_claim"] = result_contract.get("defense_claim_type")
+        interpretation["result"] = (
+            f"The injected scenario preserved the business contract within the observed window; "
+            f"the evidence supports a bounded {result_contract.get('defense_claim_type')} defense claim."
+        )
+
     return {
         "schema_version": 1,
         "tool": "classify_runtime_result",
@@ -262,6 +288,7 @@ def classify(
             "cleanup_confirmed": cleanup_state,
         },
         "interpretation": interpretation,
+        "result_contract": result_contract,
         "evidence_refs": [
             value
             for value in [run.get("mutation"), run.get("apply"), run.get("lifecycle", {}).get("cleanup")]

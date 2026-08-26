@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 from copy import deepcopy
 from typing import Any
@@ -18,6 +19,18 @@ FORBIDDEN_KEYS = {
     "defense_status",
 }
 _HYPOTHESIS_FIELDS = {"candidate_id", "mechanism", "expected_observations", "missing_evidence", "next_actions"}
+_ADVISORY_METADATA_FIELDS = {
+    "backend",
+    "model",
+    "endpoint",
+    "generation_time_ms",
+    "prompt_tokens",
+    "completion_tokens",
+    "total_tokens",
+    "finish_reason",
+    "reasoning_content_chars",
+}
+_KNOWLEDGE_VIEW_FORBIDDEN = FORBIDDEN_KEYS | {"status"}
 
 
 def _forbidden(value: Any, path: str = "$") -> list[str]:
@@ -39,6 +52,33 @@ def _strings(value: Any, field: str) -> list[str]:
     return [item.strip() for item in value]
 
 
+def _safe_advisory_metadata(value: Any) -> dict[str, Any]:
+    """Retain only bounded, scalar provider metadata from an advisory response."""
+    if not isinstance(value, dict):
+        return {}
+    safe: dict[str, Any] = {}
+    for key in sorted(_ADVISORY_METADATA_FIELDS):
+        if key not in value:
+            continue
+        candidate = value[key]
+        if isinstance(candidate, (str, int, float, bool)) or candidate is None:
+            safe[key] = candidate
+    return safe
+
+
+def _sanitize_knowledge_view(value: Any) -> Any:
+    """Keep explanatory knowledge while hiding conclusion/status labels from advisory input."""
+    if isinstance(value, dict):
+        return {
+            key: _sanitize_knowledge_view(child)
+            for key, child in value.items()
+            if key not in _KNOWLEDGE_VIEW_FORBIDDEN
+        }
+    if isinstance(value, list):
+        return [_sanitize_knowledge_view(item) for item in value]
+    return value
+
+
 def build_hypothesis_input(
     inventory: dict[str, Any],
     detection: dict[str, Any],
@@ -56,15 +96,43 @@ def build_hypothesis_input(
         "inventory": deepcopy(inventory),
         "server_deployment_detection": deepcopy(detection),
         "candidate_space": deepcopy(candidate_space),
-        "knowledge_view": deepcopy(cards),
+        "knowledge_view": _sanitize_knowledge_view(cards),
         "claim_scope": "advisory",
     }
 
 
-def rank_candidates(candidate_space: dict[str, Any], cards: list[dict[str, Any]]) -> dict[str, Any]:
+def rank_candidates(
+    candidate_space: dict[str, Any],
+    cards: list[dict[str, Any]],
+    rca_snapshot: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     candidates = [deepcopy(item) for item in candidate_space.get("candidates") or [] if isinstance(item, dict)]
     if not candidates:
         return {"schema_version": "chaosatlas-ranked-candidates-v1", "candidate_count": 0, "candidate_ids": [], "candidates": []}
+    if rca_snapshot is not None:
+        from tools.decision_engine import rank as decision_rank
+
+        decisions = decision_rank([dict(item) for item in candidates], rca_snapshot=rca_snapshot)
+        by_id = {str(item.get("candidate_id")): item for item in decisions}
+        for item in candidates:
+            decision = by_id.get(str(item.get("candidate_id")))
+            if decision is not None:
+                item["runtime_retrieval"] = decision
+                item["retrieval_score"] = decision["score"]
+        candidates.sort(
+            key=lambda item: (
+                -float((item.get("runtime_retrieval") or {}).get("score", 0)),
+                str(item.get("candidate_id") or ""),
+            )
+        )
+        return {
+            "schema_version": "chaosatlas-ranked-candidates-v1",
+            "candidate_count": len(candidates),
+            "candidate_ids": [str(item.get("candidate_id")) for item in candidates],
+            "candidates": candidates,
+            "claim_scope": "advisory",
+            "runtime_retrieval": True,
+        }
     reusable = [card for card in cards if isinstance(card, dict) and card.get("status") in {"local_reusable", "cross_project_reusable"}]
     ranked: list[tuple[int, str, dict[str, Any]]] = []
     for item in candidates:
@@ -124,12 +192,15 @@ def parse_advisory_output(raw: str, *, allowed_candidate_ids: set[str]) -> dict[
             "next_actions": _strings(item.get("next_actions", []), f"hypotheses[{index}].next_actions"),
         }
         parsed.append(normalized)
-    return {
+    result = {
         "schema_version": "chaosatlas-advisory-hypotheses-v1",
         "hypotheses": parsed,
         "global_missing_evidence": _strings(value.get("global_missing_evidence", []), "global_missing_evidence"),
         "claim_scope": "advisory",
     }
+    if "advisory_metadata" in value:
+        result["advisory_metadata"] = _safe_advisory_metadata(value["advisory_metadata"])
+    return result
 
 
 def build_deterministic_hypotheses(ranked: dict[str, Any]) -> dict[str, Any]:
@@ -144,4 +215,41 @@ def build_deterministic_hypotheses(ranked: dict[str, Any]) -> dict[str, Any]:
             "missing_evidence": ["runtime evidence"],
             "next_actions": ["run bounded baseline and observation plan"],
         })
-    return {"schema_version": "chaosatlas-deterministic-hypotheses-v1", "hypotheses": hypotheses, "claim_scope": "advisory"}
+    return {
+        "schema_version": "chaosatlas-deterministic-hypotheses-v1",
+        "hypotheses": hypotheses,
+        "candidate_ids": [item.get("candidate_id") for item in ranked.get("candidates") or []],
+        "claim_scope": "advisory",
+    }
+
+
+def build_hypotheses_with_advisory(
+    ranked: dict[str, Any],
+    hypothesis_input: dict[str, Any],
+    *,
+    provider: Any | None = None,
+) -> dict[str, Any]:
+    """Attach optional, allow-listed advisory output to deterministic hypotheses."""
+
+    result = build_deterministic_hypotheses(ranked)
+    if provider is None:
+        result["advisory_status"] = "deterministic_fallback"
+        return result
+    try:
+        raw = provider(deepcopy(hypothesis_input))
+        if isinstance(raw, dict):
+            raw = json.dumps(raw, ensure_ascii=True)
+        advisory = parse_advisory_output(
+            str(raw),
+            allowed_candidate_ids={str(item) for item in result["candidate_ids"]},
+        )
+    except (TypeError, ValueError, json.JSONDecodeError) as exc:
+        result["advisory_status"] = "deterministic_fallback"
+        result["advisory_error"] = type(exc).__name__
+        return result
+    result["advisory_status"] = "completed"
+    result["advisory"] = advisory
+    result["advisory_input_sha256"] = hashlib.sha256(
+        json.dumps(hypothesis_input, ensure_ascii=True, sort_keys=True).encode("utf-8")
+    ).hexdigest()
+    return result

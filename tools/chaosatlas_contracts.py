@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import tempfile
+import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -26,6 +27,7 @@ STAGES = (
     "classify",
     "rca",
     "learn",
+    "promote_defense",
     "regression",
 )
 _STAGE_SET = set(STAGES)
@@ -54,7 +56,16 @@ def _write_json_atomic(path: Path, payload: dict[str, Any]) -> Path:
         with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
             json.dump(payload, handle, ensure_ascii=False, indent=2, sort_keys=True)
             handle.write("\n")
-        os.replace(temporary, path)
+        # Windows endpoint scanners can briefly hold the destination between
+        # stage writes. Retry only that transient atomic-replace failure.
+        for attempt in range(4):
+            try:
+                os.replace(temporary, path)
+                break
+            except PermissionError:
+                if attempt == 3:
+                    raise
+                time.sleep(0.05 * (attempt + 1))
     except Exception:
         try:
             os.unlink(temporary)
@@ -89,8 +100,8 @@ class RunContext:
         seed: int,
         output_root: str | Path,
     ) -> "RunContext":
-        if mode not in {"dry-run"}:
-            raise ValueError("offline run mode must be dry-run")
+        if mode not in {"dry-run", "live"}:
+            raise ValueError("run mode must be dry-run or live")
         if not isinstance(seed, int) or isinstance(seed, bool):
             raise ValueError("seed must be an integer")
         profile_text = str(profile_path).replace("\\", "/")
@@ -102,7 +113,7 @@ class RunContext:
         }
         input_hash = _sha256(snapshot)
         return cls(
-            run_id=f"dry-run-{input_hash[:12]}",
+            run_id=f"{('live' if mode == 'live' else 'dry-run')}-{input_hash[:12]}",
             profile_path=profile_text,
             mode=mode,
             seed=seed,

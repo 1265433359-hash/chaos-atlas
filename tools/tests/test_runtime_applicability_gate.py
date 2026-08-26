@@ -42,11 +42,44 @@ spec:
 
 
 class RuntimeGateTest(unittest.TestCase):
+    def test_chaos_components_returns_components_and_errors(self) -> None:
+        data = {
+            "items": [
+                {
+                    "metadata": {
+                        "name": "chaos-controller-manager-0",
+                        "labels": {"app.kubernetes.io/component": "controller-manager"},
+                    },
+                    "status": {"conditions": [{"type": "Ready", "status": "True"}]},
+                },
+                {
+                    "metadata": {
+                        "name": "chaos-daemon-0",
+                        "labels": {"app.kubernetes.io/component": "daemon"},
+                    },
+                    "status": {"conditions": [{"type": "Ready", "status": "True"}]},
+                },
+            ]
+        }
+
+        with patch.object(gate, "kubectl_json", return_value=(data, None)):
+            components, errors = gate.chaos_components()
+
+        self.assertTrue(components["ready"])
+        self.assertEqual(["chaos-controller-manager-0"], components["controller_pods"])
+        self.assertEqual(["chaos-daemon-0"], components["daemon_pods"])
+        self.assertEqual([], errors)
+
     def check(self, content: str) -> dict:
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "mutation.yaml"
             path.write_text(content, encoding="utf-8")
-            with patch.object(gate, "run_kubectl", return_value=(1, "", "not found")), patch.object(
+            def kubectl_for_top_level(args: list[str], timeout: int = 20):
+                if len(args) >= 3 and args[0:2] == ["get", "crd"]:
+                    return 0, "crd", ""
+                return 1, "", "not found"
+
+            with patch.object(gate, "run_kubectl", side_effect=kubectl_for_top_level), patch.object(
                 gate, "chaos_components", return_value=(
                     {"ready": True, "controller_pods": ["controller"], "daemon_pods": ["daemon"]}, []
                 ),
@@ -75,6 +108,55 @@ class RuntimeGateTest(unittest.TestCase):
                 result = gate.check_mutation(path)
         self.assertNotEqual("blocked", result["decision"])
         self.assertTrue(result["checks"]["scope_guard"]["metadata_namespace_ok"])
+
+    def test_caller_can_supply_runtime_namespace_policy(self) -> None:
+        def kubectl_for_runtime_namespace(args: list[str], timeout: int = 20):
+            if len(args) >= 3 and args[0:2] == ["get", "crd"]:
+                return 0, "crd", ""
+            return 1, "", "not found"
+
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "mutation.yaml"
+            path.write_text(mutation(namespace="sock-shop-lab"), encoding="utf-8")
+            with patch.object(gate, "run_kubectl", side_effect=kubectl_for_runtime_namespace), patch.object(
+                gate, "chaos_components", return_value=(
+                    {"ready": True, "controller_pods": ["controller"], "daemon_pods": ["daemon"]}, []
+                ),
+            ), patch.object(gate, "target_pods", return_value=([READY_POD], [])):
+                result = gate.check_mutation(path, allowed_namespaces={"sock-shop-lab"})
+        self.assertTrue(result["checks"]["scope_guard"]["metadata_namespace_ok"])
+        self.assertNotEqual("blocked", result["decision"])
+
+    def test_top_level_chaos_mesh_selector_is_normalized(self) -> None:
+        content = """apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: test-pod
+  namespace: sock-shop-lab
+spec:
+  namespaces: [sock-shop-lab]
+  labelSelectors:
+    name: front-end
+  action: pod-kill
+  mode: one
+  duration: 1s
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "mutation.yaml"
+            path.write_text(content, encoding="utf-8")
+            def kubectl_for_top_level(args: list[str], timeout: int = 20):
+                if len(args) >= 3 and args[0:2] == ["get", "crd"]:
+                    return 0, "crd", ""
+                return 1, "", "not found"
+
+            with patch.object(gate, "run_kubectl", side_effect=kubectl_for_top_level), patch.object(
+                gate, "chaos_components", return_value=(
+                    {"ready": True, "controller_pods": ["controller"], "daemon_pods": ["daemon"]}, []
+                ),
+            ), patch.object(gate, "target_pods", return_value=([READY_POD], [])):
+                result = gate.check_mutation(path, allowed_namespaces={"sock-shop-lab"})
+        self.assertNotEqual("blocked", result["decision"])
+        self.assertTrue(result["checks"]["scope_guard"]["selector_labels_ok"])
 
     def test_current_online_boutique_namespace_is_allowed(self) -> None:
         def kubectl_for_allowed_namespace(args: list[str], timeout: int = 20):

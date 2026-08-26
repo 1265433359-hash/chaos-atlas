@@ -2,12 +2,46 @@
   "schema_version": "chaosatlas-offline-facts-v1",
   "project_id": "p02",
   "project_commit": "p02-fixture-commit",
-  "namespace": "p02-lab",
-  "services": ["api-gateway", "customers-service", "visits-service"],
-  "deployments": [
-    {"name": "api-gateway", "selector": {"app": "api-gateway"}, "desired_replicas": 2},
-    {"name": "visits-service", "selector": {"app": "visits-service"}, "desired_replicas": 1}
+  "namespace": "chaosatlas-p02",
+  "manifest_root": "artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P02/kubernetes-static",
+  "services": [
+    "admin-server",
+    "api-gateway",
+    "config-server",
+    "customers-service",
+    "discovery-server",
+    "grafana-server",
+    "prometheus-server",
+    "tracing-server",
+    "vets-service",
+    "visits-service"
   ],
-  "dependencies": [{"source": "api-gateway", "target": "visits-service", "relation": "http"}],
-  "business_oracles": [{"id": "p02-homepage", "kind": "http", "entrypoint": "/", "success_contract": "http_200"}]
+  "deployments": [
+    {"name": "admin-server", "selector": {"app.kubernetes.io/name": "admin-server", "app.kubernetes.io/part-of": "chaosatlas-p02"}, "desired_replicas": 1},
+    {"name": "api-gateway", "selector": {"app.kubernetes.io/name": "api-gateway", "app.kubernetes.io/part-of": "chaosatlas-p02"}, "desired_replicas": 1},
+    {"name": "config-server", "selector": {"app.kubernetes.io/name": "config-server", "app.kubernetes.io/part-of": "chaosatlas-p02"}, "desired_replicas": 1},
+    {"name": "customers-service", "selector": {"app.kubernetes.io/name": "customers-service", "app.kubernetes.io/part-of": "chaosatlas-p02"}, "desired_replicas": 1},
+    {"name": "discovery-server", "selector": {"app.kubernetes.io/name": "discovery-server", "app.kubernetes.io/part-of": "chaosatlas-p02"}, "desired_replicas": 1},
+    {"name": "grafana-server", "selector": {"app.kubernetes.io/name": "grafana-server", "app.kubernetes.io/part-of": "chaosatlas-p02"}, "desired_replicas": 1},
+    {"name": "prometheus-server", "selector": {"app.kubernetes.io/name": "prometheus-server", "app.kubernetes.io/part-of": "chaosatlas-p02"}, "desired_replicas": 1},
+    {"name": "tracing-server", "selector": {"app.kubernetes.io/name": "tracing-server", "app.kubernetes.io/part-of": "chaosatlas-p02"}, "desired_replicas": 1},
+    {"name": "vets-service", "selector": {"app.kubernetes.io/name": "vets-service", "app.kubernetes.io/part-of": "chaosatlas-p02"}, "desired_replicas": 1},
+    {"name": "visits-service", "selector": {"app.kubernetes.io/name": "visits-service", "app.kubernetes.io/part-of": "chaosatlas-p02"}, "desired_replicas": 1}
+  ],
+  "dependencies": [
+    {"source": "admin-server", "target": "config-server", "relation": "config"},
+    {"source": "admin-server", "target": "discovery-server", "relation": "discovery"},
+    {"source": "api-gateway", "target": "config-server", "relation": "config"},
+    {"source": "api-gateway", "target": "discovery-server", "relation": "discovery"},
+    {"source": "customers-service", "target": "config-server", "relation": "config"},
+    {"source": "customers-service", "target": "discovery-server", "relation": "discovery"},
+    {"source": "discovery-server", "target": "config-server", "relation": "config"},
+    {"source": "vets-service", "target": "config-server", "relation": "config"},
+    {"source": "vets-service", "target": "discovery-server", "relation": "discovery"},
+    {"source": "visits-service", "target": "config-server", "relation": "config"},
+    {"source": "visits-service", "target": "discovery-server", "relation": "discovery"}
+  ],
+  "business_oracles": [
+    {"id": "p02-gateway-owner", "kind": "http", "entrypoint": "/api/gateway/owners/1", "success_contract": "http_200"}
+  ]
 }

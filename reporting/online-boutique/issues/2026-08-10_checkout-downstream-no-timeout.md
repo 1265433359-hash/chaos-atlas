@@ -32,6 +32,21 @@ Runtime observation:
 | Payment loss, 100% | approximately 17-23 ms | request waited approximately 10,008 ms and ended with `DEADLINE_EXCEEDED` |
 | Recovery | baseline restored | service returned to approximately 17-23 ms after cleanup |
 
+### Additional runtime evidence: shipping double-call and delay accumulation
+
+The `PlaceOrder` path invokes `shippingservice` twice: once for `GetQuote` and
+once for `ShipOrder`. With a 2-second delay injected into `shippingservice`, the
+total `PlaceOrder` latency increased to approximately 4021.5 ms from a baseline
+of about 17 ms.
+
+With simultaneous 2-second delays on `paymentservice` and `emailservice`, the
+end-to-end latency was approximately 4016.2 ms, showing that synchronous
+downstream delays accumulate across the checkout path.
+
+These are controlled experiment measurements, not production SLO claims. The
+main question is whether each dependency should have an explicit deadline and
+whether the non-critical email operation should be asynchronous or best-effort.
+
 ## Impact
 
 The checkout path may retain request, goroutine and connection resources while waiting for an unavailable dependency. Under concurrent failures, this could increase queueing and make unrelated orders more likely to reach their client deadlines.

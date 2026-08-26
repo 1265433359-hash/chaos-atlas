@@ -10,6 +10,7 @@ from knowledge_updater import (
     evidence_from_candidate,
     match_selection,
     match_judgment,
+    policy_evidence_reference,
 )
 
 
@@ -43,6 +44,18 @@ class KnowledgeUpdaterTests(unittest.TestCase):
         backfill(candidate_ids=["OB-PAYMENT-LOSS-100"], dry_run=True)
         after = _json.loads(Path(SE_PATH).read_text(encoding="utf-8"))
         self.assertEqual(before, after)
+
+    def test_policy_evidence_reference_keeps_runtime_details_out_of_library_entry(self):
+        ref = policy_evidence_reference({
+            "candidate_id": "candidate-a",
+            "classification": "confirmed_weakness",
+            "causal_cluster_id": "cluster-a",
+            "result_sha256": "c" * 64,
+            "runtime_observation": {"availableReplicas": 0},
+        })
+        self.assertEqual(ref["candidate_id"], "candidate-a")
+        self.assertEqual(ref["causal_cluster_id"], "cluster-a")
+        self.assertNotIn("runtime_observation", ref)
 
 
 if __name__ == "__main__":

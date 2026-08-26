@@ -9,6 +9,7 @@ from tools.run_sock_shop_two_arm import (
     NAMESPACE,
     classify_observation,
     contract_ok,
+    resolve_api_key,
     oracle_passes,
     schedule_child_names,
     validate_mutation,
@@ -245,6 +246,54 @@ def test_response_contracts_and_observation_classification() -> None:
     failing = [{"pass": True}, {"pass": False}]
     assert classify_observation(passing) == "no_business_impact_observed"
     assert classify_observation(failing) == "weakness_observed"
+
+
+def test_resolve_api_key_prefers_explicit_file(tmp_path: Path, monkeypatch) -> None:
+    key_file = tmp_path / "deepseek_api_key.txt"
+    key_file.write_text("  file-key\n", encoding="utf-8")
+    monkeypatch.setenv("CHAOS_EATER_API_KEY", "environment-key")
+
+    key, source = resolve_api_key(None, key_file)
+
+    assert key == "file-key"
+    assert source == str(key_file)
+
+
+def test_resolve_api_key_uses_environment_before_default_file(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setenv("CHAOS_EATER_API_KEY", "environment-key")
+
+    key, source = resolve_api_key(None, None, default_file=tmp_path / "missing-key.txt")
+
+    assert key == "environment-key"
+    assert source == "CHAOS_EATER_API_KEY"
+
+
+def test_resolve_api_key_returns_no_secret_when_sources_are_missing(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("CHAOS_EATER_API_KEY", raising=False)
+
+    key, source = resolve_api_key(None, None, default_file=tmp_path / "missing-key.txt")
+
+    assert key is None
+    assert source is None
+
+
+def test_configure_console_output_uses_utf8_when_supported(monkeypatch) -> None:
+    class FakeStream:
+        def __init__(self) -> None:
+            self.options: dict[str, str] | None = None
+
+        def reconfigure(self, **kwargs: str) -> None:
+            self.options = kwargs
+
+    stdout = FakeStream()
+    stderr = FakeStream()
+    monkeypatch.setattr(runner.sys, "stdout", stdout)
+    monkeypatch.setattr(runner.sys, "stderr", stderr)
+
+    runner.configure_console_output()
+
+    assert stdout.options == {"encoding": "utf-8", "errors": "replace"}
+    assert stderr.options == {"encoding": "utf-8", "errors": "replace"}
 
 
 def test_failed_washout_preserves_journey_evidence(tmp_path: Path, monkeypatch) -> None:

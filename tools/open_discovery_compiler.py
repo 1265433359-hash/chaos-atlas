@@ -83,6 +83,25 @@ def contract_from_topology(
     return RuntimeContract(project_id, project_commit, namespace, frozenset(targets), workload_id, workload_contract, max_hypotheses, kinds, resolvers, roles, fault_families)
 
 
+def contract_from_deployment_pool(pool: dict[str, Any], *, workload_id: str = "deployment-capability", workload_contract: str = "availability/recovery") -> RuntimeContract:
+    """Create the same bounded discovery contract from a manifest-only pool."""
+    targets: set[str] = set()
+    kinds: dict[str, str] = {}
+    resolvers: dict[str, str] = {}
+    fault_families: dict[str, frozenset[str]] = {}
+    for candidate in pool.get("candidates", []):
+        if not isinstance(candidate, dict) or not candidate.get("compile_eligible"):
+            continue
+        target = str(candidate.get("target") or "")
+        if not target:
+            continue
+        targets.add(target)
+        kinds[target] = str(candidate.get("target_kind") or "deployment")
+        resolvers[target] = target
+        fault_families[target] = frozenset({"pod_kill", "container_cpu_stress"})
+    return RuntimeContract(str(pool.get("project_id", "")), str(pool.get("project_commit", "")), str(pool.get("namespace", "")), frozenset(targets), workload_id, workload_contract, 8, kinds, resolvers, None, fault_families)
+
+
 def _walk_forbidden(value: Any, path: str = "$") -> list[str]:
     hits: list[str] = []
     if isinstance(value, dict):
@@ -144,7 +163,7 @@ def compile_output(payload: dict[str, Any], contract: RuntimeContract, known_sig
         if missing:
             errors.append({"index": index, "reason": "missing_required_fields", "fields": missing})
             continue
-        if item["target_kind"] not in {"service", "dependency_edge"}:
+        if item["target_kind"] not in {"service", "dependency_edge", "deployment", "scenario"}:
             errors.append({"index": index, "reason": "unsupported_target_kind"})
             continue
         if item["target"] not in contract.targets:
@@ -160,6 +179,10 @@ def compile_output(payload: dict[str, Any], contract: RuntimeContract, known_sig
         if contract.target_fault_families and family not in contract.target_fault_families.get(item["target"], frozenset()):
             errors.append({"index": index, "reason": "fault_family_not_supported_for_target", "target": item["target"], "fault_family": family})
             continue
+        if item["target_kind"] in {"deployment", "scenario"}:
+            if not str(item.get("expected_steady_state", "")).strip() or not str(item.get("recovery_expectation", "")).strip():
+                errors.append({"index": index, "reason": "deployment hypothesis requires expected_steady_state and recovery_expectation"})
+                continue
         call_chain = item.get("call_chain")
         if not isinstance(call_chain, list) or not call_chain:
             errors.append({"index": index, "reason": "call_chain_required"})
@@ -200,6 +223,7 @@ def compile_output(payload: dict[str, Any], contract: RuntimeContract, known_sig
             "parameters": item["parameters"],
             "hypothesis": item["hypothesis"],
             "expected_invariant": item["expected_invariant"],
+            "expected_steady_state": item.get("expected_steady_state"),
             "validation_plan": item["validation_plan"],
             "recovery_expectation": item["recovery_expectation"],
             "call_chain": item.get("call_chain", []),

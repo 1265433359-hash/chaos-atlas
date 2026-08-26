@@ -392,6 +392,7 @@ def contract_hard_filter(candidate: dict[str, Any], contract_snapshot: dict[str,
 def _score_native_candidate(
     candidate: dict[str, Any],
     knowledge_snapshot: dict[str, Any] | None,
+    rca_snapshot: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Score manifest-derived candidates without invoking legacy project rules.
 
@@ -430,6 +431,10 @@ def _score_native_candidate(
                 score += weight * 10.0
                 reasons.append(f"native knowledge {entry.get('id', '<unknown>')} (w={weight:.2f})")
                 diagnostics.extend(str(item) for item in entry.get("diagnostics", []))
+    rca = _rca_influence(candidate, rca_snapshot)
+    score += rca["bonus"]
+    reasons.extend(rca["reasons"])
+    diagnostics.extend(rca["diagnostics"])
     return {
         "candidate_id": candidate_id,
         "edge": candidate.get("edge"),
@@ -457,13 +462,28 @@ def _rca_cards(rca_snapshot: dict[str, Any] | None) -> list[dict[str, Any]]:
 
 
 def _rca_card_matches(card: dict[str, Any], candidate: dict[str, Any]) -> bool:
-    edge = str(card.get("edge") or "")
-    if edge and edge == candidate.get("edge"):
-        return True
     tn = card.get("test_node") or {}
+    card_target = str(card.get("target") or tn.get("target") or "")
+    candidate_target = str(candidate.get("target") or candidate.get("service_target") or "")
+    if card_target and candidate_target and card_target != candidate_target:
+        return False
+    edge = str(card.get("edge") or "")
     cid = str(candidate.get("candidate_id") or "").upper()
     family = str(tn.get("family") or "").upper().replace("CHAOS", "")
     operation = str(tn.get("operation") or "").upper()
+    candidate_family = str(candidate.get("fault_family") or "").upper().replace("CHAOS", "")
+    candidate_operation = str(candidate.get("operation") or candidate.get("fault_family") or "").upper()
+    strict_identity = str(card.get("classification") or "") == "availability_weakness" or str(card.get("schema_version") or "").startswith("chaosatlas-weakness-")
+    if edge and edge == candidate.get("edge"):
+        if not strict_identity:
+            return True
+        if family and candidate_family and family != candidate_family:
+            return False
+        if operation and candidate_operation and operation != candidate_operation:
+            return False
+        return bool(family or operation)
+    if strict_identity and family and candidate_family and family != candidate_family:
+        return False
     return bool(family and operation and operation in cid and family in cid)
 
 
@@ -518,7 +538,7 @@ def score_candidate(
     if knowledge_snapshot is not None:
         validate_knowledge_snapshot(knowledge_snapshot)
     if str(candidate.get("target_kind") or "") in {"dependency_edge", "deployment", "scenario"}:
-        return _score_native_candidate(candidate, knowledge_snapshot)
+        return _score_native_candidate(candidate, knowledge_snapshot, rca_snapshot)
     # Hard constraint 1: availability layer — single-replica no-PDB kill/cpu
     # verdict is known a priori (AD-REDUNDANCY-001), route to availability track.
     avail = availability_hard_filter(candidate, contract_snapshot=knowledge_snapshot)

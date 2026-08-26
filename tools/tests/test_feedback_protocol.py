@@ -6,6 +6,7 @@ from tools.feedback_protocol import (
     classify_outcome,
     knowledge_projection,
     validate_ablation_pair,
+    validate_improvement_evidence,
     validate_knowledge_card_boundary,
 )
 
@@ -71,3 +72,18 @@ def test_ablation_pair_requires_byte_identical_shared_views() -> None:
     assert validate_ablation_pair(shared, nokb)["valid"] is True
     altered = dict(nokb, runtime_contract={"x": 2})
     assert validate_ablation_pair(shared, altered)["valid"] is False
+
+
+def test_improvement_evidence_requires_same_contract_and_cleanup_for_knowledge_update() -> None:
+    evidence = {
+        "schema_version": "chaosatlas-improvement-evidence-v1",
+        "status": "improvement_verified",
+        "same_scenario_contract": True,
+        "cleanup_verified": True,
+        "knowledge_update_allowed": True,
+        "defense_claim": "improvement_verified",
+    }
+    assert validate_improvement_evidence(evidence)["valid"] is True
+
+    contradicted = dict(evidence, status="deployment_blocked", knowledge_update_allowed=True)
+    assert validate_improvement_evidence(contradicted)["valid"] is False

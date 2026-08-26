@@ -49,3 +49,13 @@ def test_chaoseater_requires_explicit_unfreeze() -> None:
         "ChaosAtlas-noKB-open",
         "ChaosEater-official",
     }
+
+
+def test_run_rows_carry_explicit_policy_rollout_configuration() -> None:
+    gate = {
+        "status": "ready", "execution_ready": True, "method_result_eligible": True,
+        "namespace": "chaosatlas-p02", "blocker": None, "baseline": {}, "health": {}, "recovery": {}, "cleanup": {},
+    }
+    rows = build_run_rows("P02", gate, {"status": "pass_static", "reason": None}, policy_mode="shadow", policy_budget=2)
+    assert rows[0]["policy_mode"] == "shadow"
+    assert rows[0]["policy_budget"] == 2

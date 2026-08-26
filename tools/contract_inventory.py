@@ -224,8 +224,25 @@ def availability_for_service(project: str, service: str) -> dict[str, Any] | Non
 
 
 def build() -> dict[str, Any]:
+    deployment_profiles = {
+        project: {
+            service: {
+                "schema_version": 3,
+                "node_type": "deployment_profile",
+                "replicas": profile.get("replicas"),
+                "pdb": profile.get("pdb"),
+                "hpa": profile.get("hpa"),
+                "liveness_probe": profile.get("liveness_probe"),
+                "readiness_probe": profile.get("readiness_probe"),
+                "static_prediction": profile.get("static_prediction"),
+            }
+            for service, profile in services.items()
+        }
+        for project, services in AVAILABILITY.items()
+    }
     return {
         "schema_version": 2,
+        "availability_schema_version": 3,
         "tool": "contract_inventory",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "principle": (
@@ -237,6 +254,7 @@ def build() -> dict[str, Any]:
         ),
         "contracts": CONTRACTS,
         "availability": AVAILABILITY,
+        "deployment_profiles": deployment_profiles,
         "candidate_map": CANDIDATE_TO_EDGE,
     }
 
