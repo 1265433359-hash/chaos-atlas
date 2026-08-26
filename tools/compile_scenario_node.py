@@ -20,6 +20,7 @@ except ModuleNotFoundError:
 
 SUPPORTED = {
     "pod_kill",
+    "backend_pod_kill",
     "container_kill",
     "stress_cpu",
     "stress_memory",
@@ -55,7 +56,7 @@ def _manifest(scenario: dict[str, Any], phase: dict[str, Any], fault: dict[str, 
         },
     }
     parameters = fault.get("parameters") or {}
-    if kind == "pod_kill":
+    if kind in {"pod_kill", "backend_pod_kill"}:
         if parameters != {"mode": "one"}: raise ValueError("pod_kill parameters must be {'mode': 'one'}")
         api_kind, spec = "PodChaos", {**base, "action": "pod-kill", "mode": "one", "duration": _duration(phase["duration_s"])}
     elif kind == "container_kill":

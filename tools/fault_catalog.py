@@ -14,7 +14,7 @@ _CATALOG: dict[str, dict[str, Any]] = {
     "network_loss": {"status": "implemented", "backend": "NetworkChaos", "category": "network"},
     "network_partition": {"status": "implemented", "backend": "NetworkChaos", "category": "network"},
     "network_delay": {"status": "implemented", "backend": "NetworkChaos", "category": "network"},
-    "backend_pod_kill": {"status": "planned", "backend": "PodChaos", "category": "dependency"},
+    "backend_pod_kill": {"status": "implemented", "backend": "PodChaos", "category": "dependency", "semantic_alias": "pod_kill"},
     "config_reload": {"status": "planned", "backend": "KubernetesAPI", "category": "configuration"},
     "replica_reduction": {"status": "planned", "backend": "KubernetesAPI", "category": "scaling"},
 }

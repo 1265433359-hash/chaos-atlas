@@ -62,3 +62,14 @@ def test_network_delay_compiles_to_networkchaos_delay_manifest():
     assert manifest["kind"] == "NetworkChaos"
     assert manifest["spec"]["action"] == "delay"
     assert manifest["spec"]["delay"]["latency"] == "500ms"
+
+
+def test_backend_pod_kill_uses_podchaos_backend_with_dependency_semantics():
+    spec = get_fault_spec("backend_pod_kill")
+    result = compile_scenario(_scenario("backend_pod_kill"))
+
+    assert spec["status"] == "implemented"
+    assert spec["semantic_alias"] == "pod_kill"
+    assert result["status"] == "verified"
+    assert result["manifests"][0]["kind"] == "PodChaos"
+    assert result["manifests"][0]["spec"]["action"] == "pod-kill"

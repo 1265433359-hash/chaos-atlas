@@ -345,9 +345,20 @@ def _live_scenario(
             "template": {"metadata": {"labels": selector}, "spec": {"containers": [{"name": target}]}},
         },
     }
+    service_name = str(candidate.get("service_target") or oracle["service"])
+    service_port = int(oracle["remote_port"])
+    for item in inventory.get("services") or []:
+        metadata = item.get("metadata") if isinstance(item, dict) else {}
+        if str(metadata.get("name") or "") != service_name:
+            continue
+        spec = item.get("spec") if isinstance(item.get("spec"), dict) else {}
+        ports = spec.get("ports") or []
+        if ports and isinstance(ports[0], dict) and isinstance(ports[0].get("port"), int):
+            service_port = int(ports[0]["port"])
+        break
     service = {
-        "metadata": {"name": oracle["service"]},
-        "spec": {"ports": [{"port": oracle["remote_port"], "targetPort": oracle["remote_port"]}], "selector": selector},
+        "metadata": {"name": service_name},
+        "spec": {"ports": [{"port": service_port, "targetPort": service_port}], "selector": selector},
     }
     commit = str(inventory.get("project_commit") or "")
     if len(commit) != 40:
@@ -361,7 +372,7 @@ def _live_scenario(
     family = str(candidate.get("fault_family") or "pod_kill")
     candidate_parameters = candidate.get("parameters")
     parameters = dict(candidate_parameters) if isinstance(candidate_parameters, dict) else {}
-    if family == "pod_kill":
+    if family in {"pod_kill", "backend_pod_kill"}:
         parameters = {"mode": "one"}
         action = "pod-kill"
     elif family == "container_kill":
@@ -1029,7 +1040,17 @@ def run_closed_loop(
                 _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
                 return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
             if candidate_id:
-                if first_candidate.get("target") != runtime_oracle["service"]:
+                target_matches_oracle = first_candidate.get("target") == runtime_oracle["service"]
+                backend_route_match = False
+                if first_candidate.get("fault_family") == "backend_pod_kill":
+                    target_service = str(first_candidate.get("service_target") or "")
+                    ingress_services = {
+                        str(edge.get("target"))
+                        for edge in (inventory.get("dependencies") or [])
+                        if edge.get("relation") == "routes_to"
+                    }
+                    backend_route_match = bool(target_service and target_service in ingress_services)
+                if not target_matches_oracle and not backend_route_match:
                     summary = _summary(output_root, status="environment_blocked", context=context, completed=completed, error="selected live candidate does not match the business oracle service")
                     _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
                     return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
