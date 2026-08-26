@@ -5,6 +5,7 @@ __pycache__/
 *.out.log
 *.err.log
 *.log
+!artifacts/experiments/chaosatlas_10_projects/runtime_results/P02/**/*.log
 .pytest_cache/
 .mypy_cache/
 .venv/
@@ -15,8 +16,58 @@ __pycache__/
 .zcode/
 build/
 
+# Local tool distributions; install these outside the repository when needed.
+/tools/bin/
+
+# Pytest basetemp output created by older runs without the dashed prefix.
+/.pytest-tmp/
+
 # Local distribution archive; retained on disk but excluded from the repository snapshot.
 chaos-mesh-*.tgz
 
 # Temporary pytest basetemp directories created for local verification.
 .pytest-tmp-*/
+/.tmp-*/
+/.tmp-*
+/.tmp/
+/.pytest-tmp2/
+/.pytest-cache-disabled/
+/.email-notify-outbox/
+/.venv-otel-runtime/
+
+# Repository inventory is generated locally and contains machine-specific paths.
+/.tmp-repository-inventory.json
+
+# Machine-local Docker, Kubernetes, proxy, and session state.
+/.docker-config-empty/
+/.docker-empty/
+/.local/
+/.planning/
+/.tmp-bridge/
+/.tmp-chaos-kind-admin.conf
+/CHAOS_ENV_HANDOFF.md
+
+# Environment files may contain credentials. Commit only sanitized examples.
+.env
+.env.*
+*.env
+!*.env.example
+.secrets/
+
+# Private keys, certificates, kubeconfigs, and credential files.
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.kubeconfig
+kubeconfig
+credentials.json
+credentials.yaml
+credentials.yml
+
+# Full upstream repositories are local experiment inputs, not ChaosAtlas source.
+/artifacts/experiments/chaosatlas_10_projects/sources/
+/artifacts/experiments/chaosatlas_10_projects/sources_restored/*
+!/artifacts/experiments/chaosatlas_10_projects/sources_restored/RESTORATION_MANIFEST.md
+/artifacts/experiments/chaosatlas_10_projects/sources_restored_r2/
