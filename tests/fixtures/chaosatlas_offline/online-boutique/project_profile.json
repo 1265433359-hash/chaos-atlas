@@ -1,0 +1,13 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "online-boutique",
+  "project_commit": "online-boutique-fixture-commit",
+  "revision_kind": "fixture",
+  "source": {"manifest_roots": ["artifacts/sock-shop"], "source_roots": ["artifacts/sock-shop"]},
+  "namespace_policy": {"allowed_namespaces": ["online-boutique-lab"], "isolation_required": true},
+  "business_oracles": [{"id": "online-boutique-homepage", "kind": "http", "entrypoint": "/", "success_contract": "http_200", "timeout_s": 5}],
+  "observability": {"logs": {"provider": "fixture", "required": true}, "events": {"provider": "fixture", "required": true}, "traces": {"provider": "none", "required": false}},
+  "recovery": {"deadline_s": 180, "require_business_probe": true, "require_cleanup": true},
+  "cleanup": {"owner": "chaosatlas", "must_be_empty": true},
+  "sensitive_data_policy": {"allow_redacted_placeholders": true, "redact_fields": ["password", "secret", "token"]}
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": "chaosatlas-offline-facts-v1",
+  "project_id": "online-boutique",
+  "project_commit": "online-boutique-fixture-commit",
+  "namespace": "online-boutique-lab",
+  "services": ["frontend", "productcatalog", "payment"],
+  "deployments": [
+    {"name": "frontend", "selector": {"app": "frontend"}, "desired_replicas": 2},
+    {"name": "payment", "selector": {"app": "payment"}, "desired_replicas": 1}
+  ],
+  "dependencies": [{"source": "frontend", "target": "payment", "relation": "grpc"}],
+  "business_oracles": [{"id": "online-boutique-homepage", "kind": "http", "entrypoint": "/", "success_contract": "http_200"}]
+}

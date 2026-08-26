@@ -1,0 +1,45 @@
+{
+  "schema_version": "chaosatlas-offline-facts-v1",
+  "project_id": "opentelemetry-demo",
+  "project_commit": "2e72d8bcdf754603e956406808630bc9663c992c",
+  "namespace": "chaosatlas-otel",
+  "manifest_root": "artifacts/opentelemetry-demo/manifests",
+  "services": ["checkout", "cart", "currency", "email", "flagd", "payment", "postgres", "product-catalog", "quote", "shipping", "valkey"],
+  "deployments": [
+    {"name": "checkout", "selector": {"app": "checkout"}, "desired_replicas": 1},
+    {"name": "cart", "selector": {"app": "cart"}, "desired_replicas": 1},
+    {"name": "currency", "selector": {"app": "currency"}, "desired_replicas": 1},
+    {"name": "email", "selector": {"app": "email"}, "desired_replicas": 1},
+    {"name": "flagd", "selector": {"app": "flagd"}, "desired_replicas": 1},
+    {"name": "payment", "selector": {"app": "payment"}, "desired_replicas": 1},
+    {"name": "postgres", "selector": {"app": "postgres"}, "desired_replicas": 1},
+    {"name": "product-catalog", "selector": {"app": "product-catalog"}, "desired_replicas": 1},
+    {"name": "quote", "selector": {"app": "quote"}, "desired_replicas": 1},
+    {"name": "shipping", "selector": {"app": "shipping"}, "desired_replicas": 1},
+    {"name": "valkey", "selector": {"app": "valkey"}, "desired_replicas": 1}
+  ],
+  "dependencies": [
+    {"source": "checkout", "target": "cart", "relation": "grpc"},
+    {"source": "checkout", "target": "product-catalog", "relation": "grpc"},
+    {"source": "checkout", "target": "currency", "relation": "grpc"},
+    {"source": "checkout", "target": "payment", "relation": "grpc"},
+    {"source": "checkout", "target": "shipping", "relation": "http"},
+    {"source": "checkout", "target": "email", "relation": "http"},
+    {"source": "shipping", "target": "quote", "relation": "http"},
+    {"source": "cart", "target": "valkey", "relation": "tcp"},
+    {"source": "product-catalog", "target": "postgres", "relation": "tcp"},
+    {"source": "payment", "target": "flagd", "relation": "http"}
+  ],
+  "business_oracles": [
+    {
+      "id": "opentelemetry-demo-place-order",
+      "kind": "grpc",
+      "service": "checkout",
+      "remote_port": 5050,
+      "entrypoint": "/oteldemo.CheckoutService/PlaceOrder",
+      "success_contract": "grpc_place_order_order_id_and_shipping_tracking_id",
+      "client": "artifacts/opentelemetry-demo/otel_client.py",
+      "supporting_services": [{"service": "cart", "remote_port": 7070}]
+    }
+  ]
+}

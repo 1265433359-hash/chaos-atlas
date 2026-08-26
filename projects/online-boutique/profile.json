@@ -1,0 +1,46 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "online-boutique",
+  "project_commit": "online-boutique-fixture-commit",
+  "revision_kind": "fixture",
+  "namespace_policy": {
+    "allowed_namespaces": ["chaosatlas-online-boutique"],
+    "isolation_required": true
+  },
+  "source": {
+    "manifest_roots": ["artifacts/online-boutique"],
+    "source_roots": ["artifacts/online-boutique"]
+  },
+  "business_oracles": [
+    {
+      "id": "online-boutique-frontend-homepage",
+      "kind": "http",
+      "service": "frontend",
+      "remote_port": 80,
+      "entrypoint": "/",
+      "success_contract": "http_200",
+      "timeout_s": 5,
+      "count": 3,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2
+    }
+  ],
+  "observability": {
+    "logs": {"provider": "kubectl", "required": true},
+    "events": {"provider": "kubectl", "required": true},
+    "traces": {"provider": "none", "required": false}
+  },
+  "recovery": {
+    "deadline_s": 180,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "cleanup": {
+    "owner": "chaosatlas",
+    "must_be_empty": true
+  },
+  "sensitive_data_policy": {
+    "allow_redacted_placeholders": true,
+    "redact_fields": ["password", "secret", "token"]
+  }
+}

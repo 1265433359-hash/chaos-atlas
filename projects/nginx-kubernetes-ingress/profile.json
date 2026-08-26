@@ -1,0 +1,86 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "nginx-kubernetes-ingress",
+  "project_commit": "f92a24e4fd2b52c72739c4a1f4f9bb6424bf5731",
+  "revision_kind": "git",
+  "namespace_policy": {
+    "allowed_namespaces": [
+      "chaosatlas-nginx-ingress"
+    ],
+    "isolation_required": true
+  },
+  "source": {
+    "manifest_roots": [
+      "artifacts/nginx-kubernetes-ingress/manifests"
+    ],
+    "source_roots": [
+      "artifacts/nginx-kubernetes-ingress/source",
+      "artifacts/nginx-kubernetes-ingress"
+    ]
+  },
+  "business_oracles": [
+    {
+      "id": "nginx-ingress-fixture-route",
+      "kind": "http",
+      "service": "nginx-ingress",
+      "remote_port": 80,
+      "entrypoint": "/",
+      "host": "nginx-fixture.local",
+      "request_headers": {
+        "Host": "nginx-fixture.local"
+      },
+      "success_contract": "http_200_and_expected_body",
+      "expected_body": "chaosatlas-nginx-ingress-fixture",
+      "timeout_s": 5,
+      "count": 10,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2
+    }
+  ],
+  "observability": {
+    "logs": {
+      "provider": "kubectl",
+      "required": true
+    },
+    "events": {
+      "provider": "kubectl",
+      "required": true
+    },
+    "traces": {
+      "provider": "none",
+      "required": false
+    }
+  },
+  "recovery": {
+    "deadline_s": 180,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "cleanup": {
+    "owner": "chaosatlas",
+    "must_be_empty": true
+  },
+  "runtime_contract": {
+    "supported_fault_families": [
+      "pod_kill",
+      "container_kill",
+      "network_delay",
+      "network_loss",
+      "backend_pod_kill",
+      "config_reload",
+      "replica_reduction"
+    ],
+    "runtime_status": "deployment_and_baseline_verified_testing_pending_method_freeze",
+    "fixture_route": "nginx-fixture.local/"
+  },
+  "sensitive_data_policy": {
+    "allow_redacted_placeholders": true,
+    "redact_fields": [
+      "password",
+      "secret",
+      "token",
+      "authorization",
+      "private_key"
+    ]
+  }
+}

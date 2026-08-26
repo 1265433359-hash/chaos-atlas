@@ -86,3 +86,32 @@ audit material, not as a completed superiority evaluation.
 Cards must use redacted references for secrets, credentials, tokens, and private
 endpoints. The validator performs a warning-level sensitive-value scan; a clean
 validator report is necessary but not sufficient for publication review.
+
+## RCA Loop Artifacts
+
+The automated RCA loop (`tools/rca_loop.py`, `tools/sock_shop_rca.py`) writes
+its machine-generated products under per-project `rca_loop/` directories (for
+example `artifacts/sock-shop/rca_loop/`). These are project-local investigation
+artifacts and are NOT formal knowledge-base cards:
+
+- `rca_loop/knowledge_drafts/` holds provisional drafts. They are queryable only
+  via the explicit `--rca-root` option of `tools/query_knowledge_base.py` and
+  are never counted in the formal card totals.
+- The three statuses `weakness_status`, `rca_status`, and `knowledge_status`
+  must be interpreted independently. `weakness_status=confirmed` with
+  `rca_status=bounded` is a valid and expected outcome: the failure is real and
+  its affected boundary is known, but the internal mechanism is unproven.
+- `bounded` is an allowed successful RCA outcome. It must not be promoted to
+  `confirmed` without complete required evidence plus a discriminating action,
+  and an HTTP abort may only support a service-boundary propagation claim -
+  never an automatic `missing_timeout` naming - without source/config evidence.
+- Provisional drafts may only generate `discriminate`/`reproduce` regression
+  intents. Only `knowledge_status=local_reusable` cards may influence this
+  project's high-impact candidate ranking through the decision engine's
+  `rca_snapshot` parameter; `provisional` and `cross_project_pending` cards are
+  explanation-only, and `contested` cards generate no executable intents.
+- Cross-project reuse still requires the existing feedback protocol
+  (`tools/feedback_protocol.py`); the RCA module never bypasses review,
+  round, or order isolation.
+- Counter-evidence demotes a card to `provisional` or `contested` but never
+  deletes the original card, its evidence references, or prior snapshot hashes.

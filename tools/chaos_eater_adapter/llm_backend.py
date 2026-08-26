@@ -50,6 +50,8 @@ class OpenAICompatBackend:
         timeout: int = 180,
         json_mode: bool = True,
         temperature: float = 0.2,
+        max_output_tokens: int | None = None,
+        disable_thinking: bool = False,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
@@ -57,6 +59,8 @@ class OpenAICompatBackend:
         self.timeout = timeout
         self.json_mode = json_mode
         self.temperature = temperature
+        self.max_output_tokens = max_output_tokens
+        self.disable_thinking = disable_thinking
 
     @property
     def name(self) -> str:
@@ -71,8 +75,12 @@ class OpenAICompatBackend:
             ],
             "temperature": self.temperature,
         }
+        if self.max_output_tokens is not None:
+            payload["max_tokens"] = self.max_output_tokens
         if self.json_mode:
             payload["response_format"] = {"type": "json_object"}
+        if self.disable_thinking:
+            payload["thinking"] = {"type": "disabled"}
         body = json.dumps(payload).encode("utf-8")
         request = urllib.request.Request(
             f"{self.base_url}/chat/completions",
@@ -92,7 +100,10 @@ class OpenAICompatBackend:
         elapsed_ms = int((time.perf_counter() - started) * 1000)
         try:
             data = json.loads(raw)
-            content = str(data["choices"][0]["message"]["content"])
+            choice = data["choices"][0]
+            message = choice["message"]
+            content_value = message.get("content")
+            content = str(content_value or "")
             usage = data.get("usage") or {}
             meta = {
                 "backend": "openai-compatible",
@@ -102,6 +113,9 @@ class OpenAICompatBackend:
                 "prompt_tokens": usage.get("prompt_tokens"),
                 "completion_tokens": usage.get("completion_tokens"),
                 "total_tokens": usage.get("total_tokens"),
+                "finish_reason": choice.get("finish_reason"),
+                "message_fields": sorted(message.keys()) if isinstance(message, dict) else [],
+                "reasoning_content_chars": len(str(message.get("reasoning_content") or "")) if isinstance(message, dict) else 0,
             }
             return content, meta
         except (json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:

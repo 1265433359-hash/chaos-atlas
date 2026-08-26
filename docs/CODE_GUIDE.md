@@ -4,6 +4,27 @@ This guide is the code-comment index for the repository. Python modules carry
 their detailed docstrings; this file records the intended ownership and side
 effects so a future contributor can choose the correct entry point.
 
+## Current Paper-Mainline Entry Points
+
+The current evidence path is intentionally split by responsibility:
+
+| Stage | Entry points | Boundary |
+|---|---|---|
+| Raw corpus and five-category projection | `yaml_confidence_categories.py`, `yaml_confidence_stopping.py` | Static counts and stopping parameters; no runtime weakness claim |
+| Full discovery | `run_sock_shop_confidence_discovery.py` | Category-scoped knowledge/confidence discovery; emits hypotheses only |
+| Ablation discovery | `run_sock_shop_ablation_discovery.py` | Independent LLM self-stop; YAML15 exposes only frozen category examples |
+| Hypothesis compilation | `open_discovery_compiler.py`, `open_discovery_mutation_compiler.py` | Fail-closed JSON/YAML compilation; no cluster mutation |
+| Applicability gate | `runtime_applicability_gate.py` | Read-only namespace, target, CRD, workload, and platform checks |
+| Runtime lifecycle | `run_chaos_experiment.py`, `run_sock_shop_two_arm.py` | Baseline, injection, observation, recovery, cleanup, washout |
+| Result interpretation | `classify_runtime_result.py` | Evidence classification; does not auto-create knowledge cards |
+
+The authoritative narrative and evidence boundary are in
+`docs/CHAOSATLAS_PAPER_MAINLINE.md`; the current Sock Shop machine-backed
+review is in `docs/SOCK_SHOP_THREE_METHOD_STAGE_REVIEW_2026-08-16.md`.
+Same-pool, preselected-candidate, superseded Ablation, early pilot, and
+`ChaosEater-adapter` paths remain available for audit but are not current
+mainline entry points.
+
 ## Read-Only and Build Tools
 
 | Tool | Purpose | Writes |
@@ -49,3 +70,25 @@ reported rather than hidden.
 When adding a new module, start with a module docstring that states the paper
 role, inputs, outputs, and side effects. Add a focused regression test under
 `tools/tests/` for each new gate or classification branch.
+
+## Open-discovery execution path
+
+| Tool | Purpose | Side effect |
+|---|---|---|
+| `open_discovery_compiler.py` | Validate model hypotheses and produce canonical fault intents | JSON only; never executes kubectl |
+| `open_discovery_mutation_compiler.py` | Resolve an accepted intent to a bounded PodChaos, NetworkChaos, or StressChaos manifest | Writes YAML and provenance; never calls kubectl |
+| `runtime_applicability_gate.py` | Verify that the generated selector and Chaos Mesh environment are safe and applicable | Read-only kubectl checks |
+| `run_chaos_experiment.py` | Apply, observe, recover, and remove one approved mutation | Calls kubectl only after the gate returns `ready_for_injection` |
+
+The open path is therefore:
+
+```text
+model JSON -> open_discovery_compiler -> canonical intent
+           -> open_discovery_mutation_compiler -> YAML + provenance
+           -> runtime_applicability_gate -> run_chaos_experiment
+```
+
+The mutation compiler fails closed for configuration nodes, empty selectors,
+missing workload mappings, namespace mismatches, unsupported edge/fault pairs,
+and signature mismatches. Compose targets require an explicit runtime mapping
+to a Kubernetes workload before they can produce YAML.

@@ -5,9 +5,12 @@ from __future__ import annotations
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import json
+import os
+import re
 import socket
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,10 +23,11 @@ import yaml
 try:
     from runtime_applicability_gate import RESOURCE_BY_KIND, check_mutation
     from classify_runtime_result import classify as classify_runtime_result, exit_code_for_classification
-except ImportError as exc:  # pragma: no cover
-    raise SystemExit("run this script from the repository with tools/ on the import path") from exc
-
-from environment_fingerprint import load_fingerprint  # phase-5 provenance
+    from environment_fingerprint import load_fingerprint  # phase-5 provenance
+except ImportError:  # package import through ``tools``
+    from tools.runtime_applicability_gate import RESOURCE_BY_KIND, check_mutation
+    from tools.classify_runtime_result import classify as classify_runtime_result, exit_code_for_classification
+    from tools.environment_fingerprint import load_fingerprint  # phase-5 provenance
 
 
 RESOURCE_KIND_TO_PLURAL = dict(RESOURCE_BY_KIND)
@@ -33,10 +37,19 @@ def now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def run_kubectl(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
+def _contextual_args(args: list[str], kube_context: str | None) -> list[str]:
+    context = str(kube_context or "").strip()
+    if not context:
+        return list(args)
+    if not re.fullmatch(r"[A-Za-z0-9_.:@/-]+", context):
+        raise ValueError("kube_context contains unsafe characters")
+    return ["--context", context, *args]
+
+
+def run_kubectl(args: list[str], timeout: int = 30, kube_context: str | None = None) -> tuple[int, str, str]:
     try:
         completed = subprocess.run(
-            ["kubectl", *args],
+            ["kubectl", *_contextual_args(args, kube_context)],
             check=False,
             capture_output=True,
             text=True,
@@ -49,8 +62,8 @@ def run_kubectl(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
     return completed.returncode, completed.stdout, completed.stderr
 
 
-def kubectl_json(args: list[str]) -> tuple[dict[str, Any] | None, str | None]:
-    code, stdout, stderr = run_kubectl([*args, "-o", "json"])
+def kubectl_json(args: list[str], kube_context: str | None = None) -> tuple[dict[str, Any] | None, str | None]:
+    code, stdout, stderr = run_kubectl([*args, "-o", "json"], kube_context=kube_context)
     if code != 0:
         return None, (stderr or stdout).strip()
     try:
@@ -93,6 +106,7 @@ def lifecycle_snapshot(data: dict[str, Any]) -> dict[str, Any]:
         if event.get("operation") == "Recover"
     ]
     return {
+        "resource_uid": str((data.get("metadata") or {}).get("uid") or ""),
         "selected": conditions.get("Selected") == "True",
         "all_injected": conditions.get("AllInjected") == "True",
         "all_recovered": conditions.get("AllRecovered") == "True",
@@ -105,6 +119,72 @@ def lifecycle_snapshot(data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _recovered_event_snapshot(
+    kind: str,
+    namespace: str,
+    name: str,
+    *,
+    injected_count: int,
+    resource_uid: str,
+    kube_context: str | None = None,
+) -> dict[str, Any] | None:
+    """Build recovery evidence from Events when the Chaos CR is already gone.
+
+    Chaos Mesh can remove a finished CR before the lifecycle poller observes its
+    final status.  Events are append-only and retain the authoritative
+    ``Recovered`` transition.  A UID match is required whenever the initial CR
+    exposed one, preventing a stale same-name event from being reused.
+    """
+    events, _ = kubectl_json(
+        [
+            "get",
+            "events",
+            "-n",
+            namespace,
+            "--field-selector",
+            f"involvedObject.kind={kind},involvedObject.name={name}",
+        ],
+        kube_context=kube_context,
+    )
+    if not isinstance(events, dict):
+        return None
+    recovered_timestamps: list[str] = []
+    for event in events.get("items") or []:
+        if not isinstance(event, dict):
+            continue
+        involved = event.get("involvedObject") or {}
+        if resource_uid and str(involved.get("uid") or "") != resource_uid:
+            continue
+        annotations = ((event.get("metadata") or {}).get("annotations") or {})
+        message = str(event.get("message") or "").lower()
+        is_recovered = (
+            str(event.get("reason") or "").lower() == "recovered"
+            or str(annotations.get("chaos-mesh.org/type") or "").lower() == "recovered"
+            or "successfully recover chaos" in message
+        )
+        if not is_recovered:
+            continue
+        timestamp = str(event.get("lastTimestamp") or event.get("eventTime") or event.get("firstTimestamp") or "")
+        if timestamp:
+            recovered_timestamps.append(timestamp)
+    if not recovered_timestamps or injected_count < 1:
+        return None
+    return {
+        "resource_uid": resource_uid,
+        "selected": True,
+        "all_injected": False,
+        "all_recovered": True,
+        "injected_count": injected_count,
+        "recovered_count": injected_count,
+        "records": [],
+        "apply_timestamps": [],
+        "recovery_timestamps": sorted(set(recovered_timestamps)),
+        "desired_phase": "Stop",
+        "recovery_source": "event",
+        "resource_absent": True,
+    }
+
+
 def wait_for_lifecycle(
     kind: str,
     namespace: str,
@@ -112,14 +192,26 @@ def wait_for_lifecycle(
     predicate: str,
     timeout: float,
     interval: float,
+    kube_context: str | None = None,
 ) -> tuple[bool, dict[str, Any], list[str]]:
     plural = resource_name(kind)
     deadline = time.monotonic() + max(0.1, timeout)
     errors: list[str] = []
     last: dict[str, Any] = {}
     while time.monotonic() <= deadline:
-        data, error = kubectl_json(["get", plural, name, "-n", namespace])
+        data, error = kubectl_json(["get", plural, name, "-n", namespace], kube_context=kube_context)
         if data is None:
+            if predicate == "recovered" and _kubectl_not_found(error):
+                event_snapshot = _recovered_event_snapshot(
+                    kind,
+                    namespace,
+                    name,
+                    injected_count=int(last.get("injected_count", 0) or 0),
+                    resource_uid=str(last.get("resource_uid") or ""),
+                    kube_context=kube_context,
+                )
+                if event_snapshot is not None:
+                    return True, event_snapshot, errors
             if error and "not found" not in error.lower():
                 errors.append(error)
             time.sleep(max(0.1, interval))
@@ -156,6 +248,7 @@ def wait_for_target_ready(
     expected_pod_count: int | None = None,
     pre_kill_uids: set[str] | None = None,
     stable_checks: int = 2,
+    kube_context: str | None = None,
 ) -> tuple[bool, dict[str, Any], list[str]]:
     """Wait for the target selector's Pods to be Ready after a one-shot kill.
 
@@ -190,7 +283,7 @@ def wait_for_target_ready(
         args = ["get", "pods", "-n", namespace]
         if label_query:
             args.extend(["-l", label_query])
-        data, error = kubectl_json(args)
+        data, error = kubectl_json(args, kube_context=kube_context)
         if data is None:
             if error:
                 errors.append(error)
@@ -262,7 +355,96 @@ def wait_for_target_ready(
     return False, last, errors
 
 
-def delete_resource(kind: str, namespace: str, name: str, timeout: int = 30) -> dict[str, Any]:
+def wait_for_container_ready(
+    namespace: str,
+    selector: dict[str, Any],
+    timeout: float,
+    interval: float,
+    *,
+    expected_pod_count: int | None = None,
+    pre_restart_counts: dict[str, int] | None = None,
+    target_pod_names: set[str] | None = None,
+    container_names: set[str] | None = None,
+    stable_checks: int = 2,
+    kube_context: str | None = None,
+) -> tuple[bool, dict[str, Any], list[str]]:
+    """Wait for a container-kill target to restart and become Ready.
+
+    ContainerChaos is represented by a PodChaos object, but it intentionally
+    keeps the Pod UID. Recovery therefore requires an increased restart count
+    for the selected Pod/container and stable Pod readiness, rather than a new
+    Pod identity.
+    """
+    labels = selector.get("labelSelectors") if isinstance(selector, dict) else {}
+    labels = labels if isinstance(labels, dict) else {}
+    label_query = ",".join(f"{key}={value}" for key, value in sorted(labels.items()))
+    deadline = time.monotonic() + max(0.1, timeout)
+    errors: list[str] = []
+    last: dict[str, Any] = {}
+    stable_run = 0
+    baseline = {str(key): int(value or 0) for key, value in (pre_restart_counts or {}).items()}
+    targets = {str(item) for item in (target_pod_names or set()) if str(item)}
+    selected_containers = {str(item) for item in (container_names or set()) if str(item)}
+    while time.monotonic() <= deadline:
+        args = ["get", "pods", "-n", namespace]
+        if label_query:
+            args.extend(["-l", label_query])
+        data, error = kubectl_json(args, kube_context=kube_context)
+        if data is None:
+            if error:
+                errors.append(error)
+            time.sleep(max(0.1, interval))
+            continue
+        items = data.get("items") if isinstance(data, dict) else []
+        active = [item for item in items if not item.get("metadata", {}).get("deletionTimestamp")]
+        ready_names = [
+            str(item.get("metadata", {}).get("name"))
+            for item in active
+            if _pod_ready(item)
+        ]
+        restart_counts: dict[str, int] = {}
+        restarted_pods: list[str] = []
+        for item in active:
+            metadata = item.get("metadata") or {}
+            name = str(metadata.get("name") or "")
+            statuses = (item.get("status") or {}).get("containerStatuses") or []
+            relevant = [
+                status for status in statuses
+                if not selected_containers or str(status.get("name") or "") in selected_containers
+            ]
+            count = sum(int(status.get("restartCount", 0) or 0) for status in relevant)
+            restart_counts[name] = count
+            if name in (targets or set(restart_counts)) and count > baseline.get(name, 0):
+                restarted_pods.append(name)
+        all_active_ready = len(ready_names) == len(active) and bool(active)
+        count_ok = expected_pod_count is None or len(active) == expected_pod_count
+        target_names = targets or set(restart_counts)
+        restart_ok = bool(target_names) and target_names.issubset(set(restarted_pods))
+        recovered = bool(all_active_ready and count_ok and restart_ok)
+        last = {
+            "selector": label_query,
+            "recovery_mode": "container_restart",
+            "pod_count": len(items),
+            "active_pod_count": len(active),
+            "ready_pods": ready_names,
+            "expected_pod_count": expected_pod_count,
+            "target_pod_names": sorted(target_names),
+            "pre_restart_counts": baseline,
+            "restart_counts": restart_counts,
+            "restarted_pods": sorted(set(restarted_pods)),
+            "stable_checks": stable_checks,
+        }
+        if recovered:
+            stable_run += 1
+            if stable_run >= stable_checks:
+                return True, last, errors
+        else:
+            stable_run = 0
+        time.sleep(max(0.1, interval))
+    return False, last, errors
+
+
+def delete_resource(kind: str, namespace: str, name: str, timeout: int = 30, kube_context: str | None = None) -> dict[str, Any]:
     """Delete a Chaos resource and VERIFY absence, distinguishing failure modes.
 
     Phase-1 remediation (review findings #1): previously `resource_absent_after_delete`
@@ -280,9 +462,24 @@ def delete_resource(kind: str, namespace: str, name: str, timeout: int = 30) -> 
     """
     plural = resource_name(kind)
     code, stdout, stderr = run_kubectl(
-        ["delete", plural, name, "-n", namespace, "--ignore-not-found=true"], timeout=timeout
+        ["delete", plural, name, "-n", namespace, "--ignore-not-found=true"], timeout=timeout, kube_context=kube_context
     )
-    verify_code, verify_stdout, verify_stderr = run_kubectl(["get", plural, name, "-n", namespace], timeout=timeout)
+    verify_code, verify_stdout, verify_stderr = run_kubectl(["get", plural, name, "-n", namespace], timeout=timeout, kube_context=kube_context)
+
+    # Chaos Mesh may acknowledge deletion before its controller has removed the
+    # object (for example while a finalizer is completing).  A single immediate
+    # read turns that normal propagation window into a false cleanup failure.
+    # Recheck only the `exists` state within the bounded cleanup timeout; all
+    # other states remain fail-closed and are never retried as success.
+    verify_deadline = time.monotonic() + max(0.0, float(timeout))
+    while verify_code == 0:
+        remaining = verify_deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        time.sleep(min(1.0, remaining))
+        verify_code, verify_stdout, verify_stderr = run_kubectl(
+            ["get", plural, name, "-n", namespace], timeout=timeout, kube_context=kube_context
+        )
 
     # Round-2 finding #3: merge stdout and stderr before classifying absence.
     # kubectl may report "not found" on either stream depending on version/verbosity;
@@ -329,8 +526,19 @@ def wait_for_port(host: str, port: int, process: subprocess.Popen[str], timeout:
     while time.monotonic() <= deadline:
         if process.poll() is not None:
             stdout, stderr = process.communicate()
+            output = stderr or stdout or ""
+            output_path = getattr(process, "_chaosatlas_output_path", None)
+            output_file = getattr(process, "_chaosatlas_output_file", None)
+            if output_file is not None and hasattr(output_file, "flush"):
+                output_file.flush()
+            if output_path:
+                try:
+                    with open(output_path, encoding="utf-8") as handle:
+                        output = handle.read() or output
+                except OSError:
+                    pass
             raise RuntimeError(
-                f"port-forward exited with code {process.returncode}: {(stderr or stdout).strip()}"
+                f"port-forward exited with code {process.returncode}: {output.strip()}"
             )
         try:
             with socket.create_connection((host, port), timeout=0.5):
@@ -341,20 +549,26 @@ def wait_for_port(host: str, port: int, process: subprocess.Popen[str], timeout:
     raise TimeoutError(f"port-forward did not open {host}:{port}: {last_error}")
 
 
-def start_port_forward(namespace: str, service: str, local_port: int, remote_port: int) -> subprocess.Popen[str]:
-    return subprocess.Popen(
+def start_port_forward(namespace: str, service: str, local_port: int, remote_port: int, kube_context: str | None = None) -> subprocess.Popen[str]:
+    # kubectl writes one line per forwarded request. A PIPE can fill during a
+    # long business journey and block kubectl itself, making the oracle time out.
+    output = tempfile.NamedTemporaryFile(mode="w+", encoding="utf-8", suffix=".log", delete=False)
+    process = subprocess.Popen(
         [
             "kubectl",
-            "port-forward",
+            *_contextual_args(["port-forward"], kube_context),
             "-n",
             namespace,
             f"svc/{service}",
             f"{local_port}:{remote_port}",
         ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        stdout=output,
+        stderr=output,
         text=True,
     )
+    process._chaosatlas_output_file = output  # type: ignore[attr-defined]
+    process._chaosatlas_output_path = output.name  # type: ignore[attr-defined]
+    return process
 
 
 def stop_process(process: subprocess.Popen[str] | None) -> dict[str, Any] | None:
@@ -368,6 +582,20 @@ def stop_process(process: subprocess.Popen[str] | None) -> dict[str, Any] | None
             process.kill()
             process.wait(timeout=5)
     stdout, stderr = process.communicate()
+    output_file = getattr(process, "_chaosatlas_output_file", None)
+    output_path = getattr(process, "_chaosatlas_output_path", None)
+    if output_file is not None and hasattr(output_file, "flush"):
+        output_file.flush()
+    if output_file is not None and hasattr(output_file, "close"):
+        output_file.close()
+    if output_path:
+        try:
+            os.unlink(output_path)
+        except OSError:
+            pass
+    for stream in (getattr(process, "stdout", None), getattr(process, "stderr", None)):
+        if stream is not None and hasattr(stream, "close"):
+            stream.close()
     return {
         "return_code": process.returncode,
         "stopped_by_runner": True,
@@ -383,15 +611,19 @@ def http_request(
     timeout: float,
     body: str | None,
     max_body_bytes: int,
+    headers: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     if not path.startswith("/"):
         path = f"/{path}"
     request_body = body.encode("utf-8") if body is not None else None
+    request_headers = {"Content-Type": "application/json"} if request_body else {}
+    if headers:
+        request_headers.update({str(key): str(value) for key, value in headers.items()})
     request = Request(
         f"http://127.0.0.1:{local_port}{path}",
         data=request_body,
         method=method.upper(),
-        headers={"Content-Type": "application/json"} if request_body else {},
+        headers=request_headers,
     )
     started = time.monotonic()
     try:
@@ -424,6 +656,19 @@ def http_request(
         }
 
 
+def observation_failure_sample(sample: int, error: str) -> dict[str, Any]:
+    """Represent an unavailable business path without discarding lifecycle evidence."""
+    return {
+        "sample": int(sample),
+        "observed_at": now(),
+        "status_code": None,
+        "latency_ms": None,
+        "body": None,
+        "error": str(error),
+        "observation_status": "business_unreachable",
+    }
+
+
 def classify(preflight: dict[str, Any], lifecycle: dict[str, Any], requests: list[dict[str, Any]], recovered: bool) -> str:
     """Compatibility wrapper around the single project classifier."""
     normalized_lifecycle = {
@@ -435,6 +680,21 @@ def classify(preflight: dict[str, Any], lifecycle: dict[str, Any], requests: lis
         {"preflight": preflight, "lifecycle": normalized_lifecycle, "requests": requests},
         None,
     )["classification"]
+
+
+def defense_conclusion_allowed(
+    lifecycle: dict[str, Any],
+    requests: list[dict[str, Any]],
+    baseline: dict[str, Any] | None,
+) -> bool:
+    """Allow defense interpretation only when an independent baseline exists."""
+    if not lifecycle.get("injected") or not requests or not isinstance(baseline, dict):
+        return False
+    return bool(
+        baseline.get("requests")
+        or baseline.get("samples")
+        or baseline.get("journeys")
+    )
 
 
 def main() -> int:
@@ -523,11 +783,35 @@ def main() -> int:
                 report["lifecycle"]["injected_status"] = injected_status
                 report["errors"].extend(errors)
                 if args.request_path and injected:
-                    process = start_port_forward(namespace, args.service, args.local_port, args.remote_port)
-                    wait_for_port("127.0.0.1", args.local_port, process, args.port_forward_timeout)
-                    for index in range(max(0, args.warmup_count)):
-                        report["warmup_requests"].append(
-                            {
+                    try:
+                        process = start_port_forward(namespace, args.service, args.local_port, args.remote_port)
+                        wait_for_port("127.0.0.1", args.local_port, process, args.port_forward_timeout)
+                    except (OSError, RuntimeError, TimeoutError) as exc:
+                        # A PodKill can make the Service temporarily have no
+                        # running endpoint. Preserve that business-unreachable
+                        # observation and continue to recovery/cleanup.
+                        report["errors"].append(str(exc))
+                        report["requests"].append(observation_failure_sample(1, str(exc)))
+                    else:
+                        for index in range(max(0, args.warmup_count)):
+                            report["warmup_requests"].append(
+                                {
+                                    "sample": index + 1,
+                                    "observed_at": now(),
+                                    **http_request(
+                                        args.local_port,
+                                        args.request_path,
+                                        args.method,
+                                        args.request_timeout,
+                                        args.body,
+                                        args.max_body_bytes,
+                                    ),
+                                }
+                            )
+                            if index + 1 < max(0, args.warmup_count):
+                                time.sleep(max(0.0, args.warmup_interval))
+                        def formal_request(index: int) -> dict[str, Any]:
+                            return {
                                 "sample": index + 1,
                                 "observed_at": now(),
                                 **http_request(
@@ -539,32 +823,16 @@ def main() -> int:
                                     args.max_body_bytes,
                                 ),
                             }
-                        )
-                        if index + 1 < max(0, args.warmup_count):
-                            time.sleep(max(0.0, args.warmup_interval))
-                    def formal_request(index: int) -> dict[str, Any]:
-                        return {
-                            "sample": index + 1,
-                            "observed_at": now(),
-                            **http_request(
-                                args.local_port,
-                                args.request_path,
-                                args.method,
-                                args.request_timeout,
-                                args.body,
-                                args.max_body_bytes,
-                            ),
-                        }
 
-                    request_count = max(0, args.request_count)
-                    concurrency = max(1, args.request_concurrency)
-                    for batch_start in range(0, request_count, concurrency):
-                        batch_indices = range(batch_start, min(batch_start + concurrency, request_count))
-                        with ThreadPoolExecutor(max_workers=concurrency) as executor:
-                            batch = list(executor.map(formal_request, batch_indices))
-                        report["requests"].extend(batch)
-                        if batch_start + len(batch) < request_count:
-                            time.sleep(max(0.0, args.request_interval))
+                        request_count = max(0, args.request_count)
+                        concurrency = max(1, args.request_concurrency)
+                        for batch_start in range(0, request_count, concurrency):
+                            batch_indices = range(batch_start, min(batch_start + concurrency, request_count))
+                            with ThreadPoolExecutor(max_workers=concurrency) as executor:
+                                batch = list(executor.map(formal_request, batch_indices))
+                            report["requests"].extend(batch)
+                            if batch_start + len(batch) < request_count:
+                                time.sleep(max(0.0, args.request_interval))
     except (OSError, RuntimeError, TimeoutError, ValueError, yaml.YAMLError) as exc:
         report["errors"].append(str(exc))
         forced_classification = "runner_error"
@@ -588,15 +856,43 @@ def main() -> int:
                     } or None
                     report["lifecycle"]["recovery_target_pod_count"] = expected_count
                     report["lifecycle"]["recovery_pre_kill_uids"] = sorted(pre_kill_uids) if pre_kill_uids else None
-                    recovered, recovered_status, errors = wait_for_target_ready(
-                        namespace,
-                        preflight.get("selector") or {},
-                        args.recovery_timeout,
-                        args.poll_interval,
-                        expected_pod_count=expected_count,
-                        pre_kill_uids=pre_kill_uids,
-                    )
-                    report["lifecycle"]["recovery_semantics"] = "target_selector_ready_after_podchaos"
+                    action = str((yaml.safe_load(args.mutation.read_text(encoding="utf-8")) or {}).get("spec", {}).get("action") or "")
+                    if action == "container-kill":
+                        injected_records = (report.get("lifecycle", {}).get("injected_status") or {}).get("records") or []
+                        target_pod_names = {
+                            str(record.get("id")).split("/", 2)[1]
+                            for record in injected_records
+                            if isinstance(record, dict) and len(str(record.get("id") or "").split("/", 2)) >= 2
+                        }
+                        pre_restart_counts = {
+                            str(item.get("name")): int(item.get("restarts", 0) or 0)
+                            for item in target_pods
+                            if item.get("name")
+                        }
+                        recovered, recovered_status, errors = wait_for_container_ready(
+                            namespace,
+                            preflight.get("selector") or {},
+                            args.recovery_timeout,
+                            args.poll_interval,
+                            expected_pod_count=expected_count,
+                            pre_restart_counts=pre_restart_counts,
+                            target_pod_names=target_pod_names,
+                            container_names={
+                                str(item)
+                                for item in ((yaml.safe_load(args.mutation.read_text(encoding="utf-8")) or {}).get("spec", {}).get("containerNames") or [])
+                            },
+                        )
+                        report["lifecycle"]["recovery_semantics"] = "target_container_restart_and_ready"
+                    else:
+                        recovered, recovered_status, errors = wait_for_target_ready(
+                            namespace,
+                            preflight.get("selector") or {},
+                            args.recovery_timeout,
+                            args.poll_interval,
+                            expected_pod_count=expected_count,
+                            pre_kill_uids=pre_kill_uids,
+                        )
+                        report["lifecycle"]["recovery_semantics"] = "target_selector_ready_after_podchaos"
                 else:
                     recovered, recovered_status, errors = wait_for_lifecycle(
                         kind, namespace, name, "recovered", args.recovery_timeout, args.poll_interval
@@ -627,7 +923,9 @@ def main() -> int:
         )
         classification_details["classification"] = forced_classification
     report["defense_conclusion"] = {
-        "allowed": bool(report["lifecycle"].get("injected")) and bool(report["requests"]),
+        "allowed": defense_conclusion_allowed(
+            report["lifecycle"], report["requests"], report.get("baseline")
+        ),
         "rule": "The runner records effect evidence; defense interpretation still requires baseline, path evidence and outcome-specific analysis.",
     }
     report["finished_at"] = now()

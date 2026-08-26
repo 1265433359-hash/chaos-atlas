@@ -1,0 +1,50 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "sock-shop",
+  "project_commit": "sock-shop-fixture-commit",
+  "revision_kind": "fixture",
+  "namespace_policy": {
+    "allowed_namespaces": ["sock-shop-lab"],
+    "isolation_required": true
+  },
+  "source": {
+    "manifest_roots": ["artifacts/sock-shop"],
+    "source_roots": ["artifacts/sock-shop"]
+  },
+  "business_oracles": [
+    {
+      "id": "sock-shop-homepage",
+      "kind": "http",
+      "service": "front-end",
+      "remote_port": 80,
+      "entrypoint": "/",
+      "success_contract": "http_200",
+      "timeout_s": 5,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2
+    }
+  ],
+  "observability": {
+    "logs": {"provider": "kubectl", "required": true},
+    "events": {"provider": "kubectl", "required": true},
+    "traces": {"provider": "none", "required": false}
+  },
+  "recovery": {
+    "deadline_s": 180,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "cleanup": {
+    "owner": "chaosatlas",
+    "must_be_empty": true
+  },
+  "improvement_policy": {
+    "fresh_namespace": "sock-shop-improvement-lab",
+    "manifest_source": "artifacts/sock-shop/sock-shop-lab-manifest.yaml",
+    "source_copy_required": true
+  },
+  "sensitive_data_policy": {
+    "redact_fields": ["password", "secret", "token"],
+    "allow_redacted_placeholders": true
+  }
+}

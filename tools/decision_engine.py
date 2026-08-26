@@ -288,6 +288,21 @@ def availability_hard_filter(candidate: dict[str, Any], contract_snapshot: dict[
     """
     from project_registry import project_of, normalize_service, fault_of
 
+    # Native deployment nodes are preferred when supplied.  Their static
+    # prior is a routing hint only; runtime availability/recovery oracles still
+    # decide the outcome.  The legacy candidate path below remains compatible
+    # with existing contract-inventory snapshots.
+    native_node = candidate.get("deployment_node") if isinstance(candidate.get("deployment_node"), dict) else None
+    if native_node:
+        deployment = native_node.get("deployment") or {}
+        profile = native_node.get("availability_profile") or {}
+        replicas = deployment.get("desired_replicas")
+        if isinstance(replicas, bool) or not isinstance(replicas, int):
+            return {"availability_status": "static_blocked", "runtime_required": True, "reason": "deployment replica fact unavailable; no static prior"}
+        if replicas == 1 and not profile.get("pdb"):
+            return {"availability_static_prior": True, "runtime_required": True, "availability_status": "static_prior", "reason": "single-replica no-PDB deployment requires runtime availability/recovery validation"}
+        return {"availability_static_prior": False, "runtime_required": True, "availability_status": "redundant", "reason": "deployment manifest shows redundancy; runtime oracle remains authoritative"}
+
     cid = candidate.get("candidate_id", "")
     if not cid:
         return {}
@@ -374,15 +389,156 @@ def contract_hard_filter(candidate: dict[str, Any], contract_snapshot: dict[str,
     return {}
 
 
-def score_candidate(candidate: dict[str, Any], knowledge_snapshot: dict[str, Any] | None = None) -> dict[str, Any]:
+def _score_native_candidate(
+    candidate: dict[str, Any],
+    knowledge_snapshot: dict[str, Any] | None,
+    rca_snapshot: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Score manifest-derived candidates without invoking legacy project rules.
+
+    Native deployment/edge/scenario candidates have no historical project
+    prefix.  Knowledge can raise priority or add diagnostics, but this path
+    never emits a runtime verdict and never turns static facts into weakness.
+    """
+    candidate_id = candidate.get("candidate_id") or candidate.get("target")
+    target_kind = str(candidate.get("target_kind") or "")
+    family = str(candidate.get("fault_family") or "")
+    base = float(candidate.get("base_score", BASE))
+    score = base
+    reasons = [f"native {target_kind} candidate", f"static applicability: {candidate.get('status', 'unknown')}"]
+    diagnostics = [
+        "confirm namespace-local selector and target readiness",
+        "use independent business oracle and recovery evidence",
+    ]
+    if candidate.get("status") == "blocked":
+        reasons.extend(f"blocked: {reason}" for reason in candidate.get("blocked_reasons", []))
+        return {
+            "candidate_id": candidate_id,
+            "edge": candidate.get("edge"),
+            "score": -999.0,
+            "priority": "static_blocked",
+            "reasons": reasons,
+            "required_diagnostics": diagnostics,
+            "runtime_verdict": None,
+        }
+    if knowledge_snapshot is not None:
+        entries = _snapshot_se(knowledge_snapshot, "_score_native_candidate").get("entries", [])
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            if entry.get("fault_family") == family or entry.get("target_kind") == target_kind:
+                weight = _se_weight(entry)
+                score += weight * 10.0
+                reasons.append(f"native knowledge {entry.get('id', '<unknown>')} (w={weight:.2f})")
+                diagnostics.extend(str(item) for item in entry.get("diagnostics", []))
+    rca = _rca_influence(candidate, rca_snapshot)
+    score += rca["bonus"]
+    reasons.extend(rca["reasons"])
+    diagnostics.extend(rca["diagnostics"])
+    return {
+        "candidate_id": candidate_id,
+        "edge": candidate.get("edge"),
+        "score": round(score, 1),
+        "priority": "high" if score > base else "normal",
+        "reasons": reasons,
+        "required_diagnostics": sorted(set(diagnostics)),
+        "runtime_verdict": None,
+    }
+
+
+RCA_SNAPSHOT_SCHEMA_VERSION = 1
+RCA_REUSABLE_BONUS = 20.0
+
+
+def _rca_cards(rca_snapshot: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if rca_snapshot is None:
+        return []
+    if rca_snapshot.get("schema_version") != RCA_SNAPSHOT_SCHEMA_VERSION:
+        raise ValueError("rca_snapshot schema_version must be 1")
+    cards = rca_snapshot.get("cards")
+    if not isinstance(cards, list):
+        raise ValueError("rca_snapshot.cards must be a list")
+    return cards
+
+
+def _rca_card_matches(card: dict[str, Any], candidate: dict[str, Any]) -> bool:
+    tn = card.get("test_node") or {}
+    card_target = str(card.get("target") or tn.get("target") or "")
+    candidate_target = str(candidate.get("target") or candidate.get("service_target") or "")
+    if card_target and candidate_target and card_target != candidate_target:
+        return False
+    edge = str(card.get("edge") or "")
+    cid = str(candidate.get("candidate_id") or "").upper()
+    family = str(tn.get("family") or "").upper().replace("CHAOS", "")
+    operation = str(tn.get("operation") or "").upper()
+    candidate_family = str(candidate.get("fault_family") or "").upper().replace("CHAOS", "")
+    candidate_operation = str(candidate.get("operation") or candidate.get("fault_family") or "").upper()
+    strict_identity = str(card.get("classification") or "") == "availability_weakness" or str(card.get("schema_version") or "").startswith("chaosatlas-weakness-")
+    if edge and edge == candidate.get("edge"):
+        if not strict_identity:
+            return True
+        if family and candidate_family and family != candidate_family:
+            return False
+        if operation and candidate_operation and operation != candidate_operation:
+            return False
+        return bool(family or operation)
+    if strict_identity and family and candidate_family and family != candidate_family:
+        return False
+    return bool(family and operation and operation in cid and family in cid)
+
+
+def _rca_influence(candidate: dict[str, Any], rca_snapshot: dict[str, Any] | None) -> dict[str, Any]:
+    """Minimal compatible RCA-loop integration (2026-08-20 design, section 10).
+
+    Only knowledge_status=local_reusable cards without a contested flag may
+    change scoring; provisional/cross_project_pending cards contribute an
+    explanation note only and must not alter hard filters, protected skips or
+    the ranking.
+    """
+    reasons: list[str] = []
+    bonus = 0.0
+    diagnostics: list[str] = []
+    for card in _rca_cards(rca_snapshot):
+        if not _rca_card_matches(card, candidate):
+            continue
+        card_id = card.get("id", "<unknown>")
+        status = card.get("knowledge_status")
+        if status == "local_reusable" and not card.get("contested"):
+            if card.get("closed_boundary"):
+                # The runtime line was closed by its guard regression intent
+                # (closed_runtime_boundary_no_reinjection): the knowledge is a
+                # guard, not a priority boost. Re-injection stays blocked while
+                # the next-evidence diagnostics remain retrievable.
+                reasons.append(f"RCA {card_id}: local_reusable closed runtime boundary; re-injection guarded (no score change)")
+                diagnostics.extend(str(item) for item in card.get("next_evidence", []))
+            else:
+                bonus += RCA_REUSABLE_BONUS
+                reasons.append(f"RCA {card_id}: local_reusable boundary knowledge raises priority")
+                diagnostics.extend(str(item) for item in card.get("next_evidence", []))
+        elif status == "contested" or card.get("contested"):
+            reasons.append(f"RCA {card_id}: contested card ignored as a strong prior")
+        else:
+            reasons.append(f"RCA {card_id}: {status} card noted for context only (no score change)")
+    return {"reasons": reasons, "bonus": bonus, "diagnostics": diagnostics}
+
+
+def score_candidate(
+    candidate: dict[str, Any],
+    knowledge_snapshot: dict[str, Any] | None = None,
+    rca_snapshot: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Score a candidate from the three libraries (no LLM).
 
     knowledge_snapshot=None -> historical live behavior.
     knowledge_snapshot given -> pass the SAME snapshot to every downstream
     helper so the engine reads nothing from live files/module registries.
+    rca_snapshot (optional) -> local_reusable RCA cards may boost the score;
+    provisional/contested cards only add explanation notes.
     """
     if knowledge_snapshot is not None:
         validate_knowledge_snapshot(knowledge_snapshot)
+    if str(candidate.get("target_kind") or "") in {"dependency_edge", "deployment", "scenario"}:
+        return _score_native_candidate(candidate, knowledge_snapshot, rca_snapshot)
     # Hard constraint 1: availability layer — single-replica no-PDB kill/cpu
     # verdict is known a priori (AD-REDUNDANCY-001), route to availability track.
     avail = availability_hard_filter(candidate, contract_snapshot=knowledge_snapshot)
@@ -436,20 +592,33 @@ def score_candidate(candidate: dict[str, Any], knowledge_snapshot: dict[str, Any
         score += 30.0
         priority = "high"
         reasons.append("execution override: behavior shows weakness")
+    rca = _rca_influence(candidate, rca_snapshot)
+    if rca["bonus"]:
+        score += rca["bonus"]
+        priority = "high"
+    reasons.extend(rca["reasons"])
     return {
         "candidate_id": candidate.get("candidate_id"),
         "edge": candidate.get("edge"),
         "score": round(score, 1),
         "priority": priority,
         "reasons": reasons,
+        "required_diagnostics": rca["diagnostics"],
     }
 
 
-def rank(candidates: list[dict[str, Any]], knowledge_snapshot: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+def rank(
+    candidates: list[dict[str, Any]],
+    knowledge_snapshot: dict[str, Any] | None = None,
+    rca_snapshot: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
     """Rank candidates; when a snapshot is given it is forwarded to EVERY
     score_candidate call so the replay reads nothing from live knowledge."""
     ranked = sorted(
-        (score_candidate(c, knowledge_snapshot=knowledge_snapshot) for c in candidates),
+        (
+            score_candidate(c, knowledge_snapshot=knowledge_snapshot, rca_snapshot=rca_snapshot)
+            for c in candidates
+        ),
         key=lambda r: (-r["score"], r["candidate_id"]),
     )
     for i, r in enumerate(ranked, 1):

@@ -1,0 +1,14 @@
+{
+  "schema_version": "chaosatlas-offline-facts-v1",
+  "project_id": "sock-shop",
+  "project_commit": "sock-shop-fixture-commit",
+  "namespace": "sock-shop-lab",
+  "manifest_root": "artifacts/sock-shop",
+  "services": ["front-end", "catalogue", "carts", "orders"],
+  "deployments": [
+    {"name": "front-end", "selector": {"name": "front-end"}, "desired_replicas": 1},
+    {"name": "catalogue", "selector": {"name": "catalogue"}, "desired_replicas": 1}
+  ],
+  "dependencies": [{"source": "front-end", "target": "catalogue", "relation": "http"}],
+  "business_oracles": [{"id": "sock-shop-homepage", "kind": "http", "entrypoint": "/", "success_contract": "http_200"}]
+}
