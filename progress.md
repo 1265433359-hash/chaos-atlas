@@ -1400,3 +1400,9 @@
 - 新增 `tools/repository_inventory.py` 与 2 个回归测试；修复隐藏目录和外部源码路径分类后 focused suite 为 `2 passed`。
 - `.gitignore` 增加根目录临时文件、`.tmp/`、`.pytest-cache-disabled/`、通知队列、OTel 本地虚拟环境和 inventory 输出规则。
 - 尚未移动或删除任何实验数据；全量测试和选择性提交审查待完成。
+
+## GitHub 发布完成（2026-08-26）
+
+- 本地整理提交 `cd2f45e` 已推送到 `origin/remediation/2026-08-09-review`。
+- `git ls-remote` 已核对远端指针为 `cd2f45e71ca26bc9f91adc3f220d85e0af95b04f`。
+- 工作树中剩余的 artifacts 变更和未跟踪实验目录仍按清理政策保留在本机，未进入本次发布。

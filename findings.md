@@ -839,3 +839,5 @@ Artifact checks found nine classification-index mismatches rather than three; al
 - path-only inventory 将 321,434 个文件稳定分为：主线源代码/测试 1,169、主线元数据 5、审阅文档 105、实验输入 1,935、生成证据 22,063、外部源码 38,194、本机生成 257,765、本机状态 198；未分类为 0。
 - `tools/bin`、`sources_restored*`、`.venv`、`.tmp*` 等目录已明确标注为外部或本机类别，避免把工具分发物和运行环境误当作产品源码。
 - 本阶段只建立地图、政策和检查工具，不移动或删除历史 artifacts/raw YAML；后续路径迁移必须单独批准并通过引用与全量测试验证。
+
+- GitHub 发布验证完成：整理提交已出现在 `remediation/2026-08-09-review`，远端分支指针与本地提交一致；默认分支尚未自动变更。

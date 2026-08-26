@@ -934,5 +934,5 @@ Constraints:
 - [complete] 写入 `docs/REPOSITORY_MAP.md` 和 `docs/REPOSITORY_CLEANUP_POLICY.md`，冻结不删除、不移动原始证据的边界。
 - [complete] 新增只读 `tools/repository_inventory.py` 及回归测试，当前 inventory 零未分类。
 - [complete] 补充本机临时目录、通知队列、虚拟环境和 inventory 输出的 `.gitignore` 规则。
-- [in_progress] 运行全量验证并审查选择性暂存清单。
-- [pending] 创建本地整理提交并尝试推送当前分支；凭据失败时保留本地提交并报告阻塞。
+- [complete] 运行全量验证并审查选择性暂存清单。
+- [complete] 创建本地整理提交并推送当前分支；远端分支已核对到提交 `cd2f45e`。
