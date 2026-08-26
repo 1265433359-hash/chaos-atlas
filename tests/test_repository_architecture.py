@@ -40,7 +40,7 @@ def test_migration_manifest_rejects_sensitive_files(tmp_path):
         build_manifest(inventory)
 
 
-def test_cli_defaults_to_dry_run(monkeypatch, tmp_path, capsys):
+def test_cli_defaults_to_dry_run_and_fails_closed_without_facts(monkeypatch, tmp_path, capsys):
     from chaosatlas import cli
 
     profile = tmp_path / "profile.json"
@@ -51,37 +51,21 @@ def test_cli_defaults_to_dry_run(monkeypatch, tmp_path, capsys):
         lambda argv: (_ for _ in ()).throw(AssertionError("legacy execution")),
     )
 
-    result = cli.main(
-        ["run", "--profile", str(profile), "--evidence-root", str(tmp_path / "evidence")]
-    )
+    result = cli.main(["run", "--profile", str(profile), "--evidence-root", str(tmp_path / "evidence")])
 
-    assert result == 0
-    assert "dry-run" in capsys.readouterr().out
+    assert result == 1
+    assert "method_invalid" in capsys.readouterr().out
 
 
-def test_cli_live_forwards_profile_and_output_to_legacy(monkeypatch, tmp_path):
+def test_cli_live_is_rejected_before_legacy_dispatch(monkeypatch, tmp_path, capsys):
     from chaosatlas import cli
 
     profile = tmp_path / "profile.json"
     profile.write_text(json.dumps({"project_id": "demo"}), encoding="utf-8")
-    captured = {}
+    monkeypatch.setattr(cli, "_run_legacy", lambda argv: (_ for _ in ()).throw(AssertionError("legacy execution")))
 
-    def fake_legacy(argv):
-        captured["argv"] = argv
-        return 0
-
-    monkeypatch.setattr(cli, "_run_legacy", fake_legacy)
-
-    assert cli.main(["run", "--profile", str(profile), "--mode", "live", "--evidence-root", "runs/demo"]) == 0
-    assert captured["argv"] == [
-        "run",
-        "--profile",
-        str(profile),
-        "--mode",
-        "live",
-        "--output",
-        "runs/demo",
-    ]
+    assert cli.main(["run", "--profile", str(profile), "--mode", "live", "--evidence-root", "runs/demo"]) == 2
+    assert "approve-live" in capsys.readouterr().err
 
 
 def test_product_snapshot_excludes_evidence_and_runtime_state(tmp_path):

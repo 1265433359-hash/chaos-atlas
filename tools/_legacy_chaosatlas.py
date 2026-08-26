@@ -64,6 +64,31 @@ REQUIRED_ALIASES = {
 }
 
 
+def _find_candidate(
+    candidates: list[dict[str, Any]], candidate_id: str | None, *, project_id: str = ""
+) -> dict[str, Any] | None:
+    """Resolve exact runtime IDs or stable project/target/fault aliases."""
+    if not candidate_id:
+        return None
+    requested = str(candidate_id)
+    for item in candidates:
+        if isinstance(item, dict) and str(item.get("candidate_id") or "") == requested:
+            return item
+    project = str(project_id or "").strip()
+    if not project:
+        return None
+    matches = []
+    for item in candidates:
+        if not isinstance(item, dict):
+            continue
+        target = str(item.get("target") or "").strip()
+        family = str(item.get("fault_family") or "").strip()
+        stable = f"server:deployment:{project}:{target}:{family}"
+        if target and family and stable == requested:
+            matches.append(item)
+    return matches[0] if len(matches) == 1 else None
+
+
 def _read_json(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
@@ -923,10 +948,11 @@ def run_closed_loop(
         else:
             first_planned_candidate = ((ranked or {}).get("candidates") or (candidate_space or {}).get("candidates") or [None])[0]
             if candidate_id:
-                first_planned_candidate = next(
-                    (item for item in (candidate_space or {}).get("candidates", []) if item.get("candidate_id") == candidate_id),
-                    first_planned_candidate,
-                )
+                first_planned_candidate = _find_candidate(
+                    (candidate_space or {}).get("candidates", []),
+                    candidate_id,
+                    project_id=str((inventory or {}).get("project_id") or ""),
+                ) or first_planned_candidate
             elif mode == "live" and profile is not None:
                 try:
                     oracle_service = _runtime_oracle(profile)["service"]
@@ -962,9 +988,10 @@ def run_closed_loop(
 
         first_candidate = ((ranked or {}).get("candidates") or (candidate_space or {}).get("candidates") or [None])[0]
         if candidate_id:
-            first_candidate = next(
-                (item for item in (candidate_space or {}).get("candidates", []) if item.get("candidate_id") == candidate_id),
-                None,
+            first_candidate = _find_candidate(
+                (candidate_space or {}).get("candidates", []),
+                candidate_id,
+                project_id=str((inventory or {}).get("project_id") or ""),
             )
         elif mode == "live":
             first_candidate = next(

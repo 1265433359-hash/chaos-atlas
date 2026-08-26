@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
 
@@ -27,6 +28,54 @@ def _run_legacy(argv: list[str]) -> int:
     return subprocess.call([sys.executable, str(tool), *argv])
 
 
+def _run_live(args: argparse.Namespace) -> tuple[dict, int]:
+    """Run the maintained Kubernetes/native loop behind an explicit live gate."""
+    if not args.approve_live:
+        print("live execution requires explicit --approve-live", file=sys.stderr)
+        return {"status": "environment_blocked", "reason": "approve_live_required"}, 2
+    if args.resume:
+        print("live execution does not support --resume; use a new output directory", file=sys.stderr)
+        return {"status": "environment_blocked", "reason": "live_resume_forbidden"}, 2
+    output = Path(args.output)
+    if output.exists() and any(output.iterdir()):
+        print(f"refusing non-empty live output directory: {output}", file=sys.stderr)
+        return {"status": "environment_blocked", "reason": "non_empty_output"}, 2
+
+    advisory_provider = None
+    if args.advisory_provider == "deepseek":
+        try:
+            from tools.deepseek_advisory import create_deepseek_advisory_provider
+
+            advisory_provider = create_deepseek_advisory_provider(
+                api_key_file=Path(args.api_key_file) if args.api_key_file else None,
+                base_url=args.base_url,
+                model=args.model,
+            )
+        except (OSError, ValueError, ImportError) as exc:
+            print(json.dumps({"status": "blocked_missing_advisory_provider", "reason": str(exc)}, ensure_ascii=False))
+            return {"status": "blocked_missing_advisory_provider", "reason": str(exc)}, 2
+
+    from tools._legacy_chaosatlas import run_closed_loop
+
+    result = run_closed_loop(
+        profile_path=Path(args.profile),
+        output_root=output,
+        mode="live",
+        seed=args.seed,
+        resume=False,
+        knowledge_root=Path(args.knowledge_root) if args.knowledge_root else None,
+        approve_live=True,
+        candidate_id=args.candidate_id,
+        defense_history_root=Path(args.defense_history_root) if args.defense_history_root else None,
+        knowledge_write_root=Path(args.knowledge_write_root) if args.knowledge_write_root else None,
+        advisory_provider=advisory_provider,
+        registry_shadow=bool(args.registry_shadow),
+        kube_context=args.kube_context,
+    )
+    status = str(result.get("status") or "method_invalid")
+    return result, 0 if status == "live_completed" else 2
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="chaosatlas", description="Evidence-constrained ChaosAtlas orchestration.")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -34,7 +83,20 @@ def _parser() -> argparse.ArgumentParser:
     run = subparsers.add_parser("run", help="Run a project inspection.")
     run.add_argument("--profile", required=True)
     run.add_argument("--mode", choices=("dry-run", "live"), default="dry-run")
-    run.add_argument("--evidence-root", default="ChaosAtlas-evidence")
+    run.add_argument("--output", "--evidence-root", dest="output", default="ChaosAtlas-evidence")
+    run.add_argument("--seed", type=int, default=1001)
+    run.add_argument("--resume", action="store_true")
+    run.add_argument("--knowledge-root")
+    run.add_argument("--approve-live", action="store_true")
+    run.add_argument("--candidate-id")
+    run.add_argument("--kube-context")
+    run.add_argument("--advisory-provider", choices=("deterministic", "deepseek"), default="deterministic")
+    run.add_argument("--api-key-file")
+    run.add_argument("--base-url", default="https://api.deepseek.com/v1")
+    run.add_argument("--model", default="deepseek-v4-flash")
+    run.add_argument("--defense-history-root")
+    run.add_argument("--knowledge-write-root")
+    run.add_argument("--registry-shadow", action="store_true")
 
     inventory = subparsers.add_parser("inventory", help="Build a repository inventory.")
     inventory.add_argument("--root", default=".")
@@ -53,34 +115,22 @@ def main(argv: list[str] | None = None) -> int:
         profile = Path(args.profile)
         if not profile.is_file():
             raise SystemExit(f"profile not found: {profile}")
-        payload = json.loads(profile.read_text(encoding="utf-8"))
-        if args.mode == "dry-run":
-            print(
-                json.dumps(
-                    {
-                        "status": "dry-run",
-                        "project_id": payload.get("project_id", profile.stem),
-                        "profile": str(profile),
-                        "evidence_root": args.evidence_root,
-                        "mutations": False,
-                        "llm_calls": False,
-                    },
-                    indent=2,
-                    ensure_ascii=False,
-                )
-            )
-            return 0
-        return _run_legacy(
-            [
-                "run",
-                "--profile",
-                str(profile),
-                "--mode",
-                "live",
-                "--output",
-                args.evidence_root,
-            ]
+        if args.mode == "live":
+            result, code = _run_live(args)
+            print(json.dumps({**result, "output": str(args.output)}, indent=2, ensure_ascii=False, sort_keys=True))
+            return code
+        from tools.chaosatlas_orchestrator import run_closed_loop
+
+        result = run_closed_loop(
+            profile_path=profile,
+            output_root=Path(args.output),
+            mode="dry-run",
+            seed=args.seed,
+            resume=args.resume,
+            knowledge_root=Path(args.knowledge_root) if args.knowledge_root else None,
         )
+        print(json.dumps(result, indent=2, ensure_ascii=False, sort_keys=True))
+        return 0 if result.get("status") == "dry_run_ready" else 1
     if args.command == "inventory":
         from scripts.repository_inventory import build_inventory
 
