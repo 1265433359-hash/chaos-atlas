@@ -1,5 +1,6 @@
 __pycache__/
 *.py[cod]
+*.egg-info/
 *.stdout.log
 *.stderr.log
 *.out.log
@@ -46,6 +47,12 @@ chaos-mesh-*.tgz
 /.tmp-bridge/
 /.tmp-chaos-kind-admin.conf
 /CHAOS_ENV_HANDOFF.md
+
+# Repository architecture migration worktree and detached evidence archive.
+/.worktrees/
+/.migration/
+/ChaosAtlas-evidence/
+/ChaosAtlas-evidence-v2/
 
 # Environment files may contain credentials. Commit only sanitized examples.
 .env

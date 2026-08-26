@@ -114,14 +114,13 @@ workload is an experiment outcome, not a defense result.
 
 | Path | What belongs here |
 |---|---|
-| `raw_yaml/` | Source chaos YAML corpus; preserve original paths and hashes |
-| `artifacts/<project>/` | Project-scoped inventories, slices, manifests, runtime reports, and knowledge cards |
-| `artifacts/experiments/` | Comparison pilots, held-out pools, frozen snapshots, ablations, and execution ledgers |
-| `reporting/` | Human-readable findings, issue drafts, submission tracking, and evidence packaging |
-| `tools/` | Deterministic catalog builders, selectors, runners, classifiers, validators, and query tools |
-| `tools/tests/` | Regression tests for gates, runners, classifiers, selectors, and artifact builders |
-| `governance/` | Safety and review rules for isolated execution and external reporting |
-| `task_plan.md`, `findings.md`, `progress.md` | Persistent research plan, discoveries, and session history |
+| `src/chaosatlas/` | Product package and stable orchestration namespaces |
+| `projects/` | Versioned, secret-free project profiles |
+| `tests/` | Product contract tests and offline fixtures |
+| `scripts/` | Inventory, migration, boundary, and acceptance tools |
+| `tools/` | Thin compatibility wrappers for the legacy command names |
+| `docs/` | Product operations, architecture, and publication documentation |
+| `ChaosAtlas-evidence` | Separate evidence archive for inputs, runs, reports, and knowledge snapshots |
 
 The archive conventions and paper-facing evidence boundaries are documented
 in [`docs/ARCHIVE_MAP.md`](docs/ARCHIVE_MAP.md). The comparison matrix is in
@@ -150,27 +149,22 @@ These commands only inspect or validate existing artifacts. They do not deploy
 services or inject faults:
 
 ```powershell
-python tools/validate_knowledge_base.py --root artifacts/train-ticket/knowledge_base
-python tools/validate_knowledge_base.py --root artifacts/online-boutique/knowledge_base
-python tools/validate_knowledge_base.py --root artifacts/opentelemetry-demo/knowledge_base
-python tools/query_knowledge_base.py --list
-python -m pytest tools/tests -q
+python -m chaosatlas run --profile projects/sock-shop/profile.json --mode dry-run
+python -m chaosatlas run --profile projects/online-boutique/profile.json --mode dry-run
+python -m pytest tests/test_repository_architecture.py -q
 ```
 
 Runtime commands require an explicitly approved isolated namespace and a
 working Kubernetes/Chaos Mesh environment. Read
-[`governance/README.md`](governance/README.md) and the relevant project
-artifact README before running them.
+[`docs/operations/README.md`](docs/operations/README.md) and the relevant
+project profile before running them.
 
 ## Paper Preparation
 
 The current strongest paper-facing materials are:
 
-- [`artifacts/train-ticket/paper_prep_stage_summary.md`](artifacts/train-ticket/paper_prep_stage_summary.md)
-- [`artifacts/train-ticket/README.md`](artifacts/train-ticket/README.md)
-- [`reporting/projects_matrix.md`](reporting/projects_matrix.md)
-- [`reporting/submission_index.md`](reporting/submission_index.md)
-- [`artifacts/experiments/llm_knowledge_ablation_protocol_v1.md`](artifacts/experiments/llm_knowledge_ablation_protocol_v1.md)
+- Paper-facing reports and experiment ledgers are retained in the separate
+  `ChaosAtlas-evidence` archive.
 
 Numbers in a manuscript should cite the smallest machine-readable source
 available (`.json`, `.csv`, or a run ledger) and then the human-readable report.
@@ -205,3 +199,23 @@ Check the upstream licenses before making the repository public. Keep secrets,
 cluster credentials, private endpoints, raw tokens, and unredacted logs out of
 the archive. Generated binaries and local environment state should remain
 ignored unless a paper reproducibility package explicitly requires them.
+## Product Entry
+
+The supported product entry point is now:
+
+```powershell
+python -m chaosatlas run --profile projects/sock-shop/profile.json --mode dry-run
+python -m chaosatlas run --profile projects/sock-shop/profile.json --mode live --evidence-root ChaosAtlas-evidence-v2/runs/sock-shop/<run-id>
+```
+
+`live` mode is fail-closed: it requires the project profile's runtime gates,
+an approved namespace and a working Kubernetes/Chaos Mesh environment. A
+platform prerequisite failure is reported as `environment_blocked` and does
+not become a weakness or defense claim.
+
+The repository architecture and evidence migration policy are documented in
+`docs/superpowers/specs/2026-08-26-repository-architecture-redesign-design.zh-CN.md`
+and `docs/repository-migration/README.md`.
+
+Runtime evidence belongs in the separate `ChaosAtlas-evidence` archive. The
+legacy `tools/` entry points remain available during the compatibility period.

@@ -1,0 +1,53 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "opentelemetry-demo",
+  "project_commit": "2e72d8bcdf754603e956406808630bc9663c992c",
+  "revision_kind": "git",
+  "namespace_policy": {
+    "allowed_namespaces": ["chaosatlas-otel"],
+    "isolation_required": true
+  },
+  "source": {
+    "manifest_roots": ["artifacts/opentelemetry-demo/manifests"],
+    "source_roots": ["artifacts/opentelemetry-demo"]
+  },
+  "business_oracles": [
+    {
+      "id": "opentelemetry-demo-place-order",
+      "kind": "grpc",
+      "service": "checkout",
+      "remote_port": 5050,
+      "entrypoint": "/oteldemo.CheckoutService/PlaceOrder",
+      "success_contract": "grpc_place_order_order_id_and_shipping_tracking_id",
+      "client": "artifacts/opentelemetry-demo/otel_client.py",
+      "supporting_services": [{"service": "cart", "remote_port": 7070}],
+      "timeout_s": 12,
+      "count": 10,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2
+    }
+  ],
+  "observability": {
+    "logs": {"provider": "kubectl", "required": true},
+    "events": {"provider": "kubectl", "required": true},
+    "traces": {"provider": "none", "required": false}
+  },
+  "recovery": {
+    "deadline_s": 180,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "cleanup": {
+    "owner": "chaosatlas",
+    "must_be_empty": true
+  },
+  "runtime_contract": {
+    "supported_fault_families": ["pod_kill", "container_kill", "stress_cpu", "stress_memory", "network_loss", "network_partition"],
+    "runtime_status": "grpc_oracle_adapter_ready_pending_cluster_preflight",
+    "client_workflow": "AddItem_then_PlaceOrder"
+  },
+  "sensitive_data_policy": {
+    "allow_redacted_placeholders": true,
+    "redact_fields": ["password", "secret", "token", "credit_card"]
+  }
+}

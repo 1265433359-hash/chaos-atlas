@@ -1,0 +1,51 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "P02",
+  "project_commit": "p02-spring-petclinic-static-digest-20260812",
+  "revision_kind": "digest",
+  "namespace_policy": {
+    "allowed_namespaces": ["chaosatlas-p02"],
+    "isolation_required": true
+  },
+  "source": {
+    "manifest_roots": [
+      "artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P02/kubernetes-static"
+    ],
+    "source_roots": [
+      "artifacts/experiments/chaosatlas_10_projects/runtime_profiles/P02"
+    ]
+  },
+  "business_oracles": [
+    {
+      "id": "p02-gateway-owner",
+      "kind": "http",
+      "service": "api-gateway",
+      "remote_port": 8080,
+      "entrypoint": "/api/gateway/owners/1",
+      "success_contract": "http_200",
+      "timeout_s": 10,
+      "count": 3,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2,
+      "startup_window_s": 1800
+    }
+  ],
+  "observability": {
+    "logs": {"provider": "kubectl", "required": true},
+    "events": {"provider": "kubectl", "required": true},
+    "traces": {"provider": "kubectl", "required": false}
+  },
+  "recovery": {
+    "deadline_s": 300,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "cleanup": {
+    "owner": "chaosatlas",
+    "must_be_empty": true
+  },
+  "sensitive_data_policy": {
+    "allow_redacted_placeholders": true,
+    "redact_fields": ["password", "secret", "token", "authorization"]
+  }
+}
