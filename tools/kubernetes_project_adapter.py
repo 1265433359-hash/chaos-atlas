@@ -11,18 +11,12 @@ from datetime import datetime, timezone
 from typing import Any, Callable
 
 from tools.deployment_capability import build_deployment_node, validate_deployment_node
+from tools.fault_catalog import implemented_fault_families
 from tools.recovery_contract import contract_for_fault
 
 
 Runner = Callable[..., tuple[int, str, str]]
-FAULT_FAMILIES = (
-    "pod_kill",
-    "container_kill",
-    "stress_cpu",
-    "stress_memory",
-    "network_loss",
-    "network_partition",
-)
+FAULT_FAMILIES = implemented_fault_families()
 
 
 def _default_runner(args: list[str], timeout: int = 30, input_text: str | None = None) -> tuple[int, str, str]:

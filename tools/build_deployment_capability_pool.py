@@ -16,9 +16,10 @@ try:
 except ModuleNotFoundError:  # direct script invocation
     from deployment_capability import build_deployment_node, validate_deployment_node
     from recovery_contract import contract_for_fault
+from tools.fault_catalog import implemented_fault_families
 
 
-FAULT_FAMILIES = ("pod_kill", "container_kill", "stress_cpu", "stress_memory", "network_loss", "network_partition")
+FAULT_FAMILIES = implemented_fault_families()
 
 
 def _documents(root: Path) -> tuple[list[tuple[Path, dict[str, Any]]], list[str]]:

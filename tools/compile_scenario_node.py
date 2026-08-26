@@ -18,7 +18,15 @@ except ModuleNotFoundError:
     from deployment_capability import scenario_signature, validate_scenario_node
 
 
-SUPPORTED = {"pod_kill", "container_kill", "stress_cpu", "stress_memory", "network_loss", "network_partition"}
+SUPPORTED = {
+    "pod_kill",
+    "container_kill",
+    "stress_cpu",
+    "stress_memory",
+    "network_loss",
+    "network_partition",
+    "network_delay",
+}
 
 
 def _name(value: str) -> str:
@@ -62,6 +70,14 @@ def _manifest(scenario: dict[str, Any], phase: dict[str, Any], fault: dict[str, 
     elif kind == "network_loss":
         if set(parameters) != {"loss_percent"}: raise ValueError("network_loss requires loss_percent")
         api_kind, spec = "NetworkChaos", {**base, "action": "loss", "mode": "one", "loss": {"loss": str(int(parameters["loss_percent"])), "correlation": "100"}, "duration": _duration(phase["duration_s"]), "direction": "to"}
+    elif kind == "network_delay":
+        if set(parameters) != {"latency_ms", "jitter_ms", "correlation"}: raise ValueError("network_delay requires latency_ms, jitter_ms and correlation")
+        latency = int(parameters["latency_ms"])
+        jitter = int(parameters["jitter_ms"])
+        correlation = int(parameters["correlation"])
+        if latency < 1 or jitter < 0 or not 0 <= correlation <= 100:
+            raise ValueError("network_delay parameters are out of range")
+        api_kind, spec = "NetworkChaos", {**base, "action": "delay", "mode": "one", "delay": {"latency": f"{latency}ms", "jitter": f"{jitter}ms", "correlation": str(correlation)}, "duration": _duration(phase["duration_s"]), "direction": "to"}
     else:
         if parameters != {}: raise ValueError("network_partition parameters must be empty")
         api_kind, spec = "NetworkChaos", {**base, "action": "partition", "mode": "one", "duration": _duration(phase["duration_s"]), "direction": "to"}

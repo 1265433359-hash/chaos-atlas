@@ -378,6 +378,13 @@ def _live_scenario(
     elif family == "network_loss":
         parameters = {"loss_percent": int(parameters.get("loss_percent") or 100)}
         action = "network-loss"
+    elif family == "network_delay":
+        parameters = {
+            "latency_ms": int(parameters.get("latency_ms") or 500),
+            "jitter_ms": int(parameters.get("jitter_ms") or 0),
+            "correlation": int(parameters.get("correlation") or 100),
+        }
+        action = "network-delay"
     elif family == "network_partition":
         parameters = {}
         action = "network-partition"
