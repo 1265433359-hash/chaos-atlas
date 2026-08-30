@@ -28,6 +28,8 @@ chaos-mesh-*.tgz
 
 # Temporary pytest basetemp directories created for local verification.
 .pytest-tmp-*/
+.pytest-deps*/
+.pytest-run-temp/
 /.tmp-*/
 /.tmp-*
 /.tmp/
@@ -53,6 +55,18 @@ chaos-mesh-*.tgz
 /.migration/
 /ChaosAtlas-evidence/
 /ChaosAtlas-evidence-v2/
+
+# Root-level local review/render outputs and runtime scratch state.
+/.academic_review_*/
+/.lo_profile_review/
+/.review_*/
+/.review_extract.txt
+/runtime/
+/.docker-config/
+
+# Root-level research attachments and generated snapshots stay outside the product tree.
+/*.docx
+/github_candidate_snapshot_*.csv
 
 # Local live/dry-run evidence; publish sanitized reports separately.
 /.runs/
