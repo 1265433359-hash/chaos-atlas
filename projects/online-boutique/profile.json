@@ -42,5 +42,51 @@
   "sensitive_data_policy": {
     "allow_redacted_placeholders": true,
     "redact_fields": ["password", "secret", "token"]
+  },
+  "fault_support": {
+    "http_delay": {
+      "status": "supported",
+      "reason": "live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "http_abort": {
+      "status": "supported",
+      "reason": "isolated live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "http_status_error": {
+      "status": "supported",
+      "reason": "live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "http_response_corrupt": {
+      "status": "supported",
+      "reason": "live canary verified with base64 body replacement, baseline, observation, recovery and cleanup on 2026-08-27; business result response_observed"
+    },
+    "dependency_error": {
+      "status": "supported",
+      "reason": "live canary verified with HTTP dependency-boundary error response, baseline, observation, recovery and cleanup on 2026-08-27; business result response_observed"
+    },
+    "connection_reset": {
+      "status": "supported",
+      "reason": "live canary verified with HTTP session abort semantics, baseline, observation, recovery and cleanup on 2026-08-27; business result response_observed"
+    },
+    "network_bandwidth": {
+      "status": "supported",
+      "reason": "live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "network_duplicate": {
+      "status": "supported",
+      "reason": "live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "network_corrupt": {
+      "status": "supported",
+      "reason": "live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "dns_failure": {"status": "inapplicable", "reason": "requires writable resolver state or an alternate DNS injector"},
+    "dns_delay": {"status": "inapplicable", "reason": "requires writable resolver state or an alternate DNS injector"},
+    "env_misconfiguration": {"status": "inapplicable", "reason": "requires a disposable test deployment mutation"},
+    "secret_rotation": {"status": "inapplicable", "reason": "requires a test-only Secret and placeholder value"},
+    "rollout_pause": {"status": "inapplicable", "reason": "release-pause canary is not enabled in the shared namespace"},
+    "image_pull_failure": {"status": "inapplicable", "reason": "requires disposable workload and test image restore contract"},
+    "pod_unschedulable": {"status": "inapplicable", "reason": "requires disposable node-pool isolation"},
+    "api_server_delay": {"status": "inapplicable", "reason": "requires a disposable cluster control-plane mutator"}
   }
 }

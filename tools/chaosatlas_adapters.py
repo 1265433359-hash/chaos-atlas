@@ -11,6 +11,7 @@ from typing import Any
 from tools.build_deployment_capability_pool import build_pool
 from tools.project_onboarding import validate_project_profile
 from tools.recovery_contract import contract_for_fault
+from tools.fault_catalog import implemented_fault_families
 
 
 def _canonical_hash(value: Any) -> str:
@@ -27,19 +28,19 @@ class OfflineProjectAdapter:
         self.workspace_root = Path(workspace_root).resolve()
 
     def _facts(self) -> dict[str, Any]:
-        value = json.loads(self.facts_path.read_text(encoding="utf-8"))
+        value = json.loads(self.facts_path.read_text(encoding="utf-8-sig"))
         if not isinstance(value, dict) or value.get("schema_version") != "chaosatlas-offline-facts-v1":
             raise ValueError("offline facts must use chaosatlas-offline-facts-v1")
         return value
 
     def onboard(self, profile_path: Path, workspace_root: Path | None = None) -> dict[str, Any]:
         path = Path(profile_path)
-        profile = json.loads(path.read_text(encoding="utf-8"))
+        profile = json.loads(path.read_text(encoding="utf-8-sig"))
         checked = validate_project_profile(profile)
         if not checked["valid"]:
             return {"status": "method_invalid", "errors": checked["errors"], "profile": checked.get("profile", {})}
         facts = self._facts()
-        if checked["profile"].get("project_id") != facts.get("project_id"):
+        if str(checked["profile"].get("project_id") or "").casefold() != str(facts.get("project_id") or "").casefold():
             return {"status": "method_invalid", "errors": ["profile/facts project_id mismatch"]}
         if checked["profile"].get("project_commit") != facts.get("project_commit"):
             return {"status": "method_invalid", "errors": ["profile/facts project_commit mismatch"]}
@@ -53,7 +54,7 @@ class OfflineProjectAdapter:
 
     def inventory(self, profile: dict[str, Any]) -> dict[str, Any]:
         facts = self._facts()
-        if profile.get("project_id") != facts.get("project_id"):
+        if str(profile.get("project_id") or "").casefold() != str(facts.get("project_id") or "").casefold():
             raise ValueError("profile/facts project_id mismatch")
         services = [str(item) for item in facts.get("services") or []]
         deployments = [deepcopy(item) for item in facts.get("deployments") or [] if isinstance(item, dict)]
@@ -75,7 +76,7 @@ class OfflineProjectAdapter:
         }
 
     def detect_server_deployment(self, inventory: dict[str, Any]) -> dict[str, Any]:
-        if inventory.get("project_id") != self._facts().get("project_id"):
+        if str(inventory.get("project_id") or "").casefold() != str(self._facts().get("project_id") or "").casefold():
             return {"status": "method_invalid", "errors": ["inventory/facts project_id mismatch"], "candidates": []}
         facts = self._facts()
         source_pool: dict[str, Any] = {"status": "not_available"}
@@ -106,7 +107,7 @@ class OfflineProjectAdapter:
                 "namespace": inventory.get("namespace"),
                 "selector": selector,
                 "desired_replicas": int(item.get("desired_replicas") or 0),
-                "fault_families": ["pod_kill", "container_kill", "stress_cpu", "stress_memory", "network_loss", "network_partition"],
+                "fault_families": list(implemented_fault_families()),
                 "recovery_contract": {
                     "replacement_identity_required": True,
                     "ready_required": True,

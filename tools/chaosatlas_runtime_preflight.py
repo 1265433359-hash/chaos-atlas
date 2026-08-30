@@ -171,19 +171,29 @@ class KubernetesPreflight:
         if events is None:
             errors.append(f"events unavailable: {events_error}")
 
+        supported_faults = {
+            str(name)
+            for name, value in (self.profile.get("fault_support") or {}).items()
+            if isinstance(value, dict) and str(value.get("status") or "").lower() in {"supported", "implemented"}
+        }
+        chaos_required = bool(supported_faults - {"api_server_delay"})
         residual: dict[str, Any] = {}
-        for resource in CHAOS_RESOURCES:
-            value, error = self._run_json(["get", resource, "-n", namespace or "", ]) if namespace else (None, "namespace unavailable")
-            if error and "not found" in error.lower():
-                value, error = {"items": []}, None
-            if value is None:
-                residual[resource] = {"status": "blocked", "error": error}
-            else:
-                items = value.get("items") or []
-                residual[resource] = {"status": "clean" if not items else "residual", "count": len(items), "names": [str((item.get("metadata") or {}).get("name")) for item in items]}
-        residual_status = "blocked" if any(item.get("status") == "blocked" for item in residual.values()) else ("residual" if any(item.get("status") == "residual" for item in residual.values()) else "clean")
+        if chaos_required:
+            for resource in CHAOS_RESOURCES:
+                value, error = self._run_json(["get", resource, "-n", namespace or "", ]) if namespace else (None, "namespace unavailable")
+                if error and "not found" in error.lower():
+                    value, error = {"items": []}, None
+                if value is None:
+                    residual[resource] = {"status": "blocked", "error": error}
+                else:
+                    items = value.get("items") or []
+                    residual[resource] = {"status": "clean" if not items else "residual", "count": len(items), "names": [str((item.get("metadata") or {}).get("name")) for item in items]}
+            residual_status = "blocked" if any(item.get("status") == "blocked" for item in residual.values()) else ("residual" if any(item.get("status") == "residual" for item in residual.values()) else "clean")
+        else:
+            residual = {resource: {"status": "not_required"} for resource in CHAOS_RESOURCES}
+            residual_status = "not_required"
         residual_report = {"status": residual_status, "resources": residual}
-        if residual_status != "clean":
+        if residual_status not in {"clean", "not_required"}:
             errors.append(f"chaos residual gate: {residual_status}")
 
         return {

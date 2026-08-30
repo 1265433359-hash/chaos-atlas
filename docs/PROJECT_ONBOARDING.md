@@ -8,7 +8,7 @@ for later phases.
 ## Check A Profile Schema
 
 ```powershell
-python tools/project_onboarding.py --profile artifacts/project_profiles/sock-shop/project_profile.json --workspace-root .
+python tools/project_onboarding.py --profile projects/sock-shop/profile.json --workspace-root .
 ```
 
 The command checks the profile schema and declared manifest/source paths. A
@@ -28,8 +28,8 @@ Required profile facts are:
 
 ```powershell
 python tools/validate_knowledge_base.py `
-  --root artifacts/train-ticket/knowledge_base `
-  --profile artifacts/project_profiles/sock-shop/project_profile.json
+  --root <knowledge-root> `
+  --profile projects/sock-shop/profile.json
 ```
 
 The knowledge validator can validate cards and the onboarding profile in one
@@ -41,9 +41,9 @@ The first unified entry point is a deterministic offline rehearsal:
 
 ```powershell
 python tools/chaosatlas.py run `
-  --profile artifacts/project_profiles/sock-shop/project_profile.json `
+  --profile projects/sock-shop/profile.json `
   --mode dry-run `
-  --output artifacts/sock-shop/chaosatlas-runs/<run-id>
+  --output .runs/sock-shop/<run-id>
 ```
 
 The stage order is fixed:
@@ -75,11 +75,18 @@ Its synthetic executor deliberately cannot produce a runtime `weakness`,
 `defended`, or confirmed RCA/knowledge claim. Use `--resume` to continue an
 incomplete offline run after its input snapshot is verified.
 
-## Unified Live Pilot
+The command also accepts `--seed` and `--knowledge-root`. Knowledge cards are
+read-only and can change candidate ranking or advisory hypotheses, but cannot
+change the candidate set or final verdict.
 
-The live entry point now uses the same scenario runner and the namespace-scoped
-Kubernetes lifecycle executor. Add runtime connection details to the selected
-HTTP oracle without putting credentials in the profile:
+## Live Adapter Boundary
+
+The offline milestone intentionally rejects `--mode live`; it never dispatches
+to the legacy runner. A future native or CE adapter must implement the same
+`preflight -> baseline -> inject -> observe -> recover -> cleanup` lifecycle
+and return evidence through the same classifier and RCA gates. Runtime
+connection details belong in the project adapter and must not include
+credentials in the profile.
 
 ```json
 {
@@ -92,24 +99,19 @@ HTTP oracle without putting credentials in the profile:
 }
 ```
 
-Then run one explicitly approved `pod_kill` candidate:
+The future live command will require an explicit approval and namespace allowlist:
 
 ```powershell
 python tools/chaosatlas.py run `
   --profile <project-profile-with-runtime-oracle>.json `
   --mode live `
-  --approve-live `
-  --output artifacts/<project>/chaosatlas-runs/<run-id>
+  --output .runs/<project>/<run-id>
 ```
 
-Live mode executes only one namespace-local candidate and owns baseline,
-injection confirmation, business observation, recovery, and cleanup. Missing
-`service`/`remote_port`, missing approval, platform blocking, business
-unreachable observation, or unconfirmed injection fail closed. They are
-recorded in the run artifacts but cannot become a weakness, defense, RCA, or
-knowledge promotion. The current live pilot permits `pod_kill`; additional
-fault families require their own business oracle and recovery evidence before
-being enabled.
+When implemented, live mode will execute only namespace-local candidates and
+own baseline, injection confirmation, business observation, recovery, and
+cleanup. Missing `service`/`remote_port`, missing approval, platform blocking,
+business unreachable observation, or unconfirmed injection must fail closed.
 
 ## Result Contract
 

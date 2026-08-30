@@ -22,6 +22,7 @@ from typing import Any, Callable
 
 import yaml
 
+from tools.dns_network_fallback import build_dns_network_fallback
 from tools.run_chaos_experiment import (
     check_mutation,
     delete_resource,
@@ -36,6 +37,7 @@ from tools.run_chaos_experiment import (
     wait_for_target_ready,
     wait_for_container_ready,
 )
+from tools.fault_executor import validate_attestation
 
 
 HookMap = dict[str, Callable[..., Any]]
@@ -309,11 +311,70 @@ class KubernetesLifecycleExecutor:
                     "oracle_kind": "grpc",
                     "successes": sum(1 for item in samples if item.get("observation_status") == "pass"),
                     "samples": samples,
-                    "reason": failures[-1] if failures else "gRPC business oracle did not produce a successful sample",
-                }
+                "reason": failures[-1] if failures else "gRPC business oracle did not produce a successful sample",
+            }
             remaining = max(0.0, deadline - time.monotonic())
             if retry_interval:
                 time.sleep(min(retry_interval, remaining))
+
+    def _default_dns_capability_probe(self, target_pods: list[dict[str, Any]], _manifest: dict[str, Any]) -> dict[str, Any]:
+        """Check that the target container can safely mutate resolver state."""
+        if not target_pods:
+            return {"status": "inapplicable", "reason": "DNSChaos target pod list is empty", "checked_pods": []}
+        checked: list[dict[str, Any]] = []
+        for item in target_pods:
+            pod = str(item.get("name") or "").strip()
+            if not pod:
+                continue
+            marker = f"/etc/resolv.conf.chaosatlas-{hashlib.sha256(pod.encode('utf-8')).hexdigest()[:8]}"
+            code, stdout, stderr = run_kubectl(
+                ["exec", pod, "-n", self.namespace, "--", "sh", "-ceu", f"test -w /etc/resolv.conf; touch {marker}; rm -f {marker}"],
+                timeout=20,
+                kube_context=self.kube_context,
+            )
+            checked.append({"pod": pod, "return_code": code, "stdout": stdout, "stderr": stderr})
+            if code == 0:
+                return {"status": "ready", "resolver_writable": True, "checked_pods": checked}
+        return {"status": "inapplicable", "resolver_writable": False, "checked_pods": checked, "reason": "target resolver state is not writable"}
+
+    def _default_dns_fallback(self, manifest: dict[str, Any], capability: dict[str, Any]) -> dict[str, Any] | None:
+        """Build a NetworkChaos mutation against the cluster DNS Service."""
+        code, stdout, stderr = run_kubectl(
+            ["get", "service", "kube-dns", "-n", "kube-system", "-o", "json"],
+            timeout=20,
+            kube_context=self.kube_context,
+        )
+        if code != 0:
+            return None
+        try:
+            payload = json.loads(stdout)
+            cluster_ip = str(((payload.get("spec") or {}).get("clusterIP") or "")).strip()
+        except (json.JSONDecodeError, AttributeError):
+            return None
+        if not cluster_ip or cluster_ip.lower() == "none":
+            return None
+        spec = manifest.get("spec") if isinstance(manifest, dict) else {}
+        family = "dns_failure" if str((spec or {}).get("action") or "") == "error" else "dns_delay"
+        latency_text = str(((spec or {}).get("delay") or {}).get("latency") or "300ms")
+        try:
+            latency_ms = int(re.sub(r"[^0-9]", "", latency_text))
+        except ValueError:
+            latency_ms = 300
+        metadata = manifest.get("metadata") if isinstance(manifest, dict) else {}
+        name = f"{str((metadata or {}).get('name') or 'dns-fault')}-network"
+        selector = self._selector(manifest).get("labelSelectors") or {}
+        fallback = build_dns_network_fallback(
+            namespace=self.namespace,
+            selector={str(k): str(v) for k, v in selector.items()},
+            dns_cluster_ip=cluster_ip,
+            fault_family=family,
+            duration_s=30,
+            name=_safe_name(name),
+            dns_targets=[],
+            latency_ms=latency_ms if family == "dns_delay" else None,
+        )
+        fallback["metadata"]["labels"].update({"chaosatlas.dev/fallback": "dns-network"})
+        return fallback
 
     def _hook(self, name: str, default: Callable[..., Any]) -> Callable[..., Any]:
         return self.hooks.get(name, default)
@@ -414,6 +475,54 @@ class KubernetesLifecycleExecutor:
             self._write_result(action_id, result)
             return result
 
+        target_pods = ((gate.get("checks") or {}).get("target_pods") or [])
+        dns_probe = self.hooks.get("dns_capability_probe")
+        if kind == "DNSChaos" and (dns_probe is not None or target_pods):
+            capability = (dns_probe or self._default_dns_capability_probe)(target_pods, manifest)
+            result["capability"] = capability
+            if not isinstance(capability, dict) or capability.get("status") != "ready":
+                fallback_builder = self.hooks.get("dns_fallback_builder")
+                fallback = (fallback_builder or self._default_dns_fallback)(manifest, capability)
+                if fallback is None:
+                    result["status"] = "inapplicable"
+                    reason = capability.get("reason") if isinstance(capability, dict) else None
+                    result["errors"].append(str(reason or "DNS resolver capability is unavailable"))
+                    result["outcome_status"] = "inapplicable"
+                    result["attestation"] = {
+                        "schema_version": "chaosatlas-runtime-result-v1",
+                        "valid": False,
+                        "missing": ["injection", "observation", "recovery", "cleanup", "independent_oracle", "comparison_eligible"],
+                        "comparison_eligible": False,
+                        "baseline": False,
+                        "injection": False,
+                        "observation": False,
+                        "recovery": False,
+                        "cleanup": False,
+                        "independent_oracle": False,
+                    }
+                    result["promotion_allowed"] = False
+                    result["injection_confirmed"] = False
+                    result["recovery_confirmed"] = False
+                    result["cleanup_confirmed"] = False
+                    self._write_result(action_id, result)
+                    return result
+                manifest = fallback
+                kind = "NetworkChaos"
+                name = str((manifest.get("metadata") or {}).get("name") or "")
+                mutation_path = self._mutation_path(f"{action_id}-dns-network", manifest)
+                result["mutation_ref"] = str(mutation_path.relative_to(self.root)).replace("\\", "/")
+                result["fallback"] = {"backend": "NetworkChaos", "reason": capability.get("reason"), "manifest": str(mutation_path.relative_to(self.root)).replace("\\", "/")}
+                gate = self._hook(
+                    "gate",
+                    lambda _manifest, path: check_mutation(path, allowed_namespaces=self.allowed_namespaces, kube_context=self.kube_context),
+                )(manifest, mutation_path)
+                result["preflight"] = gate
+                if gate.get("decision") != "ready_for_injection":
+                    result["status"] = "environment_blocked"
+                    result["errors"].append("DNS NetworkChaos fallback applicability gate blocked mutation")
+                    self._write_result(action_id, result)
+                    return result
+
         baseline = self._hook("probe", self._default_probe)("baseline", manifest)
         result["baseline"] = baseline
         lifecycle.append("baseline")
@@ -499,11 +608,21 @@ class KubernetesLifecycleExecutor:
         injection_ok = bool(result["injection"].get("confirmed"))
         recovery_ok = bool(result["recovery"].get("confirmed"))
         cleanup_ok = bool(result["cleanup"].get("confirmed"))
-        comparison_eligible = all((baseline_ok, injection_ok, bool(observation.get("samples")), recovery_ok, cleanup_ok)) and observation.get("status") in {"pass", "degraded"}
+        comparison_eligible = all((baseline_ok, injection_ok, bool(observation.get("samples")), recovery_ok, cleanup_ok)) and observation.get("status") in {"pass", "degraded", "business_unreachable"}
         result["outcome_status"] = "observed" if observation.get("status") == "pass" else str(observation.get("status") or result["status"])
+        attestation = validate_attestation({
+            "baseline": baseline_ok,
+            "injection": injection_ok,
+            "observation": observation_ok,
+            "recovery": recovery_ok,
+            "cleanup": cleanup_ok,
+            "independent_oracle": baseline_ok and observation_ok,
+            "comparison_eligible": comparison_eligible,
+        })
         result["attestation"] = {
             "schema_version": "chaosatlas-runtime-result-v1",
-            "valid": all((baseline_ok, injection_ok, observation_ok, recovery_ok, cleanup_ok)) and comparison_eligible,
+            "valid": attestation.valid,
+            "missing": list(attestation.missing),
             "comparison_eligible": comparison_eligible,
             "baseline": baseline_ok,
             "injection": injection_ok,
@@ -512,6 +631,7 @@ class KubernetesLifecycleExecutor:
             "cleanup": cleanup_ok,
             "independent_oracle": baseline_ok and observation_ok,
         }
+        result["promotion_allowed"] = attestation.valid
         result["injection_confirmed"] = injection_ok
         result["recovery_confirmed"] = recovery_ok
         result["cleanup_confirmed"] = cleanup_ok

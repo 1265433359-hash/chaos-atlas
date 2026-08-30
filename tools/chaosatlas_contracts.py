@@ -7,7 +7,7 @@ import json
 import os
 import tempfile
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -120,6 +120,10 @@ class RunContext:
             input_snapshot_sha256=input_hash,
             output_root=str(Path(output_root)),
         )
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return the canonical JSON-ready context snapshot."""
+        return asdict(self)
 
 
 @dataclass(frozen=True)

@@ -11,18 +11,13 @@ from datetime import datetime, timezone
 from typing import Any, Callable
 
 from tools.deployment_capability import build_deployment_node, validate_deployment_node
+from tools.fault_catalog import implemented_fault_families
+from tools.fault_matrix import build_fault_matrix
 from tools.recovery_contract import contract_for_fault
 
 
 Runner = Callable[..., tuple[int, str, str]]
-FAULT_FAMILIES = (
-    "pod_kill",
-    "container_kill",
-    "stress_cpu",
-    "stress_memory",
-    "network_loss",
-    "network_partition",
-)
+FAULT_FAMILIES = implemented_fault_families()
 
 
 def _default_runner(args: list[str], timeout: int = 30, input_text: str | None = None) -> tuple[int, str, str]:
@@ -216,6 +211,13 @@ class KubernetesProjectAdapter:
             raise ValueError("live inventory requires exactly one allowed namespace")
         return str(values[0]).strip()
 
+    def _fault_families(self) -> tuple[str, ...]:
+        """Use the profile matrix when declared, preserving legacy defaults."""
+        if self.profile.get("runtime_contract") is None and self.profile.get("fault_support") is None:
+            return FAULT_FAMILIES
+        matrix = build_fault_matrix(self.profile)
+        return tuple(item["fault_id"] for item in matrix["faults"] if item["status"] == "supported")
+
     def _get(self, resource: str, namespace: str) -> tuple[dict[str, Any] | None, str | None]:
         code, stdout, stderr = self.runner(self._command(["get", resource, "-n", namespace, "-o", "json"]), timeout=30)
         if code != 0:
@@ -318,7 +320,7 @@ class KubernetesProjectAdapter:
         candidates = []
         for node in nodes:
             deployment = node["deployment"]
-            for family in FAULT_FAMILIES:
+            for family in self._fault_families():
                 if family == "container_kill" and not deployment.get("containers"):
                     continue
                 candidates.append({

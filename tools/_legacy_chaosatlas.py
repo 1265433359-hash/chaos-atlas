@@ -32,12 +32,17 @@ from tools.compile_scenario_node import compile_scenario
 from tools.deployment_capability import build_deployment_node, build_scenario_node
 from tools.run_deployment_scenario import run_scenario
 from tools.kubernetes_lifecycle_executor import KubernetesLifecycleExecutor
+from tools.kubernetes_fault_executor import KubernetesApiFaultExecutor, ControlPlaneDelayExecutor
+from tools.minikube_control_plane_mutator import MinikubeControlPlaneMutator
+from tools.native_resource_fault_executor import NativeResourceFaultExecutor
+from tools.native_http_fault_executor import NativeHttpFaultExecutor
 from tools.kubernetes_project_adapter import KubernetesProjectAdapter
 from tools.kubernetes_evidence import KubernetesEvidenceCollector
 from tools.evidence_collectors import collect_file_evidence, collect_unavailable_evidence
 from tools.evidence_action_planner import build_evidence_plan
 from tools.planned_evidence import collect_planned_evidence
 from tools.chaosatlas_runtime_preflight import KubernetesPreflight
+from tools.project_onboarding import validate_project_profile
 from tools.run_chaos_experiment import run_kubectl
 from tools.compile_rca_regression import compile_regression_intents, project_knowledge_draft
 from tools.discovery_to_rca import build_case_from_hypothesis
@@ -64,8 +69,34 @@ REQUIRED_ALIASES = {
 }
 
 
+def _find_candidate(
+    candidates: list[dict[str, Any]], candidate_id: str | None, *, project_id: str = ""
+) -> dict[str, Any] | None:
+    """Resolve exact runtime IDs or stable project/target/fault aliases."""
+    if not candidate_id:
+        return None
+    requested = str(candidate_id)
+    for item in candidates:
+        if isinstance(item, dict) and str(item.get("candidate_id") or "") == requested:
+            return item
+    project = str(project_id or "").strip()
+    if not project:
+        return None
+    matches = []
+    for item in candidates:
+        if not isinstance(item, dict):
+            continue
+        target = str(item.get("target") or "").strip()
+        family = str(item.get("fault_family") or "").strip()
+        stable = f"server:deployment:{project}:{target}:{family}"
+        if target and family and stable == requested:
+            matches.append(item)
+    return matches[0] if len(matches) == 1 else None
+
+
 def _read_json(path: Path) -> dict[str, Any]:
-    value = json.loads(path.read_text(encoding="utf-8"))
+    # Windows PowerShell's `Set-Content -Encoding UTF8` emits a BOM.
+    value = json.loads(path.read_text(encoding="utf-8-sig"))
     if not isinstance(value, dict):
         raise ValueError(f"JSON object required: {path}")
     return value
@@ -320,9 +351,30 @@ def _live_scenario(
             "template": {"metadata": {"labels": selector}, "spec": {"containers": [{"name": target}]}},
         },
     }
+    service_name = str(candidate.get("service_target") or oracle["service"])
+    service_port = int(oracle["remote_port"])
+    for item in inventory.get("services") or []:
+        metadata = item.get("metadata") if isinstance(item, dict) else {}
+        if str(metadata.get("name") or "") != service_name:
+            continue
+        spec = item.get("spec") if isinstance(item.get("spec"), dict) else {}
+        ports = spec.get("ports") or []
+        if ports and isinstance(ports[0], dict) and isinstance(ports[0].get("port"), int):
+            service_port = int(ports[0]["port"])
+        break
+    target_port = service_port
+    for item in inventory.get("services") or []:
+        metadata = item.get("metadata") if isinstance(item, dict) else {}
+        if str(metadata.get("name") or "") != service_name:
+            continue
+        spec = item.get("spec") if isinstance(item.get("spec"), dict) else {}
+        ports = spec.get("ports") or []
+        if ports and isinstance(ports[0], dict) and isinstance(ports[0].get("targetPort"), int):
+            target_port = int(ports[0]["targetPort"])
+        break
     service = {
-        "metadata": {"name": oracle["service"]},
-        "spec": {"ports": [{"port": oracle["remote_port"], "targetPort": oracle["remote_port"]}], "selector": selector},
+        "metadata": {"name": service_name},
+        "spec": {"ports": [{"port": service_port, "targetPort": service_port}], "selector": selector},
     }
     commit = str(inventory.get("project_commit") or "")
     if len(commit) != 40:
@@ -336,7 +388,7 @@ def _live_scenario(
     family = str(candidate.get("fault_family") or "pod_kill")
     candidate_parameters = candidate.get("parameters")
     parameters = dict(candidate_parameters) if isinstance(candidate_parameters, dict) else {}
-    if family == "pod_kill":
+    if family in {"pod_kill", "backend_pod_kill"}:
         parameters = {"mode": "one"}
         action = "pod-kill"
     elif family == "container_kill":
@@ -353,9 +405,155 @@ def _live_scenario(
     elif family == "network_loss":
         parameters = {"loss_percent": int(parameters.get("loss_percent") or 100)}
         action = "network-loss"
+    elif family == "network_delay":
+        parameters = {
+            "latency_ms": int(parameters.get("latency_ms") or 500),
+            "jitter_ms": int(parameters.get("jitter_ms") or 0),
+            "correlation": int(parameters.get("correlation") or 100),
+        }
+        action = "network-delay"
+    elif family == "network_bandwidth":
+        parameters = {
+            "rate": str(parameters["rate"]) if "rate" in parameters else "1mbps",
+            "limit": int(parameters["limit"]) if "limit" in parameters else 1000,
+            "buffer": int(parameters["buffer"]) if "buffer" in parameters else 1000,
+        }
+        action = "bandwidth"
+    elif family in {"network_duplicate", "network_corrupt"}:
+        value_key = "duplicate_percent" if family == "network_duplicate" else "corrupt_percent"
+        parameters = {
+            value_key: int(parameters[value_key]) if value_key in parameters else 20,
+            "correlation": int(parameters["correlation"]) if "correlation" in parameters else 100,
+        }
+        action = "duplicate" if family == "network_duplicate" else "corrupt"
     elif family == "network_partition":
         parameters = {}
         action = "network-partition"
+    elif family in {"dns_failure", "dns_delay"}:
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        parameters["hostname"] = str(parameters.get("hostname") or service_name or target)
+        if family == "dns_failure":
+            action = "dns-error"
+        else:
+            parameters["latency_ms"] = int(parameters.get("latency_ms") or 500)
+            action = "dns-delay"
+    elif family in {"http_delay", "http_abort", "http_status_error", "http_response_corrupt", "dependency_error", "connection_reset", "http_rate_limit", "business_dependency_unreachable"}:
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        if "port" not in parameters:
+            parameters["port"] = target_port
+        if "path" not in parameters:
+            parameters["path"] = str(oracle.get("entrypoint") or "/")
+        if family == "http_delay":
+            if "latency_ms" not in parameters:
+                parameters["latency_ms"] = 500
+            action = "http-delay"
+        elif family == "http_abort":
+            action = "http-abort"
+        elif family == "http_status_error":
+            if "status_code" not in parameters:
+                parameters["status_code"] = 503
+            action = "http-status-error"
+        elif family == "http_response_corrupt":
+            if "body" not in parameters:
+                parameters["body"] = "chaosatlas-response-corrupted"
+            action = "http-response-corrupt"
+        elif family == "dependency_error":
+            if "status_code" not in parameters:
+                parameters["status_code"] = 503
+            action = "dependency-error"
+        elif family == "http_rate_limit":
+            parameters.setdefault("requests_per_window", 2)
+            parameters.setdefault("window_s", 10)
+            parameters.setdefault("status_code", 429)
+            action = "http-rate-limit"
+        elif family == "business_dependency_unreachable":
+            action = "business-dependency-unreachable"
+        else:
+            action = "connection-reset"
+    elif family == "replica_reduction":
+        original_replicas = int(deployment.get("spec", {}).get("replicas") or 1)
+        parameters = {"replicas": int(parameters.get("replicas", max(0, original_replicas - 1)))}
+        action = "replica-reduction"
+    elif family == "config_reload":
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        parameters = {"reload_token": str(parameters.get("reload_token") or f"chaosatlas-{scenario_id}")}
+        action = "config-reload"
+    elif family == "config_drift":
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        parameters = {"value": str(parameters.get("value") or "chaosatlas-config-drift")}
+        action = "config-drift"
+    elif family == "env_misconfiguration":
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        parameters = {
+            "name": str(parameters.get("name") or "CHAOSATLAS_MODE"),
+            "value": str(parameters.get("value") or "chaosatlas-test-misconfigured"),
+        }
+        action = "env-misconfiguration"
+    elif family == "secret_rotation":
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        parameters = {
+            "secret_name": str(parameters.get("secret_name") or f"{target}-secret"),
+            "key": str(parameters.get("key") or "token"),
+            "value": str(parameters.get("value") or "chaosatlas-test-placeholder"),
+        }
+        action = "secret-rotation"
+    elif family == "rollout_pause":
+        parameters = {"paused": True}
+        action = "rollout-pause"
+    elif family == "image_pull_failure":
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        parameters = {"image": str(parameters.get("image") or "chaosatlas.invalid/not-found:test")}
+        action = "image-pull-failure"
+    elif family == "pod_unschedulable":
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        parameters = {
+            "node_selector_key": str(parameters.get("node_selector_key") or "chaosatlas.invalid/never"),
+            "node_selector_value": str(parameters.get("node_selector_value") or "true"),
+        }
+        action = "pod-unschedulable"
+    elif family == "api_server_delay":
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        parameters = {"latency_ms": int(parameters.get("latency_ms") or 100)}
+        action = "api-server-delay"
+    elif family == "disk_pressure":
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        parameters = {
+            "path": str(parameters.get("path") or "/tmp/chaosatlas-pressure"),
+            "size_mb": int(parameters.get("size_mb") or 16),
+        }
+        action = "disk-pressure"
+    elif family == "file_descriptor_exhaustion":
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        parameters = {"count": int(parameters.get("count") or 32)}
+        action = "file-descriptor-exhaustion"
+    elif family == "process_exhaustion":
+        configured = (profile.get("fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        parameters = {"count": int(parameters.get("count") or 8)}
+        action = "process-exhaustion"
     else:
         raise ValueError(f"unsupported live fault family: {family}")
     scenario = build_scenario_node(
@@ -432,6 +630,8 @@ def _classify_live_outcome(execution_status: str, injection_confirmed: bool, out
         return "environment_blocked"
     if not injection_confirmed:
         return "injection_not_confirmed"
+    if outcome_status in {"rate_limit_observed", "dependency_unreachable_observed"}:
+        return outcome_status
     if outcome_status == "business_unreachable":
         return "business_not_reachable"
     if outcome_status == "degraded":
@@ -625,6 +825,49 @@ def _live_lifecycle_evidence(*, output_root: Path, evidence_prefix: str, claim_s
         if evidence.get("polarity") == "supports":
             evidence["satisfies"] = ["mechanism_evidence"]
         records.append(evidence)
+    # Native HTTP canaries expose a deterministic boundary contract rather
+    # than a Kubernetes object event. Persist that contract as mechanism
+    # evidence so RCA can distinguish an injected 429/503 from a broken
+    # baseline and retain the observed threshold/status semantics.
+    contract = fault.get("observation_contract")
+    if isinstance(contract, dict) and contract.get("kind") in {
+        "http_rate_limit",
+        "business_dependency_unreachable",
+    }:
+        source_ref = f"runtime/business/{evidence_prefix}-http-contract.json"
+        payload = {
+            "schema_version": "chaosatlas-http-boundary-observation-v1",
+            "claim_scope": claim_scope,
+            "fault_family": contract.get("kind"),
+            "observation_contract": contract,
+            "samples": [
+                {
+                    key: item.get(key)
+                    for key in ("sample", "status_code", "latency_ms", "error")
+                    if key in item
+                }
+                for item in ((fault.get("observation") or {}).get("samples") or [])
+                if isinstance(item, dict)
+            ],
+        }
+        path = output_root / source_ref
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload, indent=2, ensure_ascii=True) + "\n", encoding="utf-8")
+        records.append(
+            collect_file_evidence(
+                root=output_root,
+                source_ref=source_ref,
+                evidence_id=f"{evidence_prefix}-http-boundary-mechanism",
+                kind="runtime_log",
+                claim_scope=claim_scope,
+                interpretation=(
+                    "The workload boundary reported the fault-specific HTTP contract "
+                    "after confirmed injection; this is service-boundary mechanism evidence, "
+                    "not a source-level root-cause claim."
+                ),
+                satisfies=["mechanism_evidence"],
+            )
+        )
     return records
 
 
@@ -681,7 +924,7 @@ def _live_rca_projection(
         "action_ref": f"runtime/actions/{run_id}.json",
         "target_scope": claim_scope,
         "discriminating_action": any("mechanism_evidence" in (item.get("satisfies") or []) for item in evidence_records),
-        "valid_reproductions": 1 if fault.get("outcome_status") == "observed" else 0,
+        "valid_reproductions": 1 if fault.get("outcome_status") in {"observed", "rate_limit_observed", "dependency_unreachable_observed"} else 0,
         "valid_counterfactuals": 0,
         "lifecycle_complete": bool((fault.get("attestation") or {}).get("valid")),
         "direct_evidence": False,
@@ -772,20 +1015,32 @@ def run_closed_loop(
     try:
         if "onboard" not in completed:
             profile = _read_json(profile_path)
-            facts_hint = _read_json(profile_path)
-            project_id = str(facts_hint.get("project_id") or "")
-            facts_path = _facts_path(project_id)
-            adapter = OfflineProjectAdapter(facts_path, workspace_root=Path(__file__).resolve().parents[1])
-            onboard = adapter.onboard(profile_path, Path(__file__).resolve().parents[1])
+            if mode == "live":
+                checked = validate_project_profile(profile)
+                onboard = {
+                    "status": "ready_for_runtime" if checked["valid"] else "method_invalid",
+                    "profile": checked.get("profile", {}),
+                    "errors": checked.get("errors", []),
+                    "warnings": checked.get("warnings", []),
+                    "claim_scope": "static",
+                }
+                adapter = None
+            else:
+                facts_hint = _read_json(profile_path)
+                project_id = str(facts_hint.get("project_id") or "")
+                facts_path = _facts_path(project_id)
+                adapter = OfflineProjectAdapter(facts_path, workspace_root=Path(__file__).resolve().parents[1])
+                onboard = adapter.onboard(profile_path, Path(__file__).resolve().parents[1])
             _stage(output_root, completed, "onboard", onboard)
-            if onboard.get("status") != "ready_for_static_analysis":
+            valid_onboard_status = {"ready_for_static_analysis", "ready_for_runtime"}
+            if onboard.get("status") not in valid_onboard_status:
                 result = _summary(output_root, status="method_invalid", context=context, completed=completed, error="profile onboarding failed")
                 _finalize_phase6(output_root, status=result["status"], execution_contract=execution_contract, completed=completed)
                 return {**result, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
         else:
             profile = _read_json(profile_path)
             project_id = str(profile.get("project_id") or "")
-            adapter = OfflineProjectAdapter(_facts_path(project_id), workspace_root=Path(__file__).resolve().parents[1])
+            adapter = None if mode == "live" else OfflineProjectAdapter(_facts_path(project_id), workspace_root=Path(__file__).resolve().parents[1])
 
         if mode == "live":
             assert profile is not None
@@ -806,12 +1061,34 @@ def run_closed_loop(
         else:
             inventory = _read_json(output_root / "inventory.json").get("payload", _read_json(output_root / "inventory.json"))
 
+        if mode == "live" and (inventory or {}).get("status") != "verified":
+            summary = _summary(
+                output_root,
+                status="environment_blocked",
+                context=context,
+                completed=completed,
+                error="; ".join(str(item) for item in (inventory or {}).get("errors") or ["live inventory unavailable"]),
+            )
+            _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
+            return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
+
         if "server_deployment_detection" not in completed:
             assert inventory is not None
             detection = runtime_adapter.detect_server_deployment(inventory) if runtime_adapter is not None else adapter.detect_server_deployment(inventory)
             _stage(output_root, completed, "server_deployment_detection", detection, aliases=(REQUIRED_ALIASES["server_deployment_detection"],))
         else:
             detection = _read_json(output_root / "server_deployment_detection.json").get("payload", _read_json(output_root / "server_deployment_detection.json"))
+
+        if mode == "live" and (detection or {}).get("status") != "verified":
+            summary = _summary(
+                output_root,
+                status="environment_blocked",
+                context=context,
+                completed=completed,
+                error="; ".join(str(item) for item in (detection or {}).get("errors") or ["live deployment detection unavailable"]),
+            )
+            _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
+            return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
 
         if "mapping" not in completed:
             assert detection is not None
@@ -923,10 +1200,11 @@ def run_closed_loop(
         else:
             first_planned_candidate = ((ranked or {}).get("candidates") or (candidate_space or {}).get("candidates") or [None])[0]
             if candidate_id:
-                first_planned_candidate = next(
-                    (item for item in (candidate_space or {}).get("candidates", []) if item.get("candidate_id") == candidate_id),
-                    first_planned_candidate,
-                )
+                first_planned_candidate = _find_candidate(
+                    (candidate_space or {}).get("candidates", []),
+                    candidate_id,
+                    project_id=str((inventory or {}).get("project_id") or ""),
+                ) or first_planned_candidate
             elif mode == "live" and profile is not None:
                 try:
                     oracle_service = _runtime_oracle(profile)["service"]
@@ -962,9 +1240,10 @@ def run_closed_loop(
 
         first_candidate = ((ranked or {}).get("candidates") or (candidate_space or {}).get("candidates") or [None])[0]
         if candidate_id:
-            first_candidate = next(
-                (item for item in (candidate_space or {}).get("candidates", []) if item.get("candidate_id") == candidate_id),
-                None,
+            first_candidate = _find_candidate(
+                (candidate_space or {}).get("candidates", []),
+                candidate_id,
+                project_id=str((inventory or {}).get("project_id") or ""),
             )
         elif mode == "live":
             first_candidate = next(
@@ -995,7 +1274,17 @@ def run_closed_loop(
                 _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
                 return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
             if candidate_id:
-                if first_candidate.get("target") != runtime_oracle["service"]:
+                target_matches_oracle = first_candidate.get("target") == runtime_oracle["service"]
+                backend_route_match = False
+                if first_candidate.get("fault_family") == "backend_pod_kill":
+                    target_service = str(first_candidate.get("service_target") or "")
+                    ingress_services = {
+                        str(edge.get("target"))
+                        for edge in (inventory.get("dependencies") or [])
+                        if edge.get("relation") == "routes_to"
+                    }
+                    backend_route_match = bool(target_service and target_service in ingress_services)
+                if not target_matches_oracle and not backend_route_match:
                     summary = _summary(output_root, status="environment_blocked", context=context, completed=completed, error="selected live candidate does not match the business oracle service")
                     _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
                     return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
@@ -1027,12 +1316,65 @@ def run_closed_loop(
                     _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
                     return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
                 namespace = str((profile.get("namespace_policy") or {}).get("allowed_namespaces", [""])[0])
-                live_executor = KubernetesLifecycleExecutor(
+                lifecycle_executor = KubernetesLifecycleExecutor(
                     root=output_root, namespace=namespace,
                     allowed_namespaces={str(item) for item in (profile.get("namespace_policy") or {}).get("allowed_namespaces", [])},
                     allow_live=True, oracle=runtime_oracle,
                     kube_context=kube_context,
                 )
+                namespace_policy = profile.get("namespace_policy") or {}
+                isolated_api = bool(namespace_policy.get("disposable") or (namespace_policy.get("isolation_required") and namespace.startswith("chaosatlas-run-")))
+                api_executor = KubernetesApiFaultExecutor(
+                    namespace=namespace,
+                    allowed_namespaces={str(item) for item in (profile.get("namespace_policy") or {}).get("allowed_namespaces", [])},
+                    allow_live=True,
+                    isolated=isolated_api,
+                    kube_context=kube_context,
+                )
+                namespace_policy = profile.get("namespace_policy") or {}
+                disposable_cluster = bool(namespace_policy.get("disposable_cluster"))
+                control_plane_mutator = None
+                if disposable_cluster:
+                    cluster_profile = str(namespace_policy.get("cluster_profile") or kube_context or "").strip()
+                    control_plane_mutator = MinikubeControlPlaneMutator(
+                        profile=cluster_profile,
+                        context=str(kube_context or cluster_profile),
+                        disposable=True,
+                    )
+                control_plane_executor = ControlPlaneDelayExecutor(
+                    allow_live=True,
+                    disposable_cluster=disposable_cluster,
+                    mutator=control_plane_mutator,
+                )
+                native_executor = NativeResourceFaultExecutor(
+                    namespace=namespace,
+                    allowed_namespaces={str(item) for item in (profile.get("namespace_policy") or {}).get("allowed_namespaces", [])},
+                    allow_live=True,
+                    isolated=bool((profile.get("namespace_policy") or {}).get("native_resource_isolated")),
+                    runner=lambda args, timeout=30: run_kubectl(args, timeout=timeout, kube_context=kube_context),
+                )
+                native_http_executor = NativeHttpFaultExecutor(
+                    namespace=namespace,
+                    allowed_namespaces={str(item) for item in (profile.get("namespace_policy") or {}).get("allowed_namespaces", [])},
+                    allow_live=True,
+                    isolated=bool((profile.get("namespace_policy") or {}).get("native_http_isolated")),
+                    runner=lambda args, timeout=30: run_kubectl(args, timeout=timeout, kube_context=kube_context),
+                )
+
+                def live_executor(manifest: dict[str, Any], phase: dict[str, Any] | None = None, fault: dict[str, Any] | None = None) -> dict[str, Any]:
+                    if manifest.get("kind") == "ChaosAtlasKubernetesFault":
+                        api_executor.probe = lambda probe_phase: lifecycle_executor._default_probe(probe_phase, manifest)
+                        return api_executor(manifest, phase, fault)
+                    if manifest.get("kind") == "ChaosAtlasNativeFault":
+                        native_executor.probe = lambda probe_phase: lifecycle_executor._default_probe(probe_phase, manifest)
+                        return native_executor(manifest, phase, fault)
+                    if manifest.get("kind") == "ChaosAtlasNativeHttpFault":
+                        native_http_executor.probe = lambda probe_phase: lifecycle_executor._default_probe(probe_phase, manifest)
+                        return native_http_executor(manifest, phase, fault)
+                    if manifest.get("kind") == "ChaosAtlasControlPlaneFault":
+                        control_plane_executor.probe = lambda probe_phase: lifecycle_executor._default_probe(probe_phase, manifest)
+                        return control_plane_executor(manifest, phase=phase, fault=fault)
+                    return lifecycle_executor(manifest, phase, fault)
             execution = run_scenario(scenario, compiled=compiled, dry_run=False, executor=live_executor)
             phase_fault = ((execution.get("phases") or [{}])[0].get("faults") or [{}])[0]
             namespace = str((profile.get("namespace_policy") or {}).get("allowed_namespaces", [""])[0])
@@ -1086,13 +1428,6 @@ def run_closed_loop(
             )
             if defense_evidence is not None:
                 phase_fault["defense_evidence"] = defense_evidence
-            classification = _classify_live_outcome(
-                status,
-                bool(phase_fault.get("injection_confirmed")),
-                str(phase_fault.get("outcome_status") or ""),
-                defense_evidence,
-            )
-            _stage(output_root, completed, "classify", {"result": classification, "claim_scope": "runtime", "attestation": phase_fault.get("attestation"), "defense_evidence": defense_evidence, "evidence_refs": evidence_refs, "promotion_allowed": False}, claim_scope="runtime", aliases=(REQUIRED_ALIASES["classify"],))
             outcome = str(phase_fault.get("outcome_status") or "")
             if not outcome:
                 observed_status = str((phase_fault.get("observation") or {}).get("status") or "")
@@ -1102,7 +1437,15 @@ def run_closed_loop(
                     outcome = "observed" if observed_status == "pass" else observed_status
                 phase_fault["outcome_status"] = outcome
             if outcome == "business_unreachable":
-                phase_fault["outcome_status"] = "business_not_reachable"
+                baseline_status = str((phase_fault.get("baseline") or {}).get("status") or "")
+                phase_fault["outcome_status"] = "degraded" if baseline_status == "pass" else "business_not_reachable"
+            classification = _classify_live_outcome(
+                status,
+                bool(phase_fault.get("injection_confirmed")),
+                str(phase_fault.get("outcome_status") or ""),
+                defense_evidence,
+            )
+            _stage(output_root, completed, "classify", {"result": classification, "claim_scope": "runtime", "attestation": phase_fault.get("attestation"), "defense_evidence": defense_evidence, "evidence_refs": evidence_refs, "promotion_allowed": False}, claim_scope="runtime", aliases=(REQUIRED_ALIASES["classify"],))
             updated_case, ingested, draft = _live_rca_projection(
                 profile=profile,
                 inventory=inventory,
