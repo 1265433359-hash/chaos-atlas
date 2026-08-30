@@ -47,6 +47,16 @@ def test_p02_identity_comparison_is_case_normalized(tmp_path):
     assert result["status"] == "ready_for_static_analysis"
 
 
+def test_onboard_accepts_windows_utf8_bom_profile(tmp_path):
+    source_path, profile = _profile("sock-shop")
+    profile_path = tmp_path / "profile.json"
+    profile_path.write_bytes(b"\xef\xbb\xbf" + json.dumps(profile).encode("utf-8"))
+
+    result = _adapter("sock-shop").onboard(profile_path)
+
+    assert result["status"] == "ready_for_static_analysis"
+
+
 def test_fake_executor_is_synthetic_and_cleanup_confirmed():
     result = FakeExecutor().run({"candidate_id": "server:demo:pod_kill"})
 

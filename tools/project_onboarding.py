@@ -213,7 +213,7 @@ def _result_for_classification(classification: str, gate: dict[str, Any] | None 
         return "response_preserved"
     if classification in {"response_preserved_latency_degradation", "transport_or_observation_error"}:
         return "degraded" if classification.startswith("response_preserved") else "effect_unobserved"
-    if classification in {"client_timeout_observed", "server_error_observed", "response_contract_changed"}:
+    if classification in {"client_timeout_observed", "server_error_observed", "response_contract_changed", "rate_limit_observed", "dependency_unreachable_observed"}:
         return "weakness"
     return "effect_unobserved"
 

@@ -3,6 +3,7 @@ from pathlib import Path
 import types
 
 from chaosatlas.cli import main
+from tools._legacy_chaosatlas import _read_json
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -133,3 +134,10 @@ def test_cli_live_rejects_resume_before_dispatch(tmp_path, capsys):
 
     assert result != 0
     assert "resume" in capsys.readouterr().err
+
+
+def test_legacy_json_reader_accepts_windows_utf8_bom(tmp_path):
+    profile = tmp_path / "profile.json"
+    profile.write_bytes(b"\xef\xbb\xbf{\"project_id\": \"resource-canary\"}")
+
+    assert _read_json(profile)["project_id"] == "resource-canary"

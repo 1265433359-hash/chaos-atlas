@@ -1,6 +1,6 @@
 from tools.compile_scenario_node import compile_scenario
 from tools.deployment_capability import build_deployment_node
-from tools.fault_catalog import get_fault_spec
+from tools.fault_catalog import fault_catalog, get_fault_spec
 
 
 def _scenario(fault_family: str):
@@ -54,6 +54,34 @@ def test_network_delay_is_cataloged_as_implemented():
     assert spec["backend"] == "NetworkChaos"
 
 
+def test_http_delay_is_cataloged_as_implemented_after_live_canaries():
+    spec = get_fault_spec("http_delay")
+
+    assert spec["status"] == "implemented"
+    assert spec["backend"] == "HTTPChaos"
+
+
+def test_http_abort_is_cataloged_as_implemented_after_cross_project_canaries():
+    spec = get_fault_spec("http_abort")
+
+    assert spec["status"] == "implemented"
+    assert spec["backend"] == "HTTPChaos"
+
+
+def test_http_status_error_is_cataloged_as_implemented_after_cross_project_canaries():
+    spec = get_fault_spec("http_status_error")
+
+    assert spec["status"] == "implemented"
+    assert spec["backend"] == "HTTPChaos"
+
+
+def test_native_http_boundary_faults_are_cataloged_as_implemented_after_canaries():
+    for fault_family in ("http_rate_limit", "business_dependency_unreachable"):
+        spec = get_fault_spec(fault_family)
+        assert spec["status"] == "implemented"
+        assert spec["backend"] == "NativeExecutor"
+
+
 def test_network_delay_compiles_to_networkchaos_delay_manifest():
     result = compile_scenario(_scenario("network_delay"))
 
@@ -73,3 +101,11 @@ def test_backend_pod_kill_uses_podchaos_backend_with_dependency_semantics():
     assert result["status"] == "verified"
     assert result["manifests"][0]["kind"] == "PodChaos"
     assert result["manifests"][0]["spec"]["action"] == "pod-kill"
+
+
+def test_catalog_contains_exactly_32_product_fault_ids():
+    catalog = fault_catalog()
+
+    assert len(catalog) == 32
+    assert len(set(catalog)) == 32
+    assert all(entry["status"] in {"implemented", "planned"} for entry in catalog.values())

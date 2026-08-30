@@ -68,9 +68,13 @@
       "network_loss",
       "backend_pod_kill",
       "config_reload",
-      "replica_reduction"
+      "replica_reduction",
+      "config_drift",
+      "disk_pressure",
+      "file_descriptor_exhaustion",
+      "process_exhaustion"
     ],
-    "runtime_status": "deployment_and_baseline_verified_testing_pending_method_freeze",
+    "runtime_status": "deployment_and_baseline_verified_kubernetes_api_faults_verified",
     "fixture_route": "nginx-fixture.local/"
   },
   "sensitive_data_policy": {
@@ -82,5 +86,75 @@
       "authorization",
       "private_key"
     ]
+  },
+  "fault_support": {
+    "http_delay": {
+      "status": "supported",
+      "reason": "live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "http_abort": {
+      "status": "supported",
+      "reason": "isolated live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "http_status_error": {
+      "status": "supported",
+      "reason": "live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "http_response_corrupt": {
+      "status": "supported",
+      "reason": "live canary verified with base64 body replacement, baseline, observation, recovery and cleanup on chaosatlas-improvement/2026-08-27; business result response_observed"
+    },
+    "dependency_error": {
+      "status": "supported",
+      "reason": "live canary verified with HTTP dependency-boundary error response, baseline, observation, recovery and cleanup on chaosatlas-improvement/2026-08-27; business result response_observed"
+    },
+    "connection_reset": {
+      "status": "supported",
+      "reason": "live canary verified with HTTP session abort semantics, baseline, observation, recovery and cleanup on chaosatlas-improvement/2026-08-27; business result response_observed"
+    },
+    "network_bandwidth": {
+      "status": "supported",
+      "reason": "live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "network_duplicate": {
+      "status": "supported",
+      "reason": "live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "network_corrupt": {
+      "status": "supported",
+      "reason": "live canary verified with baseline, injection, observation, recovery and cleanup on 2026-08-27"
+    },
+    "replica_reduction": {
+      "status": "supported",
+      "reason": "live canary verified with Deployment snapshot, reversible replica reduction, business observation, recovery and cleanup on chaosatlas-improvement/2026-08-27; single-replica route became unavailable during injection"
+    },
+    "config_reload": {
+      "status": "supported",
+      "reason": "live canary verified with reversible Deployment template reload annotation, baseline, observation, recovery and cleanup on chaosatlas-improvement/2026-08-27; business result response_observed"
+    },
+    "config_drift": {
+      "status": "supported",
+      "reason": "live canary verified with reversible Deployment template drift annotation, baseline, observation, recovery and cleanup on chaosatlas-improvement/2026-08-27; business result response_observed"
+    },
+    "disk_pressure": {
+      "status": "supported",
+      "reason": "isolated resource-canary live canary verified baseline, native injection, observation, recovery, cleanup and attestation on chaosatlas-improvement/2026-08-27"
+    },
+    "file_descriptor_exhaustion": {
+      "status": "supported",
+      "reason": "isolated resource-canary live canary verified baseline, native injection, observation, recovery, cleanup and attestation on chaosatlas-improvement/2026-08-27"
+    },
+    "process_exhaustion": {
+      "status": "supported",
+      "reason": "isolated resource-canary live canary verified baseline, native injection, observation, recovery, cleanup and attestation on chaosatlas-improvement/2026-08-27"
+    },
+    "dns_failure": {"status": "inapplicable", "reason": "requires writable resolver state or an alternate DNS injector; current ingress canary is read-only"},
+    "dns_delay": {"status": "inapplicable", "reason": "requires writable resolver state or an alternate DNS injector; current ingress canary is read-only"},
+    "env_misconfiguration": {"status": "inapplicable", "reason": "guarded executor is available; no disposable env-mutation canary has been approved for this profile"},
+    "secret_rotation": {"status": "inapplicable", "reason": "requires a test-only Secret contract and placeholder value"},
+    "rollout_pause": {"status": "inapplicable", "reason": "guarded executor is available; release-pause canary is not enabled in the shared profile"},
+    "image_pull_failure": {"status": "inapplicable", "reason": "requires disposable workload and test image restore contract"},
+    "pod_unschedulable": {"status": "inapplicable", "reason": "requires disposable node-pool isolation"},
+    "api_server_delay": {"status": "inapplicable", "reason": "requires a disposable cluster control-plane mutator"}
   }
 }

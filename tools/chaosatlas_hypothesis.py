@@ -107,8 +107,21 @@ def rank_candidates(
     rca_snapshot: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     candidates = [deepcopy(item) for item in candidate_space.get("candidates") or [] if isinstance(item, dict)]
+    knowledge_card_ids = sorted(
+        str(card.get("id")) for card in cards if isinstance(card, dict) and card.get("id")
+    )
+    knowledge_view_sha256 = hashlib.sha256(
+        json.dumps(_sanitize_knowledge_view(cards), ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     if not candidates:
-        return {"schema_version": "chaosatlas-ranked-candidates-v1", "candidate_count": 0, "candidate_ids": [], "candidates": []}
+        return {
+            "schema_version": "chaosatlas-ranked-candidates-v1",
+            "candidate_count": 0,
+            "candidate_ids": [],
+            "candidates": [],
+            "knowledge_card_ids": knowledge_card_ids,
+            "knowledge_view_sha256": knowledge_view_sha256,
+        }
     if rca_snapshot is not None:
         from tools.decision_engine import rank as decision_rank
 
@@ -132,6 +145,8 @@ def rank_candidates(
             "candidates": candidates,
             "claim_scope": "advisory",
             "runtime_retrieval": True,
+            "knowledge_card_ids": knowledge_card_ids,
+            "knowledge_view_sha256": knowledge_view_sha256,
         }
     reusable = [card for card in cards if isinstance(card, dict) and card.get("status") in {"local_reusable", "cross_project_reusable"}]
     ranked: list[tuple[int, str, dict[str, Any]]] = []
@@ -154,6 +169,8 @@ def rank_candidates(
         "candidate_ids": [str(item.get("candidate_id")) for item in ordered],
         "candidates": ordered,
         "claim_scope": "advisory",
+        "knowledge_card_ids": knowledge_card_ids,
+        "knowledge_view_sha256": knowledge_view_sha256,
     }
 
 

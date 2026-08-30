@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chaosatlas-http-canary
+  labels:
+    chaosatlas.dev/owner: chaosatlas
+    chaosatlas.dev/purpose: http-boundary-canary
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-boundary-canary
+  namespace: chaosatlas-http-canary
+  labels:
+    app: http-boundary-canary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-boundary-canary
+  template:
+    metadata:
+      labels:
+        app: http-boundary-canary
+    spec:
+      containers:
+        - name: canary
+          image: chaosatlas/http-boundary-canary:20260827
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 1
+            periodSeconds: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-boundary-canary
+  namespace: chaosatlas-http-canary
+spec:
+  selector:
+    app: http-boundary-canary
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080

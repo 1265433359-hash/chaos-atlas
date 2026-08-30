@@ -28,14 +28,14 @@ class OfflineProjectAdapter:
         self.workspace_root = Path(workspace_root).resolve()
 
     def _facts(self) -> dict[str, Any]:
-        value = json.loads(self.facts_path.read_text(encoding="utf-8"))
+        value = json.loads(self.facts_path.read_text(encoding="utf-8-sig"))
         if not isinstance(value, dict) or value.get("schema_version") != "chaosatlas-offline-facts-v1":
             raise ValueError("offline facts must use chaosatlas-offline-facts-v1")
         return value
 
     def onboard(self, profile_path: Path, workspace_root: Path | None = None) -> dict[str, Any]:
         path = Path(profile_path)
-        profile = json.loads(path.read_text(encoding="utf-8"))
+        profile = json.loads(path.read_text(encoding="utf-8-sig"))
         checked = validate_project_profile(profile)
         if not checked["valid"]:
             return {"status": "method_invalid", "errors": checked["errors"], "profile": checked.get("profile", {})}

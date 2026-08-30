@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from tools.chaosatlas import _runtime_oracle, run_closed_loop
+from tools._legacy_chaosatlas import _runtime_oracle, run_closed_loop
 from tools.experiment_policy import new_policy_state
 from tools.experiment_policy_feedback import ingest_runtime_result, write_policy_state
 from tools.kubernetes_project_adapter import KubernetesProjectAdapter
