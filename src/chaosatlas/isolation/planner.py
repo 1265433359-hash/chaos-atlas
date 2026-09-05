@@ -106,6 +106,7 @@ class IsolationPlanner:
             "source_namespace": source_namespace,
             "config": safe_config,
             "target_sha256": canonical_hash(safe_target or {}),
+            "parent_lease_id": (profile.get("runtime_contract") or {}).get("parent_isolation_lease_id"),
         }
         plan = {
             "schema_version": "chaosatlas-isolation-plan-v2",
@@ -129,6 +130,7 @@ class IsolationPlanner:
             "blueprint": deepcopy(safe_config.get("blueprint")) if isinstance(safe_config.get("blueprint"), dict) else None,
             "target": deepcopy(safe_target),
             "kube_context": str(config.get("kube_context") or ((profile.get("runtime_contract") or {}).get("kube_context")) or "") or None,
+            "parent_lease_id": (profile.get("runtime_contract") or {}).get("parent_isolation_lease_id"),
             "synthetic_data_only": True,
             "forbidden_source_kinds": ["Secret", "PersistentVolume", "PersistentVolumeClaim"],
             "required_checks": ["ownership", "ready", "cleanup", "absence", "sensitive_scan"],

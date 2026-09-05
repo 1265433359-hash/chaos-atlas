@@ -126,6 +126,8 @@ def validate_plan(plan: dict[str, Any]) -> list[str]:
                 errors.append("effective isolation cannot be lower than any isolation input")
         if not isinstance(plan.get("isolation_reasons"), list):
             errors.append("isolation_reasons must be a list")
+        if plan.get("parent_lease_id") is not None and not SAFE_ID.fullmatch(str(plan.get("parent_lease_id") or "")):
+            errors.append("unsafe parent_lease_id")
     if plan.get("status") not in {"ready", "blocked"}:
         errors.append("plan status must be ready or blocked")
     if plan.get("synthetic_data_only") is not True:

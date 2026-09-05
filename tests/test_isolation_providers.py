@@ -1,5 +1,7 @@
 import json
 
+import pytest
+
 from chaosatlas.isolation.manager import IsolationManager
 from chaosatlas.isolation.lease_store import LeaseStore
 from chaosatlas.isolation.planner import IsolationPlanner
@@ -264,3 +266,17 @@ def test_minikube_unknown_profile_inventory_fails_closed(tmp_path):
     assert absence["confirmed"] is False
     assert "unknown" in absence["errors"][0]
     assert str(provider._paths(lease)[0]).startswith(str((tmp_path / "pinned").resolve()))
+
+
+def test_minikube_rejects_unapproved_cni_before_start(tmp_path):
+    calls = []
+
+    def runner(args, timeout=900, env=None):
+        calls.append(args)
+        return 0, "", ""
+
+    provider = MinikubeIsolationProvider(root=tmp_path / "runtime", runner=runner, docker_runner=lambda *args, **kwargs: (0, "", ""), cache_seed_root=tmp_path / "empty")
+    lease = {"lease_id": "lease-abc", "target_name": "ca-l3-fixture-abc", "runtime_locator": {"provider": "minikube-l3", "runtime_root": str(tmp_path / "runtime"), "driver": "docker"}, "external_profiles": [], "resources": []}
+    with pytest.raises(RuntimeError, match="unsupported.*CNI"):
+        provider.prepare({"blueprint": {"driver": "docker", "container_runtime": "containerd", "cni": "unsafe-plugin"}, "resource_budget": {}}, lease, lambda action, payload: None)
+    assert not any(call and call[0] == "start" for call in calls)

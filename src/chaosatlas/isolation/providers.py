@@ -100,7 +100,7 @@ class KubernetesIsolationProvider:
         cluster_uid = str(((value or {}).get("metadata") or {}).get("uid") or "")
         if error or not cluster_uid:
             raise RuntimeError(f"cannot identify Kubernetes cluster: {error or 'kube-system UID missing'}")
-        return {"provider": self.name, "kube_context": str(plan.get("kube_context") or ""), "cluster_uid": cluster_uid}
+        return {"provider": self.name, "kube_context": str(plan.get("kube_context") or ""), "cluster_uid": cluster_uid, "parent_lease_id": plan.get("parent_lease_id")}
 
     def _runtime_identity_error(self, plan: dict[str, Any], lease: dict[str, Any]) -> str | None:
         locator = lease.get("runtime_locator") if isinstance(lease.get("runtime_locator"), dict) else {}
@@ -343,6 +343,7 @@ class MinikubeIsolationProvider:
             "provider": self.name,
             "runtime_root": str(self.root),
             "driver": str(((plan.get("blueprint") or {}).get("driver")) or "docker"),
+            "cni": str(((plan.get("blueprint") or {}).get("cni")) or ""),
         }
 
     def _root(self, lease: dict[str, Any]) -> Path:
@@ -414,11 +415,23 @@ class MinikubeIsolationProvider:
         budget = plan.get("resource_budget") or {}
         driver = str(((plan.get("blueprint") or {}).get("driver")) or "docker")
         runtime = str(((plan.get("blueprint") or {}).get("container_runtime")) or "containerd")
-        if driver not in {"docker", "hyperv"} or runtime not in {"containerd", "docker"}:
-            raise RuntimeError("unsupported Minikube driver or container runtime")
-        code, stdout, stderr = self._run(["start", "--profile", profile, "--driver", driver, "--container-runtime", runtime, "--cpus", str(budget.get("cpu") or 2), "--memory", str(budget.get("memory") or "4096mb"), "--disk-size", str(budget.get("disk") or "10g")], lease)
+        cni = str(((plan.get("blueprint") or {}).get("cni")) or "")
+        if driver not in {"docker", "hyperv"} or runtime not in {"containerd", "docker"} or cni not in {"", "calico"}:
+            raise RuntimeError("unsupported Minikube driver, container runtime or CNI")
+        args = ["start", "--profile", profile, "--driver", driver, "--container-runtime", runtime, "--cpus", str(budget.get("cpu") or 2), "--memory", str(budget.get("memory") or "4096mb"), "--disk-size", str(budget.get("disk") or "10g")]
+        if cni:
+            args.extend(["--cni", cni])
+        code, stdout, stderr = self._run(args, lease)
         if code != 0:
             raise RuntimeError((stderr or stdout).strip() or "minikube start failed")
+        preload = ((plan.get("blueprint") or {}).get("local_image_preload")) or []
+        if not isinstance(preload, list) or len(preload) > 12 or any(not isinstance(image, str) or not re.fullmatch(r"[A-Za-z0-9._/:@-]{1,240}", image) for image in preload):
+            raise RuntimeError("local_image_preload must contain safe image references")
+        for image in preload:
+            mutate("register_resource", {"kind": "ContainerImage", "namespace": None, "name": image, "expected_uid": None, "actual_uid": None, "cleanup_policy": "provider_delete"})
+            code, stdout, stderr = self._run(["image", "load", "--profile", profile, image], lease)
+            if code != 0:
+                raise RuntimeError((stderr or stdout).strip() or f"Minikube image preload failed: {image}")
         mutate("update_profile", {"provider": "minikube", "name": profile, "state": "ready"})
 
     def verify_ready(self, plan: dict[str, Any], lease: dict[str, Any]) -> dict[str, Any]:

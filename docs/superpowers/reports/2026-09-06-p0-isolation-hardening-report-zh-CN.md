@@ -1,10 +1,11 @@
 # P0 隔离纠错与真实验收报告
 
-日期：2026-09-06。阶段状态：**部分完成，尚未达到 P0 退出门槛**。
+日期：2026-09-06。阶段状态：**P0 已完成；主应用集群的直接网络隔离能力保持 blocked**。
 
 本报告严格区分代码、离线测试、真实生命周期、真实业务和真实故障。外置原始证据位于
-`%LOCALAPPDATA%\ChaosAtlas\runs\p0-isolation-20260906-d\acceptance-summary.json`；仓库只保存
-脱敏结论，不复制运行日志和租约。
+`%LOCALAPPDATA%\ChaosAtlas\runs\p0-isolation-20260906-e\acceptance-summary.json` 和
+`%LOCALAPPDATA%\ChaosAtlas\runs\p0-calico-20260906-b\acceptance-summary.json`；仓库只保存脱敏结论，
+不复制运行日志和租约。
 
 ## 已实现
 
@@ -17,6 +18,8 @@
   NetworkPolicy/Quota/LimitRange 放宽守卫；支持显式等待前置 Job；
 - 创建 namespace 后 UID 尚未写回时，可依据精确名称和双所有权标签恢复；已有 UID 不同或 cluster UID 改变时拒绝删除；
 - 进程内 `KeyboardInterrupt`/`SystemExit` 先清理再继续抛出。外部强杀无法保证同步 finally，依靠已持久化租约、TTL 和显式 recover。
+- L3 可显式选择 Calico，并按 plan 中的安全镜像引用从宿主 Docker 预载到独立 containerd；子 L1/L2
+  lease 记录父 L3 lease 身份，避免把嵌套环境误报成普通 namespace 隔离。
 
 ## 离线测试
 
@@ -42,6 +45,9 @@
 | NetworkPolicy 数据面 | **失败** | 源 namespace 的 Redis 客户端仍能跨 namespace 得到 `PONG`，证明当前 CNI 未执行该边界 |
 | ResourceQuota 数据面 | 通过 | 带显式 3 CPU request/limit 的 server dry-run 被 `exceeded quota` 拒绝，不是 LimitRange 误判 |
 | L3 disposable profile | 通过 | 独立 runtime root 内创建/Ready/删除；profile 清单、Docker 容器身份、目录和 kubeconfig 均确认无残留 |
+| L3+Calico 嵌套 L1 Medusa | 通过 | 全自动本地镜像预载、migration、后端 `/health=200`、子 lease 清理 |
+| L3+Calico 嵌套 L2 Redis | 通过 | 同 namespace PING、跨 namespace 超时拒绝、租约外探针前后 PING、Quota 拒绝 |
+| L3+Calico 父环境清理 | 通过 | 第二轮全自动复现最终 `parent_cleanup_state=released`，敏感扫描 0、错误 0 |
 
 Medusa 克隆明确替换了数据库持久卷、凭据和数据，遗漏 worker、admin UI、ingress；因此只能支持
 “真实应用子集能在安全生成配置下启动并通过健康检查”，不能支持完整业务代表性。第一次克隆暴露
@@ -51,16 +57,16 @@ Medusa 克隆明确替换了数据库持久卷、凭据和数据，遗漏 worker
 cluster UID、namespace UID 和标签成功 recover，随后查询为 NotFound。它证明可恢复性，不证明强杀时
 同步零残留。
 
-## 尚未获得的证据与阻断
+## 尚未获得的证据与保留阻断
 
 - 四项目事务 Oracle 尚未生成、审核、冻结，所以真实业务证据为 **未评估**；
 - P0 按约束不做故障注入，真实故障证据为 **未运行**；
-- 当前 `chaosatlas-apps` 的 NetworkPolicy 数据面未生效。仅创建 YAML 不能视为隔离通过；在修复 CNI
-  或改用带可验证策略执行面的专用集群前，依赖 namespace 网络边界的实验必须保持 blocked；
+- 当前 `chaosatlas-apps` 的 NetworkPolicy 数据面未生效。仅创建 YAML 不能视为隔离通过；依赖网络边界
+  的实验必须自动升级到已验证的 L3+Calico 嵌套路由，或保持 blocked；不能把 Calico 样例外推到主集群；
 - `environment-reports/` 仍是活跃 Dify bind mount，仓库卫生阻断按既有维护边界保留。
 
-## P0 后续门槛
+## P0 退出结论
 
-推荐在独立 disposable Minikube profile 启用 Calico，再重跑 Medusa 克隆、真实 Redis 目标、跨 namespace
-拒绝、租约外探针不受影响、ResourceQuota、L3 缺失证明和零残留。不要直接替换当前四应用集群 CNI，
-以免把基础设施迁移风险混入方法验收。全部通过后才能把 P0 标成完成，并进入 P3 Oracle 首次人工审核。
+独立 disposable Minikube+Calico 的第二轮全自动复现已完成：真实 Medusa 子集、真实 Redis 目标、跨
+namespace 拒绝、租约外探针、ResourceQuota、敏感扫描和父子零残留全部通过。P0 因此退出；下一阶段
+进入 P3 OracleBuilder。P3 首次事务契约仍须形成具体草稿后由人工批准，P0 健康检查不能替代该批准。
