@@ -1,0 +1,298 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: medusa-postgres
+  namespace: chaosatlas-medusa
+  labels:
+    app.kubernetes.io/part-of: chaosatlas-apps
+    chaosatlas.io/application: medusa
+spec:
+  selector:
+    app.kubernetes.io/name: medusa-postgres
+  ports:
+    - name: postgres
+      port: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: medusa-postgres
+  namespace: chaosatlas-medusa
+  labels:
+    app.kubernetes.io/part-of: chaosatlas-apps
+    chaosatlas.io/application: medusa
+spec:
+  serviceName: medusa-postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: medusa-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: medusa-postgres
+        app.kubernetes.io/part-of: chaosatlas-apps
+        chaosatlas.io/application: medusa
+    spec:
+      containers:
+        - name: postgres
+          image: docker.io/library/postgres:15-alpine
+          env:
+            - name: POSTGRES_DB
+              value: medusa
+            - name: POSTGRES_USER
+              value: medusa
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: medusa-secrets
+                  key: postgres-password
+          ports:
+            - name: postgres
+              containerPort: 5432
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U medusa -d medusa
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        resources:
+          requests:
+            storage: 8Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: medusa-redis
+  namespace: chaosatlas-medusa
+  labels:
+    app.kubernetes.io/part-of: chaosatlas-apps
+    chaosatlas.io/application: medusa
+spec:
+  selector:
+    app.kubernetes.io/name: medusa-redis
+  ports:
+    - name: redis
+      port: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medusa-redis
+  namespace: chaosatlas-medusa
+  labels:
+    app.kubernetes.io/part-of: chaosatlas-apps
+    chaosatlas.io/application: medusa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: medusa-redis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: medusa-redis
+        app.kubernetes.io/part-of: chaosatlas-apps
+        chaosatlas.io/application: medusa
+    spec:
+      containers:
+        - name: redis
+          image: docker.io/library/redis:6-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: redis
+              containerPort: 6379
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: medusa-migrate
+  namespace: chaosatlas-medusa
+  labels:
+    app.kubernetes.io/part-of: chaosatlas-apps
+    chaosatlas.io/application: medusa
+spec:
+  backoffLimit: 6
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/part-of: chaosatlas-apps
+        chaosatlas.io/application: medusa
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+        - name: wait-for-postgres
+          image: docker.io/library/postgres:15-alpine
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - until pg_isready -h medusa-postgres -U medusa -d medusa; do sleep 3; done
+      containers:
+        - name: migrate
+          image: docker.io/chaosatlas/medusa-backend:2.20.1
+          imagePullPolicy: IfNotPresent
+          workingDir: /app/apps/backend
+          command:
+            - npx
+            - medusa
+            - db:migrate
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: medusa-secrets
+                  key: database-url
+            - name: DB_NAME
+              value: medusa
+            - name: REDIS_URL
+              value: redis://medusa-redis:6379
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: medusa-secrets
+                  key: jwt-secret
+            - name: COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: medusa-secrets
+                  key: cookie-secret
+            - name: MEDUSA_DB_MIGRATION_CONNECTION_TIMEOUT
+              value: "60000"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medusa-backend
+  namespace: chaosatlas-medusa
+  labels:
+    app.kubernetes.io/part-of: chaosatlas-apps
+    chaosatlas.io/application: medusa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: medusa-backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: medusa-backend
+        app.kubernetes.io/part-of: chaosatlas-apps
+        chaosatlas.io/application: medusa
+    spec:
+      containers:
+        - name: backend
+          image: docker.io/chaosatlas/medusa-backend:2.20.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 9000
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: medusa-secrets
+                  key: database-url
+            - name: DB_NAME
+              value: medusa
+            - name: REDIS_URL
+              value: redis://medusa-redis:6379
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: medusa-secrets
+                  key: jwt-secret
+            - name: COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: medusa-secrets
+                  key: cookie-secret
+            - name: STORE_CORS
+              value: http://medusa.local
+            - name: ADMIN_CORS
+              value: http://medusa.local
+            - name: AUTH_CORS
+              value: http://medusa.local
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: medusa-backend
+  namespace: chaosatlas-medusa
+spec:
+  selector:
+    app.kubernetes.io/name: medusa-backend
+  ports:
+    - name: http
+      port: 9000
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: medusa-worker
+  namespace: chaosatlas-medusa
+  labels:
+    app.kubernetes.io/part-of: chaosatlas-apps
+    chaosatlas.io/application: medusa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: medusa-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: medusa-worker
+        app.kubernetes.io/part-of: chaosatlas-apps
+        chaosatlas.io/application: medusa
+    spec:
+      containers:
+        - name: worker
+          image: docker.io/chaosatlas/medusa-backend:2.20.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - npm
+            - run
+            - start
+            - --workspace=@dtc/backend
+          env:
+            - name: MEDUSA_WORKER_MODE
+              value: worker
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: medusa-secrets
+                  key: database-url
+            - name: DB_NAME
+              value: medusa
+            - name: REDIS_URL
+              value: redis://medusa-redis:6379
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: medusa-secrets
+                  key: jwt-secret
+            - name: COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: medusa-secrets
+                  key: cookie-secret

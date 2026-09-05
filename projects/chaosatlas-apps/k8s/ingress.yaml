@@ -1,0 +1,89 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: immich
+  namespace: chaosatlas-immich
+  labels:
+    app.kubernetes.io/part-of: chaosatlas-apps
+    chaosatlas.io/application: immich
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: immich.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: immich-server
+                port:
+                  number: 2283
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: erpnext
+  namespace: chaosatlas-erpnext
+  labels:
+    app.kubernetes.io/part-of: chaosatlas-apps
+    chaosatlas.io/application: erpnext
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: erpnext.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: erpnext
+                port:
+                  number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: medusa
+  namespace: chaosatlas-medusa
+  labels:
+    app.kubernetes.io/part-of: chaosatlas-apps
+    chaosatlas.io/application: medusa
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: medusa.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: medusa-backend
+                port:
+                  number: 9000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rocketchat
+  namespace: chaosatlas-rocketchat
+  labels:
+    app.kubernetes.io/part-of: chaosatlas-apps
+    chaosatlas.io/application: rocketchat
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: rocketchat.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rocketchat-rocketchat
+                port:
+                  number: 80
