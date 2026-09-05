@@ -1,0 +1,106 @@
+{
+  "allowed_requests": [
+    {
+      "id": "create-cart",
+      "method": "POST",
+      "path": "/store/carts"
+    },
+    {
+      "id": "add-line",
+      "method": "POST",
+      "path": "/store/carts/{cart_id}/line-items"
+    },
+    {
+      "id": "read-cart",
+      "method": "GET",
+      "path": "/store/carts/{cart_id}"
+    },
+    {
+      "id": "delete-line",
+      "method": "DELETE",
+      "path": "/store/carts/{cart_id}/line-items/{line_id}"
+    }
+  ],
+  "approval": {
+    "record": null,
+    "required": true
+  },
+  "assertions": [
+    {
+      "expected": 1,
+      "id": "quantity",
+      "operator": "json_path_equals",
+      "path": "$.cart.items[0].quantity",
+      "step_id": "read-cart"
+    },
+    {
+      "expected_from": "fixture_currency",
+      "id": "currency",
+      "operator": "json_path_equals",
+      "path": "$.cart.currency_code",
+      "step_id": "read-cart"
+    },
+    {
+      "expected_from": "fixture_unit_price",
+      "id": "unit-price",
+      "operator": "json_path_equals",
+      "path": "$.cart.items[0].unit_price",
+      "step_id": "read-cart"
+    }
+  ],
+  "cleanup": {
+    "on_every_exit": true,
+    "reason": "No approved Store API cart-delete operation; delete the exact line item, then destroy the disposable database environment.",
+    "strategy": "disposable_environment"
+  },
+  "contract_sha256": "b063321c5e07b5459eae25a8096d94140d68f4945b0423a11dc5e65cb1de692b",
+  "credential_refs": [
+    {
+      "id": "medusa-publishable-api-key",
+      "source": "runtime_secret_ref"
+    }
+  ],
+  "evidence_sources": [
+    "image:medusa-backend:2.20.1",
+    "source:apps/backend/src"
+  ],
+  "oracle_id": "medusa-cart-lineitem-v1",
+  "ownership": {
+    "delete_scope": "returned_or_exactly_queried_ids",
+    "marker_field": "chaosatlas_run_id",
+    "synthetic_only": true
+  },
+  "project_id": "medusa",
+  "project_revision": "52c3aa27333530c946e3b2c1b025c988c432283257b053cb61269c5ab2da6334",
+  "schema_version": "chaosatlas-transaction-oracle-v1",
+  "status": "validated",
+  "steps": [
+    {
+      "capture": {
+        "cart_id": "$.cart.id"
+      },
+      "id": "create-cart",
+      "request_id": "create-cart"
+    },
+    {
+      "capture": {
+        "line_id": "$.cart.items[0].id"
+      },
+      "fixture_refs": [
+        "synthetic_region_id",
+        "synthetic_variant_id"
+      ],
+      "id": "add-synthetic-variant",
+      "request_id": "add-line"
+    },
+    {
+      "id": "read-cart",
+      "request_id": "read-cart"
+    }
+  ],
+  "timeouts": {
+    "eventual_s": 30,
+    "poll_interval_s": 2,
+    "request_s": 10
+  }
+}

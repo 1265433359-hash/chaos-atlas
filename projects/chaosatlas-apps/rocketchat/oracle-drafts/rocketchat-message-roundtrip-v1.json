@@ -1,0 +1,105 @@
+{
+  "allowed_requests": [
+    {
+      "id": "create-room",
+      "method": "POST",
+      "path": "/api/v1/channels.create"
+    },
+    {
+      "id": "post-message",
+      "method": "POST",
+      "path": "/api/v1/chat.postMessage"
+    },
+    {
+      "id": "read-messages",
+      "method": "GET",
+      "path": "/api/v1/channels.messages"
+    },
+    {
+      "id": "delete-room",
+      "method": "POST",
+      "path": "/api/v1/channels.delete"
+    }
+  ],
+  "approval": {
+    "record": null,
+    "required": true
+  },
+  "assertions": [
+    {
+      "expected_from": "room_id",
+      "id": "room-owner",
+      "operator": "json_path_equals",
+      "path": "$.messages[0].rid",
+      "step_id": "poll-messages"
+    },
+    {
+      "expected_from": "synthetic_message",
+      "id": "message-body",
+      "operator": "json_path_equals",
+      "path": "$.messages[0].msg",
+      "step_id": "poll-messages"
+    },
+    {
+      "assertion_ref": "message-body",
+      "id": "async-visible",
+      "operator": "eventually",
+      "step_id": "poll-messages"
+    }
+  ],
+  "cleanup": {
+    "lookup_after_lost_response": {
+      "field": "name",
+      "value": "ca-{run_id}"
+    },
+    "on_every_exit": true,
+    "request_id": "delete-room",
+    "strategy": "exact_owned_ids"
+  },
+  "contract_sha256": "b59fdc29b116f63ac863431895332bd072a65ee2a81fa27b2a82ac4affd080e0",
+  "credential_refs": [
+    {
+      "id": "rocketchat-test-user",
+      "source": "runtime_secret_ref"
+    }
+  ],
+  "evidence_sources": [
+    "image:rocket.chat:8.6.1",
+    "api:channels.create,chat.postMessage,channels.messages,channels.delete"
+  ],
+  "oracle_id": "rocketchat-message-roundtrip-v1",
+  "ownership": {
+    "delete_scope": "returned_or_exactly_queried_ids",
+    "marker_field": "chaosatlas_run_id",
+    "synthetic_only": true
+  },
+  "project_id": "rocketchat",
+  "project_revision": "5f9f0b3332fa175da829a92dca7f86e5d6223b1581d2c4372838133e929b8bf4",
+  "schema_version": "chaosatlas-transaction-oracle-v1",
+  "status": "validated",
+  "steps": [
+    {
+      "capture": {
+        "room_id": "$.channel._id"
+      },
+      "id": "create-owned-room",
+      "request_id": "create-room"
+    },
+    {
+      "capture": {
+        "message_id": "$.message._id"
+      },
+      "id": "post-owned-message",
+      "request_id": "post-message"
+    },
+    {
+      "id": "poll-messages",
+      "request_id": "read-messages"
+    }
+  ],
+  "timeouts": {
+    "eventual_s": 30,
+    "poll_interval_s": 2,
+    "request_s": 10
+  }
+}
