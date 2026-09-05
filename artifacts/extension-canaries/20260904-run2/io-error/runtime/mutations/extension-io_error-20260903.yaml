@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: atlas-extension-io-error-live-canary-0-a51908d36293
+  namespace: chaosatlas-extension-canary
+  labels:
+    chaosatlas.dev/scenario: extension-io_error
+    chaosatlas.dev/phase: live-canary
+    chaosatlas.dev/cleanup-owner: chaosatlas
+    chaosatlas.dev/extension: extension-io_error
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-extension-canary
+    labelSelectors:
+      app: extension-python
+  action: fault
+  volumePath: /data
+  path: /data
+  errno: 5
+  percent: 100
+  duration: 10s

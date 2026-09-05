@@ -1,0 +1,64 @@
+{
+  "schema_version": "chaosatlas-native-extension-lifecycle-v1",
+  "fault_family": "extension.runtime_pause",
+  "status": "environment_blocked",
+  "errors": [
+    "capability probe blocked: command terminated with exit code 1"
+  ],
+  "lifecycle": [
+    "preflight"
+  ],
+  "injection": {
+    "applied": false,
+    "confirmed": false
+  },
+  "recovery": {
+    "confirmed": false
+  },
+  "cleanup": {
+    "confirmed": false
+  },
+  "target": {
+    "kind": "Pod",
+    "name": "extension-python-5cd944b54b-2464s",
+    "namespace": "chaosatlas-extension-canary"
+  },
+  "capabilities": {
+    "status": "blocked",
+    "pod": "extension-python-5cd944b54b-2464s",
+    "read_only": true,
+    "reason": "command terminated with exit code 1"
+  },
+  "control": {
+    "path": "/tmp/chaosatlas-extension-control.json",
+    "control_sha256": "f16c9f572293b762f446b4b6dc7de17aa9936557c7440b5acfa859451a1c3317"
+  },
+  "attestation": {
+    "schema_version": "chaosatlas-runtime-result-v1",
+    "valid": false,
+    "missing": [
+      "baseline",
+      "injection",
+      "observation",
+      "recovery",
+      "cleanup",
+      "independent_oracle",
+      "comparison_eligible"
+    ],
+    "comparison_eligible": false,
+    "baseline": false,
+    "injection": false,
+    "observation": false,
+    "recovery": false,
+    "cleanup": false,
+    "independent_oracle": false
+  },
+  "outcome_status": "environment_blocked",
+  "injection_confirmed": false,
+  "injected_count": 0,
+  "recovery_confirmed": false,
+  "cleanup_confirmed": false,
+  "promotion_allowed": false,
+  "verdict": "environment_blocked",
+  "mutation_ref": "runtime/mutations/extension-runtime_pause.yaml"
+}

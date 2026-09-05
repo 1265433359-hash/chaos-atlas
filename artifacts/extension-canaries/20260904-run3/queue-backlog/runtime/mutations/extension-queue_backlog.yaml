@@ -1,0 +1,35 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: ChaosAtlasNativeExtension
+metadata:
+  name: atlas-extension-queue-backlog-live-canary-0-0140d6409d42
+  namespace: chaosatlas-extension-canary
+  labels:
+    chaosatlas.dev/scenario: extension-queue_backlog
+    chaosatlas.dev/phase: live-canary
+    chaosatlas.dev/cleanup-owner: chaosatlas
+    chaosatlas.dev/extension: extension-queue_backlog
+spec:
+  faultFamily: extension.queue_backlog
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: extension-python
+  targetSelector:
+    app: extension-python
+  parameters:
+    depth: 100
+    duration_s: 10
+    queue_name: chaosatlas-test-queue
+chaosatlas_extension:
+  extension_id: extension.queue_backlog
+  category: runtime_queue
+  backend: ChaosAtlasQueueAgent
+  assessment:
+    status: supported
+    reason: native runtime agent and disposable target are available
+    requirements: []
+    evidence:
+      resource_scope: deployment
+      capabilities:
+        queue_agent: true
+        disposable_target: true

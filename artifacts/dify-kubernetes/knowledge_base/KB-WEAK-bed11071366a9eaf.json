@@ -1,0 +1,658 @@
+{
+  "schema_version": "chaosatlas-weakness-knowledge-v1",
+  "id": "KB-WEAK-bed11071366a9eaf",
+  "project": "dify-kubernetes",
+  "project_commit": "37f2f83d6c058c86545fab11d1ad07ac09e0af1a",
+  "case_family": "native_deployment_config_drift",
+  "weakness_id": "WS-dify-kubernetes-dify-k8s-plugin-daemon-config-drift-intent",
+  "target": "dify-k8s-plugin-daemon",
+  "target_kind": "deployment",
+  "classification": "availability_weakness",
+  "weakness_status": "confirmed",
+  "rca_status": "confirmed",
+  "knowledge_status": "local_reusable",
+  "mechanism_level": "service_boundary",
+  "mechanism_claim": "config_drift may affect dify-k8s-plugin-daemon availability or business behavior",
+  "test_node": {
+    "canonical_signature": null,
+    "family": "config_drift",
+    "operation": "config_drift",
+    "parameters": {},
+    "source_ref": "runtime/hypotheses/live-aee0aa4807b2.json",
+    "target": "dify-k8s-plugin-daemon",
+    "target_kind": "deployment",
+    "target_role": "dify-k8s-plugin-daemon"
+  },
+  "test_node_centered_graph": {
+    "edge": "dify-k8s-plugin-daemon",
+    "scope": {
+      "edge": "deployment:dify-k8s-plugin-daemon",
+      "target": "dify-k8s-plugin-daemon",
+      "target_kind": "deployment"
+    }
+  },
+  "four_layer_validation": {
+    "availability": false,
+    "business_path": true,
+    "contract": false,
+    "recovery": true
+  },
+  "applicability_conditions": [
+    "same project and commit"
+  ],
+  "exclusion_conditions": [
+    "cross_project_transfer_requires_existing_feedback_protocol",
+    "must_not_be_promoted_to_timeout_mechanism_without_source_evidence"
+  ],
+  "evidence_runs": [
+    {
+      "run_id": "live-aee0aa4807b2",
+      "seed": 1036,
+      "run_fingerprint": "048ef6565e79478979f8c7b7eca431dcda359e6a23996ff7984f45a0b9f8d629",
+      "root": "C:\\APP\\project\\chaos-atlas\\.runs\\dify-k8s-llm-policy-guarded-20260902-r2\\trials\\0037-server-deployment-7e068c4a2f5079ba8c5ee4f5-config_drift-r01\\attempt-01",
+      "evidence_refs": [
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:51.853409Z",
+          "collector": "manifest",
+          "evidence_id": "live-aee0aa4807b2-deployment_facts",
+          "interpretation": "Deployment facts captured for the bounded evidence plan",
+          "kind": "manifest",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:deployment_facts",
+          "polarity": "supports",
+          "satisfies": [
+            "deployment_identity"
+          ],
+          "sha256": "648c1bc8965a7510b83539cee10672cce3c0e7c5e785cb09b8bcfcc56a7d0798",
+          "source_ref": "runtime/kubernetes/deployments/live-aee0aa4807b2-deployment_facts.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:51.957881Z",
+          "collector": "config",
+          "evidence_id": "live-aee0aa4807b2-pod_state",
+          "interpretation": "Pod state captured for the bounded evidence plan",
+          "kind": "config",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:pod_state",
+          "polarity": "supports",
+          "satisfies": [
+            "ready_pods"
+          ],
+          "sha256": "caca732f4e6411e0e7030bd1b350ff1217aea01e5f7e03571c0365d9e4532eb5",
+          "source_ref": "runtime/kubernetes/pods/live-aee0aa4807b2-pod_state.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:52.062280Z",
+          "collector": "config",
+          "evidence_id": "live-aee0aa4807b2-service_facts",
+          "interpretation": "Service facts captured for the bounded evidence plan",
+          "kind": "config",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:service_facts",
+          "polarity": "supports",
+          "satisfies": [
+            "service_selector"
+          ],
+          "sha256": "d049ffc109ddcad3b76a34aec2408fe7865d5ff959d79d31fdfe559732e8850f",
+          "source_ref": "runtime/kubernetes/services/live-aee0aa4807b2-service_facts.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:52.165982Z",
+          "collector": "kubernetes_event",
+          "evidence_id": "live-aee0aa4807b2-pod_events",
+          "interpretation": "Kubernetes events captured for the bounded RCA window",
+          "kind": "kubernetes_event",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:pod_events",
+          "polarity": "supports",
+          "satisfies": [
+            "kubernetes_event_window"
+          ],
+          "sha256": "386dfd9f05c7c607f7be552ca7582f1d1b3834400b15e8f7f973c56027a3a7c6",
+          "source_ref": "runtime/kubernetes/events/live-aee0aa4807b2-pod_events.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:52.300456Z",
+          "collector": "runtime_log",
+          "evidence_id": "live-aee0aa4807b2-pod_logs",
+          "interpretation": "Kubernetes workload logs captured for the bounded RCA window",
+          "kind": "runtime_log",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:pod_logs",
+          "polarity": "supports",
+          "satisfies": [
+            "runtime_logs_window"
+          ],
+          "sha256": "95ef510a1e0eb0b9733981f96b9cb857d1ecadeac963aca9ef5145aed2e1b59a",
+          "source_ref": "runtime/kubernetes/logs/live-aee0aa4807b2-pod_logs.log",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:52.313390Z",
+          "collector": "business_path_replay",
+          "evidence_id": "live-aee0aa4807b2-business",
+          "interpretation": "business oracle and lifecycle observation summary for the bounded run",
+          "kind": "business_path_replay",
+          "polarity": "supports",
+          "satisfies": [
+            "business_oracle_window"
+          ],
+          "sha256": "f13a4d2bf61c111f764deab90dc94456fe02e5f7d63278831f66ced02fd8b64f",
+          "source_ref": "runtime/business/live-aee0aa4807b2.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:52.327805Z",
+          "collector": "recovery",
+          "evidence_id": "live-aee0aa4807b2-service-boundary-mechanism",
+          "interpretation": "Kubernetes/Chaos Mesh lifecycle evidence connects confirmed injection, target Pod identity change, business observation and recovery at the service boundary; it does not claim a source-level root cause.",
+          "kind": "recovery",
+          "polarity": "supports",
+          "satisfies": [
+            "mechanism_evidence"
+          ],
+          "sha256": "2026a498de545111195427d47a7fb78058f8ed35c67a52413f27cf9018bf3e38",
+          "source_ref": "runtime/kubernetes/mechanism/live-aee0aa4807b2-service-boundary.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:52.327888Z",
+          "evidence_id": "live-aee0aa4807b2-baseline",
+          "interpretation": "baseline oracle completed",
+          "kind": "business_path_replay",
+          "polarity": "supports",
+          "satisfies": [
+            "baseline_oracle"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-aee0aa4807b2.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:52.327903Z",
+          "evidence_id": "live-aee0aa4807b2-injection",
+          "interpretation": "fault injection was confirmed",
+          "kind": "kubernetes_event",
+          "polarity": "supports",
+          "satisfies": [
+            "injection_confirmation"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-aee0aa4807b2.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:52.327916Z",
+          "evidence_id": "live-aee0aa4807b2-observation",
+          "interpretation": "business observation completed",
+          "kind": "business_path_replay",
+          "polarity": "supports",
+          "satisfies": [
+            "observation"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-aee0aa4807b2.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:52.327929Z",
+          "evidence_id": "live-aee0aa4807b2-recovery",
+          "interpretation": "target recovered after fault removal",
+          "kind": "recovery",
+          "polarity": "supports",
+          "satisfies": [
+            "recovery"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-aee0aa4807b2.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:56:52.327940Z",
+          "evidence_id": "live-aee0aa4807b2-cleanup",
+          "interpretation": "fault resource cleanup was confirmed",
+          "kind": "recovery",
+          "polarity": "supports",
+          "satisfies": [
+            "cleanup"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-aee0aa4807b2.json",
+          "window": {}
+        }
+      ]
+    },
+    {
+      "run_id": "live-bbd0bfdfe236",
+      "seed": 1037,
+      "run_fingerprint": "3e3a80693855e2e83062d80df528f24bfe39f91fbcaaa2102f3ca3af5cd248f6",
+      "root": "C:\\APP\\project\\chaos-atlas\\.runs\\dify-k8s-llm-policy-guarded-20260902-r2\\trials\\0038-server-deployment-7e068c4a2f5079ba8c5ee4f5-config_drift-r02\\attempt-02",
+      "evidence_refs": [
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:20.710889Z",
+          "collector": "manifest",
+          "evidence_id": "live-bbd0bfdfe236-deployment_facts",
+          "interpretation": "Deployment facts captured for the bounded evidence plan",
+          "kind": "manifest",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:deployment_facts",
+          "polarity": "supports",
+          "satisfies": [
+            "deployment_identity"
+          ],
+          "sha256": "847ab45ea509c1ad3e5de4698fb63cdb3f12f1ed06877b85325f7cff30ccebbc",
+          "source_ref": "runtime/kubernetes/deployments/live-bbd0bfdfe236-deployment_facts.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:20.815695Z",
+          "collector": "config",
+          "evidence_id": "live-bbd0bfdfe236-pod_state",
+          "interpretation": "Pod state captured for the bounded evidence plan",
+          "kind": "config",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:pod_state",
+          "polarity": "supports",
+          "satisfies": [
+            "ready_pods"
+          ],
+          "sha256": "c738bfc649ebf01315e14e5d8c33cf5de1665c430c03bfb8858a804c45c5516f",
+          "source_ref": "runtime/kubernetes/pods/live-bbd0bfdfe236-pod_state.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:20.907689Z",
+          "collector": "config",
+          "evidence_id": "live-bbd0bfdfe236-service_facts",
+          "interpretation": "Service facts captured for the bounded evidence plan",
+          "kind": "config",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:service_facts",
+          "polarity": "supports",
+          "satisfies": [
+            "service_selector"
+          ],
+          "sha256": "d049ffc109ddcad3b76a34aec2408fe7865d5ff959d79d31fdfe559732e8850f",
+          "source_ref": "runtime/kubernetes/services/live-bbd0bfdfe236-service_facts.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:21.007462Z",
+          "collector": "kubernetes_event",
+          "evidence_id": "live-bbd0bfdfe236-pod_events",
+          "interpretation": "Kubernetes events captured for the bounded RCA window",
+          "kind": "kubernetes_event",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:pod_events",
+          "polarity": "supports",
+          "satisfies": [
+            "kubernetes_event_window"
+          ],
+          "sha256": "386dfd9f05c7c607f7be552ca7582f1d1b3834400b15e8f7f973c56027a3a7c6",
+          "source_ref": "runtime/kubernetes/events/live-bbd0bfdfe236-pod_events.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:21.146347Z",
+          "collector": "runtime_log",
+          "evidence_id": "live-bbd0bfdfe236-pod_logs",
+          "interpretation": "Kubernetes workload logs captured for the bounded RCA window",
+          "kind": "runtime_log",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:pod_logs",
+          "polarity": "supports",
+          "satisfies": [
+            "runtime_logs_window"
+          ],
+          "sha256": "0e0eb7ec335c3246c80847286513d290823f3ae8dd5db431b000942aec939be0",
+          "source_ref": "runtime/kubernetes/logs/live-bbd0bfdfe236-pod_logs.log",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:21.158933Z",
+          "collector": "business_path_replay",
+          "evidence_id": "live-bbd0bfdfe236-business",
+          "interpretation": "business oracle and lifecycle observation summary for the bounded run",
+          "kind": "business_path_replay",
+          "polarity": "supports",
+          "satisfies": [
+            "business_oracle_window"
+          ],
+          "sha256": "dcbf52750757630e1f7b85933085a06f7db14b0db5f5db7d01019532ffe1ccf7",
+          "source_ref": "runtime/business/live-bbd0bfdfe236.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:21.169909Z",
+          "collector": "recovery",
+          "evidence_id": "live-bbd0bfdfe236-service-boundary-mechanism",
+          "interpretation": "Kubernetes/Chaos Mesh lifecycle evidence connects confirmed injection, target Pod identity change, business observation and recovery at the service boundary; it does not claim a source-level root cause.",
+          "kind": "recovery",
+          "polarity": "supports",
+          "satisfies": [
+            "mechanism_evidence"
+          ],
+          "sha256": "ce0ea74b5c251880203de3e9a92462463696306d1486196df4ef7894d7fbf3da",
+          "source_ref": "runtime/kubernetes/mechanism/live-bbd0bfdfe236-service-boundary.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:21.170048Z",
+          "evidence_id": "live-bbd0bfdfe236-baseline",
+          "interpretation": "baseline oracle completed",
+          "kind": "business_path_replay",
+          "polarity": "supports",
+          "satisfies": [
+            "baseline_oracle"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-bbd0bfdfe236.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:21.170087Z",
+          "evidence_id": "live-bbd0bfdfe236-injection",
+          "interpretation": "fault injection was confirmed",
+          "kind": "kubernetes_event",
+          "polarity": "supports",
+          "satisfies": [
+            "injection_confirmation"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-bbd0bfdfe236.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:21.170105Z",
+          "evidence_id": "live-bbd0bfdfe236-observation",
+          "interpretation": "business observation completed",
+          "kind": "business_path_replay",
+          "polarity": "supports",
+          "satisfies": [
+            "observation"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-bbd0bfdfe236.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:21.170139Z",
+          "evidence_id": "live-bbd0bfdfe236-recovery",
+          "interpretation": "target recovered after fault removal",
+          "kind": "recovery",
+          "polarity": "supports",
+          "satisfies": [
+            "recovery"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-bbd0bfdfe236.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:21.170183Z",
+          "evidence_id": "live-bbd0bfdfe236-cleanup",
+          "interpretation": "fault resource cleanup was confirmed",
+          "kind": "recovery",
+          "polarity": "supports",
+          "satisfies": [
+            "cleanup"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-bbd0bfdfe236.json",
+          "window": {}
+        }
+      ]
+    },
+    {
+      "run_id": "live-a521681e73f6",
+      "seed": 1038,
+      "run_fingerprint": "a76e5d4d46203523d8c59db14d6b818472c9aec5649af9fae1bb6e3c550c0643",
+      "root": "C:\\APP\\project\\chaos-atlas\\.runs\\dify-k8s-llm-policy-guarded-20260902-r2\\trials\\0039-server-deployment-7e068c4a2f5079ba8c5ee4f5-config_drift-r03\\attempt-02",
+      "evidence_refs": [
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.390454Z",
+          "collector": "manifest",
+          "evidence_id": "live-a521681e73f6-deployment_facts",
+          "interpretation": "Deployment facts captured for the bounded evidence plan",
+          "kind": "manifest",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:deployment_facts",
+          "polarity": "supports",
+          "satisfies": [
+            "deployment_identity"
+          ],
+          "sha256": "15e1bd81bd0ef945c973c4d62c1be99421e125ddab12a70136bdb1e2a00fb8f6",
+          "source_ref": "runtime/kubernetes/deployments/live-a521681e73f6-deployment_facts.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.491264Z",
+          "collector": "config",
+          "evidence_id": "live-a521681e73f6-pod_state",
+          "interpretation": "Pod state captured for the bounded evidence plan",
+          "kind": "config",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:pod_state",
+          "polarity": "supports",
+          "satisfies": [
+            "ready_pods"
+          ],
+          "sha256": "85b524029490f9261012ad2c6403e3e2e095f1956f7d6614d3258253e48bbf3a",
+          "source_ref": "runtime/kubernetes/pods/live-a521681e73f6-pod_state.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.585603Z",
+          "collector": "config",
+          "evidence_id": "live-a521681e73f6-service_facts",
+          "interpretation": "Service facts captured for the bounded evidence plan",
+          "kind": "config",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:service_facts",
+          "polarity": "supports",
+          "satisfies": [
+            "service_selector"
+          ],
+          "sha256": "d049ffc109ddcad3b76a34aec2408fe7865d5ff959d79d31fdfe559732e8850f",
+          "source_ref": "runtime/kubernetes/services/live-a521681e73f6-service_facts.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.695385Z",
+          "collector": "kubernetes_event",
+          "evidence_id": "live-a521681e73f6-pod_events",
+          "interpretation": "Kubernetes events captured for the bounded RCA window",
+          "kind": "kubernetes_event",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:pod_events",
+          "polarity": "supports",
+          "satisfies": [
+            "kubernetes_event_window"
+          ],
+          "sha256": "386dfd9f05c7c607f7be552ca7582f1d1b3834400b15e8f7f973c56027a3a7c6",
+          "source_ref": "runtime/kubernetes/events/live-a521681e73f6-pod_events.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.857593Z",
+          "collector": "runtime_log",
+          "evidence_id": "live-a521681e73f6-pod_logs",
+          "interpretation": "Kubernetes workload logs captured for the bounded RCA window",
+          "kind": "runtime_log",
+          "planned_action_id": "server:deployment:7e068c4a2f5079ba8c5ee4f5:config_drift:pod_logs",
+          "polarity": "supports",
+          "satisfies": [
+            "runtime_logs_window"
+          ],
+          "sha256": "88a582a2290ab54f165b852879324cf289a4ab256d8f40ba5c055fc92d5e3900",
+          "source_ref": "runtime/kubernetes/logs/live-a521681e73f6-pod_logs.log",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.871468Z",
+          "collector": "business_path_replay",
+          "evidence_id": "live-a521681e73f6-business",
+          "interpretation": "business oracle and lifecycle observation summary for the bounded run",
+          "kind": "business_path_replay",
+          "polarity": "supports",
+          "satisfies": [
+            "business_oracle_window"
+          ],
+          "sha256": "59aea144dace6f530cd5dffd1fb6952aacdd27b15ca36b933b5a4c6e21fb316e",
+          "source_ref": "runtime/business/live-a521681e73f6.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.886794Z",
+          "collector": "recovery",
+          "evidence_id": "live-a521681e73f6-service-boundary-mechanism",
+          "interpretation": "Kubernetes/Chaos Mesh lifecycle evidence connects confirmed injection, target Pod identity change, business observation and recovery at the service boundary; it does not claim a source-level root cause.",
+          "kind": "recovery",
+          "polarity": "supports",
+          "satisfies": [
+            "mechanism_evidence"
+          ],
+          "sha256": "433dbdfceb15235bf79654c824bf01c142fd63c83b04b374ae4a9c3d4ef2834c",
+          "source_ref": "runtime/kubernetes/mechanism/live-a521681e73f6-service-boundary.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.886860Z",
+          "evidence_id": "live-a521681e73f6-baseline",
+          "interpretation": "baseline oracle completed",
+          "kind": "business_path_replay",
+          "polarity": "supports",
+          "satisfies": [
+            "baseline_oracle"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-a521681e73f6.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.886871Z",
+          "evidence_id": "live-a521681e73f6-injection",
+          "interpretation": "fault injection was confirmed",
+          "kind": "kubernetes_event",
+          "polarity": "supports",
+          "satisfies": [
+            "injection_confirmation"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-a521681e73f6.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.886880Z",
+          "evidence_id": "live-a521681e73f6-observation",
+          "interpretation": "business observation completed",
+          "kind": "business_path_replay",
+          "polarity": "supports",
+          "satisfies": [
+            "observation"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-a521681e73f6.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.886890Z",
+          "evidence_id": "live-a521681e73f6-recovery",
+          "interpretation": "target recovered after fault removal",
+          "kind": "recovery",
+          "polarity": "supports",
+          "satisfies": [
+            "recovery"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-a521681e73f6.json",
+          "window": {}
+        },
+        {
+          "claim_scope": "deployment:dify-k8s-plugin-daemon",
+          "collected_at": "2026-09-02T08:57:48.886899Z",
+          "evidence_id": "live-a521681e73f6-cleanup",
+          "interpretation": "fault resource cleanup was confirmed",
+          "kind": "recovery",
+          "polarity": "supports",
+          "satisfies": [
+            "cleanup"
+          ],
+          "sha256": null,
+          "source_ref": "runtime/business/live-a521681e73f6.json",
+          "window": {}
+        }
+      ]
+    }
+  ],
+  "valid_reproductions": 3,
+  "counter_evidence": [],
+  "promotion_audit": {
+    "allowed": true,
+    "next_status": "local_reusable",
+    "reason": "local_reuse_gates_passed"
+  },
+  "next_evidence": [
+    "next_bounded_evidence"
+  ],
+  "stop_rule": "stop after three valid reproductions or one clean falsification",
+  "regression_recipe": {
+    "oracle": "HTTP /v1/chat-messages on dify-k8s",
+    "selected_next_action": null
+  },
+  "regression_intents": [
+    {
+      "kind": "reproduce",
+      "source_card_id": "KB-WEAK-bed11071366a9eaf",
+      "weakness_id": "WS-dify-kubernetes-dify-k8s-plugin-daemon-config-drift-intent",
+      "snapshot_sha256": "ca5578b6314d73592fa902a1cf26deabfa771695641eefab3902d35307d05b20",
+      "oracle": "HTTP /v1/chat-messages on dify-k8s",
+      "required_evidence": [
+        "next_bounded_evidence"
+      ],
+      "stop_rule": "stop after three valid reproductions or one clean falsification",
+      "applicability_conditions": [
+        "same project and commit"
+      ]
+    },
+    {
+      "kind": "guard",
+      "source_card_id": "KB-WEAK-bed11071366a9eaf",
+      "weakness_id": "WS-dify-kubernetes-dify-k8s-plugin-daemon-config-drift-intent",
+      "snapshot_sha256": "ca5578b6314d73592fa902a1cf26deabfa771695641eefab3902d35307d05b20",
+      "oracle": "HTTP /v1/chat-messages on dify-k8s",
+      "required_evidence": [
+        "next_bounded_evidence"
+      ],
+      "stop_rule": "guard: closed_runtime_boundary_no_reinjection; stop after three valid reproductions or one clean falsification",
+      "applicability_conditions": [
+        "same project and commit"
+      ]
+    }
+  ]
+}

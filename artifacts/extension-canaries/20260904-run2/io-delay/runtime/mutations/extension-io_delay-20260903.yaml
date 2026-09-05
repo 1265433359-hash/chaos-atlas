@@ -1,0 +1,23 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: IOChaos
+metadata:
+  name: atlas-extension-io-delay-live-canary-0-b3a51917bd7b
+  namespace: chaosatlas-extension-canary
+  labels:
+    chaosatlas.dev/scenario: extension-io_delay
+    chaosatlas.dev/phase: live-canary
+    chaosatlas.dev/cleanup-owner: chaosatlas
+    chaosatlas.dev/extension: extension-io_delay
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-extension-canary
+    labelSelectors:
+      app: extension-python
+  action: latency
+  volumePath: /data
+  path: /data
+  delay: 100ms
+  percent: 100
+  duration: 10s

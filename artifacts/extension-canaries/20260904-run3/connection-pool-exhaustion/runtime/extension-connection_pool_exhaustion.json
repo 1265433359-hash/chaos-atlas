@@ -1,0 +1,132 @@
+{
+  "schema_version": "chaosatlas-native-extension-lifecycle-v1",
+  "fault_family": "extension.connection_pool_exhaustion",
+  "status": "executed",
+  "errors": [],
+  "lifecycle": [
+    "preflight",
+    "baseline",
+    "inject",
+    "observe",
+    "recover",
+    "cleanup"
+  ],
+  "injection": {
+    "applied": true,
+    "confirmed": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "recovery": {
+    "confirmed": true,
+    "state": {
+      "control_removed": true
+    },
+    "business_probe": {
+      "status": "pass",
+      "phase": "recovery",
+      "samples": [
+        {
+          "status_code": 200,
+          "latency_ms": 1011.964,
+          "body": "{\"capacity\": 20, \"in_use\": 0, \"pool_name\": \"chaosatlas-test-pool\", \"status\": \"ok\", \"utilization_pct\": 0}\n",
+          "error": null
+        }
+      ],
+      "mechanism_evidence": {
+        "pool_in_use": 0,
+        "pool_capacity": 20,
+        "utilization_pct": 0,
+        "pool_name": "chaosatlas-test-pool"
+      }
+    }
+  },
+  "cleanup": {
+    "confirmed": true,
+    "verified": true,
+    "cleanup_command": {
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "verification": {
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "target": {
+    "kind": "Pod",
+    "name": "extension-python-77b89748b5-bfg99",
+    "namespace": "chaosatlas-extension-canary"
+  },
+  "capabilities": {
+    "status": "ready",
+    "pod": "extension-python-77b89748b5-bfg99",
+    "read_only": true,
+    "reason": null
+  },
+  "control": {
+    "path": "/tmp/chaosatlas-extension-control.json",
+    "control_sha256": "7500db9ea3c367e8fa4b850f5cbcaea0129548dd2f32a444dfd7c355b4c860c5"
+  },
+  "baseline": {
+    "status": "pass",
+    "phase": "baseline",
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 1013.656,
+        "body": "{\"capacity\": 20, \"in_use\": 0, \"pool_name\": \"chaosatlas-test-pool\", \"status\": \"ok\", \"utilization_pct\": 0}\n",
+        "error": null
+      }
+    ],
+    "mechanism_evidence": {
+      "pool_in_use": 0,
+      "pool_capacity": 20,
+      "utilization_pct": 0,
+      "pool_name": "chaosatlas-test-pool"
+    }
+  },
+  "observation": {
+    "status": "degraded",
+    "phase": "observe",
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 1012.619,
+        "body": "{\"capacity\": 20, \"in_use\": 20, \"pool_name\": \"chaosatlas-test-pool\", \"status\": \"exhausted\", \"utilization_pct\": 100}\n",
+        "error": null
+      }
+    ],
+    "mechanism_evidence": {
+      "pool_in_use": 20,
+      "pool_capacity": 20,
+      "utilization_pct": 100,
+      "pool_name": "chaosatlas-test-pool"
+    }
+  },
+  "attestation": {
+    "schema_version": "chaosatlas-runtime-result-v1",
+    "valid": true,
+    "missing": [],
+    "comparison_eligible": true,
+    "baseline": true,
+    "injection": true,
+    "observation": true,
+    "recovery": true,
+    "cleanup": true,
+    "independent_oracle": true
+  },
+  "outcome_status": "degraded",
+  "injection_confirmed": true,
+  "injected_count": 1,
+  "recovery_confirmed": true,
+  "cleanup_confirmed": true,
+  "promotion_allowed": true,
+  "verdict": "degraded",
+  "mutation_ref": "runtime/mutations/extension-connection_pool_exhaustion.yaml"
+}

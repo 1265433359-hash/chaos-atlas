@@ -1,0 +1,15 @@
+{
+  "schema_version": "chaosatlas-extension-canary-v1",
+  "checked_at": "2026-09-04T06:32:06.727927+00:00",
+  "context": "chaosatlas-dify",
+  "namespace": "chaosatlas-extension-canary",
+  "results": [
+    {
+      "status": "runner_error",
+      "errors": [
+        "RuntimeError: docker build failed for chaosatlas/extension-python:20260903: /library/python:3.12-alpine:\n------\nDockerfile.python:1\n--------------------\n   1 | >>> FROM python:3.12-alpine\n   2 |     COPY python_server.py /opt/chaosatlas/python_server.py\n   3 |     COPY queue-extension-capability /opt/chaosatlas/queue-extension-capability\n--------------------\nERROR: failed to build: failed to solve: python:3.12-alpine: failed to resolve source metadata for docker.io/library/python:3.12-alpine: failed to do request: Head \"https://registry-1.docker.io/v2/library/python/manifests/3.12-alpine\": dialing registry-1.docker.io:443 container via direct connection because Docker Desktop has no HTTPS proxy: connecting to registry-1.docker.io:443: dial tcp 179.60.193.16:443: connectex: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond.\n\nView build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/c9pt9npmjaolg5e3n2o1cyffx\n"
+      ]
+    }
+  ],
+  "cleanup": "namespace_deleted"
+}

@@ -1,0 +1,126 @@
+{
+  "schema_version": "chaosatlas-native-extension-lifecycle-v1",
+  "fault_family": "extension.runtime_pause",
+  "status": "executed",
+  "errors": [],
+  "lifecycle": [
+    "preflight",
+    "baseline",
+    "inject",
+    "observe",
+    "recover",
+    "cleanup"
+  ],
+  "injection": {
+    "applied": true,
+    "confirmed": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "recovery": {
+    "confirmed": true,
+    "state": {
+      "control_removed": true
+    },
+    "business_probe": {
+      "status": "pass",
+      "phase": "recovery",
+      "samples": [
+        {
+          "status_code": 200,
+          "latency_ms": 1004.873,
+          "body": "{\"status\": \"ok\", \"target_process\": \"python\"}\n",
+          "error": null
+        }
+      ],
+      "mechanism_evidence": {
+        "target_process": "python",
+        "pause_ms": null
+      }
+    }
+  },
+  "cleanup": {
+    "confirmed": true,
+    "verified": true,
+    "cleanup_command": {
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "verification": {
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "target": {
+    "kind": "Pod",
+    "name": "extension-python-77b89748b5-bfg99",
+    "namespace": "chaosatlas-extension-canary"
+  },
+  "capabilities": {
+    "status": "ready",
+    "pod": "extension-python-77b89748b5-bfg99",
+    "read_only": true,
+    "reason": null
+  },
+  "control": {
+    "path": "/tmp/chaosatlas-extension-control.json",
+    "control_sha256": "f16c9f572293b762f446b4b6dc7de17aa9936557c7440b5acfa859451a1c3317"
+  },
+  "baseline": {
+    "status": "pass",
+    "phase": "baseline",
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 1019.121,
+        "body": "{\"status\": \"ok\", \"target_process\": \"python\"}\n",
+        "error": null
+      }
+    ],
+    "mechanism_evidence": {
+      "target_process": "python",
+      "pause_ms": null
+    }
+  },
+  "observation": {
+    "status": "degraded",
+    "phase": "observe",
+    "samples": [
+      {
+        "status_code": 503,
+        "latency_ms": 1016.653,
+        "body": "{\"pause_ms\": 100, \"status\": \"paused\", \"target_process\": \"python\"}\n",
+        "error": "HTTP Error 503: Service Unavailable"
+      }
+    ],
+    "mechanism_evidence": {
+      "target_process": "python",
+      "pause_ms": 100
+    }
+  },
+  "attestation": {
+    "schema_version": "chaosatlas-runtime-result-v1",
+    "valid": true,
+    "missing": [],
+    "comparison_eligible": true,
+    "baseline": true,
+    "injection": true,
+    "observation": true,
+    "recovery": true,
+    "cleanup": true,
+    "independent_oracle": true
+  },
+  "outcome_status": "degraded",
+  "injection_confirmed": true,
+  "injected_count": 1,
+  "recovery_confirmed": true,
+  "cleanup_confirmed": true,
+  "promotion_allowed": true,
+  "verdict": "degraded",
+  "mutation_ref": "runtime/mutations/extension-runtime_pause.yaml"
+}

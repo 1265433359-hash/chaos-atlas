@@ -1,0 +1,52 @@
+{
+  "status": "verified",
+  "manifests": [
+    {
+      "apiVersion": "chaos-mesh.org/v1alpha1",
+      "kind": "ChaosAtlasNativeExtension",
+      "metadata": {
+        "name": "atlas-extension-runtime-pause-live-canary-0-795d68e0e6d8",
+        "namespace": "chaosatlas-extension-canary",
+        "labels": {
+          "chaosatlas.dev/scenario": "extension-runtime_pause",
+          "chaosatlas.dev/phase": "live-canary",
+          "chaosatlas.dev/cleanup-owner": "chaosatlas",
+          "chaosatlas.dev/extension": "extension-runtime_pause"
+        }
+      },
+      "spec": {
+        "faultFamily": "extension.runtime_pause",
+        "targetRef": {
+          "apiVersion": "apps/v1",
+          "kind": "Deployment",
+          "name": "extension-python"
+        },
+        "targetSelector": {
+          "app": "extension-python"
+        },
+        "parameters": {
+          "duration_s": 10,
+          "pause_ms": 100,
+          "target_process": "python"
+        }
+      },
+      "chaosatlas_extension": {
+        "extension_id": "extension.runtime_pause",
+        "category": "runtime_generic",
+        "backend": "ChaosAtlasRuntimeAgent",
+        "assessment": {
+          "status": "supported",
+          "reason": "native runtime agent and disposable target are available",
+          "requirements": [],
+          "evidence": {
+            "resource_scope": "deployment",
+            "capabilities": {
+              "pause_agent": true,
+              "disposable_target": true
+            }
+          }
+        }
+      }
+    }
+  ]
+}

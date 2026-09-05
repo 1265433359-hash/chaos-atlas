@@ -1,0 +1,21 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: TimeChaos
+metadata:
+  name: atlas-extension-time-offset-live-canary-0-8487360ba7de
+  namespace: chaosatlas-extension-canary
+  labels:
+    chaosatlas.dev/scenario: extension-time_offset
+    chaosatlas.dev/phase: live-canary
+    chaosatlas.dev/cleanup-owner: chaosatlas
+    chaosatlas.dev/extension: extension-time_offset
+spec:
+  mode: one
+  selector:
+    namespaces:
+    - chaosatlas-extension-canary
+    labelSelectors:
+      app: extension-python
+  timeOffset: +500ms
+  clockIds:
+  - CLOCK_REALTIME
+  duration: 10s

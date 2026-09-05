@@ -1,0 +1,126 @@
+{
+  "schema_version": "chaosatlas-native-extension-lifecycle-v1",
+  "fault_family": "extension.queue_backlog",
+  "status": "executed",
+  "errors": [],
+  "lifecycle": [
+    "preflight",
+    "baseline",
+    "inject",
+    "observe",
+    "recover",
+    "cleanup"
+  ],
+  "injection": {
+    "applied": true,
+    "confirmed": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "recovery": {
+    "confirmed": true,
+    "state": {
+      "control_removed": true
+    },
+    "business_probe": {
+      "status": "pass",
+      "phase": "recovery",
+      "samples": [
+        {
+          "status_code": 200,
+          "latency_ms": 1012.207,
+          "body": "{\"depth\": 0, \"queue_name\": \"chaosatlas-test-queue\", \"status\": \"ok\"}\n",
+          "error": null
+        }
+      ],
+      "mechanism_evidence": {
+        "queue_depth": 0,
+        "queue_name": "chaosatlas-test-queue"
+      }
+    }
+  },
+  "cleanup": {
+    "confirmed": true,
+    "verified": true,
+    "cleanup_command": {
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "verification": {
+      "return_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "target": {
+    "kind": "Pod",
+    "name": "extension-python-5cd944b54b-2464s",
+    "namespace": "chaosatlas-extension-canary"
+  },
+  "capabilities": {
+    "status": "ready",
+    "pod": "extension-python-5cd944b54b-2464s",
+    "read_only": true,
+    "reason": null
+  },
+  "control": {
+    "path": "/tmp/chaosatlas-extension-control.json",
+    "control_sha256": "cf17cbc68727d5ecf4a8d557249cb4cb3051bf1e1d762691c852b34d7f743e38"
+  },
+  "baseline": {
+    "status": "pass",
+    "phase": "baseline",
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 11.585,
+        "body": "{\"depth\": 0, \"queue_name\": \"chaosatlas-test-queue\", \"status\": \"ok\"}\n",
+        "error": null
+      }
+    ],
+    "mechanism_evidence": {
+      "queue_depth": 0,
+      "queue_name": "chaosatlas-test-queue"
+    }
+  },
+  "observation": {
+    "status": "degraded",
+    "phase": "observe",
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 1006.298,
+        "body": "{\"depth\": 100, \"queue_name\": \"chaosatlas-test-queue\", \"status\": \"backlog\"}\n",
+        "error": null
+      }
+    ],
+    "mechanism_evidence": {
+      "queue_depth": 100,
+      "queue_name": "chaosatlas-test-queue"
+    }
+  },
+  "attestation": {
+    "schema_version": "chaosatlas-runtime-result-v1",
+    "valid": true,
+    "missing": [],
+    "comparison_eligible": true,
+    "baseline": true,
+    "injection": true,
+    "observation": true,
+    "recovery": true,
+    "cleanup": true,
+    "independent_oracle": true
+  },
+  "outcome_status": "degraded",
+  "injection_confirmed": true,
+  "injected_count": 1,
+  "recovery_confirmed": true,
+  "cleanup_confirmed": true,
+  "promotion_allowed": true,
+  "verdict": "degraded",
+  "mutation_ref": "runtime/mutations/extension-queue_backlog.yaml"
+}

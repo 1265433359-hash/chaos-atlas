@@ -1,0 +1,220 @@
+{
+  "schema_version": "chaosatlas-kubernetes-lifecycle-v1",
+  "action_id": "extension-io_error-20260903",
+  "status": "executed",
+  "mutation_ref": "runtime/mutations/extension-io_error-20260903.yaml",
+  "lifecycle": [
+    "preflight",
+    "baseline",
+    "inject",
+    "observe",
+    "recover",
+    "cleanup"
+  ],
+  "baseline": {
+    "status": "pass",
+    "phase": "baseline",
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 1085.817,
+        "body": "{\"bytes\": 20480, \"status\": \"ok\"}\n",
+        "error": null
+      }
+    ]
+  },
+  "injection": {
+    "applied": true,
+    "confirmed": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "iochaos.chaos-mesh.org/atlas-extension-io-error-live-canary-0-a51908d36293 created\n",
+      "stderr": "",
+      "manifest": "apiVersion: chaos-mesh.org/v1alpha1\nkind: IOChaos\nmetadata:\n  name: atlas-extension-io-error-live-canary-0-a51908d36293\n  namespace: chaosatlas-extension-canary\n  labels:\n    chaosatlas.dev/scenario: extension-io_error\n    chaosatlas.dev/phase: live-canary\n    chaosatlas.dev/cleanup-owner: chaosatlas\n    chaosatlas.dev/extension: extension-io_error\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-extension-canary\n    labelSelectors:\n      app: extension-python\n  action: fault\n  volumePath: /data\n  path: /data\n  errno: 5\n  percent: 100\n  duration: 10s\n"
+    },
+    "state": {
+      "resource_uid": "68bd7596-1559-4e1c-aa6e-940873ae1e5c",
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-09-04T06:33:06Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-extension-canary/extension-python-5cd944b54b-2464s/python",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-09-04T06:33:06Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    }
+  },
+  "observation": {
+    "status": "pass",
+    "phase": "observe",
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 38.019,
+        "body": "{\"bytes\": 20480, \"status\": \"ok\"}\n",
+        "error": null
+      }
+    ]
+  },
+  "recovery": {
+    "confirmed": true,
+    "state": {
+      "resource_uid": "68bd7596-1559-4e1c-aa6e-940873ae1e5c",
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-09-04T06:33:06Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-09-04T06:33:15Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-extension-canary/extension-python-5cd944b54b-2464s/python",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-09-04T06:33:06Z"
+      ],
+      "recovery_timestamps": [
+        "2026-09-04T06:33:15Z"
+      ],
+      "desired_phase": "Stop"
+    }
+  },
+  "cleanup": {
+    "confirmed": true,
+    "resource": {
+      "delete_command_ok": true,
+      "delete_output": "iochaos.chaos-mesh.org \"atlas-extension-io-error-live-canary-0-a51908d36293\" deleted from chaosatlas-extension-canary namespace",
+      "resource_absent_after_delete": true,
+      "absent_confirmed": true,
+      "verify_status": "absent",
+      "verify_error": "Error from server (NotFound): iochaos.chaos-mesh.org \"atlas-extension-io-error-live-canary-0-a51908d36293\" not found",
+      "delete_failed": false
+    },
+    "chaos_mesh": {
+      "schema_version": "chaosatlas-chaos-cleanup-v1",
+      "status": "not_run",
+      "confirmed": true,
+      "reason": "namespace Chaos Mesh sweep is not configured for this oracle"
+    }
+  },
+  "errors": [],
+  "preflight": {
+    "checked_at": "2026-09-04T06:33:03.730289+00:00",
+    "mutation": "C:/APP/project/chaos-atlas/artifacts/extension-canaries/20260904-run2/io-error/runtime/mutations/extension-io_error-20260903.yaml",
+    "kind": "IOChaos",
+    "namespace": "chaosatlas-extension-canary",
+    "name": "atlas-extension-io-error-live-canary-0-a51908d36293",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-extension-canary"
+      ],
+      "labelSelectors": {
+        "app": "extension-python"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "chaosatlas-extension-canary",
+        "allowed_namespaces": [
+          "chaosatlas-extension-canary"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "selector_labels_ok": true,
+        "requested_namespaces": [
+          "chaosatlas-extension-canary"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "chaosatlas-extension-canary",
+          "name": "extension-python-5cd944b54b-2464s",
+          "uid": "c38338b5-8716-4c0e-91e2-8d7cd295472c",
+          "terminating": false,
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            8080
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "mutation_name_status": "available",
+      "mutation_name_error": "Error from server (NotFound): iochaos.chaos-mesh.org \"atlas-extension-io-error-live-canary-0-a51908d36293\" not found",
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): iochaos.chaos-mesh.org \"atlas-extension-io-error-live-canary-0-a51908d36293\" not found\n"
+  },
+  "outcome_status": "observed",
+  "attestation": {
+    "schema_version": "chaosatlas-runtime-result-v1",
+    "valid": true,
+    "missing": [],
+    "comparison_eligible": true,
+    "baseline": true,
+    "injection": true,
+    "observation": true,
+    "recovery": true,
+    "cleanup": true,
+    "independent_oracle": true
+  },
+  "promotion_allowed": true,
+  "injection_confirmed": true,
+  "recovery_confirmed": true,
+  "cleanup_confirmed": true,
+  "verdict": "pass"
+}

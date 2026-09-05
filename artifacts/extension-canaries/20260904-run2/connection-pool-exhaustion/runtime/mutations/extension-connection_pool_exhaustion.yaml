@@ -1,0 +1,35 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: ChaosAtlasNativeExtension
+metadata:
+  name: atlas-extension-connection-pool-exhaustion-live-canary-0-0210d958c3ac
+  namespace: chaosatlas-extension-canary
+  labels:
+    chaosatlas.dev/scenario: extension-connection_pool_exhaustion
+    chaosatlas.dev/phase: live-canary
+    chaosatlas.dev/cleanup-owner: chaosatlas
+    chaosatlas.dev/extension: extension-connection_pool_exhaustion
+spec:
+  faultFamily: extension.connection_pool_exhaustion
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: extension-python
+  targetSelector:
+    app: extension-python
+  parameters:
+    connections: 20
+    duration_s: 10
+    pool_name: chaosatlas-test-pool
+chaosatlas_extension:
+  extension_id: extension.connection_pool_exhaustion
+  category: connection_pool
+  backend: ChaosAtlasConnectionPoolAgent
+  assessment:
+    status: supported
+    reason: native runtime agent and disposable target are available
+    requirements: []
+    evidence:
+      resource_scope: deployment
+      capabilities:
+        connection_pool_agent: true
+        disposable_target: true

@@ -1,0 +1,224 @@
+{
+  "schema_version": "chaosatlas-kubernetes-lifecycle-v1",
+  "action_id": "extension-time_offset-20260903",
+  "status": "executed",
+  "mutation_ref": "runtime/mutations/extension-time_offset-20260903.yaml",
+  "lifecycle": [
+    "preflight",
+    "baseline",
+    "inject",
+    "observe",
+    "recover",
+    "cleanup"
+  ],
+  "baseline": {
+    "status": "pass",
+    "phase": "baseline",
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 868.202,
+        "body": "{\"epoch\": 1788503597.9320729}\n",
+        "error": null
+      }
+    ]
+  },
+  "injection": {
+    "applied": true,
+    "confirmed": true,
+    "apply": {
+      "return_code": 0,
+      "stdout": "timechaos.chaos-mesh.org/atlas-extension-time-offset-live-canary-0-8487360ba7de created\n",
+      "stderr": "",
+      "manifest": "apiVersion: chaos-mesh.org/v1alpha1\nkind: TimeChaos\nmetadata:\n  name: atlas-extension-time-offset-live-canary-0-8487360ba7de\n  namespace: chaosatlas-extension-canary\n  labels:\n    chaosatlas.dev/scenario: extension-time_offset\n    chaosatlas.dev/phase: live-canary\n    chaosatlas.dev/cleanup-owner: chaosatlas\n    chaosatlas.dev/extension: extension-time_offset\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-extension-canary\n    labelSelectors:\n      app: extension-python\n  timeOffset: +500ms\n  clockIds:\n  - CLOCK_REALTIME\n  duration: 10s\n"
+    },
+    "state": {
+      "resource_uid": "1aa8e1ee-adec-455d-902d-27e75310d355",
+      "selected": true,
+      "all_injected": true,
+      "all_recovered": false,
+      "injected_count": 1,
+      "recovered_count": 0,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-09-04T06:33:18Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-extension-canary/extension-python-5cd944b54b-2464s/python",
+          "injectedCount": 1,
+          "phase": "Injected",
+          "recoveredCount": 0,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-09-04T06:33:18Z"
+      ],
+      "recovery_timestamps": [],
+      "desired_phase": "Run"
+    }
+  },
+  "observation": {
+    "status": "degraded",
+    "phase": "observe",
+    "samples": [
+      {
+        "status_code": 200,
+        "latency_ms": 1012.8,
+        "body": "{\"epoch\": 1788503601.2956872}\n",
+        "error": null,
+        "clock_offset_s": 0.4987599849700928
+      }
+    ],
+    "mechanism_evidence": {
+      "clock_offset_s": 0.4987599849700928
+    }
+  },
+  "recovery": {
+    "confirmed": true,
+    "state": {
+      "resource_uid": "1aa8e1ee-adec-455d-902d-27e75310d355",
+      "selected": true,
+      "all_injected": false,
+      "all_recovered": true,
+      "injected_count": 1,
+      "recovered_count": 1,
+      "records": [
+        {
+          "events": [
+            {
+              "operation": "Apply",
+              "timestamp": "2026-09-04T06:33:18Z",
+              "type": "Succeeded"
+            },
+            {
+              "operation": "Recover",
+              "timestamp": "2026-09-04T06:33:28Z",
+              "type": "Succeeded"
+            }
+          ],
+          "id": "chaosatlas-extension-canary/extension-python-5cd944b54b-2464s/python",
+          "injectedCount": 1,
+          "phase": "Not Injected",
+          "recoveredCount": 1,
+          "selectorKey": "."
+        }
+      ],
+      "apply_timestamps": [
+        "2026-09-04T06:33:18Z"
+      ],
+      "recovery_timestamps": [
+        "2026-09-04T06:33:28Z"
+      ],
+      "desired_phase": "Stop"
+    }
+  },
+  "cleanup": {
+    "confirmed": true,
+    "resource": {
+      "delete_command_ok": true,
+      "delete_output": "timechaos.chaos-mesh.org \"atlas-extension-time-offset-live-canary-0-8487360ba7de\" deleted from chaosatlas-extension-canary namespace",
+      "resource_absent_after_delete": true,
+      "absent_confirmed": true,
+      "verify_status": "absent",
+      "verify_error": "Error from server (NotFound): timechaos.chaos-mesh.org \"atlas-extension-time-offset-live-canary-0-8487360ba7de\" not found",
+      "delete_failed": false
+    },
+    "chaos_mesh": {
+      "schema_version": "chaosatlas-chaos-cleanup-v1",
+      "status": "not_run",
+      "confirmed": true,
+      "reason": "namespace Chaos Mesh sweep is not configured for this oracle"
+    }
+  },
+  "errors": [],
+  "preflight": {
+    "checked_at": "2026-09-04T06:33:16.332619+00:00",
+    "mutation": "C:/APP/project/chaos-atlas/artifacts/extension-canaries/20260904-run2/time-offset/runtime/mutations/extension-time_offset-20260903.yaml",
+    "kind": "TimeChaos",
+    "namespace": "chaosatlas-extension-canary",
+    "name": "atlas-extension-time-offset-live-canary-0-8487360ba7de",
+    "selector": {
+      "namespaces": [
+        "chaosatlas-extension-canary"
+      ],
+      "labelSelectors": {
+        "app": "extension-python"
+      }
+    },
+    "decision": "ready_for_injection",
+    "checks": {
+      "scope_guard": {
+        "allowed_namespace": "chaosatlas-extension-canary",
+        "allowed_namespaces": [
+          "chaosatlas-extension-canary"
+        ],
+        "metadata_namespace_ok": true,
+        "selector_namespaces_ok": true,
+        "selector_labels_ok": true,
+        "requested_namespaces": [
+          "chaosatlas-extension-canary"
+        ],
+        "requested_mode": "one",
+        "allowed_modes": [
+          "one"
+        ],
+        "mode_ok": true
+      },
+      "yaml_shape": true,
+      "crd_exists": true,
+      "chaos_components_ready": true,
+      "selector_matches": true,
+      "target_pods": [
+        {
+          "namespace": "chaosatlas-extension-canary",
+          "name": "extension-python-5cd944b54b-2464s",
+          "uid": "c38338b5-8716-4c0e-91e2-8d7cd295472c",
+          "terminating": false,
+          "ready": true,
+          "restarts": 0,
+          "ports": [
+            8080
+          ]
+        }
+      ],
+      "target_pods_ready": true,
+      "target_port_exists": true,
+      "mutation_name_available": true,
+      "mutation_name_status": "available",
+      "mutation_name_error": "Error from server (NotFound): timechaos.chaos-mesh.org \"atlas-extension-time-offset-live-canary-0-8487360ba7de\" not found",
+      "injector_prerequisite": {
+        "status": "pass",
+        "evidence": "Chaos Mesh controller and daemon Pods are Ready."
+      }
+    },
+    "errors": [],
+    "interpretation": {
+      "selected_is_not_injected": true,
+      "defense_conclusion_allowed": true
+    },
+    "resource_error": "Error from server (NotFound): timechaos.chaos-mesh.org \"atlas-extension-time-offset-live-canary-0-8487360ba7de\" not found\n"
+  },
+  "outcome_status": "degraded",
+  "attestation": {
+    "schema_version": "chaosatlas-runtime-result-v1",
+    "valid": true,
+    "missing": [],
+    "comparison_eligible": true,
+    "baseline": true,
+    "injection": true,
+    "observation": true,
+    "recovery": true,
+    "cleanup": true,
+    "independent_oracle": true
+  },
+  "promotion_allowed": true,
+  "injection_confirmed": true,
+  "recovery_confirmed": true,
+  "cleanup_confirmed": true,
+  "verdict": "degraded"
+}

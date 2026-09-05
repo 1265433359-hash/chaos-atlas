@@ -1,0 +1,660 @@
+{
+  "schema_version": "chaosatlas-extension-canary-v1",
+  "checked_at": "2026-09-04T06:37:20.830305+00:00",
+  "context": "chaosatlas-dify",
+  "namespace": "chaosatlas-extension-canary",
+  "results": [
+    {
+      "extension_id": "extension.io_delay",
+      "status": "executed",
+      "outcome_status": "observed",
+      "verdict": "pass",
+      "attestation": {
+        "schema_version": "chaosatlas-runtime-result-v1",
+        "valid": true,
+        "missing": [],
+        "comparison_eligible": true,
+        "baseline": true,
+        "injection": true,
+        "observation": true,
+        "recovery": true,
+        "cleanup": true,
+        "independent_oracle": true
+      },
+      "injection": {
+        "applied": true,
+        "confirmed": true,
+        "apply": {
+          "return_code": 0,
+          "stdout": "iochaos.chaos-mesh.org/atlas-extension-io-delay-live-canary-0-b3a51917bd7b created\n",
+          "stderr": "",
+          "manifest": "apiVersion: chaos-mesh.org/v1alpha1\nkind: IOChaos\nmetadata:\n  name: atlas-extension-io-delay-live-canary-0-b3a51917bd7b\n  namespace: chaosatlas-extension-canary\n  labels:\n    chaosatlas.dev/scenario: extension-io_delay\n    chaosatlas.dev/phase: live-canary\n    chaosatlas.dev/cleanup-owner: chaosatlas\n    chaosatlas.dev/extension: extension-io_delay\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-extension-canary\n    labelSelectors:\n      app: extension-python\n  action: latency\n  volumePath: /data\n  path: /data\n  delay: 100ms\n  percent: 100\n  duration: 10s\n"
+        },
+        "state": {
+          "resource_uid": "f2b81a86-6590-4add-a80a-d097492385a6",
+          "selected": true,
+          "all_injected": true,
+          "all_recovered": false,
+          "injected_count": 1,
+          "recovered_count": 0,
+          "records": [
+            {
+              "events": [
+                {
+                  "operation": "Apply",
+                  "timestamp": "2026-09-04T06:35:43Z",
+                  "type": "Succeeded"
+                }
+              ],
+              "id": "chaosatlas-extension-canary/extension-python-77b89748b5-bfg99/python",
+              "injectedCount": 1,
+              "phase": "Injected",
+              "recoveredCount": 0,
+              "selectorKey": "."
+            }
+          ],
+          "apply_timestamps": [
+            "2026-09-04T06:35:43Z"
+          ],
+          "recovery_timestamps": [],
+          "desired_phase": "Run"
+        }
+      },
+      "observation": {
+        "status": "pass",
+        "phase": "observe",
+        "samples": [
+          {
+            "status_code": 200,
+            "latency_ms": 75.925,
+            "body": "{\"bytes\": 20480, \"status\": \"ok\"}\n",
+            "error": null
+          }
+        ]
+      },
+      "recovery": {
+        "confirmed": true,
+        "state": {
+          "resource_uid": "f2b81a86-6590-4add-a80a-d097492385a6",
+          "selected": true,
+          "all_injected": false,
+          "all_recovered": true,
+          "injected_count": 1,
+          "recovered_count": 1,
+          "records": [
+            {
+              "events": [
+                {
+                  "operation": "Apply",
+                  "timestamp": "2026-09-04T06:35:43Z",
+                  "type": "Succeeded"
+                },
+                {
+                  "operation": "Recover",
+                  "timestamp": "2026-09-04T06:35:53Z",
+                  "type": "Succeeded"
+                }
+              ],
+              "id": "chaosatlas-extension-canary/extension-python-77b89748b5-bfg99/python",
+              "injectedCount": 1,
+              "phase": "Not Injected",
+              "recoveredCount": 1,
+              "selectorKey": "."
+            }
+          ],
+          "apply_timestamps": [
+            "2026-09-04T06:35:43Z"
+          ],
+          "recovery_timestamps": [
+            "2026-09-04T06:35:53Z"
+          ],
+          "desired_phase": "Stop"
+        }
+      },
+      "cleanup": {
+        "confirmed": true,
+        "resource": {
+          "delete_command_ok": true,
+          "delete_output": "iochaos.chaos-mesh.org \"atlas-extension-io-delay-live-canary-0-b3a51917bd7b\" deleted from chaosatlas-extension-canary namespace",
+          "resource_absent_after_delete": true,
+          "absent_confirmed": true,
+          "verify_status": "absent",
+          "verify_error": "Error from server (NotFound): iochaos.chaos-mesh.org \"atlas-extension-io-delay-live-canary-0-b3a51917bd7b\" not found",
+          "delete_failed": false
+        },
+        "chaos_mesh": {
+          "schema_version": "chaosatlas-chaos-cleanup-v1",
+          "status": "not_run",
+          "confirmed": true,
+          "reason": "namespace Chaos Mesh sweep is not configured for this oracle"
+        }
+      },
+      "errors": [],
+      "mechanism_evidence": null
+    },
+    {
+      "extension_id": "extension.io_error",
+      "status": "executed",
+      "outcome_status": "observed",
+      "verdict": "pass",
+      "attestation": {
+        "schema_version": "chaosatlas-runtime-result-v1",
+        "valid": true,
+        "missing": [],
+        "comparison_eligible": true,
+        "baseline": true,
+        "injection": true,
+        "observation": true,
+        "recovery": true,
+        "cleanup": true,
+        "independent_oracle": true
+      },
+      "injection": {
+        "applied": true,
+        "confirmed": true,
+        "apply": {
+          "return_code": 0,
+          "stdout": "iochaos.chaos-mesh.org/atlas-extension-io-error-live-canary-0-a51908d36293 created\n",
+          "stderr": "",
+          "manifest": "apiVersion: chaos-mesh.org/v1alpha1\nkind: IOChaos\nmetadata:\n  name: atlas-extension-io-error-live-canary-0-a51908d36293\n  namespace: chaosatlas-extension-canary\n  labels:\n    chaosatlas.dev/scenario: extension-io_error\n    chaosatlas.dev/phase: live-canary\n    chaosatlas.dev/cleanup-owner: chaosatlas\n    chaosatlas.dev/extension: extension-io_error\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-extension-canary\n    labelSelectors:\n      app: extension-python\n  action: fault\n  volumePath: /data\n  path: /data\n  errno: 5\n  percent: 100\n  duration: 10s\n"
+        },
+        "state": {
+          "resource_uid": "699d3d38-a5bc-4fbf-85d0-b8af04116766",
+          "selected": true,
+          "all_injected": true,
+          "all_recovered": false,
+          "injected_count": 1,
+          "recovered_count": 0,
+          "records": [
+            {
+              "events": [
+                {
+                  "operation": "Apply",
+                  "timestamp": "2026-09-04T06:35:56Z",
+                  "type": "Succeeded"
+                }
+              ],
+              "id": "chaosatlas-extension-canary/extension-python-77b89748b5-bfg99/python",
+              "injectedCount": 1,
+              "phase": "Injected",
+              "recoveredCount": 0,
+              "selectorKey": "."
+            }
+          ],
+          "apply_timestamps": [
+            "2026-09-04T06:35:56Z"
+          ],
+          "recovery_timestamps": [],
+          "desired_phase": "Run"
+        }
+      },
+      "observation": {
+        "status": "pass",
+        "phase": "observe",
+        "samples": [
+          {
+            "status_code": 200,
+            "latency_ms": 1029.403,
+            "body": "{\"bytes\": 20480, \"status\": \"ok\"}\n",
+            "error": null
+          }
+        ]
+      },
+      "recovery": {
+        "confirmed": true,
+        "state": {
+          "resource_uid": "699d3d38-a5bc-4fbf-85d0-b8af04116766",
+          "selected": true,
+          "all_injected": false,
+          "all_recovered": true,
+          "injected_count": 1,
+          "recovered_count": 1,
+          "records": [
+            {
+              "events": [
+                {
+                  "operation": "Apply",
+                  "timestamp": "2026-09-04T06:35:56Z",
+                  "type": "Succeeded"
+                },
+                {
+                  "operation": "Recover",
+                  "timestamp": "2026-09-04T06:36:06Z",
+                  "type": "Succeeded"
+                }
+              ],
+              "id": "chaosatlas-extension-canary/extension-python-77b89748b5-bfg99/python",
+              "injectedCount": 1,
+              "phase": "Not Injected",
+              "recoveredCount": 1,
+              "selectorKey": "."
+            }
+          ],
+          "apply_timestamps": [
+            "2026-09-04T06:35:56Z"
+          ],
+          "recovery_timestamps": [
+            "2026-09-04T06:36:06Z"
+          ],
+          "desired_phase": "Stop"
+        }
+      },
+      "cleanup": {
+        "confirmed": true,
+        "resource": {
+          "delete_command_ok": true,
+          "delete_output": "iochaos.chaos-mesh.org \"atlas-extension-io-error-live-canary-0-a51908d36293\" deleted from chaosatlas-extension-canary namespace",
+          "resource_absent_after_delete": true,
+          "absent_confirmed": true,
+          "verify_status": "absent",
+          "verify_error": "Error from server (NotFound): iochaos.chaos-mesh.org \"atlas-extension-io-error-live-canary-0-a51908d36293\" not found",
+          "delete_failed": false
+        },
+        "chaos_mesh": {
+          "schema_version": "chaosatlas-chaos-cleanup-v1",
+          "status": "not_run",
+          "confirmed": true,
+          "reason": "namespace Chaos Mesh sweep is not configured for this oracle"
+        }
+      },
+      "errors": [],
+      "mechanism_evidence": null
+    },
+    {
+      "extension_id": "extension.time_offset",
+      "status": "executed",
+      "outcome_status": "degraded",
+      "verdict": "degraded",
+      "attestation": {
+        "schema_version": "chaosatlas-runtime-result-v1",
+        "valid": true,
+        "missing": [],
+        "comparison_eligible": true,
+        "baseline": true,
+        "injection": true,
+        "observation": true,
+        "recovery": true,
+        "cleanup": true,
+        "independent_oracle": true
+      },
+      "injection": {
+        "applied": true,
+        "confirmed": true,
+        "apply": {
+          "return_code": 0,
+          "stdout": "timechaos.chaos-mesh.org/atlas-extension-time-offset-live-canary-0-8487360ba7de created\n",
+          "stderr": "",
+          "manifest": "apiVersion: chaos-mesh.org/v1alpha1\nkind: TimeChaos\nmetadata:\n  name: atlas-extension-time-offset-live-canary-0-8487360ba7de\n  namespace: chaosatlas-extension-canary\n  labels:\n    chaosatlas.dev/scenario: extension-time_offset\n    chaosatlas.dev/phase: live-canary\n    chaosatlas.dev/cleanup-owner: chaosatlas\n    chaosatlas.dev/extension: extension-time_offset\nspec:\n  mode: one\n  selector:\n    namespaces:\n    - chaosatlas-extension-canary\n    labelSelectors:\n      app: extension-python\n  timeOffset: +500ms\n  clockIds:\n  - CLOCK_REALTIME\n  duration: 10s\n"
+        },
+        "state": {
+          "resource_uid": "1801a969-64e9-41f7-8b16-d3613a25cf70",
+          "selected": true,
+          "all_injected": true,
+          "all_recovered": false,
+          "injected_count": 1,
+          "recovered_count": 0,
+          "records": [
+            {
+              "events": [
+                {
+                  "operation": "Apply",
+                  "timestamp": "2026-09-04T06:36:09Z",
+                  "type": "Succeeded"
+                }
+              ],
+              "id": "chaosatlas-extension-canary/extension-python-77b89748b5-bfg99/python",
+              "injectedCount": 1,
+              "phase": "Injected",
+              "recoveredCount": 0,
+              "selectorKey": "."
+            }
+          ],
+          "apply_timestamps": [
+            "2026-09-04T06:36:09Z"
+          ],
+          "recovery_timestamps": [],
+          "desired_phase": "Run"
+        }
+      },
+      "observation": {
+        "status": "degraded",
+        "phase": "observe",
+        "samples": [
+          {
+            "status_code": 200,
+            "latency_ms": 1005.477,
+            "body": "{\"epoch\": 1788503771.7821577}\n",
+            "error": null,
+            "clock_offset_s": 0.49785447120666504
+          }
+        ],
+        "mechanism_evidence": {
+          "clock_offset_s": 0.49785447120666504
+        }
+      },
+      "recovery": {
+        "confirmed": true,
+        "state": {
+          "resource_uid": "1801a969-64e9-41f7-8b16-d3613a25cf70",
+          "selected": true,
+          "all_injected": false,
+          "all_recovered": true,
+          "injected_count": 1,
+          "recovered_count": 1,
+          "records": [
+            {
+              "events": [
+                {
+                  "operation": "Apply",
+                  "timestamp": "2026-09-04T06:36:09Z",
+                  "type": "Succeeded"
+                },
+                {
+                  "operation": "Recover",
+                  "timestamp": "2026-09-04T06:36:19Z",
+                  "type": "Succeeded"
+                }
+              ],
+              "id": "chaosatlas-extension-canary/extension-python-77b89748b5-bfg99/python",
+              "injectedCount": 1,
+              "phase": "Not Injected",
+              "recoveredCount": 1,
+              "selectorKey": "."
+            }
+          ],
+          "apply_timestamps": [
+            "2026-09-04T06:36:09Z"
+          ],
+          "recovery_timestamps": [
+            "2026-09-04T06:36:19Z"
+          ],
+          "desired_phase": "Stop"
+        }
+      },
+      "cleanup": {
+        "confirmed": true,
+        "resource": {
+          "delete_command_ok": true,
+          "delete_output": "timechaos.chaos-mesh.org \"atlas-extension-time-offset-live-canary-0-8487360ba7de\" deleted from chaosatlas-extension-canary namespace",
+          "resource_absent_after_delete": true,
+          "absent_confirmed": true,
+          "verify_status": "absent",
+          "verify_error": "Error from server (NotFound): timechaos.chaos-mesh.org \"atlas-extension-time-offset-live-canary-0-8487360ba7de\" not found",
+          "delete_failed": false
+        },
+        "chaos_mesh": {
+          "schema_version": "chaosatlas-chaos-cleanup-v1",
+          "status": "not_run",
+          "confirmed": true,
+          "reason": "namespace Chaos Mesh sweep is not configured for this oracle"
+        }
+      },
+      "errors": [],
+      "mechanism_evidence": null
+    },
+    {
+      "extension_id": "extension.queue_backlog",
+      "status": "executed",
+      "outcome_status": "degraded",
+      "verdict": "degraded",
+      "attestation": {
+        "schema_version": "chaosatlas-runtime-result-v1",
+        "valid": true,
+        "missing": [],
+        "comparison_eligible": true,
+        "baseline": true,
+        "injection": true,
+        "observation": true,
+        "recovery": true,
+        "cleanup": true,
+        "independent_oracle": true
+      },
+      "injection": {
+        "applied": true,
+        "confirmed": true,
+        "apply": {
+          "return_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "observation": {
+        "status": "degraded",
+        "phase": "observe",
+        "samples": [
+          {
+            "status_code": 200,
+            "latency_ms": 37.442,
+            "body": "{\"depth\": 100, \"queue_name\": \"chaosatlas-test-queue\", \"status\": \"backlog\"}\n",
+            "error": null
+          }
+        ],
+        "mechanism_evidence": {
+          "queue_depth": 100,
+          "queue_name": "chaosatlas-test-queue"
+        }
+      },
+      "recovery": {
+        "confirmed": true,
+        "state": {
+          "control_removed": true
+        },
+        "business_probe": {
+          "status": "pass",
+          "phase": "recovery",
+          "samples": [
+            {
+              "status_code": 200,
+              "latency_ms": 1005.267,
+              "body": "{\"depth\": 0, \"queue_name\": \"chaosatlas-test-queue\", \"status\": \"ok\"}\n",
+              "error": null
+            }
+          ],
+          "mechanism_evidence": {
+            "queue_depth": 0,
+            "queue_name": "chaosatlas-test-queue"
+          }
+        }
+      },
+      "cleanup": {
+        "confirmed": true,
+        "verified": true,
+        "cleanup_command": {
+          "return_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "verification": {
+          "return_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "errors": [],
+      "mechanism_evidence": {
+        "queue_depth": 100,
+        "queue_name": "chaosatlas-test-queue"
+      }
+    },
+    {
+      "extension_id": "extension.connection_pool_exhaustion",
+      "status": "executed",
+      "outcome_status": "degraded",
+      "verdict": "degraded",
+      "attestation": {
+        "schema_version": "chaosatlas-runtime-result-v1",
+        "valid": true,
+        "missing": [],
+        "comparison_eligible": true,
+        "baseline": true,
+        "injection": true,
+        "observation": true,
+        "recovery": true,
+        "cleanup": true,
+        "independent_oracle": true
+      },
+      "injection": {
+        "applied": true,
+        "confirmed": true,
+        "apply": {
+          "return_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "observation": {
+        "status": "degraded",
+        "phase": "observe",
+        "samples": [
+          {
+            "status_code": 200,
+            "latency_ms": 1012.619,
+            "body": "{\"capacity\": 20, \"in_use\": 20, \"pool_name\": \"chaosatlas-test-pool\", \"status\": \"exhausted\", \"utilization_pct\": 100}\n",
+            "error": null
+          }
+        ],
+        "mechanism_evidence": {
+          "pool_in_use": 20,
+          "pool_capacity": 20,
+          "utilization_pct": 100,
+          "pool_name": "chaosatlas-test-pool"
+        }
+      },
+      "recovery": {
+        "confirmed": true,
+        "state": {
+          "control_removed": true
+        },
+        "business_probe": {
+          "status": "pass",
+          "phase": "recovery",
+          "samples": [
+            {
+              "status_code": 200,
+              "latency_ms": 1011.964,
+              "body": "{\"capacity\": 20, \"in_use\": 0, \"pool_name\": \"chaosatlas-test-pool\", \"status\": \"ok\", \"utilization_pct\": 0}\n",
+              "error": null
+            }
+          ],
+          "mechanism_evidence": {
+            "pool_in_use": 0,
+            "pool_capacity": 20,
+            "utilization_pct": 0,
+            "pool_name": "chaosatlas-test-pool"
+          }
+        }
+      },
+      "cleanup": {
+        "confirmed": true,
+        "verified": true,
+        "cleanup_command": {
+          "return_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "verification": {
+          "return_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "errors": [],
+      "mechanism_evidence": {
+        "pool_in_use": 20,
+        "pool_capacity": 20,
+        "utilization_pct": 100,
+        "pool_name": "chaosatlas-test-pool"
+      }
+    },
+    {
+      "extension_id": "extension.runtime_pause",
+      "status": "executed",
+      "outcome_status": "degraded",
+      "verdict": "degraded",
+      "attestation": {
+        "schema_version": "chaosatlas-runtime-result-v1",
+        "valid": true,
+        "missing": [],
+        "comparison_eligible": true,
+        "baseline": true,
+        "injection": true,
+        "observation": true,
+        "recovery": true,
+        "cleanup": true,
+        "independent_oracle": true
+      },
+      "injection": {
+        "applied": true,
+        "confirmed": true,
+        "apply": {
+          "return_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "observation": {
+        "status": "degraded",
+        "phase": "observe",
+        "samples": [
+          {
+            "status_code": 503,
+            "latency_ms": 1016.653,
+            "body": "{\"pause_ms\": 100, \"status\": \"paused\", \"target_process\": \"python\"}\n",
+            "error": "HTTP Error 503: Service Unavailable"
+          }
+        ],
+        "mechanism_evidence": {
+          "target_process": "python",
+          "pause_ms": 100
+        }
+      },
+      "recovery": {
+        "confirmed": true,
+        "state": {
+          "control_removed": true
+        },
+        "business_probe": {
+          "status": "pass",
+          "phase": "recovery",
+          "samples": [
+            {
+              "status_code": 200,
+              "latency_ms": 1004.873,
+              "body": "{\"status\": \"ok\", \"target_process\": \"python\"}\n",
+              "error": null
+            }
+          ],
+          "mechanism_evidence": {
+            "target_process": "python",
+            "pause_ms": null
+          }
+        }
+      },
+      "cleanup": {
+        "confirmed": true,
+        "verified": true,
+        "cleanup_command": {
+          "return_code": 0,
+          "stdout": "",
+          "stderr": ""
+        },
+        "verification": {
+          "return_code": 0,
+          "stdout": "",
+          "stderr": ""
+        }
+      },
+      "errors": [],
+      "mechanism_evidence": {
+        "target_process": "python",
+        "pause_ms": 100
+      }
+    },
+    {
+      "extension_id": "extension.jvm_gc_pause",
+      "status": "inapplicable",
+      "reason": "Dify target has no JVM runtime; JVM canary was intentionally not run in three-extension mode"
+    }
+  ],
+  "cleanup": "namespace_deleted"
+}
