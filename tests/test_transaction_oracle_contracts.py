@@ -4,7 +4,13 @@ from pathlib import Path
 import pytest
 
 from chaosatlas.oracles.builder import OracleBuilder
-from chaosatlas.oracles.transaction_contracts import evaluate_assertions, make_draft, record_human_approval, validate_transaction_contract
+from chaosatlas.oracles.transaction_contracts import (
+    evaluate_assertions,
+    freeze_approved_contract,
+    make_draft,
+    record_human_approval,
+    validate_transaction_contract,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,6 +53,22 @@ def test_changing_approved_semantics_invalidates_hash_and_approval_subject():
     errors = validate_transaction_contract(approved)
     assert "contract hash mismatch" in errors
     assert "approved/frozen Oracle requires a matching human approval record" in errors
+
+
+def test_approved_contract_can_be_frozen_without_changing_approval_subject():
+    contract = OracleBuilder().build(project_id="immich", project_revision="r")
+    approved = record_human_approval(contract, {"decision": "approved", "reviewer": "human-reviewer", "reviewed_at": "2026-09-06T00:00:00+00:00"})
+    frozen = freeze_approved_contract(approved)
+    assert frozen["status"] == "frozen"
+    assert frozen["approval"]["record"] == approved["approval"]["record"]
+    assert frozen["contract_sha256"] != approved["contract_sha256"]
+    assert validate_transaction_contract(frozen) == []
+
+
+def test_freeze_rejects_contract_without_human_approval():
+    contract = OracleBuilder().build(project_id="immich", project_revision="r")
+    with pytest.raises(ValueError, match="only an approved Oracle"):
+        freeze_approved_contract(contract)
 
 
 def test_oracle_self_check_accepts_normal_and_detects_wrong_hash():

@@ -1,0 +1,121 @@
+{
+  "allowed_requests": [
+    {
+      "id": "upload",
+      "method": "POST",
+      "path": "/api/assets"
+    },
+    {
+      "id": "read",
+      "method": "GET",
+      "path": "/api/assets/{asset_id}"
+    },
+    {
+      "id": "download",
+      "method": "GET",
+      "path": "/api/assets/{asset_id}/original"
+    },
+    {
+      "id": "delete",
+      "method": "DELETE",
+      "path": "/api/assets"
+    }
+  ],
+  "approval": {
+    "record": {
+      "approved_subject_sha256": "0d4ddc29bf91214edd68ea87344af32d812963b55236d13df9ad83c2b593c0f7",
+      "decision": "approved",
+      "decision_reference": "user-selection:1A,2A,3A",
+      "reviewed_at": "2026-09-05T17:20:47.1313330+00:00",
+      "reviewer": "1265433359-hash"
+    },
+    "required": true
+  },
+  "assertions": [
+    {
+      "expected": 201,
+      "id": "upload-ok",
+      "operator": "status_equals",
+      "step_id": "upload-synthetic-image"
+    },
+    {
+      "id": "id-returned",
+      "operator": "json_path_exists",
+      "path": "$.id",
+      "step_id": "upload-synthetic-image"
+    },
+    {
+      "expected_from": "fixture_sha256",
+      "id": "original-byte-hash",
+      "operator": "sha256_equals",
+      "step_id": "download-original"
+    }
+  ],
+  "cleanup": {
+    "lookup_after_lost_response": {
+      "field": "deviceAssetId",
+      "value": "{run_id}-asset"
+    },
+    "on_every_exit": true,
+    "request_id": "delete",
+    "strategy": "exact_owned_ids"
+  },
+  "contract_sha256": "1886fd29567ededbcdf6696561ac6fea4e17a9bfd172e4219c5c302506198d0a",
+  "credential_refs": [
+    {
+      "id": "immich-test-api-key",
+      "source": "runtime_secret_ref"
+    }
+  ],
+  "evidence_sources": [
+    "image:immich-server:v2.6.3",
+    "source:asset-media.controller.ts"
+  ],
+  "oracle_id": "immich-asset-roundtrip-v1",
+  "ownership": {
+    "delete_scope": "returned_or_exactly_queried_ids",
+    "marker_field": "chaosatlas_run_id",
+    "synthetic_only": true
+  },
+  "project_id": "immich",
+  "project_revision": "5cf305a3a239e0619f756a5cdcb380e83e90d6a04f2065adb5e7f1afee5c2629",
+  "schema_version": "chaosatlas-transaction-oracle-v1",
+  "status": "frozen",
+  "steps": [
+    {
+      "capture": {
+        "asset_id": "$.id"
+      },
+      "id": "upload-synthetic-image",
+      "idempotency_key": "{run_id}-asset",
+      "multipart": {
+        "assetData": "fixture:synthetic_png",
+        "deviceAssetId": "{run_id}-asset",
+        "deviceId": "chaosatlas",
+        "fileCreatedAt": "fixture_timestamp",
+        "fileModifiedAt": "fixture_timestamp",
+        "isFavorite": "false"
+      },
+      "request_id": "upload"
+    },
+    {
+      "id": "read-metadata",
+      "path_variables": {
+        "asset_id": "{asset_id}"
+      },
+      "request_id": "read"
+    },
+    {
+      "id": "download-original",
+      "path_variables": {
+        "asset_id": "{asset_id}"
+      },
+      "request_id": "download"
+    }
+  ],
+  "timeouts": {
+    "eventual_s": 30,
+    "poll_interval_s": 2,
+    "request_s": 10
+  }
+}

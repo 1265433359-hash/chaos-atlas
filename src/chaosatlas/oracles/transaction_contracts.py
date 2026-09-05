@@ -90,6 +90,22 @@ def record_human_approval(contract: dict[str, Any], record: dict[str, Any]) -> d
     return with_hash(result, "contract_sha256")
 
 
+def freeze_approved_contract(contract: dict[str, Any]) -> dict[str, Any]:
+    """Freeze an already approved contract without changing its approved semantics."""
+    if contract.get("status") != "approved":
+        raise ValueError("only an approved Oracle can be frozen")
+    errors = validate_transaction_contract(contract)
+    if errors:
+        raise ValueError("invalid approved transaction Oracle: " + "; ".join(errors))
+    result = deepcopy(contract)
+    result["status"] = "frozen"
+    result = with_hash(result, "contract_sha256")
+    errors = validate_transaction_contract(result)
+    if errors:
+        raise ValueError("invalid frozen transaction Oracle: " + "; ".join(errors))
+    return result
+
+
 def make_draft(payload: dict[str, Any]) -> dict[str, Any]:
     value = {"schema_version": SCHEMA, **deepcopy(payload), "status": "draft"}
     value.setdefault("approval", {"required": True, "record": None})

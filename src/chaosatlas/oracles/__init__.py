@@ -8,7 +8,7 @@ from chaosatlas.oracles.registry import (
     OracleRuntime,
     build_default_oracle_registry,
 )
-from chaosatlas.oracles.transaction_contracts import validate_transaction_contract
+from chaosatlas.oracles.transaction_contracts import freeze_approved_contract, validate_transaction_contract
 
 __all__ = [
     "DEFAULT_ORACLE_REGISTRY",
@@ -19,5 +19,6 @@ __all__ = [
     "ProbeWorkflowOracle",
     "WorkflowOracle",
     "build_default_oracle_registry",
+    "freeze_approved_contract",
     "validate_transaction_contract",
 ]

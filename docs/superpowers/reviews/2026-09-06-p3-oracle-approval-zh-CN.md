@@ -1,6 +1,8 @@
 # P3 首批事务 Oracle 人工审核包
 
-日期：2026-09-06。状态：四份契约均为 `validated`，尚未 `approved`，尚未执行真实写操作。
+日期：2026-09-06。状态：四份原始草稿保留为 `validated`；用户以 `1A 2A 3A` 批准当前四份语义，
+审批身份为 `1265433359-hash`，批准时间为 `2026-09-05T17:20:47.1313330+00:00`。四份批准件已生成并置为
+`frozen`；尚未执行真实写操作。
 
 ## 共同安全边界
 
@@ -27,13 +29,20 @@
 - `projects/chaosatlas-apps/rocketchat/oracle-drafts/rocketchat-message-roundtrip-v1.json`
 - `projects/chaosatlas-apps/erpnext/oracle-drafts/erpnext-todo-crud-v1.json`
 
+对应的不可变批准件位于各项目的 `oracle-contracts/` 目录。批准记录只包含 reviewer、时间、用户选择引用和
+批准语义哈希，不包含邮箱或运行凭据。`validated` 草稿和 `frozen` 批准件同时保留，以便审计批准前后的状态转换。
+
 ## 已完成的非真实自检
 
 契约 schema/hash、项目 revision、路径白名单、审批门、清理策略和敏感扫描已由自动测试覆盖。合成正常
 Immich 响应通过断言器，刻意错误的下载哈希被捕获。这只验证 Oracle 逻辑，不是四个应用的真实业务证据。
 
-## 审批后才执行
+## 批准件验证结果
 
-批准后写入外部人工审批记录并冻结 hash，随后按 Immich → Medusa → Rocket.Chat → ERPNext 顺序做正常
-事务、刻意 Oracle 反例、每个写步骤失败补偿和响应丢失恢复。缺少测试凭据或 fixture 时精确 blocked，
+自动测试验证了：只有 `validated` 可以批准、只有 `approved` 可以冻结、冻结不改变已批准语义、批准后修改
+步骤或断言会同时破坏内容哈希与批准语义哈希。四份落盘批准件均通过 schema、内容哈希和批准记录校验。
+
+## 后续真实执行
+
+随后按 Immich → Medusa → Rocket.Chat → ERPNext 顺序做正常事务、刻意 Oracle 反例、每个写步骤失败补偿和响应丢失恢复。缺少测试凭据或 fixture 时精确 blocked，
 不以健康检查替代事务，不自动创建高权限生产账号。
