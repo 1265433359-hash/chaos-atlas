@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from chaosatlas.orchestration.engine import _runtime_oracle
+from chaosatlas.orchestration.engine import _find_candidate, _runtime_oracle
 from chaosatlas.oracles import DEFAULT_ORACLE_REGISTRY, OracleRegistry
 from tools.experiment_policy import new_policy_state
 from tools.experiment_policy_feedback import ingest_runtime_result, write_policy_state
@@ -339,6 +339,36 @@ def _adapter_inventory(adapter: Any, profile: dict[str, Any]) -> dict[str, Any]:
     return method(profile) if required else method()
 
 
+def resolve_requested_candidate_ids(
+    candidates: list[dict[str, Any]],
+    requested_ids: list[str],
+    *,
+    project_id: str,
+) -> tuple[list[str], list[str]]:
+    """Resolve exact runtime IDs and stable CLI aliases for the batch loop."""
+    by_id = {
+        str(item.get("candidate_id")): item
+        for item in candidates
+        if isinstance(item, dict) and item.get("candidate_id")
+    }
+    resolved: list[str] = []
+    unknown: list[str] = []
+    for requested in requested_ids:
+        requested = str(requested)
+        candidate = by_id.get(requested) or _find_candidate(
+            candidates,
+            requested,
+            project_id=project_id,
+        )
+        if candidate is None:
+            unknown.append(requested)
+            continue
+        candidate_id = str(candidate["candidate_id"])
+        if candidate_id not in resolved:
+            resolved.append(candidate_id)
+    return resolved, unknown
+
+
 def build_live_batch_plan(
     *,
     profile: dict[str, Any],
@@ -469,8 +499,12 @@ def run_live_batch(
     plan = build_live_batch_plan(profile=profile, adapter=adapter, oracle_registry=oracle_registry)
     candidates = list(plan.get("candidates") or [])
     by_id = {str(item.get("candidate_id")): item for item in candidates}
-    requested_ids = [str(item) for item in candidate_ids] if candidate_ids else [str(item.get("candidate_id")) for item in candidates]
-    unknown = [item for item in requested_ids if item not in by_id]
+    requested = [str(item) for item in candidate_ids] if candidate_ids else [str(item.get("candidate_id")) for item in candidates]
+    requested_ids, unknown = resolve_requested_candidate_ids(
+        candidates,
+        requested,
+        project_id=str(plan.get("project_id") or profile.get("project_id") or ""),
+    )
     if unknown:
         plan["status"] = "environment_blocked"
         plan.setdefault("errors", []).append("unknown candidate ids: " + ",".join(unknown))

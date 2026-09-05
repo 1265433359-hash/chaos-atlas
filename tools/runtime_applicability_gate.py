@@ -51,6 +51,7 @@ ALLOWED_NAMESPACES = {
     "chaosatlas-sock-shop",
 }
 ALLOWED_MODES = {"one"}
+CHAOS_MESH_NAMESPACES = ("chaos-testing", "chaos-mesh")
 
 
 def _call_with_optional_context(function: Any, *args: Any, kube_context: str | None = None, **kwargs: Any) -> Any:
@@ -214,31 +215,47 @@ def ports_for_pod(pod: dict[str, Any]) -> set[int]:
 
 
 def chaos_components(kube_context: str | None = None) -> tuple[dict[str, Any], list[str]]:
-    data, error = kubectl_json(["get", "pods", "-n", "chaos-testing"], kube_context=kube_context)
-    if error:
-        return {"ready": False, "controller_pods": [], "daemon_pods": []}, [error]
-    controllers: list[dict[str, Any]] = []
-    daemons: list[dict[str, Any]] = []
-    for pod in data.get("items", []):
-        name = pod.get("metadata", {}).get("name", "")
-        labels = pod.get("metadata", {}).get("labels", {})
-        component = labels.get("app.kubernetes.io/component", "")
-        if "controller-manager" in component or name.startswith("chaos-controller-manager"):
-            controllers.append(pod)
-        if "daemon" in component or name.startswith("chaos-daemon"):
-            daemons.append(pod)
-    ready = bool(controllers) and bool(daemons) and all(
-        ready_condition(pod) for pod in [*controllers, *daemons]
-    )
-    gate_result = {
-        "ready": ready,
-        "controller_pods": [pod["metadata"]["name"] for pod in controllers],
-        "daemon_pods": [pod["metadata"]["name"] for pod in daemons],
-    }, []
-    return gate_result
+    errors: list[str] = []
+    for namespace in CHAOS_MESH_NAMESPACES:
+        data, error = kubectl_json(["get", "pods", "-n", namespace], kube_context=kube_context)
+        if error:
+            errors.append(f"{namespace}: {error}")
+            continue
+        controllers: list[dict[str, Any]] = []
+        daemons: list[dict[str, Any]] = []
+        for pod in data.get("items", []):
+            name = pod.get("metadata", {}).get("name", "")
+            labels = pod.get("metadata", {}).get("labels", {})
+            component = labels.get("app.kubernetes.io/component", "")
+            if "controller-manager" in component or name.startswith("chaos-controller-manager"):
+                controllers.append(pod)
+            if "daemon" in component or name.startswith("chaos-daemon"):
+                daemons.append(pod)
+        if controllers or daemons:
+            ready = bool(controllers) and bool(daemons) and all(
+                ready_condition(pod) for pod in [*controllers, *daemons]
+            )
+            return {
+                "ready": ready,
+                "namespace": namespace,
+                "controller_pods": [pod["metadata"]["name"] for pod in controllers],
+                "daemon_pods": [pod["metadata"]["name"] for pod in daemons],
+            }, []
+    return {
+        "ready": False,
+        "namespace": None,
+        "controller_pods": [],
+        "daemon_pods": [],
+    }, errors
 
 
-def daemon_prerequisite(kind: str, daemon_names: list[str], kube_context: str | None = None) -> dict[str, Any]:
+def daemon_prerequisite(
+    kind: str,
+    daemon_names: list[str],
+    *,
+    namespace: str = "chaos-testing",
+    kube_context: str | None = None,
+) -> dict[str, Any]:
     result: dict[str, Any] = {
         "status": "pass",
         "evidence": "Chaos Mesh controller and daemon Pods are Ready.",
@@ -251,7 +268,7 @@ def daemon_prerequisite(kind: str, daemon_names: list[str], kube_context: str | 
     for daemon in daemon_names:
         code, stdout, stderr = _call_with_optional_context(
             run_kubectl,
-            ["logs", "-n", "chaos-testing", daemon, "--since=24h", "--tail=1000"],
+            ["logs", "-n", namespace, daemon, "--since=24h", "--tail=1000"],
             timeout=30,
             kube_context=kube_context,
         )
@@ -534,6 +551,7 @@ def _check_mutation_impl(path: Path, *, allowed_namespaces: set[str] | None = No
         daemon_prerequisite,
         kind,
         components.get("daemon_pods", []),
+        namespace=str(components.get("namespace") or "chaos-testing"),
         kube_context=kube_context,
     )
     checks["injector_prerequisite"] = injector

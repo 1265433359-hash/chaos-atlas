@@ -547,6 +547,9 @@ class KubernetesLifecycleExecutor:
 
     def _write_result(self, action_id: str, result: dict[str, Any]) -> Path:
         path = self.root / "runtime" / f"{_safe_name(action_id)}.json"
+        if len(str(path)) >= 240:
+            digest = hashlib.sha256(str(action_id).encode("utf-8")).hexdigest()[:12]
+            path = self.root / "runtime" / f"result-{digest}.json"
         if path.exists():
             raise FileExistsError(path)
         path.parent.mkdir(parents=True, exist_ok=True)

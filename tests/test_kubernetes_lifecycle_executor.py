@@ -3,6 +3,20 @@ import json
 from tools.kubernetes_lifecycle_executor import KubernetesLifecycleExecutor
 
 
+def test_long_action_id_uses_bounded_result_path(tmp_path):
+    executor = KubernetesLifecycleExecutor(
+        root=tmp_path,
+        namespace="lab",
+        allowed_namespaces={"lab"},
+    )
+
+    path = executor._write_result("candidate-" + "x" * 300, {"status": "blocked"})
+
+    assert path.is_file()
+    assert path.name.startswith("result-")
+    assert len(str(path)) < 240
+
+
 def test_network_target_pods_are_included_in_cleanup_ownership(monkeypatch, tmp_path):
     def runner(args, timeout=30, kube_context=None):
         assert args[:4] == ["get", "pods", "-n", "lab"]

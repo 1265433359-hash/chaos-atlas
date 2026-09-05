@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from tools.dify_chatflow_oracle import DifyChatflowOracle
-from chaosatlas.orchestration.batch import build_live_batch_plan
+from chaosatlas.orchestration.batch import build_live_batch_plan, resolve_requested_candidate_ids
 from tools.experiment_policy import new_policy_state
 from tools.experiment_policy_feedback import ingest_runtime_result
 from tools.feedback_protocol import classify_outcome
@@ -75,6 +75,25 @@ def test_dify_business_path_oracle_covers_all_discovered_candidates():
     assert result["status"] == "ready"
     assert result["oracle"]["candidate_scope"] == "business_path"
     assert result["candidate_ids"] == ["c-api", "c-worker"]
+
+
+def test_live_batch_resolves_stable_cli_candidate_alias():
+    candidates = [
+        {
+            "candidate_id": "server:deployment:runtime-hash:pod_kill",
+            "target": "immich-server",
+            "fault_family": "pod_kill",
+        }
+    ]
+
+    resolved, unknown = resolve_requested_candidate_ids(
+        candidates,
+        ["server:deployment:immich:immich-server:pod_kill"],
+        project_id="immich",
+    )
+
+    assert resolved == ["server:deployment:runtime-hash:pod_kill"]
+    assert unknown == []
 
 
 def test_stop_policy_uses_posterior_and_budget_selection():
