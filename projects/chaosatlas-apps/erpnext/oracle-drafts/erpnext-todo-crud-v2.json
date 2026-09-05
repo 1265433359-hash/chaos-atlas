@@ -1,0 +1,168 @@
+{
+  "allowed_requests": [
+    {
+      "id": "create",
+      "method": "POST",
+      "path": "/api/resource/ToDo"
+    },
+    {
+      "id": "list",
+      "method": "GET",
+      "path": "/api/resource/ToDo"
+    },
+    {
+      "id": "read",
+      "method": "GET",
+      "path": "/api/resource/ToDo/{todo_name}"
+    },
+    {
+      "id": "update",
+      "method": "PUT",
+      "path": "/api/resource/ToDo/{todo_name}"
+    },
+    {
+      "id": "delete",
+      "method": "DELETE",
+      "path": "/api/resource/ToDo/{todo_name}"
+    }
+  ],
+  "approval": {
+    "record": null,
+    "required": true
+  },
+  "assertions": [
+    {
+      "expected": "ChaosAtlas synthetic {run_id}",
+      "id": "description",
+      "operator": "json_path_equals",
+      "path": "$.data.description",
+      "step_id": "read-todo"
+    },
+    {
+      "expected": "Closed",
+      "id": "status-updated",
+      "operator": "json_path_equals",
+      "path": "$.data.status",
+      "step_id": "read-updated-todo"
+    }
+  ],
+  "cleanup": {
+    "on_every_exit": true,
+    "steps": [
+      {
+        "acceptable_statuses": [
+          200,
+          202
+        ],
+        "id": "delete-owned-todo",
+        "path_variables": {
+          "todo_name": "{todo_name}"
+        },
+        "request_id": "delete",
+        "required_variables": [
+          "todo_name"
+        ]
+      },
+      {
+        "acceptable_statuses": [
+          404
+        ],
+        "id": "confirm-todo-absent",
+        "path_variables": {
+          "todo_name": "{todo_name}"
+        },
+        "request_id": "read",
+        "required_variables": [
+          "todo_name"
+        ]
+      }
+    ],
+    "strategy": "exact_owned_ids"
+  },
+  "contract_sha256": "7935aa99c15bb79c9cce9e492fa895ecbeeec61b6bd32959728b1556abc4c98f",
+  "credential_refs": [
+    {
+      "id": "erpnext-test-api-token",
+      "source": "runtime_secret_ref"
+    }
+  ],
+  "evidence_sources": [
+    "image:erpnext:v16.34.1",
+    "api:/api/resource/ToDo"
+  ],
+  "oracle_id": "erpnext-todo-crud-v2",
+  "ownership": {
+    "delete_scope": "returned_or_exactly_queried_ids",
+    "marker_field": "chaosatlas_run_id",
+    "synthetic_only": true
+  },
+  "probe_steps": [
+    "read-updated-todo"
+  ],
+  "project_id": "erpnext",
+  "project_revision": "609170a9d174de731d310fefaa6132335f3ab06795a12b09cd1214a29fdc3fe8",
+  "schema_version": "chaosatlas-transaction-oracle-v2",
+  "status": "validated",
+  "steps": [
+    {
+      "capture": {
+        "todo_name": "$.data.name"
+      },
+      "id": "create-owned-todo",
+      "json_body": {
+        "description": "ChaosAtlas synthetic {run_id}",
+        "priority": "Low",
+        "status": "Open"
+      },
+      "on_response_loss": {
+        "capture": {
+          "todo_name": "$.data[0].name"
+        },
+        "query": {
+          "fields": "[\"name\"]",
+          "filters": "[[\"description\",\"=\",\"ChaosAtlas synthetic {run_id}\"]]",
+          "limit_page_length": 2
+        },
+        "request_id": "list",
+        "strategy": "exact_lookup"
+      },
+      "request_id": "create"
+    },
+    {
+      "id": "read-todo",
+      "path_variables": {
+        "todo_name": "{todo_name}"
+      },
+      "request_id": "read"
+    },
+    {
+      "id": "update-status",
+      "json_body": {
+        "status": "Closed"
+      },
+      "on_response_loss": {
+        "acceptable_statuses": [
+          200
+        ],
+        "max_attempts": 1,
+        "strategy": "retry_same_request"
+      },
+      "path_variables": {
+        "todo_name": "{todo_name}"
+      },
+      "request_id": "update"
+    },
+    {
+      "id": "read-updated-todo",
+      "path_variables": {
+        "todo_name": "{todo_name}"
+      },
+      "request_id": "read"
+    }
+  ],
+  "timeouts": {
+    "eventual_s": 30,
+    "poll_interval_s": 2,
+    "request_s": 10
+  }
+}

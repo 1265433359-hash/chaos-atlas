@@ -10,10 +10,12 @@ from typing import Any
 from chaosatlas.isolation.contracts import SAFE_ID, canonical_hash, sensitive_paths, verify_hash, with_hash
 
 
-SCHEMA = "chaosatlas-transaction-oracle-v1"
+LEGACY_SCHEMA = "chaosatlas-transaction-oracle-v1"
+SCHEMA = "chaosatlas-transaction-oracle-v2"
+SCHEMAS = {LEGACY_SCHEMA, SCHEMA}
 STATES = {"draft", "validated", "approved", "frozen"}
 METHODS = {"GET", "POST", "PUT", "PATCH", "DELETE"}
-ASSERTIONS = {"status_equals", "json_path_equals", "json_path_exists", "sha256_equals", "count_equals", "eventually", "body_contains"}
+ASSERTIONS = {"status_equals", "status_in", "json_path_equals", "json_path_exists", "sha256_equals", "count_equals", "eventually", "body_contains"}
 
 
 def approval_subject_sha256(contract: dict[str, Any]) -> str:
@@ -26,7 +28,7 @@ def approval_subject_sha256(contract: dict[str, Any]) -> str:
 def validate_transaction_contract(contract: dict[str, Any]) -> list[str]:
     required = ("schema_version", "oracle_id", "project_id", "project_revision", "status", "evidence_sources", "credential_refs", "allowed_requests", "steps", "assertions", "ownership", "cleanup", "approval", "contract_sha256")
     errors = [f"missing {key}" for key in required if key not in contract]
-    if contract.get("schema_version") != SCHEMA:
+    if contract.get("schema_version") not in SCHEMAS:
         errors.append("unknown transaction Oracle schema")
     if not SAFE_ID.fullmatch(str(contract.get("oracle_id") or "")):
         errors.append("unsafe oracle_id")
@@ -56,6 +58,52 @@ def validate_transaction_contract(contract: dict[str, Any]) -> list[str]:
     approval = contract.get("approval") if isinstance(contract.get("approval"), dict) else {}
     if approval.get("required") is not True:
         errors.append("human approval must be required")
+    if contract.get("schema_version") == SCHEMA:
+        probe_steps = contract.get("probe_steps") if isinstance(contract.get("probe_steps"), list) else []
+        if not probe_steps or any(item not in step_ids for item in probe_steps):
+            errors.append("v2 probe_steps must reference transaction steps")
+        request_methods = {
+            str(item.get("id")): str(item.get("method"))
+            for item in requests
+            if isinstance(item, dict)
+        }
+        step_requests = {
+            str(item.get("id")): str(item.get("request_id"))
+            for item in steps
+            if isinstance(item, dict)
+        }
+        if any(request_methods.get(step_requests.get(str(item))) != "GET" for item in probe_steps):
+            errors.append("v2 probe_steps must be read-only GET requests")
+        write_steps = [
+            item for item in steps
+            if isinstance(item, dict) and request_methods.get(str(item.get("request_id"))) != "GET"
+        ]
+        recovery_strategies = {"retry_same_request", "exact_lookup", "disposable_environment"}
+        if any(
+            not isinstance(item.get("on_response_loss"), dict)
+            or item["on_response_loss"].get("strategy") not in recovery_strategies
+            for item in write_steps
+        ):
+            errors.append("every v2 write step requires bounded response-loss recovery")
+        for item in write_steps:
+            recovery = item.get("on_response_loss") if isinstance(item.get("on_response_loss"), dict) else {}
+            if recovery.get("strategy") == "retry_same_request" and recovery.get("max_attempts") != 1:
+                errors.append("v2 response-loss retry must be bounded to one attempt")
+            if recovery.get("strategy") == "exact_lookup":
+                lookup_id = str(recovery.get("request_id") or "")
+                if lookup_id not in request_ids or request_methods.get(lookup_id) != "GET" or not isinstance(recovery.get("capture"), dict):
+                    errors.append("v2 response-loss lookup must be an allowed GET with capture")
+        cleanup_steps = cleanup.get("steps") if isinstance(cleanup.get("steps"), list) else []
+        if cleanup.get("strategy") == "exact_owned_ids" and not cleanup_steps:
+            errors.append("v2 exact cleanup requires explicit request steps")
+        if cleanup.get("strategy") == "disposable_environment" and cleanup.get("environment_release_required") is not True:
+            errors.append("v2 disposable cleanup requires environment release")
+        for item in cleanup_steps:
+            if not isinstance(item, dict) or item.get("request_id") not in request_ids:
+                errors.append("invalid v2 cleanup request step")
+            statuses = item.get("acceptable_statuses") if isinstance(item, dict) else None
+            if not isinstance(statuses, list) or not statuses or any(not isinstance(status, int) for status in statuses):
+                errors.append("v2 cleanup steps require acceptable_statuses")
     if contract.get("status") in {"approved", "frozen"}:
         record = approval.get("record") if isinstance(approval.get("record"), dict) else {}
         if record.get("decision") != "approved" or not record.get("reviewer") or not record.get("reviewed_at") or record.get("approved_subject_sha256") != approval_subject_sha256(contract):
@@ -128,9 +176,17 @@ def evaluate_assertions(contract: dict[str, Any], observations: dict[str, dict[s
         observation = observations.get(str(assertion.get("step_id") or ""), {})
         operator = assertion.get("operator")
         expected = assertion.get("expected") if "expected" in assertion else variables.get(str(assertion.get("expected_from") or ""))
+        if isinstance(expected, str):
+            expected = re.sub(
+                r"\{([A-Za-z][A-Za-z0-9_-]*)\}",
+                lambda match: str(variables.get(match.group(1), match.group(0))),
+                expected,
+            )
         try:
             if operator == "status_equals":
                 passed = observation.get("status") == expected
+            elif operator == "status_in":
+                passed = observation.get("status") in expected
             elif operator in {"json_path_equals", "json_path_exists"}:
                 actual = _json_path(observation.get("json"), str(assertion.get("path") or ""))
                 passed = actual == expected if operator == "json_path_equals" else actual is not None

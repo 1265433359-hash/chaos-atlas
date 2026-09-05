@@ -19,10 +19,10 @@ from chaosatlas.oracles.transaction_contracts import (
 APPS = ("immich", "medusa", "rocketchat", "erpnext")
 
 
-def approve(root: Path, reviewer: str, reviewed_at: str, decision_reference: str) -> list[Path]:
+def approve(root: Path, reviewer: str, reviewed_at: str, decision_reference: str, oracle_version: str) -> list[Path]:
     paths: list[Path] = []
     for app in APPS:
-        drafts = sorted((root / "projects" / "chaosatlas-apps" / app / "oracle-drafts").glob("*.json"))
+        drafts = sorted((root / "projects" / "chaosatlas-apps" / app / "oracle-drafts").glob(f"*-{oracle_version}.json"))
         if len(drafts) != 1:
             raise ValueError(f"expected exactly one {app} Oracle draft, found {len(drafts)}")
         contract = json.loads(drafts[0].read_text(encoding="utf-8"))
@@ -55,8 +55,9 @@ def main() -> int:
     parser.add_argument("--reviewer", required=True)
     parser.add_argument("--reviewed-at", required=True, help="ISO-8601 timestamp including timezone")
     parser.add_argument("--decision-reference", required=True)
+    parser.add_argument("--oracle-version", required=True, choices=("v1", "v2"))
     args = parser.parse_args()
-    for path in approve(Path(args.root).resolve(), args.reviewer, args.reviewed_at, args.decision_reference):
+    for path in approve(Path(args.root).resolve(), args.reviewer, args.reviewed_at, args.decision_reference, args.oracle_version):
         print(path)
     return 0
 

@@ -1,0 +1,156 @@
+{
+  "allowed_requests": [
+    {
+      "id": "upload",
+      "method": "POST",
+      "path": "/api/assets"
+    },
+    {
+      "id": "read",
+      "method": "GET",
+      "path": "/api/assets/{asset_id}"
+    },
+    {
+      "id": "download",
+      "method": "GET",
+      "path": "/api/assets/{asset_id}/original"
+    },
+    {
+      "id": "delete",
+      "method": "DELETE",
+      "path": "/api/assets"
+    }
+  ],
+  "approval": {
+    "record": null,
+    "required": true
+  },
+  "assertions": [
+    {
+      "expected": [
+        200,
+        201
+      ],
+      "id": "upload-ok",
+      "operator": "status_in",
+      "step_id": "upload-synthetic-image"
+    },
+    {
+      "id": "id-returned",
+      "operator": "json_path_exists",
+      "path": "$.id",
+      "step_id": "upload-synthetic-image"
+    },
+    {
+      "expected_from": "fixture_sha256",
+      "id": "original-byte-hash",
+      "operator": "sha256_equals",
+      "step_id": "download-original"
+    }
+  ],
+  "cleanup": {
+    "on_every_exit": true,
+    "steps": [
+      {
+        "acceptable_statuses": [
+          204
+        ],
+        "id": "delete-owned-asset",
+        "json_body": {
+          "force": true,
+          "ids": [
+            "{asset_id}"
+          ]
+        },
+        "request_id": "delete",
+        "required_variables": [
+          "asset_id"
+        ]
+      },
+      {
+        "acceptable_statuses": [
+          404
+        ],
+        "id": "confirm-asset-absent",
+        "path_variables": {
+          "asset_id": "{asset_id}"
+        },
+        "request_id": "read",
+        "required_variables": [
+          "asset_id"
+        ]
+      }
+    ],
+    "strategy": "exact_owned_ids"
+  },
+  "contract_sha256": "2ffc2b950af062e407be98c2d350fd7c7e7a621bdad179da669577a3c35cfd6d",
+  "credential_refs": [
+    {
+      "id": "immich-test-api-key",
+      "source": "runtime_secret_ref"
+    }
+  ],
+  "evidence_sources": [
+    "image:immich-server:v2.6.3",
+    "source:asset-media.controller.ts"
+  ],
+  "oracle_id": "immich-asset-roundtrip-v2",
+  "ownership": {
+    "delete_scope": "returned_or_exactly_queried_ids",
+    "marker_field": "chaosatlas_run_id",
+    "synthetic_only": true
+  },
+  "probe_steps": [
+    "read-metadata",
+    "download-original"
+  ],
+  "project_id": "immich",
+  "project_revision": "5cf305a3a239e0619f756a5cdcb380e83e90d6a04f2065adb5e7f1afee5c2629",
+  "schema_version": "chaosatlas-transaction-oracle-v2",
+  "status": "validated",
+  "steps": [
+    {
+      "capture": {
+        "asset_id": "$.id"
+      },
+      "id": "upload-synthetic-image",
+      "idempotency_key": "{run_id}-asset",
+      "multipart": {
+        "assetData": "fixture:synthetic_png",
+        "deviceAssetId": "{run_id}-asset",
+        "deviceId": "chaosatlas",
+        "fileCreatedAt": "{fixture_timestamp}",
+        "fileModifiedAt": "{fixture_timestamp}",
+        "isFavorite": "false"
+      },
+      "on_response_loss": {
+        "acceptable_statuses": [
+          200,
+          201
+        ],
+        "max_attempts": 1,
+        "strategy": "retry_same_request"
+      },
+      "request_id": "upload"
+    },
+    {
+      "id": "read-metadata",
+      "path_variables": {
+        "asset_id": "{asset_id}"
+      },
+      "request_id": "read"
+    },
+    {
+      "id": "download-original",
+      "path_variables": {
+        "asset_id": "{asset_id}"
+      },
+      "request_id": "download"
+    }
+  ],
+  "timeouts": {
+    "eventual_s": 30,
+    "poll_interval_s": 2,
+    "request_s": 10
+  }
+}

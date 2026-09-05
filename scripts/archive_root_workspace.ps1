@@ -3,6 +3,7 @@ param(
     [string]$ArchiveRoot,
     [string]$ArchiveName = "$(Get-Date -Format 'yyyy-MM-dd-HHmmss')-repository-cleanup",
     [switch]$IncludeDependencies,
+    [string[]]$ExcludeRootName = @(),
     [switch]$Resume
 )
 
@@ -92,6 +93,9 @@ $rootNames = @(
 )
 $sources = [System.Collections.Generic.List[System.IO.FileSystemInfo]]::new()
 foreach ($name in $rootNames) {
+    if ($ExcludeRootName -contains $name) {
+        continue
+    }
     $candidate = Join-Path $repo $name
     if (Test-Path -LiteralPath $candidate) {
         [void]$sources.Add((Get-Item -LiteralPath $candidate -Force))
@@ -111,6 +115,10 @@ $generatedDirectories = @(Get-ChildItem -LiteralPath $repo -Directory -Recurse -
     ($_.Name -eq '__pycache__' -or $_.Name -like '*.egg-info')
 })
 foreach ($candidate in $generatedDirectories) {
+    $relativeRoot = [System.IO.Path]::GetRelativePath($repo, $candidate.FullName).Split([System.IO.Path]::DirectorySeparatorChar)[0]
+    if ($ExcludeRootName -contains $relativeRoot) {
+        continue
+    }
     $covered = $false
     foreach ($selected in $sources) {
         $selectedPrefix = $selected.FullName.TrimEnd('\') + '\'

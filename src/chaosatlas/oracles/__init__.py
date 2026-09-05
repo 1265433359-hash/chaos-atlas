@@ -8,6 +8,7 @@ from chaosatlas.oracles.registry import (
     OracleRuntime,
     build_default_oracle_registry,
 )
+from chaosatlas.oracles.replay import TransactionReplayer, TransactionWorkflowOracle, UrllibHttpTransport
 from chaosatlas.oracles.transaction_contracts import freeze_approved_contract, validate_transaction_contract
 
 __all__ = [
@@ -17,6 +18,9 @@ __all__ = [
     "OracleRegistry",
     "OracleRuntime",
     "ProbeWorkflowOracle",
+    "TransactionReplayer",
+    "TransactionWorkflowOracle",
+    "UrllibHttpTransport",
     "WorkflowOracle",
     "build_default_oracle_registry",
     "freeze_approved_contract",
