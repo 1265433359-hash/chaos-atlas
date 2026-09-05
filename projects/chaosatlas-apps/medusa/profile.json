@@ -12,6 +12,14 @@
     "isolation_required": true,
     "cluster_profile": "chaosatlas-apps"
   },
+  "isolation": {
+    "l1": {
+      "mode": "adopted-test-replica",
+      "dedicated_test_replica": true,
+      "namespace": "chaosatlas-medusa"
+    },
+    "synthetic_data_only": true
+  },
   "source": {
     "manifest_roots": ["projects/chaosatlas-apps/k8s"],
     "source_roots": ["projects/chaosatlas-apps/medusa/medusa", "projects/chaosatlas-apps/k8s"]

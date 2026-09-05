@@ -209,3 +209,32 @@ def test_cli_module_entrypoint_is_executable():
     )
     assert completed.returncode == 0
     assert "capabilities" in completed.stdout
+    assert "isolation" in completed.stdout
+
+
+def test_isolation_plan_cli_selects_one_record_and_writes_external_plan(tmp_path, capsys):
+    profile = tmp_path / "profile.json"
+    matrix = tmp_path / "matrix.json"
+    output = tmp_path / "plans" / "plan.json"
+    profile.write_text(json.dumps({"project_id": "p", "project_commit": "r", "namespace_policy": {"allowed_namespaces": ["p-lab"]}, "isolation": {"l1": {"mode": "adopted-test-replica", "dedicated_test_replica": True}, "synthetic_data_only": True}}), encoding="utf-8")
+    matrix.write_text(json.dumps({"target_capabilities": [{"fault_id": "pod_kill", "target_id": "n1", "required_isolation": "L1", "capability_status": "canary_required"}], "targets": [{"node_id": "n1", "deployment": {"name": "web"}}]}), encoding="utf-8")
+    result = main(["isolation", "plan", "--profile", str(profile), "--capability-matrix", str(matrix), "--fault-id", "pod_kill", "--target-id", "n1", "--output", str(output)])
+    assert result == 0
+    assert json.loads(output.read_text(encoding="utf-8"))["provider"] == "kubernetes-l1"
+    assert json.loads(capsys.readouterr().out)["injection_performed"] is False
+
+
+def test_isolation_store_inside_repository_is_rejected(capsys):
+    result = main(["isolation", "status", "--lease-id", "lease-safe", "--store-root", str(ROOT / ".forbidden-isolation")])
+    assert result == 2
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["status"] == "method_invalid"
+    assert "outside the repository" in payload["reason"]
+
+
+def test_isolation_prepare_requires_explicit_approval(tmp_path, capsys):
+    plan = tmp_path / "plan.json"
+    plan.write_text("{}", encoding="utf-8")
+    result = main(["isolation", "prepare", "--plan", str(plan), "--store-root", str(tmp_path / "store")])
+    assert result == 2
+    assert json.loads(capsys.readouterr().out)["reason"] == "approve_isolation_required"

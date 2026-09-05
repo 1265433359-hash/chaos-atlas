@@ -4,7 +4,7 @@
 
 项目：ChaosAtlas
 
-状态：待书面审核
+状态：已批准并实现；2026-09-05 真实 L1/L2/L3 无故障生命周期验收通过
 
 上位设计：`2026-09-05-new-project-full-capability-bootstrap-design-zh-CN.md`
 

@@ -90,6 +90,16 @@ def _extension_facts(deployment: dict[str, Any], pod_spec: dict[str, Any], conta
         "resource_scope": str(declared.get("resource_scope") or "deployment"),
         "mounts": mounts,
         "volumes": volumes,
+        "container_blueprints": [
+            {
+                "name": str(item.get("name") or ""),
+                "image": str(item.get("image") or ""),
+                "ports": deepcopy(item.get("ports") or []),
+                "resources": deepcopy(item.get("resources") or {}),
+            }
+            for item in containers
+            if str(item.get("image") or "")
+        ],
         "runtime": runtime,
         "time_sensitive_edges": list(declared.get("time_sensitive_edges") or []),
         "capabilities": deepcopy(_mapping(declared.get("capabilities"))),

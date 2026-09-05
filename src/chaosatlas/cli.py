@@ -15,6 +15,75 @@ def _safe_output_name(value: object, fallback: str) -> str:
     return normalized or fallback
 
 
+def _read_object(path: str | Path, label: str) -> dict:
+    value = json.loads(Path(path).expanduser().resolve().read_text(encoding="utf-8-sig"))
+    if not isinstance(value, dict):
+        raise ValueError(f"{label} must be a JSON object")
+    return value
+
+
+def _build_isolation_manager(store_root: str | Path | None):
+    from chaosatlas.isolation.lease_store import LeaseStore
+    from chaosatlas.isolation.manager import IsolationManager
+    from chaosatlas.isolation.providers import KubernetesIsolationProvider, MinikubeIsolationProvider, ProviderRegistry
+
+    repository_root = Path(__file__).resolve().parents[2]
+    if store_root is not None and is_within(Path(store_root).expanduser().resolve(), repository_root):
+        raise ValueError("isolation store must be outside the repository")
+    store = LeaseStore(store_root)
+    registry = ProviderRegistry([
+        KubernetesIsolationProvider(name="kubernetes-l1", level="L1"),
+        KubernetesIsolationProvider(name="kubernetes-l2", level="L2"),
+        MinikubeIsolationProvider(root=store.root / "runtime"),
+    ])
+    return IsolationManager(store=store, providers=registry)
+
+
+def _run_isolation(args: argparse.Namespace) -> tuple[dict, int]:
+    from chaosatlas.isolation.planner import IsolationPlanner
+
+    repository_root = Path(__file__).resolve().parents[2]
+    try:
+        if args.isolation_command == "plan":
+            profile = _read_object(args.profile, "profile")
+            matrix = _read_object(args.capability_matrix, "capability matrix")
+            records = [item for item in matrix.get("target_capabilities") or [] if isinstance(item, dict) and item.get("fault_id") == args.fault_id]
+            if args.target_id is not None:
+                records = [item for item in records if str(item.get("target_id") or "") == str(args.target_id)]
+            if len(records) != 1:
+                raise ValueError(f"capability selection must resolve exactly one target record, got {len(records)}")
+            capability = records[0]
+            target = next((item for item in matrix.get("targets") or [] if isinstance(item, dict) and str(item.get("node_id") or "") == str(capability.get("target_id") or "")), None)
+            plan = IsolationPlanner().plan(profile=profile, capability=capability, target=target, proposed_isolation=args.proposed_isolation)
+            output = Path(args.output).expanduser().resolve()
+            if is_within(output, repository_root):
+                raise ValueError(f"isolation plan output must be outside the repository: {output}")
+            if output.exists():
+                raise ValueError(f"refusing to overwrite isolation plan: {output}")
+            output.parent.mkdir(parents=True, exist_ok=True)
+            output.write_text(json.dumps(plan, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+            return {**plan, "output": str(output), "injection_performed": False}, 0 if plan.get("status") == "ready" else 2
+
+        manager = _build_isolation_manager(args.store_root)
+        if args.isolation_command == "status":
+            return manager.status(args.lease_id), 0
+        if not args.approve_isolation:
+            return {"status": "environment_blocked", "reason": "approve_isolation_required", "injection_performed": False}, 2
+        if args.isolation_command == "prepare":
+            plan = _read_object(args.plan, "isolation plan")
+            lease = manager.prepare(plan, ttl_minutes=args.ttl_minutes)
+            return {**lease, "injection_performed": False}, 0 if lease.get("state") == "ready" else 2
+        if args.isolation_command in {"release", "recover"}:
+            lease = manager.release(args.lease_id) if args.isolation_command == "release" else manager.recover(args.lease_id)
+            return {**lease, "injection_performed": False}, 0 if lease.get("state") == "released" else 2
+        if args.isolation_command == "reap-expired":
+            leases = manager.reap_expired()
+            return {"status": "verified" if all(item.get("state") == "released" for item in leases) else "partial", "leases": leases, "injection_performed": False}, 0 if all(item.get("state") == "released" for item in leases) else 2
+    except (OSError, UnicodeError, json.JSONDecodeError, ValueError, RuntimeError, KeyError) as exc:
+        return {"status": "method_invalid", "reason": f"{type(exc).__name__}: {exc}", "injection_performed": False}, 2
+    return {"status": "method_invalid", "reason": "unknown isolation command", "injection_performed": False}, 2
+
+
 def _run_capabilities(args: argparse.Namespace) -> tuple[dict, int]:
     """Run read-only capability discovery for one or more profiles."""
     from chaosatlas.capabilities.bootstrap import CapabilityBootstrapper
@@ -213,6 +282,32 @@ def _parser() -> argparse.ArgumentParser:
     capabilities.add_argument("--output", default=str(default_run_output("capability-bootstrap")), help="external, empty output directory")
     capabilities.add_argument("--kube-context")
     capabilities.add_argument("--evidence-root", help="optional external root containing verified live run evidence")
+
+    isolation = subparsers.add_parser("isolation", help="Plan and manage fault-free L1/L2/L3 isolation environments.")
+    isolation_commands = isolation.add_subparsers(dest="isolation_command", required=True)
+    isolation_plan = isolation_commands.add_parser("plan", help="Create a read-only isolation plan.")
+    isolation_plan.add_argument("--profile", required=True)
+    isolation_plan.add_argument("--capability-matrix", required=True)
+    isolation_plan.add_argument("--fault-id", required=True)
+    isolation_plan.add_argument("--target-id")
+    isolation_plan.add_argument("--proposed-isolation", choices=("L1", "L2", "L3"))
+    isolation_plan.add_argument("--output", default=str(default_run_output("isolation-plan") / "plan.json"))
+    isolation_prepare = isolation_commands.add_parser("prepare", help="Create the exact environment described by a plan.")
+    isolation_prepare.add_argument("--plan", required=True)
+    isolation_prepare.add_argument("--store-root")
+    isolation_prepare.add_argument("--ttl-minutes", type=int, default=60)
+    isolation_prepare.add_argument("--approve-isolation", action="store_true")
+    for command_name in ("release", "recover"):
+        command = isolation_commands.add_parser(command_name, help=f"{command_name.title()} one exact environment lease.")
+        command.add_argument("--lease-id", required=True)
+        command.add_argument("--store-root")
+        command.add_argument("--approve-isolation", action="store_true")
+    isolation_status = isolation_commands.add_parser("status", help="Read one exact environment lease.")
+    isolation_status.add_argument("--lease-id", required=True)
+    isolation_status.add_argument("--store-root")
+    isolation_reap = isolation_commands.add_parser("reap-expired", help="Clean expired owned leases.")
+    isolation_reap.add_argument("--store-root")
+    isolation_reap.add_argument("--approve-isolation", action="store_true")
     return parser
 
 
@@ -252,6 +347,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "capabilities":
         result, code = _run_capabilities(args)
+        print(json.dumps(result, indent=2, ensure_ascii=False, sort_keys=True))
+        return code
+    if args.command == "isolation":
+        result, code = _run_isolation(args)
         print(json.dumps(result, indent=2, ensure_ascii=False, sort_keys=True))
         return code
     return 2

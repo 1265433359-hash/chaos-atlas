@@ -59,6 +59,48 @@ python tools/run_closed_loop.py --help
 
 live 执行必须显式提供允许的 namespace、executor、业务 Oracle、恢复和清理契约。缺少任一契约时应停在 preflight，不得注入。
 
+## 统一隔离环境
+
+`chaosatlas isolation` 通过同一个 `IsolationManager` 管理三类环境：L1 专用测试副本或临时完整
+副本、L2 一次性目标 sandbox、L3 一次性 Minikube 控制面。隔离命令不接受故障参数，不执行
+Chaos 资源，也不运行 Oracle。
+
+先从 32+9 能力矩阵生成只读计划；计划文件和 lease store 必须放在仓库外：
+
+```powershell
+& scripts/invoke_python.ps1 -m chaosatlas isolation plan `
+  --profile projects/chaosatlas-apps/immich/profile.json `
+  --capability-matrix "$env:LOCALAPPDATA\ChaosAtlas\runs\capabilities\immich.json" `
+  --fault-id pod_kill `
+  --target-id '<matrix-target-id>' `
+  --output "$env:LOCALAPPDATA\ChaosAtlas\isolation\plans\immich-pod-kill.json"
+```
+
+人工检查 plan 后，显式批准创建和释放：
+
+```powershell
+& scripts/invoke_python.ps1 -m chaosatlas isolation prepare `
+  --plan "$env:LOCALAPPDATA\ChaosAtlas\isolation\plans\immich-pod-kill.json" `
+  --approve-isolation
+
+& scripts/invoke_python.ps1 -m chaosatlas isolation release `
+  --lease-id '<exact-lease-id>' `
+  --approve-isolation
+```
+
+异常中断后使用 `recover --lease-id <exact-id> --approve-isolation`；定时清理只处理 schema、摘要
+和所有权均有效的过期 lease。L1/L2 删除前同时校验精确 namespace、租约标签和 UID；L3 只删除
+租约生成的唯一 profile。租约损坏、身份变化或归属不匹配时一律停止删除并要求人工审核。
+
+无故障真实生命周期验收命令为：
+
+```powershell
+& scripts/invoke_python.ps1 scripts/run_isolation_acceptance.py `
+  --root . `
+  --output "$env:LOCALAPPDATA\ChaosAtlas\acceptance\isolation-<run-id>" `
+  --kube-context chaosatlas-apps
+```
+
 ## Dify Compose E2E
 
 Dify 1.17.0 is a Docker Compose workload, so use the Compose adapter instead
