@@ -24,6 +24,10 @@ python scripts/check_workspace_hygiene.py --root .
 正式归档会在外置目录生成 `MANIFEST.json` 和 `RESTORE.md`。旧的
 `.email-notify-outbox` 只保留审计记录，不得复制到当前邮件待发送队列。
 
+`-IncludeDependencies` 可以归档普通 `node_modules`，但会主动跳过 npm workspace；
+Windows 的 workspace 链接可能指向项目源码，自动移动存在误伤风险。正在使用的依赖继续
+由 Git 忽略，需要时根据已提交的锁文件重新生成。
+
 ## Dry-run
 
 ```powershell

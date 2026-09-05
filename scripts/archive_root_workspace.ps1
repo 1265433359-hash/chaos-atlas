@@ -128,6 +128,18 @@ if ($IncludeDependencies) {
     if (Test-Path -LiteralPath $appsRoot) {
         $dependencyCandidates = @(Get-ChildItem -LiteralPath $appsRoot -Directory -Recurse -Force -Filter 'node_modules' | Sort-Object { $_.FullName.Length })
         foreach ($candidate in $dependencyCandidates) {
+            $packageManifest = Join-Path $candidate.Parent.FullName 'package.json'
+            if (Test-Path -LiteralPath $packageManifest) {
+                try {
+                    $package = Get-Content -LiteralPath $packageManifest -Raw | ConvertFrom-Json
+                    if ($package.workspaces) {
+                        Write-Warning "Skipping npm workspace node_modules because it may contain links to project source: $($candidate.FullName)"
+                        continue
+                    }
+                } catch {
+                    throw "Cannot validate dependency archive boundary from ${packageManifest}: $($_.Exception.Message)"
+                }
+            }
             $candidatePrefix = $candidate.FullName.TrimEnd('\') + '\'
             $alreadyCovered = $false
             foreach ($selected in $sources) {

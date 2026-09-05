@@ -26,13 +26,6 @@ def find_workspace_leaks(root: str | Path) -> list[str]:
         if entry.name in FORBIDDEN_ROOT_NAMES or entry.name.startswith(".tmp-"):
             leaks.append(entry.name)
 
-    apps_root = root_path / "projects" / "chaosatlas-apps"
-    if apps_root.is_dir():
-        for dependency_dir in apps_root.rglob("node_modules"):
-            relative = dependency_dir.relative_to(root_path)
-            if dependency_dir.is_dir() and "node_modules" not in relative.parts[:-1]:
-                leaks.append(relative.as_posix())
-
     pruned = {".git", ".planning", ".secrets", ".venv"}
     for current, directories, _files in os.walk(root_path):
         directories[:] = [name for name in directories if name not in pruned]

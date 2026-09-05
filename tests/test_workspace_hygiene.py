@@ -16,19 +16,17 @@ def test_state_root_uses_local_app_data_on_windows_style_environment(tmp_path):
     assert state_root({"LOCALAPPDATA": str(tmp_path)}) == (tmp_path / "ChaosAtlas").resolve()
 
 
-def test_hygiene_finds_runtime_state_and_nested_dependencies(tmp_path):
+def test_hygiene_finds_runtime_state_and_python_build_output(tmp_path):
     from scripts.check_workspace_hygiene import find_workspace_leaks
 
     (tmp_path / ".runs").mkdir()
     (tmp_path / ".tmp-old").mkdir()
-    (tmp_path / "projects" / "chaosatlas-apps" / "medusa" / "node_modules").mkdir(parents=True)
     (tmp_path / "src" / "chaosatlas" / "__pycache__").mkdir(parents=True)
     (tmp_path / "src" / "chaosatlas.egg-info").mkdir()
 
     assert find_workspace_leaks(tmp_path) == [
         ".runs",
         ".tmp-old",
-        "projects/chaosatlas-apps/medusa/node_modules",
         "src/chaosatlas.egg-info",
         "src/chaosatlas/__pycache__",
     ]
@@ -37,7 +35,13 @@ def test_hygiene_finds_runtime_state_and_nested_dependencies(tmp_path):
 def test_hygiene_allows_curated_evidence_and_required_local_environments(tmp_path):
     from scripts.check_workspace_hygiene import find_workspace_leaks
 
-    for relative in ("artifacts/reviewed", "reporting/issues", ".venv", ".secrets"):
+    for relative in (
+        "artifacts/reviewed",
+        "reporting/issues",
+        ".venv",
+        ".secrets",
+        "projects/chaosatlas-apps/medusa/node_modules",
+    ):
         (tmp_path / relative).mkdir(parents=True)
 
     assert find_workspace_leaks(tmp_path) == []

@@ -10,8 +10,8 @@
 
 Keep the ChaosAtlas repository limited to reviewed source, tests, sanitized
 project inputs, curated evidence, and documentation. Runtime output, caches,
-dependency installations, notification queues, credentials, and temporary
-files must live outside the repository by default.
+inactive dependency installations, notification queues, credentials, and
+temporary files must live outside the repository by default.
 
 ## External State Boundary
 
@@ -34,7 +34,8 @@ secret storage and are never archived into Git.
 
 The 2026-09-05 cleanup moves repository-local `.runs`, `.tmp-*`, pytest state,
 the legacy notification queue, the old `ChaosAtlas-evidence` directory, raw
-environment reports, runtime scratch data, and Medusa `node_modules` to a
+environment reports, runtime scratch data, and the inactive Medusa
+`node_modules` installation to a
 timestamped external archive. The archive records the source commit, original
 paths, file counts, byte counts, SHA-256 tree digests, and restoration
 instructions.
@@ -52,6 +53,8 @@ placed in the active mail queue, so they cannot be sent accidentally.
    part of repository acceptance.
 6. The archive command refuses to overwrite an existing archive and refuses
    unsafe source or destination paths.
+7. npm workspace dependencies are ignored but not moved automatically because
+   Windows workspace links may reference project source.
 
 ## Git Strategy
 
