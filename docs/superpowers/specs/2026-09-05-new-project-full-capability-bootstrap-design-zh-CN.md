@@ -4,7 +4,8 @@
 
 **项目：** ChaosAtlas
 
-**状态：** 已完成交互设计，待书面规格复核
+**状态：** Approved
+
 **目标项目：** Immich、Medusa、Rocket.Chat、ERPNext
 
 ## 1. 背景与口径
