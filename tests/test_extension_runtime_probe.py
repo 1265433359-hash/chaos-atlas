@@ -66,3 +66,23 @@ def test_probe_projects_extension_agents_from_a_labeled_disposable_workload():
     assert statuses["extension.queue_backlog"] == "supported"
     assert statuses["extension.connection_pool_exhaustion"] == "supported"
     assert statuses["extension.runtime_pause"] == "supported"
+
+
+def test_probe_falls_back_to_chaos_mesh_namespace():
+    deployment = {"metadata": {"name": "api"}, "spec": {"template": {"spec": {"containers": [{"image": "app:1"}]}}}}
+
+    def runner(args, timeout=30):
+        command = args[3:] if args[:3] == ["--context", "test", "get"] else args
+        if command[0] == "crd":
+            return 0, "ok", ""
+        if command[:4] == ["pods", "-n", "chaos-testing", "-o"]:
+            return 1, "", "not found"
+        if command[:4] == ["pods", "-n", "chaos-mesh", "-o"]:
+            return 0, json.dumps({"items": [{"status": {"phase": "Running", "conditions": [{"type": "Ready", "status": "True"}]}}]}), ""
+        if command[:4] == ["deployments", "-n", "dify-k8s-lab", "-o"]:
+            return 0, json.dumps({"items": [deployment]}), ""
+        return 1, "", "not found"
+
+    result = probe_extension_environment(_profile(), runner=runner, kube_context="test")
+    assert result["cluster"]["chaos_mesh_namespace"] == "chaos-mesh"
+    assert result["cluster"]["chaos_mesh_ready"] is True

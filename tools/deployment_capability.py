@@ -80,11 +80,17 @@ def _extension_facts(deployment: dict[str, Any], pod_spec: dict[str, Any], conta
             volume_name = str(mount.get("name") or "").strip()
             if path and volume_name:
                 mounts.append({"container": container_name, "container_path": path, "volume_name": volume_name, "read_only": bool(mount.get("readOnly"))})
+    runtime = deepcopy(_mapping(declared.get("runtime")))
+    if "jvm_present" not in runtime:
+        images = " ".join(str(item.get("image") or "") for item in containers)
+        runtime["jvm_present"] = bool(re.search(r"(?:java|jvm|openjdk|temurin|jetty|tomcat)", images, re.IGNORECASE))
+    if runtime.get("jvm_present") is True and not runtime.get("process_name"):
+        runtime["process_name"] = "java"
     facts = {
         "resource_scope": str(declared.get("resource_scope") or "deployment"),
         "mounts": mounts,
         "volumes": volumes,
-        "runtime": deepcopy(_mapping(declared.get("runtime"))),
+        "runtime": runtime,
         "time_sensitive_edges": list(declared.get("time_sensitive_edges") or []),
         "capabilities": deepcopy(_mapping(declared.get("capabilities"))),
         "writable_paths": [str(item) for item in (declared.get("writable_paths") or []) if str(item).strip()],

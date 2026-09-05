@@ -2,11 +2,95 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
 from chaosatlas.orchestration.engine import RunEngine, RunRequest
-from chaosatlas.workspace import default_run_output
+from chaosatlas.workspace import default_run_output, is_within
+
+
+def _safe_output_name(value: object, fallback: str) -> str:
+    normalized = re.sub(r"[^A-Za-z0-9._-]+", "-", str(value or "").strip()).strip(".-")
+    return normalized or fallback
+
+
+def _run_capabilities(args: argparse.Namespace) -> tuple[dict, int]:
+    """Run read-only capability discovery for one or more profiles."""
+    from chaosatlas.capabilities.bootstrap import CapabilityBootstrapper
+    from chaosatlas.capabilities.evidence import CapabilityEvidenceIndex
+    from tools.kubernetes_project_adapter import KubernetesProjectAdapter
+
+    output = Path(args.output).expanduser().resolve()
+    repository_root = Path(__file__).resolve().parents[2]
+    if is_within(output, repository_root):
+        reason = f"capability output must be outside the repository: {output}"
+        print(reason, file=sys.stderr)
+        return {"status": "environment_blocked", "reason": "repository_output_forbidden"}, 2
+    if output.exists() and (not output.is_dir() or any(output.iterdir())):
+        reason = f"refusing non-empty capability output directory: {output}"
+        print(reason, file=sys.stderr)
+        return {"status": "environment_blocked", "reason": "non_empty_output"}, 2
+    output.mkdir(parents=True, exist_ok=True)
+    evidence_index = CapabilityEvidenceIndex.from_root(args.evidence_root)
+    results: list[dict] = []
+    used_names: set[str] = set()
+    for index, raw_profile_path in enumerate(args.profile, start=1):
+        profile_path = Path(raw_profile_path).expanduser().resolve()
+        profile: dict = {}
+        try:
+            value = json.loads(profile_path.read_text(encoding="utf-8-sig"))
+            if not isinstance(value, dict):
+                raise ValueError("profile must be a JSON object")
+            profile = value
+            project_id = str(profile.get("project_id") or "").strip()
+            if not project_id:
+                raise ValueError("profile project_id is required")
+            kube_context = args.kube_context or str(((profile.get("runtime_contract") or {}).get("kube_context")) or "").strip() or None
+            adapter = KubernetesProjectAdapter(profile=profile, kube_context=kube_context)
+            result = CapabilityBootstrapper(profile=profile, adapter=adapter, evidence_index=evidence_index).run()
+        except (OSError, UnicodeError, json.JSONDecodeError, ValueError, TypeError, RuntimeError, KeyError) as exc:
+            project_id = str(profile.get("project_id") or profile_path.stem or f"profile-{index}")
+            result = {
+                "schema_version": "chaosatlas-capability-bootstrap-v1",
+                "status": "method_invalid",
+                "project_id": project_id,
+                "profile_path": str(profile_path),
+                "errors": [f"{type(exc).__name__}: {exc}"],
+                "warnings": [],
+                "read_only": True,
+                "injection_performed": False,
+            }
+        name = _safe_output_name(project_id, f"profile-{index}")
+        if name in used_names:
+            name = f"{name}-{index}"
+        used_names.add(name)
+        result_path = output / f"{name}.json"
+        result_path.write_text(json.dumps(result, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+        results.append({
+            "project_id": project_id,
+            "status": result.get("status"),
+            "result": result_path.name,
+            "catalog": result.get("catalog"),
+            "status_counts": result.get("status_counts", {}),
+            "errors": list(result.get("errors") or []),
+        })
+    successes = sum(item["status"] == "verified" for item in results)
+    status = "verified" if successes == len(results) else "partial" if successes else "failed"
+    summary = {
+        "schema_version": "chaosatlas-capability-bootstrap-summary-v1",
+        "status": status,
+        "project_count": len(results),
+        "verified_count": successes,
+        "failed_count": len(results) - successes,
+        "projects": results,
+        "evidence_root": str(Path(args.evidence_root).expanduser().resolve()) if args.evidence_root else None,
+        "output": str(output),
+        "read_only": True,
+        "injection_performed": False,
+    }
+    (output / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+    return summary, 0 if status == "verified" else 2
 
 
 def _run_live(args: argparse.Namespace) -> tuple[dict, int]:
@@ -123,6 +207,12 @@ def _parser() -> argparse.ArgumentParser:
     migrate.add_argument("--root", default=".")
     migrate.add_argument("--evidence-root", default=str(default_run_output("migrated-evidence")))
     migrate.add_argument("--dry-run", action="store_true")
+
+    capabilities = subparsers.add_parser("capabilities", help="Discover a project's complete read-only 32+9 capability matrix.")
+    capabilities.add_argument("--profile", action="append", required=True, help="project profile; repeat for multiple projects")
+    capabilities.add_argument("--output", default=str(default_run_output("capability-bootstrap")), help="external, empty output directory")
+    capabilities.add_argument("--kube-context")
+    capabilities.add_argument("--evidence-root", help="optional external root containing verified live run evidence")
     return parser
 
 
@@ -160,4 +250,12 @@ def main(argv: list[str] | None = None) -> int:
         manifest = build_manifest(inventory, args.evidence_root)
         print(json.dumps({"dry_run": args.dry_run, "files": len(manifest["files"])}, ensure_ascii=False))
         return 0
+    if args.command == "capabilities":
+        result, code = _run_capabilities(args)
+        print(json.dumps(result, indent=2, ensure_ascii=False, sort_keys=True))
+        return code
     return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

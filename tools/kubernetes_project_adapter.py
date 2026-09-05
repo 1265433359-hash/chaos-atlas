@@ -395,9 +395,15 @@ class KubernetesProjectAdapter:
             "read_only": True,
         }
 
-    def detect_server_deployment(self, inventory: dict[str, Any]) -> dict[str, Any]:
+    def build_capability_nodes(self, inventory: dict[str, Any]) -> dict[str, Any]:
+        """Build workload nodes without consulting the profile fault allow-list."""
         if inventory.get("status") != "verified":
-            return {"schema_version": "chaosatlas-server-deployment-detection-v1", "status": "environment_blocked", "errors": list(inventory.get("errors") or ["inventory is unavailable"]), "deployment_nodes": [], "candidates": []}
+            return {
+                "schema_version": "chaosatlas-capability-nodes-v1",
+                "status": "environment_blocked",
+                "errors": list(inventory.get("errors") or ["inventory is unavailable"]),
+                "deployment_nodes": [],
+            }
         namespace = str(inventory.get("namespace") or "")
         nodes: list[dict[str, Any]] = []
         errors: list[str] = []
@@ -414,10 +420,6 @@ class KubernetesProjectAdapter:
             extension_facts = enriched.get("extensions") if isinstance(enriched.get("extensions"), dict) else {}
             extension_capabilities = extension_facts.get("capabilities") if isinstance(extension_facts.get("capabilities"), dict) else {}
             extension_capabilities = deepcopy(extension_capabilities)
-            extension_capabilities.setdefault(
-                "networkchaos",
-                bool({"network_delay", "network_loss", "network_partition"} & set(self._fault_families())),
-            )
             disposable_target = _disposable_target_config(self.profile, deployment)
             if disposable_target:
                 declared_capabilities = disposable_target.get("capabilities") if isinstance(disposable_target.get("capabilities"), dict) else {}
@@ -462,6 +464,31 @@ class KubernetesProjectAdapter:
                 errors.extend(f"{name}: {item}" for item in validation_errors)
             else:
                 nodes.append(node)
+        return {
+            "schema_version": "chaosatlas-capability-nodes-v1",
+            "status": "method_invalid" if errors else "verified",
+            "project_id": inventory.get("project_id"),
+            "namespace": namespace,
+            "deployment_nodes": sorted(nodes, key=lambda item: str(item.get("node_id") or "")),
+            "dependencies": deepcopy(inventory.get("dependencies") or []),
+            "errors": errors,
+            "claim_scope": "runtime_inventory",
+            "read_only": True,
+        }
+
+    def detect_server_deployment(self, inventory: dict[str, Any]) -> dict[str, Any]:
+        node_result = self.build_capability_nodes(inventory)
+        if node_result.get("status") != "verified":
+            return {
+                "schema_version": "chaosatlas-server-deployment-detection-v1",
+                "status": node_result.get("status") or "method_invalid",
+                "errors": list(node_result.get("errors") or []),
+                "deployment_nodes": list(node_result.get("deployment_nodes") or []),
+                "candidates": [],
+            }
+        namespace = str(node_result.get("namespace") or "")
+        nodes = list(node_result.get("deployment_nodes") or [])
+        errors: list[str] = []
         candidates = []
         for node in nodes:
             deployment = node["deployment"]

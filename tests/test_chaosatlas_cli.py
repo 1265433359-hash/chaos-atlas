@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 from chaosatlas.cli import main
@@ -137,3 +139,73 @@ def test_engine_json_reader_accepts_windows_utf8_bom(tmp_path):
     profile.write_bytes(b"\xef\xbb\xbf{\"project_id\": \"resource-canary\"}")
 
     assert _read_json(profile)["project_id"] == "resource-canary"
+
+
+def test_capabilities_cli_writes_one_result_per_profile_and_summary(tmp_path, monkeypatch, capsys):
+    profiles = []
+    for project_id in ("one", "two"):
+        path = tmp_path / f"{project_id}-profile.json"
+        path.write_text(json.dumps({"project_id": project_id, "project_commit": "r", "namespace_policy": {"allowed_namespaces": ["lab"]}}), encoding="utf-8")
+        profiles.append(path)
+
+    def fake_run(self):
+        return {
+            "status": "verified",
+            "project_id": self.profile["project_id"],
+            "catalog": {"core": 32, "extension": 9, "total": 41},
+            "status_counts": {"blocked": 41},
+            "read_only": True,
+            "injection_performed": False,
+            "errors": [],
+        }
+
+    monkeypatch.setattr("chaosatlas.capabilities.bootstrap.CapabilityBootstrapper.run", fake_run)
+    output = tmp_path / "outside-output"
+    result = main(["capabilities", "--profile", str(profiles[0]), "--profile", str(profiles[1]), "--output", str(output)])
+
+    assert result == 0
+    assert (output / "one.json").is_file()
+    assert (output / "two.json").is_file()
+    summary = json.loads((output / "summary.json").read_text(encoding="utf-8"))
+    assert summary["status"] == "verified"
+    assert summary["project_count"] == 2
+    assert summary["injection_performed"] is False
+    assert json.loads(capsys.readouterr().out)["verified_count"] == 2
+
+
+def test_capabilities_cli_preserves_success_when_another_profile_is_invalid(tmp_path, monkeypatch):
+    valid = tmp_path / "valid.json"
+    invalid = tmp_path / "invalid.json"
+    valid.write_text(json.dumps({"project_id": "valid", "namespace_policy": {"allowed_namespaces": ["lab"]}}), encoding="utf-8")
+    invalid.write_text("not json", encoding="utf-8")
+    monkeypatch.setattr("chaosatlas.capabilities.bootstrap.CapabilityBootstrapper.run", lambda self: {"status": "verified", "project_id": "valid", "errors": [], "read_only": True, "injection_performed": False})
+
+    output = tmp_path / "partial-output"
+    result = main(["capabilities", "--profile", str(valid), "--profile", str(invalid), "--output", str(output)])
+
+    assert result == 2
+    summary = json.loads((output / "summary.json").read_text(encoding="utf-8"))
+    assert summary["status"] == "partial"
+    assert (output / "valid.json").is_file()
+    assert (output / "invalid.json").is_file()
+
+
+def test_capabilities_cli_rejects_nonempty_output(tmp_path, capsys):
+    output = tmp_path / "existing"
+    output.mkdir()
+    (output / "keep.json").write_text("{}", encoding="utf-8")
+    result = main(["capabilities", "--profile", str(PROFILE), "--output", str(output)])
+    assert result == 2
+    assert "non-empty" in capsys.readouterr().err
+
+
+def test_cli_module_entrypoint_is_executable():
+    completed = subprocess.run(
+        [sys.executable, "-m", "chaosatlas.cli", "--help"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 0
+    assert "capabilities" in completed.stdout

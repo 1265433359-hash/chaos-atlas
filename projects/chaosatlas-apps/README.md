@@ -81,3 +81,28 @@ $output = Join-Path $env:LOCALAPPDATA 'ChaosAtlas\runs\four-app-phase2-<unique-r
 Replace the profile and stable candidate alias for the other applications.
 One canary is capability evidence only. It must not be promoted to an
 application finding or Issue until the reproduction and RCA gates pass.
+
+## Read-only 32+9 capability bootstrap
+
+Before selecting live canaries, discover the complete 32-core plus 9-provisional
+matrix for all four applications. This command only uses Kubernetes `get`
+operations. It does not accept a live approval flag and refuses repository-local
+or non-empty output directories:
+
+```powershell
+$runId = Get-Date -Format 'yyyyMMdd-HHmmss'
+$output = Join-Path $env:LOCALAPPDATA "ChaosAtlas\runs\four-app-capability-bootstrap-$runId"
+$evidence = Join-Path $env:LOCALAPPDATA 'ChaosAtlas\runs\four-app-phase2-20260905'
+./scripts/invoke_python.ps1 -m chaosatlas.cli capabilities `
+  --profile projects/chaosatlas-apps/immich/profile.json `
+  --profile projects/chaosatlas-apps/erpnext/profile.json `
+  --profile projects/chaosatlas-apps/medusa/profile.json `
+  --profile projects/chaosatlas-apps/rocketchat/profile.json `
+  --kube-context chaosatlas-apps `
+  --evidence-root $evidence `
+  --output $output
+```
+
+Each project receives an independent JSON matrix and the directory receives a
+`summary.json`. Discovery can produce at most E1 by itself; E2/E3 can only be
+imported from externally verified live lifecycle artifacts.

@@ -34,6 +34,23 @@ def test_live_detection_uses_project_declared_supported_faults():
     assert {item["fault_family"] for item in result["candidates"]} == {"pod_kill", "network_delay", "config_reload"}
 
 
+def test_capability_node_discovery_is_independent_of_supported_faults():
+    base = {
+        "project_id": "fixture",
+        "project_commit": "fixture",
+        "namespace_policy": {"allowed_namespaces": ["lab"]},
+    }
+    first = KubernetesProjectAdapter(profile={**base, "runtime_contract": {"supported_fault_families": ["pod_kill"]}}, runner=_runner)
+    second = KubernetesProjectAdapter(profile={**base, "runtime_contract": {"supported_fault_families": ["network_delay"]}}, runner=_runner)
+
+    first_nodes = first.build_capability_nodes(first.inventory())
+    second_nodes = second.build_capability_nodes(second.inventory())
+
+    assert first_nodes["status"] == "verified"
+    assert first_nodes["deployment_nodes"] == second_nodes["deployment_nodes"]
+    assert first_nodes["read_only"] is True
+
+
 def test_live_detection_expands_profile_parameter_ladder():
     profile = {
         "project_id": "fixture",

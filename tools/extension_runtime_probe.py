@@ -29,7 +29,10 @@ def _default_runner(args: list[str], timeout: int = 30) -> tuple[int, str, str]:
 
 def _run(runner: Runner, args: list[str], *, context: str | None = None, timeout: int = 30) -> tuple[int, str, str]:
     command = (["--context", context, *args] if context else list(args))
-    return runner(command, timeout=timeout)
+    try:
+        return runner(command, timeout=timeout)
+    except (OSError, RuntimeError, TypeError, ValueError) as exc:
+        return 1, "", f"{type(exc).__name__}: {exc}"
 
 
 def _json(runner: Runner, args: list[str], *, context: str | None = None) -> tuple[Any | None, str | None]:
@@ -112,12 +115,35 @@ def probe_extension_environment(
     for resource in sorted(set(CRDS.values())):
         code, stdout, stderr = _run(runner, ["get", "crd", resource], context=kube_context)
         crd_checks[resource] = {"status": "available" if code == 0 else "unavailable", "error": None if code == 0 else (stderr or stdout).strip()}
-    mesh, mesh_error = _json(runner, ["get", "pods", "-n", "chaos-testing"], context=kube_context)
-    mesh_pods = [item for item in (mesh or {}).get("items") or [] if isinstance(item, dict)] if isinstance(mesh, dict) else []
-    mesh_ready = bool(mesh_pods) and all(_ready(item) for item in mesh_pods if str((item.get("status") or {}).get("phase") or "") == "Running")
+    mesh_namespace = None
+    mesh_errors: list[str] = []
+    mesh_pods: list[dict[str, Any]] = []
+    for candidate_namespace in ("chaos-testing", "chaos-mesh"):
+        mesh, mesh_error = _json(runner, ["get", "pods", "-n", candidate_namespace], context=kube_context)
+        if mesh_error:
+            mesh_errors.append(f"{candidate_namespace}: {mesh_error}")
+            continue
+        candidate_pods = [item for item in (mesh or {}).get("items") or [] if isinstance(item, dict)] if isinstance(mesh, dict) else []
+        candidate_ready = bool(candidate_pods) and all(
+            str((item.get("status") or {}).get("phase") or "") == "Running" and _ready(item)
+            for item in candidate_pods
+        )
+        if candidate_ready:
+            mesh_namespace = candidate_namespace
+            mesh_pods = candidate_pods
+            break
+        if candidate_pods and not mesh_pods:
+            mesh_namespace = candidate_namespace
+            mesh_pods = candidate_pods
+        if candidate_pods:
+            mesh_errors.append(f"{candidate_namespace}: Chaos Mesh Pods are not Ready")
+    mesh_ready = bool(mesh_pods) and all(
+        str((item.get("status") or {}).get("phase") or "") == "Running" and _ready(item)
+        for item in mesh_pods
+    )
     deployments, deployment_error = _json(runner, ["get", "deployments", "-n", namespace], context=kube_context) if namespace else (None, "profile must declare one allowed namespace")
     workloads = _workload_facts(deployments) if isinstance(deployments, dict) else []
-    cluster = {"context": kube_context, "namespace": namespace, "chaos_mesh_ready": mesh_ready, "chaos_mesh_error": mesh_error, "crds": crd_checks, "workloads": workloads, "workload_error": deployment_error}
+    cluster = {"context": kube_context, "namespace": namespace, "chaos_mesh_namespace": mesh_namespace, "chaos_mesh_ready": mesh_ready, "chaos_mesh_error": None if mesh_ready else "; ".join(mesh_errors), "crds": crd_checks, "workloads": workloads, "workload_error": deployment_error}
     dedicated_paths = ((profile.get("extension_runtime") or {}).get("io_test_paths") or [])
     disposable = bool((profile.get("extension_runtime") or {}).get("disposable_target"))
     disposable_config = _disposable_target_config(profile, workloads)
@@ -133,7 +159,7 @@ def probe_extension_environment(
             status, reason = "blocked", "Chaos Mesh controller/daemon is not Ready"
         elif extension_id in {"extension.io_delay", "extension.io_error"}:
             if not dedicated_paths or (disposable_config and target_capabilities.get("iochaos") is not True):
-                status, reason = "blocked", "Dify profile has no dedicated disposable IO test path or test volume"
+                status, reason = "blocked", "project profile has no dedicated disposable IO test path or test volume"
             elif not disposable:
                 status, reason = "blocked", "IO mutation requires an explicitly disposable target"
             else:
