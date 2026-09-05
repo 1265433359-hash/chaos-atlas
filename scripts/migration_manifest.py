@@ -3,9 +3,18 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import sys
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "src"))
+
+from chaosatlas.workspace import default_run_output
 
 
-def build_manifest(inventory: dict, evidence_root: str = "ChaosAtlas-evidence") -> dict:
+def build_manifest(inventory: dict, evidence_root: str | Path | None = None) -> dict:
+    if evidence_root is None:
+        evidence_root = default_run_output("migrated-evidence")
     files = inventory.get("files", [])
     sensitive = [entry["path"] for entry in files if entry.get("sensitive")]
     unknown = [entry["path"] for entry in files if entry.get("category") == "unknown"]
@@ -30,7 +39,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=".")
     parser.add_argument("--inventory", required=True)
     parser.add_argument("--output", required=True)
-    parser.add_argument("--evidence-root", default="ChaosAtlas-evidence")
+    parser.add_argument("--evidence-root", default=str(default_run_output("migrated-evidence")))
     args = parser.parse_args(argv)
     del args.root
     inventory = json.loads(Path(args.inventory).read_text(encoding="utf-8"))

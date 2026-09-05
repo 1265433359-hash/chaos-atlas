@@ -12,11 +12,19 @@ IGNORED_DIR_NAMES = {
     ".venv",
     ".venv-otel-runtime",
     ".pytest_cache",
+    ".email-notify-outbox",
+    ".planning",
+    ".runs",
+    ".secrets",
     ".pytest-cache-disabled",
     "__pycache__",
     ".worktrees",
     ".migration",
     "ChaosAtlas-evidence",
+    "ChaosAtlas-evidence-v2",
+    "environment-reports",
+    "node_modules",
+    "runtime",
 }
 
 SENSITIVE_NAMES = {

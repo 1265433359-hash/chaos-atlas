@@ -1,98 +1,275 @@
 [CmdletBinding(SupportsShouldProcess)]
 param(
-    [string]$ArchiveRoot = 'C:\Users\23741\Desktop\XIAO\ChaosAtlas-local-archive-20260826',
-    [string]$ArchiveName = '2026-08-30-root-cleanup'
+    [string]$ArchiveRoot,
+    [string]$ArchiveName = "$(Get-Date -Format 'yyyy-MM-dd-HHmmss')-repository-cleanup",
+    [switch]$IncludeDependencies,
+    [switch]$Resume
 )
 
 $ErrorActionPreference = 'Stop'
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$archive = Join-Path $ArchiveRoot $ArchiveName
 
-if (Test-Path -LiteralPath $archive) {
+if (-not $ArchiveRoot) {
+    if ($env:CHAOSATLAS_STATE_ROOT) {
+        $stateRoot = [System.IO.Path]::GetFullPath($env:CHAOSATLAS_STATE_ROOT)
+    } elseif ($env:LOCALAPPDATA) {
+        $stateRoot = Join-Path $env:LOCALAPPDATA 'ChaosAtlas'
+    } else {
+        $stateRoot = Join-Path ([Environment]::GetFolderPath('UserProfile')) '.local\state\chaosatlas'
+    }
+    $ArchiveRoot = Join-Path $stateRoot 'archive'
+}
+
+$archiveRootResolved = [System.IO.Path]::GetFullPath($ArchiveRoot)
+$archive = [System.IO.Path]::GetFullPath((Join-Path $archiveRootResolved $ArchiveName))
+$repoPrefix = $repo.TrimEnd('\') + '\'
+$archivePrefix = $archive.TrimEnd('\') + '\'
+
+if ($archive -eq $repo -or $archive.StartsWith($repoPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+    throw "Archive must be outside the repository: $archive"
+}
+if ($archive -eq [System.IO.Path]::GetPathRoot($archive)) {
+    throw "Refusing to use a filesystem root as the archive target: $archive"
+}
+if ((Test-Path -LiteralPath $archive) -and -not $Resume) {
     throw "Archive target already exists; refusing to overwrite: $archive"
 }
-
-$protected = @(
-    '.git', '.planning', '.email-notify-outbox', '.venv',
-    'src', 'cli', 'tools', 'scripts', 'tests', 'projects', 'workloads', 'docs'
-)
-$patterns = @(
-    '.academic_review*', '.lo_profile_review*', '.review_*',
-    '.pytest*', '.tmp-*', '.runs', 'runtime', '.docker-config*',
-    '.zcode', 'build', 'train-ticket', 'online-boutique', 'otel-demo',
-    '.worktrees', '.migration', 'ChaosAtlas-evidence*'
-)
-
-# Build a root-level tracked-path set so a future cleanup cannot move product files.
-$tracked = [System.Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
-foreach ($path in (git -C $repo ls-files)) {
-    [void]$tracked.Add($path.Replace('/', '\'))
+if ($Resume -and -not (Test-Path -LiteralPath $archive)) {
+    throw "Cannot resume because the archive does not exist: $archive"
 }
 
+function Get-TreeSummary {
+    param([Parameter(Mandatory)][string]$Path)
+
+    $resolved = (Resolve-Path -LiteralPath $Path).Path
+    $item = Get-Item -LiteralPath $resolved -Force
+    $enumerationErrors = @()
+    $files = if ($item.PSIsContainer) {
+        @(Get-ChildItem -LiteralPath $resolved -Recurse -Force -File -ErrorAction SilentlyContinue -ErrorVariable +enumerationErrors | Sort-Object FullName)
+    } else {
+        @($item)
+    }
+
+    $aggregate = [System.Security.Cryptography.IncrementalHash]::CreateHash(
+        [System.Security.Cryptography.HashAlgorithmName]::SHA256
+    )
+    $bytes = [long]0
+    foreach ($file in $files) {
+        $bytes += $file.Length
+        $relative = if ($item.PSIsContainer) {
+            [System.IO.Path]::GetRelativePath($resolved, $file.FullName).Replace('\', '/')
+        } else {
+            $file.Name
+        }
+        try {
+            $fileHash = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256 -ErrorAction Stop).Hash.ToLowerInvariant()
+        } catch {
+            $enumerationErrors += $_
+            continue
+        }
+        $record = "$relative`t$($file.Length)`t$fileHash`n"
+        $aggregate.AppendData([System.Text.Encoding]::UTF8.GetBytes($record))
+    }
+    $treeHash = [Convert]::ToHexString($aggregate.GetHashAndReset()).ToLowerInvariant()
+    $aggregate.Dispose()
+    [pscustomobject]@{
+        files = $files.Count
+        bytes = $bytes
+        sha256_tree = $treeHash
+        hash_complete = $enumerationErrors.Count -eq 0
+        read_errors = $enumerationErrors.Count
+    }
+}
+
+$rootNames = @(
+    '.email-notify-outbox',
+    '.pytest_cache',
+    '.runs',
+    'ChaosAtlas-evidence',
+    'ChaosAtlas-evidence-v2',
+    'environment-reports',
+    'runtime'
+)
 $sources = [System.Collections.Generic.List[System.IO.FileSystemInfo]]::new()
-foreach ($entry in (Get-ChildItem -LiteralPath $repo -Force)) {
-    if ($protected -contains $entry.Name) { continue }
-    $matched = $false
-    foreach ($pattern in $patterns) {
-        if ($entry.Name -like $pattern) { $matched = $true; break }
+foreach ($name in $rootNames) {
+    $candidate = Join-Path $repo $name
+    if (Test-Path -LiteralPath $candidate) {
+        [void]$sources.Add((Get-Item -LiteralPath $candidate -Force))
     }
-    if (-not $matched -and $entry.PSIsContainer -eq $false) {
-        $matched = $entry.Name -like '*.docx' -or
-            $entry.Name -like '*.pdf' -or
-            $entry.Name -like 'github_candidate_snapshot_*.csv'
-    }
-    if (-not $matched) { continue }
-
-    # Skip any root item that contains tracked files, including a tracked file deleted locally.
-    $rootName = $entry.Name.Replace('\', '/')
-    $hasTracked = $tracked | Where-Object { $_ -eq $rootName -or $_.StartsWith("$rootName/", [StringComparison]::OrdinalIgnoreCase) }
-    if ($hasTracked) { continue }
-    [void]$sources.Add($entry)
 }
-$sources = @($sources | Sort-Object Name)
+foreach ($candidate in Get-ChildItem -LiteralPath $repo -Force) {
+    if ($candidate.Name.StartsWith('.tmp-', [StringComparison]::OrdinalIgnoreCase) -or
+        $candidate.Name.StartsWith('.pytest-tmp-', [StringComparison]::OrdinalIgnoreCase)) {
+        if (-not ($sources.FullName -contains $candidate.FullName)) {
+            [void]$sources.Add($candidate)
+        }
+    }
+}
+$generatedDirectories = @(Get-ChildItem -LiteralPath $repo -Directory -Recurse -Force -ErrorAction SilentlyContinue | Where-Object {
+    $_.FullName -notlike "$repo\.git\*" -and
+    $_.FullName -notlike "$repo\.venv\*" -and
+    ($_.Name -eq '__pycache__' -or $_.Name -like '*.egg-info')
+})
+foreach ($candidate in $generatedDirectories) {
+    $covered = $false
+    foreach ($selected in $sources) {
+        $selectedPrefix = $selected.FullName.TrimEnd('\') + '\'
+        if ($candidate.FullName.StartsWith($selectedPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+            $covered = $true
+            break
+        }
+    }
+    if (-not $covered) {
+        [void]$sources.Add($candidate)
+    }
+}
+if ($IncludeDependencies) {
+    $appsRoot = Join-Path $repo 'projects\chaosatlas-apps'
+    if (Test-Path -LiteralPath $appsRoot) {
+        $dependencyCandidates = @(Get-ChildItem -LiteralPath $appsRoot -Directory -Recurse -Force -Filter 'node_modules' | Sort-Object { $_.FullName.Length })
+        foreach ($candidate in $dependencyCandidates) {
+            $candidatePrefix = $candidate.FullName.TrimEnd('\') + '\'
+            $alreadyCovered = $false
+            foreach ($selected in $sources) {
+                $selectedPrefix = $selected.FullName.TrimEnd('\') + '\'
+                if ($candidate.FullName.StartsWith($selectedPrefix, [StringComparison]::OrdinalIgnoreCase) -or
+                    $selected.FullName.StartsWith($candidatePrefix, [StringComparison]::OrdinalIgnoreCase)) {
+                    $alreadyCovered = $true
+                    break
+                }
+            }
+            if (-not $alreadyCovered) {
+                [void]$sources.Add($candidate)
+            }
+        }
+    }
+}
+$sources = @($sources | Sort-Object FullName -Unique)
 
-if (@($sources).Count -eq 0) {
-    Write-Host 'No root artifacts matched the archive policy.'
+if ($sources.Count -eq 0) {
+    Write-Host 'No generated workspace state matched the archive policy.'
     return
 }
 
-if ($PSCmdlet.ShouldProcess($archive, 'create archive directory')) {
-    New-Item -ItemType Directory -Path $archive | Out-Null
+foreach ($source in $sources) {
+    $resolvedSource = (Resolve-Path -LiteralPath $source.FullName).Path
+    if (-not ($resolvedSource -eq $repo -or $resolvedSource.StartsWith($repoPrefix, [StringComparison]::OrdinalIgnoreCase))) {
+        throw "Refusing source outside repository: $resolvedSource"
+    }
+    if ($resolvedSource -eq $repo) {
+        throw 'Refusing to archive the repository root.'
+    }
 }
 
-$manifest = [System.Collections.Generic.List[string]]::new()
-$manifest.Add('ChaosAtlas root cleanup archive')
-$manifest.Add("Created: $(Get-Date -Format o)")
-$manifest.Add("Source: $repo")
-$manifest.Add('')
-$manifest.Add('Moved items:')
-$failed = [System.Collections.Generic.List[string]]::new()
+if ($WhatIfPreference) {
+    foreach ($source in $sources) {
+        $relative = [System.IO.Path]::GetRelativePath($repo, $source.FullName)
+        $destination = Join-Path $archive $relative
+        $PSCmdlet.ShouldProcess($source.FullName, "move to $destination") | Out-Null
+    }
+    return
+}
+
+New-Item -ItemType Directory -Path $archive -Force | Out-Null
+$commit = (git -C $repo rev-parse HEAD).Trim()
 
 foreach ($source in $sources) {
-    $destination = Join-Path $archive $source.Name
-    try {
-        if ($PSCmdlet.ShouldProcess($source.FullName, "move to $destination")) {
-            Move-Item -LiteralPath $source.FullName -Destination $destination -ErrorAction Stop
-        }
-        $manifest.Add("- $($source.Name)")
-    } catch {
-        $message = $_.Exception.Message -replace '\s+', ' '
-        $failed.Add("- $($source.Name): $message")
-        Write-Warning "Could not archive $($source.Name): $message"
+    $relative = [System.IO.Path]::GetRelativePath($repo, $source.FullName).Replace('\', '/')
+    $destination = Join-Path $archive ($relative.Replace('/', '\'))
+    $destinationParent = Split-Path -Parent $destination
+    New-Item -ItemType Directory -Path $destinationParent -Force | Out-Null
+    if (-not $destination.StartsWith($archivePrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Resolved destination escaped archive root: $destination"
+    }
+    if ($PSCmdlet.ShouldProcess($source.FullName, "move to $destination")) {
+        Move-Item -LiteralPath $source.FullName -Destination $destination -ErrorAction Stop
+        Write-Host "Moved $relative"
     }
 }
 
-if (-not $WhatIfPreference) {
-    $manifest.Add('')
-    $manifest.Add('Failed items:')
-    if ($failed.Count -eq 0) {
-        $manifest.Add('- none')
-    } else {
-        $manifest.AddRange($failed)
-    }
-    $manifest | Set-Content -LiteralPath (Join-Path $archive 'MANIFEST.txt') -Encoding utf8
-    Write-Host "Archived $($sources.Count - $failed.Count) of $($sources.Count) root items to $archive"
-    if ($failed.Count -gt 0) {
-        Write-Warning "$($failed.Count) item(s) remain in the repository; see MANIFEST.txt and rerun after closing file-using processes."
+$archivedItems = [System.Collections.Generic.List[System.IO.FileSystemInfo]]::new()
+foreach ($name in $rootNames) {
+    $candidate = Join-Path $archive $name
+    if (Test-Path -LiteralPath $candidate) {
+        [void]$archivedItems.Add((Get-Item -LiteralPath $candidate -Force))
     }
 }
+foreach ($candidate in Get-ChildItem -LiteralPath $archive -Force) {
+    if ($candidate.Name.StartsWith('.tmp-', [StringComparison]::OrdinalIgnoreCase) -or
+        $candidate.Name.StartsWith('.pytest-tmp-', [StringComparison]::OrdinalIgnoreCase)) {
+        if (-not ($archivedItems.FullName -contains $candidate.FullName)) {
+            [void]$archivedItems.Add($candidate)
+        }
+    }
+}
+$generatedArchiveDirectories = @(Get-ChildItem -LiteralPath $archive -Directory -Recurse -Force -ErrorAction SilentlyContinue | Where-Object {
+    $_.Name -eq '__pycache__' -or $_.Name -like '*.egg-info'
+})
+foreach ($candidate in $generatedArchiveDirectories) {
+    $relativeParts = [System.IO.Path]::GetRelativePath($archive, $candidate.FullName).Split([System.IO.Path]::DirectorySeparatorChar)
+    if (-not ($relativeParts -contains 'node_modules')) {
+        [void]$archivedItems.Add($candidate)
+    }
+}
+$archivedAppsRoot = Join-Path $archive 'projects\chaosatlas-apps'
+if (Test-Path -LiteralPath $archivedAppsRoot) {
+    $dependencyCandidates = @(Get-ChildItem -LiteralPath $archivedAppsRoot -Directory -Recurse -Force -Filter 'node_modules' -ErrorAction SilentlyContinue | Sort-Object { $_.FullName.Length })
+    foreach ($candidate in $dependencyCandidates) {
+        $relative = [System.IO.Path]::GetRelativePath($archive, $candidate.FullName)
+        if ($relative.Split([System.IO.Path]::DirectorySeparatorChar).Where({ $_ -eq 'node_modules' }).Count -eq 1) {
+            [void]$archivedItems.Add($candidate)
+        }
+    }
+}
+
+$records = [System.Collections.Generic.List[object]]::new()
+foreach ($archivedItem in @($archivedItems | Sort-Object FullName -Unique)) {
+    $relative = [System.IO.Path]::GetRelativePath($archive, $archivedItem.FullName).Replace('\', '/')
+    $summary = Get-TreeSummary -Path $archivedItem.FullName
+    $classification = if ($relative -eq '.email-notify-outbox') {
+        'legacy_notification_queue_do_not_send'
+    } elseif ($relative.EndsWith('/node_modules')) {
+        'regenerable_dependency'
+    } elseif ($relative -eq '.runs' -or $relative.StartsWith('ChaosAtlas-evidence')) {
+        'bulk_experiment_output'
+    } else {
+        'local_generated_state'
+    }
+    $records.Add([ordered]@{
+        source = $relative
+        destination = $relative
+        classification = $classification
+        files = $summary.files
+        bytes = $summary.bytes
+        sha256_tree = $summary.sha256_tree
+        hash_complete = $summary.hash_complete
+        read_errors = $summary.read_errors
+    })
+    Write-Host "Indexed $relative ($($summary.files) files, complete=$($summary.hash_complete))"
+}
+
+$manifest = [ordered]@{
+    schema_version = 1
+    created_at = (Get-Date).ToUniversalTime().ToString('o')
+    source_repository = $repo
+    source_commit = $commit
+    archive_root = $archive
+    notification_policy = 'Legacy pending notification records are audit-only and must not be copied into the active pending queue.'
+    restore = 'Copy an item from this archive back to its source-relative path only after confirming that the destination does not exist.'
+    items = @($records)
+}
+$manifest | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $archive 'MANIFEST.json') -Encoding utf8
+
+$restore = @(
+    '# ChaosAtlas Local Archive Restore Guide',
+    '',
+    "Source commit: $commit",
+    '',
+    'Each item keeps its repository-relative path below this directory. Restore only one exact item at a time, and only when its original destination is absent.',
+    '',
+    'The `.email-notify-outbox` tree is historical audit data. Do not copy its JSON files into the active email queue because doing so may send stale notifications.',
+    '',
+    'Verify restored content by regenerating its tree digest and comparing it with `MANIFEST.json`.'
+)
+$restore | Set-Content -LiteralPath (Join-Path $archive 'RESTORE.md') -Encoding utf8
+Write-Host "Archive complete: $archive"

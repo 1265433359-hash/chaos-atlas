@@ -120,7 +120,7 @@ workload is an experiment outcome, not a defense result.
 | `scripts/` | Inventory, migration, boundary, and acceptance tools |
 | `tools/` | Thin compatibility wrappers for the legacy command names |
 | `docs/` | Product operations, architecture, and publication documentation |
-| `ChaosAtlas-evidence` | Separate evidence archive for inputs, runs, reports, and knowledge snapshots |
+| `%LOCALAPPDATA%\ChaosAtlas` | External local state root for unreviewed runs, temporary data, and archives |
 
 The archive conventions and paper-facing evidence boundaries are documented
 in [`docs/ARCHIVE_MAP.md`](docs/ARCHIVE_MAP.md). The comparison matrix is in
@@ -149,9 +149,9 @@ These commands only inspect or validate existing artifacts. They do not deploy
 services or inject faults:
 
 ```powershell
-python -m chaosatlas run --profile projects/sock-shop/profile.json --mode dry-run
-python -m chaosatlas run --profile projects/online-boutique/profile.json --mode dry-run
-python -m pytest tests/test_repository_architecture.py -q
+& scripts/invoke_python.ps1 -m chaosatlas run --profile projects/sock-shop/profile.json --mode dry-run
+& scripts/invoke_python.ps1 -m chaosatlas run --profile projects/online-boutique/profile.json --mode dry-run
+& scripts/invoke_python.ps1 -m pytest tests/test_repository_architecture.py -q
 ```
 
 Runtime commands require an explicitly approved isolated namespace and a
@@ -163,8 +163,9 @@ project profile before running them.
 
 The current strongest paper-facing materials are:
 
-- Paper-facing reports and experiment ledgers are retained in the separate
-  `ChaosAtlas-evidence` archive.
+- Paper-facing reports and experiment ledgers are retained in reviewed
+  `artifacts/` and `reporting/` paths; bulk raw runs remain in the external
+  `%LOCALAPPDATA%\ChaosAtlas\archive` tree.
 
 Numbers in a manuscript should cite the smallest machine-readable source
 available (`.json`, `.csv`, or a run ledger) and then the human-readable report.
@@ -204,8 +205,8 @@ ignored unless a paper reproducibility package explicitly requires them.
 The supported product entry point is now:
 
 ```powershell
-python -m chaosatlas run --profile projects/sock-shop/profile.json --mode dry-run
-python -m chaosatlas run --profile projects/sock-shop/profile.json --mode live --evidence-root ChaosAtlas-evidence-v2/runs/sock-shop/<run-id>
+& scripts/invoke_python.ps1 -m chaosatlas run --profile projects/sock-shop/profile.json --mode dry-run
+& scripts/invoke_python.ps1 -m chaosatlas run --profile projects/sock-shop/profile.json --mode live --approve-live --evidence-root "$env:LOCALAPPDATA\ChaosAtlas\runs\sock-shop\<run-id>"
 ```
 
 `live` mode is fail-closed: it requires the project profile's runtime gates,
@@ -217,5 +218,5 @@ The repository architecture and evidence migration policy are documented in
 `docs/superpowers/specs/2026-08-26-repository-architecture-redesign-design.zh-CN.md`
 and `docs/repository-migration/README.md`.
 
-Runtime evidence belongs in the separate `ChaosAtlas-evidence` archive. The
-legacy `tools/` entry points remain available during the compatibility period.
+Unreviewed runtime evidence belongs under the external ChaosAtlas state root.
+The legacy `tools/` entry points remain available during the compatibility period.

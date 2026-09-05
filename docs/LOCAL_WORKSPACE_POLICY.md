@@ -15,11 +15,14 @@ ChaosAtlas keeps the repository root focused on product code and reproducible pr
 - Top-level research attachments (`*.docx`) and generated snapshots
 - Virtual environments and machine-local configuration
 
-The external archive is:
+The external state root is:
 
 ```text
-C:\Users\23741\Desktop\XIAO\ChaosAtlas-local-archive-20260826
+%LOCALAPPDATA%\ChaosAtlas
 ```
+
+Set `CHAOSATLAS_STATE_ROOT` to override it. The standard subdirectories are
+`runs/`, `tmp/`, and `archive/`; this avoids user-specific paths in scripts.
 
 Each cleanup pass uses a dated subdirectory and preserves relative names. Files are moved, not deleted, so an archived artifact can be restored without rewriting repository history.
 
@@ -37,4 +40,7 @@ Moves are attempted independently. If a cache is locked or denied by Windows ACL
 
 Run `scripts/archive_root_workspace.ps1 -WhatIf` first to preview a cleanup pass. Run it without `-WhatIf` from a normal PowerShell after stopping any active experiment that writes to `.runs/`.
 
-New experiment output should use an explicit output directory under `.runs/` or an external archive path. Do not commit machine-local credentials, kubeconfigs, Docker state, or raw evidence.
+New experiment output must use the external `runs/` directory. Run Python
+commands through `scripts/invoke_python.ps1` so bytecode caches also go to the
+external `tmp/` directory. Do not commit machine-local credentials, kubeconfigs,
+Docker state, or raw evidence.

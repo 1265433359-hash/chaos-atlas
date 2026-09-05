@@ -5,11 +5,20 @@ import json
 import os
 import shutil
 from pathlib import Path
+import sys
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+if str(REPO_ROOT / "src") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "src"))
 
 try:
     from scripts.repository_inventory import _sha256
 except ModuleNotFoundError:
     from repository_inventory import _sha256
+
+from chaosatlas.workspace import default_run_output
 
 SELECTED_ROOTS = {
     "artifacts": "runs",
@@ -76,7 +85,7 @@ def migrate(root: str | Path, evidence_root: str | Path, manifest_path: str | Pa
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Copy evidence into the independent archive.")
     parser.add_argument("--root", default=".")
-    parser.add_argument("--evidence-root", default="ChaosAtlas-evidence")
+    parser.add_argument("--evidence-root", default=str(default_run_output("migrated-evidence")))
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
