@@ -174,6 +174,28 @@ def _find_candidate(
     return matches[0] if len(matches) == 1 else None
 
 
+def _find_oracle_candidate(
+    candidates: list[dict[str, Any]], oracle_service: str
+) -> dict[str, Any] | None:
+    """Prefer the pod-kill candidate that owns the declared business service."""
+    service = str(oracle_service or "").strip()
+    if not service:
+        return None
+    matches = [
+        item
+        for item in candidates
+        if isinstance(item, dict)
+        and (
+            str(item.get("target") or "") == service
+            or str(item.get("service_target") or "") == service
+        )
+    ]
+    return next(
+        (item for item in matches if str(item.get("fault_family") or "") == "pod_kill"),
+        matches[0] if matches else None,
+    )
+
+
 def _read_json(path: Path) -> dict[str, Any]:
     # Windows PowerShell's `Set-Content -Encoding UTF8` emits a BOM.
     value = json.loads(path.read_text(encoding="utf-8-sig"))
@@ -1410,18 +1432,15 @@ def run_closed_loop(
                     candidate_id,
                     project_id=str((inventory or {}).get("project_id") or ""),
                 ) or first_planned_candidate
-            elif mode == "live" and profile is not None:
+            elif profile is not None:
                 try:
                     oracle_service = _runtime_oracle(profile, oracle_registry=oracle_registry)["service"]
                 except ValueError:
                     oracle_service = ""
-                first_planned_candidate = next(
-                    (
-                        item for item in (ranked or {}).get("candidates", [])
-                        if str(item.get("target")) == oracle_service and str(item.get("fault_family")) == "pod_kill"
-                    ),
-                    first_planned_candidate,
-                )
+                first_planned_candidate = _find_oracle_candidate(
+                    (ranked or {}).get("candidates", []),
+                    oracle_service,
+                ) or first_planned_candidate
             evidence_plan = build_evidence_plan(
                 inventory or {},
                 candidate_space or {},
@@ -1450,11 +1469,15 @@ def run_closed_loop(
                 candidate_id,
                 project_id=str((inventory or {}).get("project_id") or ""),
             )
-        elif mode == "live":
-            first_candidate = next(
-                (item for item in (ranked or {}).get("candidates", []) if item.get("fault_family") == "pod_kill"),
-                first_candidate,
-            )
+        elif profile is not None:
+            try:
+                oracle_service = _runtime_oracle(profile, oracle_registry=oracle_registry)["service"]
+            except ValueError:
+                oracle_service = ""
+            first_candidate = _find_oracle_candidate(
+                (ranked or {}).get("candidates", []),
+                oracle_service,
+            ) or first_candidate
         if first_candidate is None:
             raise ValueError("no candidate survived server deployment detection")
         plan = {"candidate_id": first_candidate.get("candidate_id"), "expected_invariant": "business_oracle_success"}
@@ -1493,13 +1516,9 @@ def run_closed_loop(
                 summary = _summary(output_root, status="environment_blocked", context=context, completed=completed, error=str(exc))
                 _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
                 return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
-            oracle_candidate = next(
-                (
-                    item for item in (candidate_space or {}).get("candidates", [])
-                    if str(item.get("target")) == runtime_oracle["service"]
-                    or str(item.get("service_target")) == runtime_oracle["service"]
-                ),
-                None,
+            oracle_candidate = _find_oracle_candidate(
+                (candidate_space or {}).get("candidates", []),
+                runtime_oracle["service"],
             )
             if oracle_candidate is None and runtime_oracle.get("candidate_scope") != "business_path":
                 summary = _summary(output_root, status="environment_blocked", context=context, completed=completed, error="live business oracle service has no matching candidate")

@@ -1,0 +1,35 @@
+{
+  "schema_version": "chaosatlas-offline-facts-v1",
+  "project_id": "immich",
+  "project_commit": "5cf305a3a239e0619f756a5cdcb380e83e90d6a04f2065adb5e7f1afee5c2629",
+  "namespace": "chaosatlas-immich",
+  "services": ["immich-postgres", "immich-server", "immich-valkey"],
+  "deployments": [
+    {
+      "name": "immich-server",
+      "selector": {
+        "app.kubernetes.io/controller": "main",
+        "app.kubernetes.io/instance": "immich",
+        "app.kubernetes.io/name": "server"
+      },
+      "desired_replicas": 1
+    },
+    {
+      "name": "immich-valkey",
+      "selector": {
+        "app.kubernetes.io/controller": "main",
+        "app.kubernetes.io/instance": "immich",
+        "app.kubernetes.io/name": "valkey"
+      },
+      "desired_replicas": 1
+    }
+  ],
+  "dependencies": [
+    {"source": "immich-server", "target": "immich-postgres", "relation": "postgresql"},
+    {"source": "immich-server", "target": "immich-valkey", "relation": "redis"}
+  ],
+  "business_oracles": [
+    {"id": "immich-server-ping", "kind": "http", "entrypoint": "/api/server/ping", "success_contract": "http_200_body_contains_pong"}
+  ],
+  "supported_fault_families": ["pod_kill"]
+}

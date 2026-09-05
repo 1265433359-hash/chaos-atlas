@@ -109,6 +109,7 @@ class OfflineProjectAdapter:
                 "candidate_id": f"server:{node_id}",
                 "node_id": node_id,
                 "target": name,
+                "service_target": str(item.get("service_target") or name),
                 "target_kind": "deployment",
                 "namespace": inventory.get("namespace"),
                 "selector": selector,

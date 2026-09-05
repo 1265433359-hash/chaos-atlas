@@ -1,0 +1,63 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "medusa",
+  "project_commit": "52c3aa27333530c946e3b2c1b025c988c432283257b053cb61269c5ab2da6334",
+  "revision_kind": "digest",
+  "deployment_snapshot": {
+    "app_version": "2.20.1",
+    "primary_image": "docker.io/chaosatlas/medusa-backend:2.20.1"
+  },
+  "namespace_policy": {
+    "allowed_namespaces": ["chaosatlas-medusa"],
+    "isolation_required": true,
+    "cluster_profile": "chaosatlas-apps"
+  },
+  "source": {
+    "manifest_roots": ["projects/chaosatlas-apps/k8s"],
+    "source_roots": ["projects/chaosatlas-apps/medusa/medusa", "projects/chaosatlas-apps/k8s"]
+  },
+  "business_oracles": [
+    {
+      "id": "medusa-backend-health",
+      "kind": "http",
+      "service": "medusa-backend",
+      "remote_port": 9000,
+      "entrypoint": "/health",
+      "request_headers": {"Host": "medusa.local"},
+      "expected_status": 200,
+      "expected_body": "OK",
+      "success_contract": "http_200_body_contains_OK",
+      "timeout_s": 10,
+      "count": 3,
+      "baseline_retry_window_s": 30,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2
+    }
+  ],
+  "observability": {
+    "logs": {"provider": "kubectl", "required": true},
+    "events": {"provider": "kubectl", "required": true},
+    "traces": {"provider": "none", "required": false}
+  },
+  "recovery": {
+    "deadline_s": 180,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "cleanup": {"owner": "chaosatlas", "must_be_empty": true},
+  "sensitive_data_policy": {
+    "redact_fields": ["password", "secret", "token", "authorization", "cookie"],
+    "allow_redacted_placeholders": true
+  },
+  "runtime_contract": {
+    "backend": "kubernetes_chaos_mesh",
+    "kube_context": "chaosatlas-apps",
+    "supported_fault_families": ["pod_kill"]
+  },
+  "fault_support": {
+    "pod_kill": {
+      "status": "supported",
+      "reason": "generic Kubernetes executor and safety contract are available; application outcome evidence is pending phase 2"
+    }
+  }
+}

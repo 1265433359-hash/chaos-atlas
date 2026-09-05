@@ -1,0 +1,40 @@
+{
+  "schema_version": "chaosatlas-offline-facts-v1",
+  "project_id": "erpnext",
+  "project_commit": "609170a9d174de731d310fefaa6132335f3ab06795a12b09cd1214a29fdc3fe8",
+  "namespace": "chaosatlas-erpnext",
+  "services": [
+    "erpnext",
+    "erpnext-gunicorn",
+    "erpnext-mariadb-sts",
+    "erpnext-socketio",
+    "erpnext-valkey-cache",
+    "erpnext-valkey-queue"
+  ],
+  "deployments": [
+    {"name": "erpnext-nginx", "service_target": "erpnext", "selector": {"app.kubernetes.io/instance": "erpnext-nginx", "app.kubernetes.io/name": "erpnext-nginx"}, "desired_replicas": 1},
+    {"name": "erpnext-gunicorn", "selector": {"app.kubernetes.io/instance": "erpnext-gunicorn", "app.kubernetes.io/name": "erpnext-gunicorn"}, "desired_replicas": 1},
+    {"name": "erpnext-scheduler", "selector": {"app.kubernetes.io/instance": "erpnext-scheduler", "app.kubernetes.io/name": "erpnext-scheduler"}, "desired_replicas": 1},
+    {"name": "erpnext-socketio", "selector": {"app.kubernetes.io/instance": "erpnext-socketio", "app.kubernetes.io/name": "erpnext-socketio"}, "desired_replicas": 1},
+    {"name": "erpnext-valkey-cache", "selector": {"app.kubernetes.io/instance": "erpnext", "app.kubernetes.io/name": "valkey-cache"}, "desired_replicas": 1},
+    {"name": "erpnext-valkey-queue", "selector": {"app.kubernetes.io/instance": "erpnext", "app.kubernetes.io/name": "valkey-queue"}, "desired_replicas": 1},
+    {"name": "erpnext-worker-d", "selector": {"app.kubernetes.io/instance": "erpnext-worker-d", "app.kubernetes.io/name": "erpnext-worker-d"}, "desired_replicas": 1},
+    {"name": "erpnext-worker-l", "selector": {"app.kubernetes.io/instance": "erpnext-worker-l", "app.kubernetes.io/name": "erpnext-worker-l"}, "desired_replicas": 1},
+    {"name": "erpnext-worker-s", "selector": {"app.kubernetes.io/instance": "erpnext-worker-s", "app.kubernetes.io/name": "erpnext-worker-s"}, "desired_replicas": 1}
+  ],
+  "dependencies": [
+    {"source": "erpnext-nginx", "target": "erpnext-gunicorn", "relation": "http"},
+    {"source": "erpnext-nginx", "target": "erpnext-socketio", "relation": "websocket"},
+    {"source": "erpnext-gunicorn", "target": "erpnext-mariadb-sts", "relation": "mariadb"},
+    {"source": "erpnext-gunicorn", "target": "erpnext-valkey-cache", "relation": "redis"},
+    {"source": "erpnext-gunicorn", "target": "erpnext-valkey-queue", "relation": "redis"},
+    {"source": "erpnext-scheduler", "target": "erpnext-mariadb-sts", "relation": "mariadb"},
+    {"source": "erpnext-worker-d", "target": "erpnext-valkey-queue", "relation": "redis"},
+    {"source": "erpnext-worker-l", "target": "erpnext-valkey-queue", "relation": "redis"},
+    {"source": "erpnext-worker-s", "target": "erpnext-valkey-queue", "relation": "redis"}
+  ],
+  "business_oracles": [
+    {"id": "erpnext-method-ping", "kind": "http", "entrypoint": "/api/method/ping", "success_contract": "http_200_body_contains_pong"}
+  ],
+  "supported_fault_families": ["pod_kill"]
+}

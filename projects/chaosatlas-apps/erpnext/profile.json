@@ -1,0 +1,64 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "erpnext",
+  "project_commit": "609170a9d174de731d310fefaa6132335f3ab06795a12b09cd1214a29fdc3fe8",
+  "revision_kind": "digest",
+  "deployment_snapshot": {
+    "chart": "erpnext-8.0.78",
+    "app_version": "v16.34.1",
+    "primary_image": "frappe/erpnext:v16.34.1"
+  },
+  "namespace_policy": {
+    "allowed_namespaces": ["chaosatlas-erpnext"],
+    "isolation_required": true,
+    "cluster_profile": "chaosatlas-apps"
+  },
+  "source": {
+    "manifest_roots": ["projects/chaosatlas-apps/k8s"],
+    "source_roots": ["projects/chaosatlas-apps/k8s"]
+  },
+  "business_oracles": [
+    {
+      "id": "erpnext-method-ping",
+      "kind": "http",
+      "service": "erpnext",
+      "remote_port": 8080,
+      "entrypoint": "/api/method/ping",
+      "request_headers": {"Host": "erpnext.local"},
+      "expected_status": 200,
+      "expected_body": "pong",
+      "success_contract": "http_200_body_contains_pong",
+      "timeout_s": 10,
+      "count": 3,
+      "baseline_retry_window_s": 45,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2
+    }
+  ],
+  "observability": {
+    "logs": {"provider": "kubectl", "required": true},
+    "events": {"provider": "kubectl", "required": true},
+    "traces": {"provider": "none", "required": false}
+  },
+  "recovery": {
+    "deadline_s": 240,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "cleanup": {"owner": "chaosatlas", "must_be_empty": true},
+  "sensitive_data_policy": {
+    "redact_fields": ["password", "secret", "token", "authorization", "cookie", "sid"],
+    "allow_redacted_placeholders": true
+  },
+  "runtime_contract": {
+    "backend": "kubernetes_chaos_mesh",
+    "kube_context": "chaosatlas-apps",
+    "supported_fault_families": ["pod_kill"]
+  },
+  "fault_support": {
+    "pod_kill": {
+      "status": "supported",
+      "reason": "generic Kubernetes executor and safety contract are available; application outcome evidence is pending phase 2"
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "immich",
+  "project_commit": "5cf305a3a239e0619f756a5cdcb380e83e90d6a04f2065adb5e7f1afee5c2629",
+  "revision_kind": "digest",
+  "deployment_snapshot": {
+    "chart": "immich-0.12.0",
+    "app_version": "v2.6.3",
+    "primary_image": "ghcr.io/immich-app/immich-server:v2.6.3"
+  },
+  "namespace_policy": {
+    "allowed_namespaces": ["chaosatlas-immich"],
+    "isolation_required": true,
+    "cluster_profile": "chaosatlas-apps"
+  },
+  "source": {
+    "manifest_roots": ["projects/chaosatlas-apps/k8s"],
+    "source_roots": ["projects/chaosatlas-apps/k8s"]
+  },
+  "business_oracles": [
+    {
+      "id": "immich-server-ping",
+      "kind": "http",
+      "service": "immich-server",
+      "remote_port": 2283,
+      "entrypoint": "/api/server/ping",
+      "request_headers": {"Host": "immich.local"},
+      "expected_status": 200,
+      "expected_body": "pong",
+      "success_contract": "http_200_body_contains_pong",
+      "timeout_s": 10,
+      "count": 3,
+      "baseline_retry_window_s": 30,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2
+    }
+  ],
+  "observability": {
+    "logs": {"provider": "kubectl", "required": true},
+    "events": {"provider": "kubectl", "required": true},
+    "traces": {"provider": "none", "required": false}
+  },
+  "recovery": {
+    "deadline_s": 180,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "cleanup": {"owner": "chaosatlas", "must_be_empty": true},
+  "sensitive_data_policy": {
+    "redact_fields": ["password", "secret", "token", "authorization", "cookie"],
+    "allow_redacted_placeholders": true
+  },
+  "runtime_contract": {
+    "backend": "kubernetes_chaos_mesh",
+    "kube_context": "chaosatlas-apps",
+    "supported_fault_families": ["pod_kill"]
+  },
+  "fault_support": {
+    "pod_kill": {
+      "status": "supported",
+      "reason": "generic Kubernetes executor and safety contract are available; application outcome evidence is pending phase 2"
+    }
+  }
+}

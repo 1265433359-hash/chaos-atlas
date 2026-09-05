@@ -1,0 +1,26 @@
+{
+  "schema_version": "chaosatlas-offline-facts-v1",
+  "project_id": "rocketchat",
+  "project_commit": "5f9f0b3332fa175da829a92dca7f86e5d6223b1581d2c4372838133e929b8bf4",
+  "namespace": "chaosatlas-rocketchat",
+  "services": ["rocketchat-mongodb-headless", "rocketchat-mongodb-metrics", "rocketchat-nats", "rocketchat-rocketchat"],
+  "deployments": [
+    {
+      "name": "rocketchat-rocketchat",
+      "selector": {
+        "app.kubernetes.io/instance": "rocketchat",
+        "app.kubernetes.io/name": "rocketchat"
+      },
+      "desired_replicas": 1
+    },
+    {"name": "rocketchat-nats-box", "selector": {"app": "rocketchat-nats-box"}, "desired_replicas": 1}
+  ],
+  "dependencies": [
+    {"source": "rocketchat-rocketchat", "target": "rocketchat-mongodb-headless", "relation": "mongodb"},
+    {"source": "rocketchat-rocketchat", "target": "rocketchat-nats", "relation": "nats"}
+  ],
+  "business_oracles": [
+    {"id": "rocketchat-health", "kind": "http", "entrypoint": "/health", "success_contract": "http_200_body_contains_status_ok"}
+  ],
+  "supported_fault_families": ["pod_kill"]
+}

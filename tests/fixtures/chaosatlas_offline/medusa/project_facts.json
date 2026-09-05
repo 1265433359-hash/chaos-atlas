@@ -1,0 +1,22 @@
+{
+  "schema_version": "chaosatlas-offline-facts-v1",
+  "project_id": "medusa",
+  "project_commit": "52c3aa27333530c946e3b2c1b025c988c432283257b053cb61269c5ab2da6334",
+  "namespace": "chaosatlas-medusa",
+  "services": ["medusa-backend", "medusa-postgres", "medusa-redis"],
+  "deployments": [
+    {"name": "medusa-backend", "selector": {"app.kubernetes.io/name": "medusa-backend"}, "desired_replicas": 1},
+    {"name": "medusa-redis", "selector": {"app.kubernetes.io/name": "medusa-redis"}, "desired_replicas": 1},
+    {"name": "medusa-worker", "selector": {"app.kubernetes.io/name": "medusa-worker"}, "desired_replicas": 1}
+  ],
+  "dependencies": [
+    {"source": "medusa-backend", "target": "medusa-postgres", "relation": "postgresql"},
+    {"source": "medusa-backend", "target": "medusa-redis", "relation": "redis"},
+    {"source": "medusa-worker", "target": "medusa-postgres", "relation": "postgresql"},
+    {"source": "medusa-worker", "target": "medusa-redis", "relation": "redis"}
+  ],
+  "business_oracles": [
+    {"id": "medusa-backend-health", "kind": "http", "entrypoint": "/health", "success_contract": "http_200_body_contains_OK"}
+  ],
+  "supported_fault_families": ["pod_kill"]
+}

@@ -1,0 +1,64 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "rocketchat",
+  "project_commit": "5f9f0b3332fa175da829a92dca7f86e5d6223b1581d2c4372838133e929b8bf4",
+  "revision_kind": "digest",
+  "deployment_snapshot": {
+    "chart": "rocketchat-7.0.2",
+    "app_version": "8.6.1",
+    "primary_image": "registry.rocket.chat/rocketchat/rocket.chat:8.6.1"
+  },
+  "namespace_policy": {
+    "allowed_namespaces": ["chaosatlas-rocketchat"],
+    "isolation_required": true,
+    "cluster_profile": "chaosatlas-apps"
+  },
+  "source": {
+    "manifest_roots": ["projects/chaosatlas-apps/k8s"],
+    "source_roots": ["projects/chaosatlas-apps/k8s"]
+  },
+  "business_oracles": [
+    {
+      "id": "rocketchat-health",
+      "kind": "http",
+      "service": "rocketchat-rocketchat",
+      "remote_port": 80,
+      "entrypoint": "/health",
+      "request_headers": {"Host": "rocketchat.local"},
+      "expected_status": 200,
+      "expected_body": "\"status\":\"ok\"",
+      "success_contract": "http_200_body_contains_status_ok",
+      "timeout_s": 10,
+      "count": 3,
+      "baseline_retry_window_s": 30,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2
+    }
+  ],
+  "observability": {
+    "logs": {"provider": "kubectl", "required": true},
+    "events": {"provider": "kubectl", "required": true},
+    "traces": {"provider": "none", "required": false}
+  },
+  "recovery": {
+    "deadline_s": 180,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "cleanup": {"owner": "chaosatlas", "must_be_empty": true},
+  "sensitive_data_policy": {
+    "redact_fields": ["password", "secret", "token", "authorization", "cookie"],
+    "allow_redacted_placeholders": true
+  },
+  "runtime_contract": {
+    "backend": "kubernetes_chaos_mesh",
+    "kube_context": "chaosatlas-apps",
+    "supported_fault_families": ["pod_kill"]
+  },
+  "fault_support": {
+    "pod_kill": {
+      "status": "supported",
+      "reason": "generic Kubernetes executor and safety contract are available; application outcome evidence is pending phase 2"
+    }
+  }
+}
