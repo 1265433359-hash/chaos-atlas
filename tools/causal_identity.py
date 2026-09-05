@@ -28,8 +28,16 @@ def _parameter_domain(candidate: dict[str, Any]) -> str:
     parameters = candidate.get("parameters") or {}
     if family in {"network_delay", "network_loss"}:
         return "latency_ms" if family == "network_delay" else "loss_percent"
-    if family == "container_cpu_stress":
+    if family == "stress_cpu":
         return "cpu_load"
+    if family == "stress_memory":
+        return "memory_size"
+    if family == "network_bandwidth":
+        return "bandwidth_rate"
+    if family in {"network_duplicate", "network_corrupt"}:
+        return "packet_mutation_percent"
+    if family == "dns_delay":
+        return "latency_ms"
     if family == "pod_kill":
         return "replica_disruption"
     keys = sorted(str(key) for key in parameters if str(key) not in {"duration_s", "duration"})

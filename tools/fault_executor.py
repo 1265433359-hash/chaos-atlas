@@ -44,3 +44,23 @@ def validate_attestation(value: dict[str, Any] | None) -> AttestationResult:
     payload = value if isinstance(value, dict) else {}
     missing = tuple(key for key in LifecycleAttestation.REQUIRED if payload.get(key) is not True)
     return AttestationResult(valid=not missing, missing=missing)
+
+
+def observation_verdict(
+    observation: dict[str, Any] | None,
+    execution_status: str | None = None,
+    outcome_status: str | None = None,
+) -> str:
+    """Normalize a completed business observation into a terminal verdict."""
+    payload = observation if isinstance(observation, dict) else {}
+    outcome = str(outcome_status or "").strip()
+    if outcome in {"rate_limit_observed", "dependency_unreachable_observed"}:
+        return outcome
+    status = str(payload.get("status") or "").strip()
+    if status in {"pass", "degraded", "business_unreachable"}:
+        return status
+    if status in {"business_not_reachable", "not_reachable"}:
+        return "business_unreachable"
+    if status:
+        return "observation_inconclusive"
+    return "observation_pending" if execution_status in {"executed", "observed"} else str(execution_status or "unknown")

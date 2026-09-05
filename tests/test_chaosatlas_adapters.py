@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from tools.chaosatlas_adapters import FakeExecutor, OfflineProjectAdapter
-from tools._legacy_chaosatlas import _find_candidate
+from chaosatlas.orchestration.engine import _find_candidate
 
 
 ROOT = Path(__file__).resolve().parents[1]

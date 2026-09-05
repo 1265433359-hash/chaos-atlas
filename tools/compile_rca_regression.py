@@ -22,8 +22,9 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from tools.rca_loop import _contains_sensitive_value, evidence_polarity_counts, sha256_json
+from tools.reproduction_policy import STABLE_REPRODUCTION_STOP_RULE
 
-DEFAULT_STOP_RULE = "stop after two valid reproductions or one clean falsification"
+DEFAULT_STOP_RULE = STABLE_REPRODUCTION_STOP_RULE
 GUARD_STOP_RULE = "guard: closed_runtime_boundary_no_reinjection"
 
 _APPLICABILITY_BY_FAMILY = {

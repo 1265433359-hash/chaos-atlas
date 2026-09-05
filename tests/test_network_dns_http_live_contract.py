@@ -38,6 +38,7 @@ def _executor(tmp_path, cleanup_ok):
             "apply": lambda _manifest: {"return_code": 0, "stdout": "", "stderr": ""},
             "wait_lifecycle": lambda _kind, _namespace, _name, _predicate: (True, {}, []),
             "delete": lambda _kind, _namespace, _name: {"absent_confirmed": cleanup_ok},
+            "cleanup_mesh": lambda **_kwargs: {"status": "verified", "confirmed": True},
         },
     )
 
@@ -49,12 +50,52 @@ def test_live_executor_returns_valid_attestation_without_real_cluster(tmp_path):
     assert result["cleanup"]["confirmed"] is True
     assert result["attestation"]["valid"] is True
     assert result["promotion_allowed"] is True
+    assert result["cleanup"]["chaos_mesh"]["confirmed"] is True
+    assert result["verdict"] == "pass"
 
 
 def test_cleanup_failure_cannot_be_promoted(tmp_path):
     result = _executor(tmp_path, cleanup_ok=False).run(_manifest(), action_id="dns-dirty")
     assert result["attestation"]["valid"] is False
     assert result["promotion_allowed"] is False
+
+
+def test_dify_executor_records_mesh_and_recovery_signals(tmp_path):
+    executor = KubernetesLifecycleExecutor(
+        root=tmp_path,
+        namespace="lab",
+        allowed_namespaces={"lab"},
+        allow_live=True,
+        oracle={"kind": "dify_chatflow", "service": "web", "remote_port": 80, "entrypoint": "/"},
+        hooks={
+            "gate": lambda _manifest, _path: {
+                "decision": "ready_for_injection",
+                "checks": {"target_pods": [{"name": "web-1"}]},
+            },
+            "probe": lambda _phase, _manifest: {"status": "pass", "samples": [{"status_code": 200}]},
+            "apply": lambda _manifest: {"return_code": 0},
+            "wait_lifecycle": lambda *_args: (True, {}, []),
+            "dns_capability_probe": lambda *_args: {
+                "status": "ready",
+                "resolver_writable": True,
+                "checked_pods": [{"pod": "web-1", "return_code": 0}],
+            },
+            "delete": lambda *_args: {"absent_confirmed": True},
+            "cleanup_mesh": lambda **_kwargs: {"status": "verified", "confirmed": True},
+            "recovery_signals": lambda **_kwargs: {
+                "workload": {"confirmed": True},
+                "business": {"status": "pass"},
+            },
+        },
+    )
+
+    result = executor.run(_manifest(), action_id="dify-signals")
+
+    assert result["cleanup"]["confirmed"] is True
+    assert result["cleanup"]["chaos_mesh"]["confirmed"] is True
+    assert result["recovery"]["signals"]["chaos_mesh"] is True
+    assert result["attestation"]["valid"] is True
+    assert result["verdict"] == "pass"
 
 
 def test_matrix_summary_counts_only_cleanup_verified_results():
@@ -80,7 +121,7 @@ def test_live_matrix_uses_profile_project_id(monkeypatch, tmp_path):
     def fake_run_live_batch(**_kwargs):
         return {"status": "completed", "results": [{"status": "live_completed", "cleanup_status": "verified"}]}
 
-    monkeypatch.setattr("tools._legacy_chaosatlas_batch.run_live_batch", fake_run_live_batch)
+    monkeypatch.setattr("chaosatlas.orchestration.batch.run_live_batch", fake_run_live_batch)
     summary = run_matrix([profile], output=tmp_path / "out", mode="live", approve_live=True)
 
     assert summary["results"][0]["project_id"] == "demo-project"

@@ -1,7 +1,7 @@
 import pytest
 
 from tools.native_http_fault_executor import NativeHttpFaultExecutor, build_native_http_mutation
-from tools._legacy_chaosatlas import _classify_live_outcome, _live_lifecycle_evidence
+from chaosatlas.orchestration.engine import _classify_live_outcome, _live_lifecycle_evidence
 from tools.project_onboarding import result_contract_from_classification
 
 
@@ -104,9 +104,9 @@ def test_native_http_outcomes_have_fault_specific_classification():
     assert result_contract_from_classification("dependency_unreachable_observed", claim_scope="deployment:web")["result"] == "weakness"
 
 
-def test_native_http_lifecycle_evidence_accepts_fault_effect_observation():
+def test_native_http_lifecycle_evidence_accepts_fault_effect_observation(tmp_path):
     records = _live_lifecycle_evidence(
-        output_root=__import__("pathlib").Path("."),
+        output_root=tmp_path,
         evidence_prefix="r1",
         claim_scope="deployment:web",
         fault={
@@ -119,3 +119,11 @@ def test_native_http_lifecycle_evidence_accepts_fault_effect_observation():
     assert "observation" in observation["satisfies"]
     mechanism = next(item for item in records if item["evidence_id"] == "r1-http-boundary-mechanism")
     assert "mechanism_evidence" in mechanism["satisfies"]
+
+
+def test_invalid_business_baseline_is_not_mislabeled_as_injection_failure():
+    assert _classify_live_outcome(
+        "business_not_reachable",
+        False,
+        "",
+    ) == "business_not_reachable"

@@ -122,56 +122,68 @@ def rank_candidates(
             "knowledge_card_ids": knowledge_card_ids,
             "knowledge_view_sha256": knowledge_view_sha256,
         }
-    if rca_snapshot is not None:
-        from tools.decision_engine import rank as decision_rank
-
-        decisions = decision_rank([dict(item) for item in candidates], rca_snapshot=rca_snapshot)
-        by_id = {str(item.get("candidate_id")): item for item in decisions}
-        for item in candidates:
-            decision = by_id.get(str(item.get("candidate_id")))
-            if decision is not None:
-                item["runtime_retrieval"] = decision
-                item["retrieval_score"] = decision["score"]
-        candidates.sort(
-            key=lambda item: (
-                -float((item.get("runtime_retrieval") or {}).get("score", 0)),
-                str(item.get("candidate_id") or ""),
-            )
-        )
-        return {
-            "schema_version": "chaosatlas-ranked-candidates-v1",
-            "candidate_count": len(candidates),
-            "candidate_ids": [str(item.get("candidate_id")) for item in candidates],
-            "candidates": candidates,
-            "claim_scope": "advisory",
-            "runtime_retrieval": True,
-            "knowledge_card_ids": knowledge_card_ids,
-            "knowledge_view_sha256": knowledge_view_sha256,
-        }
     reusable = [card for card in cards if isinstance(card, dict) and card.get("status") in {"local_reusable", "cross_project_reusable"}]
-    ranked: list[tuple[int, str, dict[str, Any]]] = []
-    for item in candidates:
-        family = str(item.get("fault_family") or "")
-        score = 1 if item.get("static_prior") else 0
-        for card in reusable:
-            node = card.get("test_node") or {}
-            if node.get("family") == family:
-                score += 100
-            if node.get("operation") == family:
-                score += 25
-        item["retrieval_score"] = score
-        ranked.append((-score, str(item.get("candidate_id") or ""), item))
-    ranked.sort(key=lambda value: (value[0], value[1]))
-    ordered = [item for _, _, item in ranked]
-    return {
+
+    def fallback_rank() -> list[dict[str, Any]]:
+        ranked: list[tuple[int, str, dict[str, Any]]] = []
+        for item in candidates:
+            family = str(item.get("fault_family") or "")
+            score = 1 if item.get("static_prior") else 0
+            for card in reusable:
+                node = card.get("test_node") or {}
+                if node.get("family") == family:
+                    score += 100
+                if node.get("operation") == family:
+                    score += 25
+            item["retrieval_score"] = score
+            ranked.append((-score, str(item.get("candidate_id") or ""), item))
+        ranked.sort(key=lambda value: (value[0], value[1]))
+        return [item for _, _, item in ranked]
+
+    ranking_fallback_reason: str | None = None
+    runtime_retrieval = False
+    if rca_snapshot is not None:
+        try:
+            from tools.decision_engine import rank as decision_rank
+
+            decisions = decision_rank([dict(item) for item in candidates], rca_snapshot=rca_snapshot)
+            by_id = {str(item.get("candidate_id")): item for item in decisions}
+            for item in candidates:
+                decision = by_id.get(str(item.get("candidate_id")))
+                if decision is not None:
+                    item["runtime_retrieval"] = decision
+                    item["retrieval_score"] = decision["score"]
+            candidates.sort(
+                key=lambda item: (
+                    -float((item.get("runtime_retrieval") or {}).get("score", 0)),
+                    str(item.get("candidate_id") or ""),
+                )
+            )
+            runtime_retrieval = True
+        except ModuleNotFoundError as exc:
+            # The legacy decision engine is optional for runtime execution.
+            # Keep candidate ranking available when its retired registries are absent.
+            if exc.name not in {"project_registry", "defense_pattern_library", "contract_inventory"}:
+                raise
+            ranking_fallback_reason = f"missing_legacy_dependency:{exc.name}"
+            candidates = fallback_rank()
+    else:
+        candidates = fallback_rank()
+
+    result = {
         "schema_version": "chaosatlas-ranked-candidates-v1",
-        "candidate_count": len(ordered),
-        "candidate_ids": [str(item.get("candidate_id")) for item in ordered],
-        "candidates": ordered,
+        "candidate_count": len(candidates),
+        "candidate_ids": [str(item.get("candidate_id")) for item in candidates],
+        "candidates": candidates,
         "claim_scope": "advisory",
+        "runtime_retrieval": runtime_retrieval,
         "knowledge_card_ids": knowledge_card_ids,
         "knowledge_view_sha256": knowledge_view_sha256,
     }
+    if ranking_fallback_reason:
+        result["ranking_fallback"] = True
+        result["ranking_fallback_reason"] = ranking_fallback_reason
+    return result
 
 
 def parse_advisory_output(raw: str, *, allowed_candidate_ids: set[str]) -> dict[str, Any]:

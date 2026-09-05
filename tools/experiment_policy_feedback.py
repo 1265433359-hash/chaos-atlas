@@ -91,8 +91,9 @@ def ingest_runtime_result(
     normalized["classification"] = classification
     normalized.setdefault("result_sha256", file_hash)
     # The round controller marks incomplete, blocked, and dirty children as
-    # ineligible.  They remain in the audit ledger but cannot alter a policy
-    # posterior or calibration metric.
+    # ineligible. Complete bounded observations, including latent-risk
+    # observations where the business oracle stayed healthy, may update the
+    # local policy posterior. Knowledge promotion has a separate higher gate.
     if result.get("eligible") is False:
         return state
     updated = update_candidate_state(state, normalized)

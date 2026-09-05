@@ -15,6 +15,7 @@ from typing import Any, Iterable
 
 from tools.feedback_protocol import classify_outcome
 from tools.policy_selection_gate import MODES, select_candidates_with_policy
+from tools.reproduction_policy import MIN_STABLE_REPRODUCTIONS
 
 
 DECISION_SCHEMA = "chaosatlas-policy-controller-decision-v1"
@@ -28,6 +29,7 @@ _WEAKNESS_LABELS = {
     "no_readiness_false_recovery",
 }
 _PROTECTED_LABELS = {"protected", "availability_defended"}
+_OBSERVATION_LABELS = {"response_observed", "response_preserved"}
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -38,10 +40,14 @@ def _read_json(path: Path) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
 
-def _artifact_value(root: Path, filename: str, key: str, default: Any = None) -> Any:
+def _artifact_payload(root: Path, filename: str) -> dict[str, Any]:
     document = _read_json(root / filename)
     payload = document.get("payload") if isinstance(document.get("payload"), dict) else document
-    return payload.get(key, default) if isinstance(payload, dict) else default
+    return payload if isinstance(payload, dict) else {}
+
+
+def _artifact_value(root: Path, filename: str, key: str, default: Any = None) -> Any:
+    return _artifact_payload(root, filename).get(key, default)
 
 
 def _sha256(value: Any) -> str:
@@ -64,6 +70,12 @@ def normalize_runtime_feedback(result: dict[str, Any], child_root: Path | None =
                 value = _artifact_value(root, filename, key)
                 if value is not None:
                     normalized[key] = value
+        finding_payload = _artifact_payload(root, "finding_report.json")
+        rca_payload = _artifact_payload(root, "rca_report.json")
+        if "attestation" not in normalized:
+            attestation = finding_payload.get("attestation") or rca_payload.get("attestation")
+            if isinstance(attestation, dict):
+                normalized["attestation"] = attestation
         cleanup = _read_json(root / "cleanup_report.json")
         if "cleanup_status" not in normalized and cleanup.get("status") is not None:
             normalized["cleanup_status"] = cleanup.get("status")
@@ -88,10 +100,15 @@ def normalize_runtime_feedback(result: dict[str, Any], child_root: Path | None =
         reason = "cleanup_not_verified"
     else:
         label = str(normalized.get("policy_classification") or normalized.get("classification") or "")
-        if label in _WEAKNESS_LABELS:
+        if label in _WEAKNESS_LABELS and int(normalized.get("valid_reproductions", 0) or 0) >= MIN_STABLE_REPRODUCTIONS:
             classification = "confirmed_weakness"
         elif label in _PROTECTED_LABELS:
             classification = "protected"
+        elif label in _OBSERVATION_LABELS:
+            # The business path stayed healthy after a confirmed mutation.
+            # This is useful policy evidence, but not a confirmed weakness or
+            # a knowledge-promotion claim.
+            classification = "latent_risk"
         else:
             classification = classify_outcome(normalized)
         # A complete child must have independent RCA and evidence.  The
@@ -101,13 +118,47 @@ def normalize_runtime_feedback(result: dict[str, Any], child_root: Path | None =
             bool(normalized.get("evidence_refs"))
             and int(normalized.get("evidence_available_count", 1) or 0) > 0
         )
+        attestation = normalized.get("attestation")
+        lifecycle_complete = (
+            isinstance(attestation, dict)
+            and attestation.get("valid") is True
+            and attestation.get("comparison_eligible") is True
+            and all(attestation.get(field) is True for field in (
+                "baseline", "injection", "observation", "recovery", "cleanup"
+            ))
+        )
+        oracle_valid = (
+            normalized.get("oracle_valid") is True
+            or (
+                isinstance(attestation, dict)
+                and attestation.get("valid") is True
+                and attestation.get("independent_oracle") is True
+            )
+        )
         eligible = (
             status == "live_completed"
-            and str(normalized.get("rca_status") or "") == "confirmed"
+            and str(normalized.get("rca_status") or "") in {"bounded", "confirmed"}
+            and lifecycle_complete
+            and oracle_valid
             and evidence_complete
-            and classification in {"confirmed_weakness", "protected"}
+            and classification in {"confirmed_weakness", "protected", "latent_risk"}
         )
-        reason = "eligible" if eligible else "incomplete_evidence"
+        if eligible:
+            reason = "eligible"
+        elif status != "live_completed":
+            reason = "runtime_not_completed"
+        elif str(normalized.get("rca_status") or "") not in {"bounded", "confirmed"}:
+            reason = "rca_not_bounded"
+        elif label in _WEAKNESS_LABELS and int(normalized.get("valid_reproductions", 0) or 0) < MIN_STABLE_REPRODUCTIONS:
+            reason = "reproduction_gate_incomplete"
+        elif not lifecycle_complete:
+            reason = "lifecycle_incomplete"
+        elif not oracle_valid:
+            reason = "oracle_not_valid"
+        elif not evidence_complete:
+            reason = "incomplete_evidence"
+        else:
+            reason = "classification_not_policy_observable"
         if not eligible:
             classification = classification if classification in {"environment_blocked", "method_invalid"} else "unsupported"
 

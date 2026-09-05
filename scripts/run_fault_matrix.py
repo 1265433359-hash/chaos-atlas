@@ -4,8 +4,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 from typing import Iterable
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from tools.fault_matrix import build_fault_matrix
 
@@ -16,7 +21,7 @@ def build_report(profile_paths: Iterable[Path]) -> dict:
         profile_path = Path(path)
         profile = json.loads(profile_path.read_text(encoding="utf-8"))
         matrix = build_fault_matrix(profile)
-        counts = {status: sum(1 for item in matrix["faults"] if item["status"] == status) for status in ("supported", "planned", "inapplicable")}
+        counts = dict(matrix["status_counts"])
         projects.append({
             "project_id": matrix["project_id"],
             "profile": str(profile_path),

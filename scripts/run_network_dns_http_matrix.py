@@ -118,7 +118,7 @@ def run_matrix(
     approve_live: bool = False,
     max_candidates: int | None = None,
     policy_mode: str = "legacy",
-    policy_budget: int = 1,
+    policy_budget: int = 20,
     seed: int = 1001,
 ) -> dict[str, Any]:
     paths = [Path(path).resolve() for path in profile_paths]
@@ -141,7 +141,7 @@ def run_matrix(
             _, profile_rows = _static_rows(path)
             rows.extend(profile_rows)
     else:
-        from tools._legacy_chaosatlas_batch import run_live_batch
+        from chaosatlas.orchestration.batch import run_live_batch
 
         rows = []
         for path in paths:
@@ -199,7 +199,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--approve-live", action="store_true")
     parser.add_argument("--max-candidates", type=int)
     parser.add_argument("--policy-mode", choices=("legacy", "observe", "shadow", "guarded", "default"), default="legacy")
-    parser.add_argument("--policy-budget", type=int, default=1)
+    parser.add_argument("--policy-budget", type=int, default=20)
     parser.add_argument("--seed", type=int, default=1001)
     args = parser.parse_args(argv)
     summary = run_matrix(

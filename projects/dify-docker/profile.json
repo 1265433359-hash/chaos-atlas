@@ -1,0 +1,51 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "dify-docker",
+  "project_commit": "f24f92e00761d01c793354b967ef5e43d9e1b956255980ce924916b586d429cc",
+  "revision_kind": "digest",
+  "namespace_policy": {
+    "allowed_namespaces": ["dify-compose-lab"],
+    "isolation_required": true
+  },
+  "source": {
+    "manifest_roots": ["projects/dify-docker/compose"],
+    "source_roots": ["projects/dify-docker/compose"]
+  },
+  "business_oracles": [
+    {
+      "id": "dify-api-health",
+      "kind": "http",
+      "service": "api",
+      "entrypoint": "/health",
+      "success_contract": "json_status_ok",
+      "timeout_s": 5,
+      "count": 3,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2
+    }
+  ],
+  "observability": {
+    "logs": {"provider": "docker-compose", "required": true},
+    "events": {"provider": "docker-compose", "required": true},
+    "traces": {"provider": "none", "required": false}
+  },
+  "recovery": {"deadline_s": 180, "require_business_probe": true, "require_cleanup": true},
+  "cleanup": {"owner": "chaosatlas", "must_be_empty": true},
+  "runtime_contract": {
+    "backend": "docker_compose",
+    "compose_file": "docker-compose.yaml",
+    "compose_directory": "projects/dify-docker/compose",
+    "project_name": "dify-1170-docker",
+    "compose_sha256": "e14550edcbbb458849ac10a0d44c1fea7d42a371537916cdf516548926334ad2",
+    "live_compose_sha256": "f24f92e00761d01c793354b967ef5e43d9e1b956255980ce924916b586d429cc",
+    "allowed_services": ["api", "nginx", "worker", "redis", "sandbox", "plugin_daemon"],
+    "supported_fault_families": ["container_kill"]
+  },
+  "fault_support": {
+    "container_kill": {"status": "supported", "reason": "bounded Compose service restart canary"}
+  },
+  "sensitive_data_policy": {
+    "allow_redacted_placeholders": true,
+    "redact_fields": ["password", "secret", "token", "authorization", "private_key", "api_key"]
+  }
+}

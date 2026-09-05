@@ -1,0 +1,6 @@
+FROM eclipse-temurin:21-jdk
+
+COPY java/ClockServer.java /opt/chaosatlas/ClockServer.java
+RUN javac /opt/chaosatlas/ClockServer.java
+EXPOSE 8080
+CMD ["java", "-cp", "/opt/chaosatlas", "ClockServer"]

@@ -1,0 +1,340 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "dify-kubernetes",
+  "project_commit": "dify-k8s-minikube-20260901",
+  "revision_kind": "digest",
+  "namespace_policy": {
+    "allowed_namespaces": ["dify-k8s-lab"],
+    "isolation_required": true,
+    "cluster_profile": "chaosatlas-dify"
+  },
+  "dependency_edges": [
+    {
+      "id": "api-plugin-daemon",
+      "source": "dify-k8s-api",
+      "target": "dify-k8s-plugin-daemon",
+      "target_port": 5002,
+      "oracle_id": "dify-k8s-chatflow"
+    },
+    {
+      "id": "api-redis",
+      "source": "dify-k8s-api",
+      "target": "dify-k8s-redis-master",
+      "target_port": 6379,
+      "oracle_id": "dify-k8s-chatflow"
+    },
+    {
+      "id": "api-postgresql",
+      "source": "dify-k8s-api",
+      "target": "dify-k8s-postgresql",
+      "target_port": 5432,
+      "oracle_id": "dify-k8s-chatflow"
+    }
+  ],
+  "source": {
+    "manifest_roots": [
+      "projects/dify-kubernetes",
+      ".tmp-dify-helm-chart/dify"
+    ],
+    "source_roots": [
+      "projects/dify-kubernetes",
+      ".tmp-dify-helm-chart/dify"
+    ]
+  },
+  "business_oracles": [
+    {
+      "id": "dify-k8s-chatflow",
+      "kind": "dify_chatflow",
+      "service": "dify-k8s",
+      "remote_port": 80,
+      "local_port": 18081,
+      "entrypoint": "/v1/chat-messages",
+      "expected_status": 200,
+      "success_contract": "dify_chatflow_response",
+      "api_key_file": "C:/APP/project/Dify_APIkey.txt",
+      "candidate_scope": "business_path",
+      "timeout_s": 60,
+      "count": 3,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2
+    }
+  ],
+  "observability": {
+    "logs": {"provider": "kubectl", "required": true},
+    "events": {"provider": "kubectl", "required": true},
+    "traces": {"provider": "none", "required": false}
+  },
+  "recovery": {
+    "deadline_s": 180,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "cleanup": {"owner": "chaosatlas", "must_be_empty": true},
+  "runtime_contract": {
+    "backend": "kubernetes_chaos_mesh",
+    "kube_context": "chaosatlas-dify",
+    "release": "dify-k8s",
+    "chart": "dify-0.38.0",
+    "dify_version": "1.17.0",
+    "supported_fault_families": [
+      "pod_kill",
+      "container_kill",
+      "stress_cpu",
+      "stress_memory",
+      "network_loss",
+      "network_delay",
+      "network_partition",
+      "network_bandwidth",
+      "network_duplicate",
+      "network_corrupt",
+      "dns_failure",
+      "dns_delay",
+      "replica_reduction",
+      "config_reload",
+      "config_drift",
+      "env_misconfiguration",
+      "rollout_pause"
+    ],
+    "runtime_status": "17_fault_families_live_verified_15_boundaries_explicit",
+    "inapplicable_fault_families": [
+      "http_delay",
+      "http_abort",
+      "http_status_error",
+      "http_response_corrupt",
+      "http_rate_limit",
+      "dependency_error",
+      "connection_reset",
+      "business_dependency_unreachable",
+      "disk_pressure",
+      "file_descriptor_exhaustion",
+      "process_exhaustion",
+      "secret_rotation",
+      "image_pull_failure",
+      "pod_unschedulable",
+      "api_server_delay"
+    ],
+    "inapplicable_reasons": {
+      "http": "HTTPChaos requires ebtables/tproxy; the WSL2 kernel lacks the ebtables broute and nat tables.",
+      "native_http": "Dify workloads expose no ChaosAtlas HTTP control contract, so native HTTP mutation is fail-closed.",
+      "native_resource": "Resource exhaustion requires a disposable isolated namespace, which this shared single-node lab does not provide.",
+      "high_risk_platform": "Secret, image-pull, unschedulable, and API-server faults require a disposable isolated workload or cluster."
+    }
+  },
+  "extension_runtime": {
+    "disposable_target": false,
+    "io_test_paths": [],
+    "native_agents": {"queue_agent": false, "connection_pool_agent": false},
+    "disposable_targets": [{
+      "id": "dify-extension-canary",
+      "selector": {"chaosatlas.dev/disposable": "true", "chaosatlas.dev/owner": "chaosatlas"},
+      "capabilities": {"iochaos": true, "timechaos": true, "queue_agent": true, "connection_pool_agent": true, "disposable_target": true},
+      "io_test_paths": ["/data"]
+    }],
+    "notes": "Only the explicitly labeled dify-extension-canary workload is disposable. IO, time, queue, and connection-pool extensions are eligible there after runtime preflight; ordinary Dify workloads remain protected. JVM extension is selected only when runtime inventory discovers a Java process."
+  },
+  "candidate_generation": {
+    "parameter_ladders": {
+      "stress_cpu": [
+        {"level": "baseline", "parameters": {"workers": 1, "load_percent": 80}},
+        {"level": "low", "parameters": {"workers": 1, "load_percent": 40}},
+        {"level": "high", "parameters": {"workers": 1, "load_percent": 100}}
+      ],
+      "stress_memory": [
+        {"level": "baseline", "parameters": {"size_mb": 64}},
+        {"level": "low", "parameters": {"size_mb": 32}},
+        {"level": "high", "parameters": {"size_mb": 128}}
+      ],
+      "network_loss": [
+        {"level": "baseline", "parameters": {"loss_percent": 100}},
+        {"level": "low", "parameters": {"loss_percent": 25}},
+        {"level": "medium", "parameters": {"loss_percent": 50}}
+      ],
+      "network_delay": [
+        {"level": "baseline", "parameters": {"latency_ms": 500, "jitter_ms": 0, "correlation": 100}},
+        {"level": "low", "parameters": {"latency_ms": 100, "jitter_ms": 0, "correlation": 100}},
+        {"level": "medium", "parameters": {"latency_ms": 300, "jitter_ms": 0, "correlation": 100}}
+      ],
+      "network_bandwidth": [
+        {"level": "baseline", "parameters": {"rate": "1mbps", "limit": 1000, "buffer": 1000}},
+        {"level": "low", "parameters": {"rate": "10mbps", "limit": 1000, "buffer": 1000}},
+        {"level": "high", "parameters": {"rate": "100kbps", "limit": 1000, "buffer": 1000}}
+      ],
+      "network_duplicate": [
+        {"level": "baseline", "parameters": {"duplicate_percent": 20, "correlation": 100}},
+        {"level": "low", "parameters": {"duplicate_percent": 5, "correlation": 100}},
+        {"level": "high", "parameters": {"duplicate_percent": 50, "correlation": 100}}
+      ],
+      "network_corrupt": [
+        {"level": "baseline", "parameters": {"corrupt_percent": 20, "correlation": 100}},
+        {"level": "low", "parameters": {"corrupt_percent": 5, "correlation": 100}},
+        {"level": "high", "parameters": {"corrupt_percent": 50, "correlation": 100}}
+      ],
+      "dns_delay": [
+        {"level": "baseline", "parameters": {"hostname": "{service_target}", "latency_ms": 300}},
+        {"level": "low", "parameters": {"hostname": "{service_target}", "latency_ms": 100}},
+        {"level": "high", "parameters": {"hostname": "{service_target}", "latency_ms": 500}}
+      ]
+    }
+  },
+  "adaptive_policy": {
+    "parameter_audit": {
+      "enabled": true,
+      "min_levels_per_cluster": 1,
+      "preferred_levels": ["low", "medium", "high", "boundary"]
+    }
+  },
+  "fault_support": {
+    "pod_kill": {
+      "status": "supported",
+      "reason": "live canary verified baseline, Chaos Mesh injection, Pod replacement, business recovery and cleanup; evidence .runs/dify-k8s-canary-20260901"
+    },
+    "container_kill": {
+      "status": "supported",
+      "reason": "live canary verified baseline, Chaos Mesh injection, container restart, business recovery and cleanup; evidence .runs/dify-k8s-canary-container-20260901"
+    },
+    "stress_cpu": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-canary/stress_cpu-api"
+    },
+    "stress_memory": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-canary/stress_memory-api"
+    },
+    "network_loss": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-canary/network_loss-api"
+    },
+    "network_delay": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-canary/network_delay-api"
+    },
+    "network_partition": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-live-20260901-r4/network_partition-api"
+    },
+    "network_bandwidth": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-live-20260901-r4/network_bandwidth-api"
+    },
+    "network_duplicate": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-live-20260901-r4/network_duplicate-api"
+    },
+    "network_corrupt": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-live-20260901-r4/network_corrupt-api"
+    },
+    "dns_failure": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-live-20260901-r4/dns_failure-api"
+    },
+    "dns_delay": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-live-20260901-r4/dns_delay-api"
+    },
+    "http_delay": {
+      "status": "blocked_by_platform_prerequisite",
+      "reason": "runtime gate blocked injection: WSL2 kernel lacks ebtables broute/nat tables; evidence .runs/dify-expanded-canary/http_delay-api"
+    },
+    "http_abort": {
+      "status": "blocked_by_platform_prerequisite",
+      "reason": "runtime gate blocked injection: WSL2 kernel lacks ebtables broute/nat tables"
+    },
+    "http_status_error": {
+      "status": "blocked_by_platform_prerequisite",
+      "reason": "runtime gate blocked injection: WSL2 kernel lacks ebtables broute/nat tables; evidence .runs/dify-expanded-canary/http_status_error-api"
+    },
+    "http_response_corrupt": {
+      "status": "blocked_by_platform_prerequisite",
+      "reason": "HTTPChaos requires ebtables broute/nat tables, unavailable in the current WSL2 kernel"
+    },
+    "http_rate_limit": {
+      "status": "not_reachable",
+      "reason": "Dify workloads expose no ChaosAtlas native HTTP control contract"
+    },
+    "dependency_error": {
+      "status": "not_reachable",
+      "reason": "Dify workloads expose no ChaosAtlas native dependency fault contract"
+    },
+    "connection_reset": {
+      "status": "not_reachable",
+      "reason": "Dify workloads expose no ChaosAtlas native connection-reset contract"
+    },
+    "business_dependency_unreachable": {
+      "status": "not_reachable",
+      "reason": "Dify workloads expose no ChaosAtlas native business-dependency contract"
+    },
+    "disk_pressure": {
+      "status": "blocked_by_platform_prerequisite",
+      "reason": "Resource exhaustion requires a disposable isolated namespace"
+    },
+    "file_descriptor_exhaustion": {
+      "status": "blocked_by_platform_prerequisite",
+      "reason": "Resource exhaustion requires a disposable isolated namespace"
+    },
+    "process_exhaustion": {
+      "status": "blocked_by_platform_prerequisite",
+      "reason": "Resource exhaustion requires a disposable isolated namespace"
+    },
+    "secret_rotation": {
+      "status": "blocked_by_platform_prerequisite",
+      "reason": "Secret rotation requires a test-only Secret and placeholder-value restore contract"
+    },
+    "image_pull_failure": {
+      "status": "blocked_by_platform_prerequisite",
+      "reason": "Image pull failure requires a disposable workload and test image restore contract"
+    },
+    "pod_unschedulable": {
+      "status": "blocked_by_platform_prerequisite",
+      "reason": "Pod unschedulable requires disposable node-pool isolation"
+    },
+    "api_server_delay": {
+      "status": "blocked_by_platform_prerequisite",
+      "reason": "API-server delay requires a disposable cluster control-plane mutator"
+    },
+    "replica_reduction": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-live-20260901-r2/replica_reduction-api"
+    },
+    "config_reload": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation and exact annotation restoration; evidence .runs/dify-expanded-live-20260901-r5/config_reload-api"
+    },
+    "config_drift": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation and exact annotation restoration; evidence .runs/dify-expanded-live-20260901-r5/config_drift-api"
+    },
+    "env_misconfiguration": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation using an unused test variable; evidence .runs/dify-expanded-live-20260901-r6/env_misconfiguration-api"
+    },
+    "rollout_pause": {
+      "status": "supported",
+      "reason": "live_completed with valid attestation; evidence .runs/dify-expanded-live-20260901-r3/rollout_pause-api"
+      }
+  },
+  "fault_defaults": {
+    "dns_failure": {
+      "hostname": "dify-k8s-api"
+    },
+    "dns_delay": {
+      "hostname": "dify-k8s-api",
+      "latency_ms": 300
+    },
+    "env_misconfiguration": {
+      "name": "CHAOSATLAS_TEST_MODE",
+      "value": "chaosatlas-test-misconfigured"
+    }
+  },
+  "sensitive_data_policy": {
+    "allow_redacted_placeholders": true,
+    "redact_fields": [
+      "password",
+      "secret",
+      "token",
+      "authorization",
+      "private_key",
+      "api_key"
+    ]
+  }
+}

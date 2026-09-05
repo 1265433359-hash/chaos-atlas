@@ -1,7 +1,7 @@
 # Unified RunEngine Design
 
 Date: 2026-09-04  
-Status: proposed for implementation  
+Status: implemented (HTTP live canary passed; Chatflow blocked by model-account balance)
 Project: ChaosAtlas
 
 ## 1. Purpose

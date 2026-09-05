@@ -11,7 +11,7 @@ import hashlib
 import json
 from typing import Any, Callable
 
-from tools.fault_executor import validate_attestation
+from tools.fault_executor import observation_verdict, validate_attestation
 
 
 Runner = Callable[[list[str]], tuple[int, str, str]]
@@ -244,5 +244,5 @@ class NativeResourceFaultExecutor:
         comparison = all((baseline, injection, recovery, cleanup, observed)) and bool(observation.get("samples"))
         attestation = validate_attestation({"baseline": baseline, "injection": injection, "observation": observed, "recovery": recovery, "cleanup": cleanup, "independent_oracle": baseline and observed, "comparison_eligible": comparison})
         result["attestation"] = {"schema_version": "chaosatlas-runtime-result-v1", "valid": attestation.valid, "missing": list(attestation.missing), "comparison_eligible": comparison, "baseline": baseline, "injection": injection, "observation": observed, "recovery": recovery, "cleanup": cleanup, "independent_oracle": baseline and observed}
-        result.update({"injection_confirmed": injection, "injected_count": 1 if injection else 0, "recovery_confirmed": recovery, "cleanup_confirmed": cleanup, "promotion_allowed": attestation.valid, "verdict": "observation_pending" if result.get("status") == "executed" else result.get("status")})
+        result.update({"injection_confirmed": injection, "injected_count": 1 if injection else 0, "recovery_confirmed": recovery, "cleanup_confirmed": cleanup, "promotion_allowed": attestation.valid, "verdict": observation_verdict(observation, result.get("status"), result.get("outcome_status"))})
         return result

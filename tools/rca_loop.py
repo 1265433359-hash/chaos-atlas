@@ -9,6 +9,8 @@ import re
 from collections.abc import Iterable, Mapping
 from typing import Any
 
+from tools.reproduction_policy import MIN_STABLE_REPRODUCTIONS
+
 
 RCA_STATES = {"pending", "bounded", "confirmed", "rejected"}
 CLAIM_LEVELS = {"symptom", "boundary", "mechanism", "source", "rejected"}
@@ -420,7 +422,7 @@ def evaluate_knowledge_promotion(
             return {"allowed": False, "reason": "weakness_status_not_eligible"}
         if rca_status not in {"bounded", "confirmed"}:
             return {"allowed": False, "reason": "rca_status_not_reusable"}
-        if not (valid_reproductions >= 2 or (valid_reproductions >= 1 and valid_counterfactuals >= 1)):
+        if valid_reproductions < MIN_STABLE_REPRODUCTIONS:
             return {"allowed": False, "reason": "reproduction_gate_incomplete"}
         if not direct_evidence:
             return {"allowed": False, "reason": "evidence_gate_incomplete"}
@@ -457,7 +459,7 @@ def evaluate_knowledge_promotion(
     if current == "provisional":
         if weakness_status not in {"confirmed", "protected"}:
             return {"allowed": False, "reason": "weakness_status_not_eligible"}
-        if not (valid_reproductions >= 2 or (valid_reproductions >= 1 and valid_counterfactuals >= 1)):
+        if valid_reproductions < MIN_STABLE_REPRODUCTIONS:
             return {"allowed": False, "reason": "reproduction_gate_incomplete"}
         if not direct_evidence:
             return {"allowed": False, "reason": "evidence_gate_incomplete"}

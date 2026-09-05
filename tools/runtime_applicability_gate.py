@@ -29,6 +29,7 @@ RESOURCE_BY_KIND = {
     "PodChaos": "podchaos",
     "IOChaos": "iochaos",
     "TimeChaos": "timechaos",
+    "JVMChaos": "jvmchaos",
     "Schedule": "schedules",
     "Workflow": "workflows",
 }
@@ -164,6 +165,7 @@ def effective_chaos_spec(kind: str, spec: dict[str, Any]) -> dict[str, Any]:
             "StressChaos": "stressChaos",
             "HTTPChaos": "httpChaos",
             "DNSChaos": "dnsChaos",
+            "JVMChaos": "jvmChaos",
         }.get(str(spec.get("type") or ""))
         nested = spec.get(nested_key) if nested_key else None
         return nested if isinstance(nested, dict) else {}
@@ -177,6 +179,7 @@ def effective_chaos_spec(kind: str, spec: dict[str, Any]) -> dict[str, Any]:
                 "StressChaos": "stressChaos",
                 "HTTPChaos": "httpChaos",
                 "DNSChaos": "dnsChaos",
+                "JVMChaos": "jvmChaos",
             }.get(str(template.get("templateType") or ""))
             nested = template.get(nested_key) if nested_key else None
             if isinstance(nested, dict):

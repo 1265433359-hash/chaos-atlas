@@ -4,31 +4,35 @@ from scripts.run_api_server_delay_disposable import _profile, build_plan
 from tools.chaosatlas_runtime_preflight import KubernetesPreflight
 
 
-def test_disposable_plan_is_owned_and_tears_down_cluster(tmp_path):
+def test_disposable_plan_is_owned_and_tears_down_cluster(tmp_path, monkeypatch):
+    monkeypatch.setenv("CHAOSATLAS_STATE_ROOT", str(tmp_path / "state"))
     plan = build_plan(
         repo=tmp_path,
         profile="chaosatlas-api-delay-test",
         namespace="chaosatlas-run-api-delay-test",
-        output=tmp_path / ".runs" / "api-server-delay",
+        output=tmp_path / "state" / "runs" / "api-server-delay",
         image="chaosatlas/resource-canary:test",
     )
 
     commands = [item["command"] for item in plan]
     assert commands[0][:4] == ["minikube", "start", "-p", "chaosatlas-api-delay-test"]
     assert any(command[:3] == ["kubectl", "--context", "chaosatlas-api-delay-test"] for command in commands)
-    run_command = next(command for command in commands if str(tmp_path / ".runs" / "api-server-delay" / "run") in command)
+    run_command = next(
+        command for command in commands if str(tmp_path / "state" / "runs" / "api-server-delay" / "run") in command
+    )
     assert "--candidate-id" not in run_command
     assert commands[-1][:4] == ["minikube", "delete", "-p", "chaosatlas-api-delay-test"]
-    assert all(str(tmp_path / ".runs") in str(item["output"]) for item in plan if item.get("output"))
+    assert all(str(tmp_path / "state" / "runs") in str(item["output"]) for item in plan if item.get("output"))
 
 
-def test_disposable_plan_rejects_unowned_names(tmp_path):
+def test_disposable_plan_rejects_unowned_names(tmp_path, monkeypatch):
+    monkeypatch.setenv("CHAOSATLAS_STATE_ROOT", str(tmp_path / "state"))
     try:
         build_plan(
             repo=tmp_path,
             profile="minikube",
             namespace="chaosatlas-run-api-delay-test",
-            output=tmp_path / ".runs" / "api-server-delay",
+            output=tmp_path / "state" / "runs" / "api-server-delay",
             image="chaosatlas/resource-canary:test",
         )
     except ValueError as exc:

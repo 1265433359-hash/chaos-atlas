@@ -1,0 +1,5 @@
+FROM chaosatlas/extension-python:20260903
+USER root
+COPY python_server.py /opt/chaosatlas/python_server.py
+COPY pause-extension-capability /opt/chaosatlas/pause-extension-capability
+USER 65532

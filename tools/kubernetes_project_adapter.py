@@ -11,8 +11,11 @@ from datetime import datetime, timezone
 from typing import Any, Callable
 
 from tools.deployment_capability import build_deployment_node, validate_deployment_node
+from tools.extension_capability import generate_extension_candidates
+from tools.dependency_fault_capability import normalize_declared_dependency_edges
 from tools.fault_catalog import implemented_fault_families
 from tools.fault_matrix import build_fault_matrix
+from tools.parameterized_candidates import expand_candidates
 from tools.recovery_contract import contract_for_fault
 
 
@@ -60,8 +63,11 @@ def _metadata(value: Any) -> dict[str, Any]:
 def _safe_container(container: Any) -> dict[str, Any]:
     value = container if isinstance(container, dict) else {}
     output: dict[str, Any] = {"name": str(value.get("name") or "")}
-    for key in ("resources", "readinessProbe", "livenessProbe", "startupProbe", "ports"):
+    for key in ("resources", "readinessProbe", "livenessProbe", "startupProbe", "ports", "volumeMounts"):
         if isinstance(value.get(key), (dict, list)):
+            output[key] = deepcopy(value[key])
+    for key in ("image", "command", "args"):
+        if isinstance(value.get(key), (str, list)):
             output[key] = deepcopy(value[key])
     return output
 
@@ -79,10 +85,75 @@ def _safe_deployment(value: Any) -> dict[str, Any]:
             "selector": {"matchLabels": {str(key): str(item) for key, item in (selector.get("matchLabels") or {}).items()}},
             "template": {
                 "metadata": {"labels": {str(key): str(item) for key, item in ((template.get("metadata") or {}).get("labels") or {}).items()}},
-                "spec": {"containers": [_safe_container(item) for item in (template_spec.get("containers") or [])]},
+                "spec": {
+                    "containers": [_safe_container(item) for item in (template_spec.get("containers") or [])],
+                    "volumes": deepcopy(template_spec.get("volumes") or []),
+                },
             },
         },
     }
+
+
+def _safe_workload(value: Any, workload_kind: str) -> dict[str, Any]:
+    normalized = _safe_deployment(value)
+    normalized["workload_kind"] = workload_kind
+    spec = value.get("spec") if isinstance(value, dict) and isinstance(value.get("spec"), dict) else {}
+    normalized["spec"]["serviceName"] = str(spec.get("serviceName") or "")
+    normalized["spec"]["volumeClaimTemplates"] = deepcopy(spec.get("volumeClaimTemplates") or [])
+    return normalized
+
+
+def _safe_resource_metadata(value: Any) -> dict[str, Any]:
+    source = value if isinstance(value, dict) else {}
+    metadata = source.get("metadata") if isinstance(source.get("metadata"), dict) else {}
+    return {"name": str(metadata.get("name") or ""), "namespace": str(metadata.get("namespace") or ""), "labels": {str(k): str(v) for k, v in (metadata.get("labels") or {}).items()}}
+
+
+def _safe_persistent_volume_claim(value: Any) -> dict[str, Any]:
+    result = _safe_resource_metadata(value)
+    spec = value.get("spec") if isinstance(value, dict) and isinstance(value.get("spec"), dict) else {}
+    status = value.get("status") if isinstance(value, dict) and isinstance(value.get("status"), dict) else {}
+    result["spec"] = {"accessModes": deepcopy(spec.get("accessModes") or []), "storageClassName": str(spec.get("storageClassName") or ""), "resources": {"requests": deepcopy((spec.get("resources") or {}).get("requests") or {}) if isinstance(spec.get("resources"), dict) else {}}, "volumeMode": str(spec.get("volumeMode") or "")}
+    result["status"] = {"phase": str(status.get("phase") or ""), "capacity": deepcopy(status.get("capacity") or {})}
+    return result
+
+
+def _safe_hpa(value: Any) -> dict[str, Any]:
+    result = _safe_resource_metadata(value)
+    spec = value.get("spec") if isinstance(value, dict) and isinstance(value.get("spec"), dict) else {}
+    status = value.get("status") if isinstance(value, dict) and isinstance(value.get("status"), dict) else {}
+    result["spec"] = {"scaleTargetRef": deepcopy(spec.get("scaleTargetRef") or {}), "minReplicas": spec.get("minReplicas"), "maxReplicas": spec.get("maxReplicas")}
+    result["status"] = {"currentReplicas": status.get("currentReplicas"), "desiredReplicas": status.get("desiredReplicas")}
+    return result
+
+
+def _safe_pdb(value: Any) -> dict[str, Any]:
+    result = _safe_resource_metadata(value)
+    spec = value.get("spec") if isinstance(value, dict) and isinstance(value.get("spec"), dict) else {}
+    result["spec"] = {"minAvailable": spec.get("minAvailable"), "maxUnavailable": spec.get("maxUnavailable"), "selector": deepcopy(spec.get("selector") or {})}
+    return result
+
+
+def _safe_named_resources(values: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [_safe_resource_metadata(item) for item in values if isinstance(item, dict) and _safe_resource_metadata(item).get("name")]
+
+
+def _selector_contains(container: Any, required: Any) -> bool:
+    container = container if isinstance(container, dict) else {}
+    required = required if isinstance(required, dict) else {}
+    return bool(required) and all(str(container.get(key)) == str(value) for key, value in required.items())
+
+
+def _disposable_target_config(profile: dict[str, Any], workload: dict[str, Any]) -> dict[str, Any]:
+    labels = ((workload.get("metadata") or {}).get("labels") or {}) if isinstance(workload, dict) else {}
+    runtime = profile.get("extension_runtime") if isinstance(profile.get("extension_runtime"), dict) else {}
+    for target in runtime.get("disposable_targets") or []:
+        if not isinstance(target, dict):
+            continue
+        selector = target.get("selector") if isinstance(target.get("selector"), dict) else {}
+        if _selector_contains(labels, selector):
+            return deepcopy(target)
+    return {}
 
 
 def _safe_service(value: Any) -> dict[str, Any]:
@@ -169,7 +240,7 @@ def _dependency_edges(
             deployment_spec = deployment.get("spec") if isinstance(deployment.get("spec"), dict) else {}
             deployment_selector = deployment_spec.get("selector") if isinstance(deployment_spec.get("selector"), dict) else {}
             match_labels = deployment_selector.get("matchLabels") if isinstance(deployment_selector, dict) else {}
-            if service_name and deployment_name and isinstance(match_labels, dict) and selector == match_labels:
+            if service_name and deployment_name and _selector_contains(match_labels, selector):
                 edges.add((service_name, deployment_name, "selects", "service", "deployment", f"service/{service_name}"))
     for ingress in ingresses:
         metadata = ingress.get("metadata") if isinstance(ingress.get("metadata"), dict) else {}
@@ -219,7 +290,10 @@ class KubernetesProjectAdapter:
         return tuple(item["fault_id"] for item in matrix["faults"] if item["status"] == "supported")
 
     def _get(self, resource: str, namespace: str) -> tuple[dict[str, Any] | None, str | None]:
-        code, stdout, stderr = self.runner(self._command(["get", resource, "-n", namespace, "-o", "json"]), timeout=30)
+        try:
+            code, stdout, stderr = self.runner(self._command(["get", resource, "-n", namespace, "-o", "json"]), timeout=30)
+        except (OSError, KeyError, TypeError, ValueError) as exc:
+            return None, f"{resource} probe failed: {type(exc).__name__}: {exc}"
         if code != 0:
             return None, (stderr or stdout).strip() or f"kubectl exit {code}"
         try:
@@ -244,16 +318,26 @@ class KubernetesProjectAdapter:
                 "services": [],
                 "pods": [],
                 "ingresses": [],
+                "statefulsets": [],
+                "daemonsets": [],
+                "persistentvolumeclaims": [],
+                "configmaps": [],
+                "secrets": [],
+                "horizontalpodautoscalers": [],
+                "poddisruptionbudgets": [],
+                "jobs": [],
+                "workloads": [],
                 "dependencies": [],
                 "business_oracles": deepcopy([item for item in self.profile.get("business_oracles") or [] if isinstance(item, dict)]),
             }
         resources: dict[str, list[dict[str, Any]]] = {}
         errors: list[str] = []
         warnings: list[str] = []
-        for resource in ("deployments", "services", "pods", "ingresses"):
+        optional_resources = {"ingresses", "statefulsets", "daemonsets", "persistentvolumeclaims", "configmaps", "secrets", "horizontalpodautoscalers", "poddisruptionbudgets", "jobs"}
+        for resource in ("deployments", "statefulsets", "daemonsets", "services", "pods", "ingresses", "persistentvolumeclaims", "configmaps", "secrets", "horizontalpodautoscalers", "poddisruptionbudgets", "jobs"):
             value, error = self._get(resource, namespace)
             if error:
-                if resource == "ingresses":
+                if resource in optional_resources:
                     warnings.append(f"{resource} unavailable: {error}")
                 else:
                     errors.append(f"{resource} unavailable: {error}")
@@ -261,10 +345,28 @@ class KubernetesProjectAdapter:
             else:
                 resources[resource] = [item for item in (value or {}).get("items") or [] if isinstance(item, dict)]
         safe_deployments = [_safe_deployment(item) for item in resources["deployments"]]
+        safe_statefulsets = [_safe_workload(item, "StatefulSet") for item in resources["statefulsets"]]
+        safe_daemonsets = [_safe_workload(item, "DaemonSet") for item in resources["daemonsets"]]
+        workloads = safe_deployments + safe_statefulsets + safe_daemonsets
         safe_services = [_safe_service(item) for item in resources["services"]]
         safe_pods = [_safe_pod(item) for item in resources["pods"]]
         safe_ingresses = [_safe_ingress(item) for item in resources["ingresses"]]
-        dependencies = _dependency_edges(safe_services, safe_deployments, safe_ingresses)
+        dependencies = _dependency_edges(safe_services, workloads, safe_ingresses)
+        dependencies.extend(
+            normalize_declared_dependency_edges(
+                self.profile.get("dependency_edges"),
+                safe_services,
+            )
+        )
+        dependencies = sorted(
+            {json.dumps(item, sort_keys=True, ensure_ascii=True): item for item in dependencies}.values(),
+            key=lambda item: (
+                str(item.get("source") or ""),
+                str(item.get("target") or ""),
+                str(item.get("relation") or ""),
+                str(item.get("id") or ""),
+            ),
+        )
         return {
             "schema_version": "chaosatlas-live-inventory-v1",
             "status": "environment_blocked" if errors else "verified",
@@ -273,12 +375,21 @@ class KubernetesProjectAdapter:
             "project_commit": _commit(self.profile.get("project_commit")),
             "namespace": namespace,
             "deployments": safe_deployments,
+            "statefulsets": safe_statefulsets,
+            "daemonsets": safe_daemonsets,
+            "workloads": workloads,
             "services": safe_services,
             "pods": safe_pods,
             "ingresses": safe_ingresses,
+            "persistentvolumeclaims": [_safe_persistent_volume_claim(item) for item in resources["persistentvolumeclaims"]],
+            "configmaps": _safe_named_resources(resources["configmaps"]),
+            "secrets": _safe_named_resources(resources["secrets"]),
+            "horizontalpodautoscalers": [_safe_hpa(item) for item in resources["horizontalpodautoscalers"]],
+            "poddisruptionbudgets": [_safe_pdb(item) for item in resources["poddisruptionbudgets"]],
+            "jobs": _safe_named_resources(resources["jobs"]),
             "dependencies": dependencies,
             "business_oracles": deepcopy([item for item in self.profile.get("business_oracles") or [] if isinstance(item, dict)]),
-            "inventory_sha256": _hash({"deployments": safe_deployments, "services": safe_services, "pods": safe_pods, "ingresses": safe_ingresses, "dependencies": dependencies}),
+            "inventory_sha256": _hash({"workloads": workloads, "services": safe_services, "pods": safe_pods, "ingresses": safe_ingresses, "persistentvolumeclaims": resources["persistentvolumeclaims"], "configmaps": resources["configmaps"], "secrets": resources["secrets"], "horizontalpodautoscalers": resources["horizontalpodautoscalers"], "poddisruptionbudgets": resources["poddisruptionbudgets"], "jobs": resources["jobs"], "dependencies": dependencies}),
             "errors": errors,
             "warnings": warnings,
             "read_only": True,
@@ -291,16 +402,50 @@ class KubernetesProjectAdapter:
         nodes: list[dict[str, Any]] = []
         errors: list[str] = []
         services = inventory.get("services") or []
-        for deployment in inventory.get("deployments") or []:
+        hpas = inventory.get("horizontalpodautoscalers") or []
+        pdbs = inventory.get("poddisruptionbudgets") or []
+        workloads = inventory.get("workloads") or inventory.get("deployments") or []
+        for deployment in workloads:
             metadata = deployment.get("metadata") or {}
             name = str(metadata.get("name") or "")
             selector = ((deployment.get("spec") or {}).get("selector") or {}).get("matchLabels") or {}
-            service = next((item for item in services if (item.get("spec") or {}).get("selector") == selector), None)
+            service = next((item for item in services if _selector_contains(selector, (item.get("spec") or {}).get("selector"))), None)
             enriched = deepcopy(deployment)
+            extension_facts = enriched.get("extensions") if isinstance(enriched.get("extensions"), dict) else {}
+            extension_capabilities = extension_facts.get("capabilities") if isinstance(extension_facts.get("capabilities"), dict) else {}
+            extension_capabilities = deepcopy(extension_capabilities)
+            extension_capabilities.setdefault(
+                "networkchaos",
+                bool({"network_delay", "network_loss", "network_partition"} & set(self._fault_families())),
+            )
+            disposable_target = _disposable_target_config(self.profile, deployment)
+            if disposable_target:
+                declared_capabilities = disposable_target.get("capabilities") if isinstance(disposable_target.get("capabilities"), dict) else {}
+                extension_capabilities.update({str(key): bool(value) for key, value in declared_capabilities.items()})
+            extension_facts["capabilities"] = extension_capabilities
+            workload_kind = str(deployment.get("workload_kind") or "Deployment")
+            matching_hpa = next((item for item in hpas if str((((item.get("spec") or {}).get("scaleTargetRef") or {}).get("name")) or "") == name), None)
+            matching_pdb = next((item for item in pdbs if _selector_contains(selector, (((item.get("spec") or {}).get("selector") or {}).get("matchLabels")))), None)
+            pod_spec = ((deployment.get("spec") or {}).get("template") or {}).get("spec") or {}
+            pvc_claims = [str(((volume.get("persistentVolumeClaim") or {}).get("claimName")) or "") for volume in pod_spec.get("volumes") or [] if isinstance(volume, dict) and isinstance(volume.get("persistentVolumeClaim"), dict)]
+            pvc_claims.extend(str((item.get("metadata") or {}).get("name") or "") for item in (deployment.get("spec") or {}).get("volumeClaimTemplates") or [] if isinstance(item, dict))
+            extension_facts["resource_facts"] = {
+                "workload_kind": workload_kind,
+                "hpa": deepcopy(matching_hpa),
+                "pdb": deepcopy(matching_pdb),
+                "pvc_claims": sorted({item for item in pvc_claims if item}),
+                "configmap_count": len(inventory.get("configmaps") or []),
+                "secret_count": len(inventory.get("secrets") or []),
+                "disposable_target": bool(disposable_target),
+                "disposable_target_id": str(disposable_target.get("id") or "") if disposable_target else "",
+            }
+            if disposable_target:
+                extension_facts["writable_paths"] = sorted({str(item) for item in (disposable_target.get("io_test_paths") or []) if str(item).strip()})
+            enriched["extensions"] = extension_facts
             enriched["availability_profile"] = {
                 "manifest_facts_status": "verified",
-                "pdb": None,
-                "hpa": None,
+                "pdb": deepcopy(matching_pdb),
+                "hpa": deepcopy(matching_hpa),
                 "recovery_contract": {"replacement_identity_required": True, "ready_required": True, "business_probe_required": True, "cleanup_required": True},
             }
             node = build_deployment_node(
@@ -309,7 +454,7 @@ class KubernetesProjectAdapter:
                 namespace=namespace,
                 deployment=enriched,
                 service=service,
-                source_refs=[f"cluster/deployment/{name}"],
+                source_refs=[f"cluster/{str(deployment.get('workload_kind') or 'Deployment').lower()}/{name}"],
                 manifest_sha256=_hash(deployment),
             )
             validation_errors = validate_deployment_node(node)
@@ -328,7 +473,10 @@ class KubernetesProjectAdapter:
                     "node_id": node["node_id"],
                     "target": deployment["name"],
                     "service_target": str(((node.get("service") or {}).get("name")) or deployment["name"]),
-                    "target_kind": "deployment",
+                    "target_kind": str(deployment.get("workload_kind") or "Deployment").lower(),
+                    "workload_kind": str(deployment.get("workload_kind") or "Deployment"),
+                    "disposable_target": bool((node.get("extensions") or {}).get("resource_facts", {}).get("disposable_target")),
+                    "disposable_target_id": str((node.get("extensions") or {}).get("resource_facts", {}).get("disposable_target_id") or ""),
                     "namespace": namespace,
                     "selector": deepcopy(deployment["selector"]),
                     "fault_family": family,
@@ -340,6 +488,12 @@ class KubernetesProjectAdapter:
                     "compile_eligible": True,
                     "static_prior": "singleton_availability_risk" if deployment.get("desired_replicas") == 1 and not (node.get("availability_profile") or {}).get("pdb") else None,
                 })
+        candidates = expand_candidates(candidates, self.profile.get("candidate_generation"))
+        extension_space = generate_extension_candidates(
+            nodes,
+            inventory.get("dependencies") or [],
+            networkchaos_available=bool({"network_delay", "network_loss", "network_partition"} & set(self._fault_families())),
+        )
         return {
             "schema_version": "chaosatlas-server-deployment-detection-v1",
             "status": "method_invalid" if errors else "verified",
@@ -347,12 +501,15 @@ class KubernetesProjectAdapter:
             "namespace": namespace,
             "deployment_nodes": nodes,
             "candidates": candidates,
+            "extension_candidates": extension_space["candidates"],
+            "extension_capability_matrix": extension_space["matrix"],
             "errors": errors,
             "claim_scope": "runtime_inventory",
         }
 
     def map_test_nodes(self, detection: dict[str, Any]) -> dict[str, Any]:
         candidates = [deepcopy(item) for item in detection.get("candidates") or []]
+        candidates.extend(deepcopy(item) for item in detection.get("extension_candidates") or [])
         return {
             "schema_version": "chaosatlas-candidate-space-v1",
             "status": "verified" if detection.get("status") == "verified" and candidates else "environment_blocked" if detection.get("status") == "environment_blocked" else "method_invalid",

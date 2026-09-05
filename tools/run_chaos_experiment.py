@@ -24,10 +24,12 @@ try:
     from runtime_applicability_gate import RESOURCE_BY_KIND, check_mutation
     from classify_runtime_result import classify as classify_runtime_result, exit_code_for_classification
     from environment_fingerprint import load_fingerprint  # phase-5 provenance
+    from reproduction_policy import MIN_STABLE_REPRODUCTIONS
 except ImportError:  # package import through ``tools``
     from tools.runtime_applicability_gate import RESOURCE_BY_KIND, check_mutation
     from tools.classify_runtime_result import classify as classify_runtime_result, exit_code_for_classification
     from tools.environment_fingerprint import load_fingerprint  # phase-5 provenance
+    from tools.reproduction_policy import MIN_STABLE_REPRODUCTIONS
 
 
 RESOURCE_KIND_TO_PLURAL = dict(RESOURCE_BY_KIND)
@@ -247,7 +249,7 @@ def wait_for_target_ready(
     interval: float,
     expected_pod_count: int | None = None,
     pre_kill_uids: set[str] | None = None,
-    stable_checks: int = 2,
+    stable_checks: int = MIN_STABLE_REPRODUCTIONS,
     kube_context: str | None = None,
 ) -> tuple[bool, dict[str, Any], list[str]]:
     """Wait for the target selector's Pods to be Ready after a one-shot kill.
@@ -269,7 +271,7 @@ def wait_for_target_ready(
         the short window where the old Pod is still Ready but already scheduled
         for termination, which would otherwise look like an instant recovery.
       - ``stable_checks``: the recovered state must be observed this many
-        consecutive polls (default 2) to avoid counting a transient Ready as
+        consecutive polls (default 3) to avoid counting a transient Ready as
         a stable recovery.
     """
     labels = selector.get("labelSelectors") if isinstance(selector, dict) else {}
@@ -365,7 +367,7 @@ def wait_for_container_ready(
     pre_restart_counts: dict[str, int] | None = None,
     target_pod_names: set[str] | None = None,
     container_names: set[str] | None = None,
-    stable_checks: int = 2,
+    stable_checks: int = MIN_STABLE_REPRODUCTIONS,
     kube_context: str | None = None,
 ) -> tuple[bool, dict[str, Any], list[str]]:
     """Wait for a container-kill target to restart and become Ready.

@@ -1,0 +1,18 @@
+# Sanitized planning-only Compose inventory for offline ChaosAtlas validation.
+# Live execution must use --compose-dir to point at the operator's external
+# Dify 1.17.0 checkout; no credentials or runtime volumes belong here.
+name: dify-1170-planning
+
+services:
+  api:
+    image: langgenius/dify-api:1.17.0
+  nginx:
+    image: nginx:latest
+  worker:
+    image: langgenius/dify-api:1.17.0
+  redis:
+    image: redis:6-alpine
+  sandbox:
+    image: langgenius/dify-sandbox:0.2.12
+  plugin_daemon:
+    image: langgenius/dify-plugin-daemon:0.5.3-local

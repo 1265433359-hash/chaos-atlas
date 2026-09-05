@@ -10,6 +10,7 @@ import sys
 from typing import Any
 
 from scripts.runtime_env import runtime_env
+from chaosatlas.workspace import runs_root
 
 
 def _owned_name(value: str, label: str, prefix: str) -> str:
@@ -25,9 +26,9 @@ def build_plan(*, repo: Path, profile: str, namespace: str, output: Path, image:
     namespace = _owned_name(namespace, "namespace", "chaosatlas-run-")
     repo = repo.resolve()
     output = output.resolve()
-    runs_root = (repo / ".runs").resolve()
-    if output != runs_root and runs_root not in output.parents:
-        raise ValueError("output must be under repository .runs/")
+    external_runs_root = runs_root().resolve()
+    if output != external_runs_root and external_runs_root not in output.parents:
+        raise ValueError(f"output must be under external runs root: {external_runs_root}")
     image = str(image or "").strip()
     if not image:
         raise ValueError("image is required")

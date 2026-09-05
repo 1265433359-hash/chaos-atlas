@@ -55,6 +55,45 @@ def _probe(container_list: list[dict[str, Any]], key: str) -> dict[str, Any] | N
     return None
 
 
+def _extension_facts(deployment: dict[str, Any], pod_spec: dict[str, Any], containers: list[dict[str, Any]]) -> dict[str, Any]:
+    """Normalize optional extension facts while retaining no secret values."""
+    declared = _mapping(deployment.get("extensions"))
+    volumes = []
+    for volume in pod_spec.get("volumes") or []:
+        if not isinstance(volume, dict):
+            continue
+        name = str(volume.get("name") or "").strip()
+        if not name:
+            continue
+        kind = next((key for key in ("persistentVolumeClaim", "emptyDir", "hostPath", "configMap", "secret") if isinstance(volume.get(key), dict)), "unknown")
+        item: dict[str, Any] = {"name": name, "kind": kind}
+        if kind == "persistentVolumeClaim":
+            item["claim_name"] = str((volume.get(kind) or {}).get("claimName") or "")
+        volumes.append(item)
+    mounts = []
+    for container in containers:
+        container_name = str(container.get("name") or "")
+        for mount in container.get("volumeMounts") or []:
+            if not isinstance(mount, dict):
+                continue
+            path = str(mount.get("mountPath") or "").strip()
+            volume_name = str(mount.get("name") or "").strip()
+            if path and volume_name:
+                mounts.append({"container": container_name, "container_path": path, "volume_name": volume_name, "read_only": bool(mount.get("readOnly"))})
+    facts = {
+        "resource_scope": str(declared.get("resource_scope") or "deployment"),
+        "mounts": mounts,
+        "volumes": volumes,
+        "runtime": deepcopy(_mapping(declared.get("runtime"))),
+        "time_sensitive_edges": list(declared.get("time_sensitive_edges") or []),
+        "capabilities": deepcopy(_mapping(declared.get("capabilities"))),
+        "writable_paths": [str(item) for item in (declared.get("writable_paths") or []) if str(item).strip()],
+    }
+    if declared:
+        facts.update({key: deepcopy(value) for key, value in declared.items() if key not in facts})
+    return facts
+
+
 def build_deployment_node(
     *, project_id: str, project_commit: str, namespace: str,
     deployment: dict[str, Any], service: dict[str, Any] | None,
@@ -83,6 +122,7 @@ def build_deployment_node(
         "namespace": str(namespace),
         "deployment": {
             "name": str(metadata.get("name") or ""),
+            "workload_kind": str(deployment.get("workload_kind") or "Deployment"),
             "selector": selector,
             "desired_replicas": spec.get("replicas"),
             "containers": [str(item.get("name") or "") for item in containers],
@@ -97,6 +137,7 @@ def build_deployment_node(
             "manifest_facts_status": str(profile.get("manifest_facts_status") or "verified"),
             "recovery_contract": deepcopy(profile.get("recovery_contract") or {}),
         },
+        "extensions": _extension_facts(deployment, pod_spec, containers),
         "source_refs": [str(item) for item in (source_refs or [])],
         "manifest_sha256": str(manifest_sha256),
     }

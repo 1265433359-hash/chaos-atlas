@@ -17,6 +17,12 @@ try:
     from tools.deployment_capability import scenario_signature, validate_scenario_node
 except ModuleNotFoundError:
     from deployment_capability import scenario_signature, validate_scenario_node
+try:
+    from tools.extension_fault_catalog import is_extension_fault
+    from tools.extension_fault_compiler import compile_extension_fault
+except ModuleNotFoundError:
+    from extension_fault_catalog import is_extension_fault
+    from extension_fault_compiler import compile_extension_fault
 
 
 SUPPORTED = {
@@ -68,6 +74,8 @@ def _duration(value: Any) -> str:
 
 def _manifest(scenario: dict[str, Any], phase: dict[str, Any], fault: dict[str, Any], index: int) -> dict[str, Any]:
     kind = str(fault.get("kind"))
+    if is_extension_fault(kind):
+        return compile_extension_fault(scenario, phase, fault, index)
     if kind not in SUPPORTED:
         raise ValueError(f"unsupported fault kind: {kind}")
     node = next(item for item in scenario["deployment_nodes"] if item.get("node_id") == fault.get("target_node_id"))
@@ -200,7 +208,9 @@ def _manifest(scenario: dict[str, Any], phase: dict[str, Any], fault: dict[str, 
         deployment_name = str(((node.get("deployment") or {}).get("name") or "")).strip()
         if not deployment_name:
             raise ValueError("Kubernetes API fault requires deployment name")
-        target_kind = "Deployment"
+        target_kind = str(((node.get("deployment") or {}).get("workload_kind") or "Deployment"))
+        if target_kind not in {"Deployment", "StatefulSet", "DaemonSet"}:
+            raise ValueError("unsupported Kubernetes workload kind")
         target_name = deployment_name
         if kind == "replica_reduction":
             if set(parameters) != {"replicas"}:

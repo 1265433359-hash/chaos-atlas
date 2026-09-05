@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from tools._legacy_chaosatlas import run_closed_loop
+from chaosatlas.orchestration.engine import run_closed_loop
 
 
 class _BlockedLiveAdapter:

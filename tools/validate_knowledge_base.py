@@ -126,8 +126,8 @@ def _validate_flat_weakness_root(
         if not isinstance(test_node, dict) or not test_node.get("family") or not test_node.get("operation"):
             errors.append(f"{card_id}: test_node must contain family and operation")
         runs = card.get("evidence_runs")
-        if not isinstance(runs, list) or len(runs) < 2:
-            errors.append(f"{card_id}: evidence_runs must contain at least two independent runs")
+        if not isinstance(runs, list) or len(runs) < 3:
+            errors.append(f"{card_id}: evidence_runs must contain at least three independent runs")
             runs = []
         else:
             run_ids = [str(item.get("run_id")) for item in runs if isinstance(item, dict) and item.get("run_id")]
@@ -136,7 +136,7 @@ def _validate_flat_weakness_root(
                 errors.append(f"{card_id}: evidence run_id values must be distinct")
             if len(fingerprints) != len(set(fingerprints)):
                 errors.append(f"{card_id}: evidence run_fingerprint values must be distinct")
-            if len(run_ids) < 2 or len(fingerprints) < 2:
+            if len(run_ids) < 3 or len(fingerprints) < 3:
                 errors.append(f"{card_id}: each evidence run needs run_id and run_fingerprint")
         if card.get("rca_status") != "confirmed":
             errors.append(f"{card_id}: rca_status must be confirmed")
@@ -207,6 +207,33 @@ def validate(
         return report
 
     index = load_json(index_path)
+    if isinstance(index, dict) and index.get("schema_version") == "chaosatlas-weakness-index-v1":
+        # Dify uses the newer flat weakness-card schema. Keep index coverage
+        # auditable without forcing those cards through the legacy retrieval
+        # schema below.
+        report = _validate_flat_weakness_root(
+            root,
+            expected_project=expected_project,
+            expected_commit=expected_commit,
+        )
+        entries = index.get("cards") if isinstance(index.get("cards"), list) else []
+        indexed_ids = [str(item.get("id")) for item in entries if isinstance(item, dict) and item.get("id")]
+        card_ids = sorted(path.stem for path in root.glob("KB-*.json"))
+        errors = list(report.get("errors") or [])
+        if indexed_ids != sorted(indexed_ids) or len(indexed_ids) != len(set(indexed_ids)):
+            errors.append("index.cards must contain unique entries in deterministic order")
+        if sorted(indexed_ids) != card_ids:
+            errors.append("index.cards does not match the flat KB-*.json card set")
+        report.update({
+            "valid": not errors,
+            "index": str(index_path).replace("\\", "/"),
+            "index_schema_version": index.get("schema_version"),
+            "index_card_count": len(entries),
+            "errors": errors,
+        })
+        if profile_report is not None:
+            report["project_profile"] = profile_report
+        return report
     cards = index.get("cards")
     if not isinstance(cards, list) or not cards:
         errors.append("index.cards must be a non-empty list")

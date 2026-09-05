@@ -1,4 +1,4 @@
-"""Run the first deterministic, offline ChaosAtlas closed-loop pipeline."""
+"""Unified ChaosAtlas dry-run and live orchestration engine."""
 
 from __future__ import annotations
 
@@ -7,13 +7,16 @@ import hashlib
 import json
 import shutil
 import sys
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
 if __package__ in (None, ""):
-    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
-from tools.chaosatlas_adapters import FakeExecutor, KnowledgeProvider, OfflineProjectAdapter
+_REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
+
+from tools.chaosatlas_adapters import KnowledgeProvider, OfflineProjectAdapter
 from tools.chaosatlas_contracts import (
     STAGES,
     RunContext,
@@ -32,6 +35,7 @@ from tools.compile_scenario_node import compile_scenario
 from tools.deployment_capability import build_deployment_node, build_scenario_node
 from tools.run_deployment_scenario import run_scenario
 from tools.kubernetes_lifecycle_executor import KubernetesLifecycleExecutor
+from chaosatlas.oracles import DEFAULT_ORACLE_REGISTRY, OracleRegistry
 from tools.kubernetes_fault_executor import KubernetesApiFaultExecutor, ControlPlaneDelayExecutor
 from tools.minikube_control_plane_mutator import MinikubeControlPlaneMutator
 from tools.native_resource_fault_executor import NativeResourceFaultExecutor
@@ -53,6 +57,82 @@ from tools.phase6_audit import build_execution_contract, write_phase6_audit
 from tools.knowledge_migration_audit import build_consumption_report
 from tools.hypothesis_registry import build_hypothesis_registry, build_project_portrait
 from tools.registry_shadow import build_registry_shadow, evaluate_registry_quality
+from tools.reproduction_policy import MIN_STABLE_REPRODUCTIONS
+
+
+@dataclass(frozen=True)
+class RunRequest:
+    """Validated configuration for one unified ChaosAtlas engine invocation."""
+
+    profile_path: Path
+    output_root: Path
+    mode: str = "dry-run"
+    seed: int = 1001
+    resume: bool = False
+    knowledge_root: Path | None = None
+    approve_live: bool = False
+    candidate_id: str | None = None
+    defense_history_root: Path | None = None
+    knowledge_write_root: Path | None = None
+    advisory_provider: Callable[[dict[str, Any]], Any] | None = None
+    policy_hypothesis: dict[str, Any] | None = None
+    registry_shadow: bool = False
+    kube_context: str | None = None
+    all_candidates: bool = False
+    max_candidates: int | None = None
+    policy_mode: str = "legacy"
+    policy_state_path: Path | None = None
+    policy_context: dict[str, Any] | None = None
+    policy_budget: int = 20
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "profile_path", Path(self.profile_path))
+        object.__setattr__(self, "output_root", Path(self.output_root))
+        for name in ("knowledge_root", "defense_history_root", "knowledge_write_root", "policy_state_path"):
+            value = getattr(self, name)
+            if value is not None:
+                object.__setattr__(self, name, Path(value))
+        if self.mode not in {"dry-run", "live"}:
+            raise ValueError(f"unsupported run mode: {self.mode}")
+        if isinstance(self.seed, bool) or not isinstance(self.seed, int):
+            raise ValueError("seed must be an integer")
+        if isinstance(self.policy_budget, bool) or int(self.policy_budget) < 1:
+            raise ValueError("policy_budget must be a positive integer")
+        if self.max_candidates is not None and (
+            isinstance(self.max_candidates, bool) or int(self.max_candidates) < 1
+        ):
+            raise ValueError("max_candidates must be a positive integer")
+        if self.mode == "dry-run" and (self.all_candidates or self.max_candidates is not None):
+            raise ValueError("dry-run candidate batching is not supported")
+
+
+@dataclass(frozen=True)
+class RunDependencies:
+    """Replaceable capabilities owned by the unified composition root."""
+
+    oracle_registry: OracleRegistry = field(default_factory=lambda: DEFAULT_ORACLE_REGISTRY)
+    live_executor: Callable[..., dict[str, Any]] | None = None
+    live_adapter: Any | None = None
+    live_evidence_collector: Any | None = None
+    live_preflight: Any | None = None
+
+
+class PlanExecutor:
+    """Describe an execution without fabricating runtime observations."""
+
+    def run(self, plan: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "status": "not_run",
+            "execution_status": "not_run",
+            "claim_scope": "planned",
+            "plan": dict(plan),
+            "observation": {
+                "status": "not_run",
+                "claim_scope": "planned",
+                "reason": "dry-run does not execute runtime mutations",
+            },
+            "cleanup_confirmed": False,
+        }
 
 
 REQUIRED_ALIASES = {
@@ -107,6 +187,12 @@ def _write_text(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8", newline="\n")
 
 
+def _payload_sha256(payload: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(payload, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+
+
 def _bounded_artifact_path(root: Path, directory: str, logical_name: str, suffix: str = ".json") -> Path:
     """Keep generated artifact paths below Windows' legacy MAX_PATH limit."""
     artifact_dir = Path(root).expanduser().resolve() / directory
@@ -153,6 +239,25 @@ def _write_advisory_artifact(output_root: Path, name: str, payload: dict[str, An
     _write_text(output_root / f"{name}.json", json.dumps(envelope, indent=2, ensure_ascii=False) + "\n")
 
 
+def _write_support_artifact(
+    output_root: Path,
+    name: str,
+    payload: dict[str, Any],
+    *,
+    claim_scope: str = "advisory",
+) -> None:
+    """Persist an auditable non-stage decision without promoting it to evidence."""
+    envelope = {
+        "schema_version": "chaosatlas-support-artifact-v1",
+        "artifact": name,
+        "status": "completed",
+        "claim_scope": claim_scope,
+        "payload": payload,
+        "output_sha256": _payload_sha256(payload),
+    }
+    _write_text(output_root / f"{name}.json", json.dumps(envelope, indent=2, ensure_ascii=False) + "\n")
+
+
 def _read_advisory_artifact(output_root: Path, name: str) -> dict[str, Any]:
     value = _read_json(output_root / f"{name}.json")
     payload = value.get("payload") if isinstance(value.get("payload"), dict) else value
@@ -163,7 +268,7 @@ def _read_advisory_artifact(output_root: Path, name: str) -> dict[str, Any]:
 
 def _facts_path(project_id: str) -> Path:
     module_path = Path(__file__).resolve()
-    repository_root = module_path.parents[1]
+    repository_root = _REPOSITORY_ROOT
     roots = (
         repository_root / "tests" / "fixtures" / "chaosatlas_offline" / project_id,
         module_path.parent / "tests" / "fixtures" / "chaosatlas_offline" / project_id,
@@ -195,16 +300,27 @@ def _stage(
     return payload
 
 
-def _summary(output_root: Path, *, status: str, context: RunContext, completed: list[str], error: str | None = None) -> dict[str, Any]:
-    claim_scope = "runtime" if context.mode == "live" else "static/synthetic"
+def _summary(
+    output_root: Path,
+    *,
+    status: str,
+    context: RunContext,
+    completed: list[str],
+    error: str | None = None,
+    **extra: Any,
+) -> dict[str, Any]:
+    claim_scope = "runtime" if context.mode == "live" else "planned"
     payload = {
         "schema_version": "chaosatlas-run-summary-v1",
         "status": status,
         "run_id": context.run_id,
         "input_snapshot_sha256": context.input_snapshot_sha256,
-        "completed_stages": completed,
+        "completed_stages": list(completed),
+        "runtime_claims": [],
+        "claim_scope": claim_scope,
         "error": error,
     }
+    payload.update(extra)
     _write_text(
         output_root / "summary.md",
         "# ChaosAtlas Offline Run\n\n"
@@ -259,10 +375,38 @@ def _load_or_create_context(profile_path: Path, output_root: Path, mode: str, se
     return RunContext.create(profile_path=profile_path, mode=mode, seed=seed, output_root=output_root), False
 
 
-def _runtime_oracle(profile: dict[str, Any]) -> dict[str, Any]:
+def _validate_resume_artifacts(output_root: Path, context: RunContext) -> list[str]:
+    checkpoint = load_checkpoint(output_root)
+    completed = list(checkpoint.get("completed_stages") or [])
+    unknown = [stage for stage in completed if stage not in STAGES]
+    if unknown:
+        raise ValueError(f"checkpoint contains unknown stages: {', '.join(unknown)}")
+    expected_prefix = list(STAGES[: len(completed)])
+    if completed != expected_prefix:
+        raise ValueError("checkpoint completed stages are not a valid stage prefix")
+    manifest = _read_json(output_root / "run_manifest.json")
+    if (
+        manifest.get("run_id") != context.run_id
+        or manifest.get("input_snapshot_sha256") != context.input_snapshot_sha256
+    ):
+        raise ValueError("run context input hash mismatch")
+    for stage_name in completed:
+        artifact = _read_json(output_root / f"{stage_name}.json")
+        if artifact.get("stage") != stage_name:
+            raise ValueError(f"artifact stage mismatch: {stage_name}")
+        if artifact.get("output_sha256") != _payload_sha256(artifact.get("payload", {})):
+            raise ValueError(f"artifact hash mismatch: {stage_name}")
+    return completed
+
+
+def _runtime_oracle(
+    profile: dict[str, Any],
+    *,
+    oracle_registry: OracleRegistry = DEFAULT_ORACLE_REGISTRY,
+) -> dict[str, Any]:
     oracle = next((item for item in profile.get("business_oracles") or [] if isinstance(item, dict)), {})
     kind = str(oracle.get("kind") or "http").strip().lower()
-    if kind not in {"http", "grpc"}:
+    if not oracle_registry.supports(kind):
         raise ValueError(f"live business oracle does not support {kind or 'unknown'}")
     service = str(oracle.get("service") or "").strip()
     remote_port = oracle.get("remote_port")
@@ -292,6 +436,7 @@ def _runtime_oracle(profile: dict[str, Any]) -> dict[str, Any]:
             if isinstance(port, bool) or not isinstance(port, int) or not 1 <= port <= 65535:
                 raise ValueError("grpc supporting service requires remote_port in [1, 65535]")
     result = {
+        **oracle,
         "kind": kind,
         "service": service,
         "remote_port": remote_port,
@@ -303,7 +448,7 @@ def _runtime_oracle(profile: dict[str, Any]) -> dict[str, Any]:
         "observation_window_s": max(0.0, float(oracle.get("observation_window_s") or 0)),
         "probe_retry_interval_s": max(0.0, float(oracle.get("probe_retry_interval_s") or 1)),
     }
-    if kind == "http":
+    if kind in {"http", "dify_chatflow"}:
         request_headers = oracle.get("request_headers")
         if isinstance(request_headers, dict):
             result["request_headers"] = {
@@ -311,6 +456,9 @@ def _runtime_oracle(profile: dict[str, Any]) -> dict[str, Any]:
             }
         if oracle.get("expected_body") is not None:
             result["expected_body"] = str(oracle["expected_body"])
+        if kind == "dify_chatflow":
+            result["api_key_file"] = str(oracle.get("api_key_file") or r"C:\APP\project\Dify_APIkey.txt")
+            result["candidate_scope"] = str(oracle.get("candidate_scope") or "business_path")
     if kind == "grpc":
         result["client"] = str(oracle["client"]).strip()
         result["supporting_services"] = [
@@ -324,7 +472,12 @@ def _runtime_oracle(profile: dict[str, Any]) -> dict[str, Any]:
 
 
 def _live_scenario(
-    *, profile: dict[str, Any], inventory: dict[str, Any], candidate: dict[str, Any], scenario_id: str,
+    *,
+    profile: dict[str, Any],
+    inventory: dict[str, Any],
+    candidate: dict[str, Any],
+    scenario_id: str,
+    oracle_registry: OracleRegistry = DEFAULT_ORACLE_REGISTRY,
 ) -> dict[str, Any]:
     target = str(candidate.get("target") or "")
     deployment_fact = next(
@@ -336,7 +489,7 @@ def _live_scenario(
     )
     if not isinstance(deployment_fact, dict):
         raise ValueError(f"live candidate target deployment not found: {target}")
-    oracle = _runtime_oracle(profile)
+    oracle = _runtime_oracle(profile, oracle_registry=oracle_registry)
     deployment_spec = deployment_fact.get("spec") if isinstance(deployment_fact.get("spec"), dict) else {}
     selector_source = deployment_fact.get("selector") or (deployment_spec.get("selector") or {}).get("matchLabels") or {}
     selector = {str(key): str(value) for key, value in selector_source.items()}
@@ -351,6 +504,9 @@ def _live_scenario(
             "template": {"metadata": {"labels": selector}, "spec": {"containers": [{"name": target}]}},
         },
     }
+    extension_facts = candidate.get("extension_facts") or deployment_fact.get("extensions")
+    if isinstance(extension_facts, dict):
+        deployment["extensions"] = deepcopy(extension_facts)
     service_name = str(candidate.get("service_target") or oracle["service"])
     service_port = int(oracle["remote_port"])
     for item in inventory.get("services") or []:
@@ -554,6 +710,11 @@ def _live_scenario(
         parameters = {**configured, **parameters}
         parameters = {"count": int(parameters.get("count") or 8)}
         action = "process-exhaustion"
+    elif family.startswith("extension."):
+        configured = (profile.get("extension_fault_defaults") or {}).get(family)
+        configured = configured if isinstance(configured, dict) else {}
+        parameters = {**configured, **parameters}
+        action = family
     else:
         raise ValueError(f"unsupported live fault family: {family}")
     scenario = build_scenario_node(
@@ -569,7 +730,7 @@ def _live_scenario(
             "cleanup_owner": "chaosatlas",
         }],
         oracle={"business": oracle},
-        recovery={"deadline_s": int((profile.get("recovery") or {}).get("deadline_s") or 180), "stable_samples": 2},
+        recovery={"deadline_s": int((profile.get("recovery") or {}).get("deadline_s") or 180), "stable_samples": MIN_STABLE_REPRODUCTIONS},
         cleanup={"required": True, "owner": str((profile.get("cleanup") or {}).get("owner") or "chaosatlas")},
     )
     return scenario
@@ -578,13 +739,27 @@ def _live_scenario(
 def _live_cleanup_report(result: dict[str, Any]) -> dict[str, Any]:
     faults = [fault for phase in result.get("phases") or [] for fault in phase.get("faults") or []]
     verified = sum(1 for fault in faults if fault.get("cleanup_confirmed") is True)
+    fault_reports = []
+    errors = []
+    for fault in faults:
+        cleanup = fault.get("cleanup") if isinstance(fault.get("cleanup"), dict) else {}
+        mesh_cleanup = cleanup.get("chaos_mesh") if isinstance(cleanup.get("chaos_mesh"), dict) else None
+        if mesh_cleanup is not None:
+            errors.extend(str(error) for error in mesh_cleanup.get("errors") or [])
+            fault_reports.append({
+                "action_id": fault.get("action_id"),
+                "confirmed": fault.get("cleanup_confirmed") is True,
+                "chaos_mesh": mesh_cleanup,
+            })
     return {
         "schema_version": "chaosatlas-live-cleanup-v1",
         "mode": "live",
         "status": "verified" if faults and verified == len(faults) else "blocked",
         "action_count": len(faults),
         "verified_action_count": verified,
-        "errors": [] if faults and verified == len(faults) else ["cleanup attestation missing"],
+        "faults": fault_reports,
+        "residual_count": sum(int((report.get("chaos_mesh") or {}).get("residual_count", 0) or 0) for report in fault_reports),
+        "errors": errors or ([] if faults and verified == len(faults) else ["cleanup attestation missing"]),
     }
 
 
@@ -628,6 +803,8 @@ def _classify_live_outcome(execution_status: str, injection_confirmed: bool, out
     """Map executor state to a bounded runtime classification."""
     if execution_status == "environment_blocked":
         return "environment_blocked"
+    if execution_status in {"business_not_reachable", "business_unreachable"}:
+        return "business_not_reachable"
     if not injection_confirmed:
         return "injection_not_confirmed"
     if outcome_status in {"rate_limit_observed", "dependency_unreachable_observed"}:
@@ -970,12 +1147,42 @@ def run_closed_loop(
     defense_history_root: Path | None = None,
     knowledge_write_root: Path | None = None,
     advisory_provider: Callable[[dict[str, Any]], Any] | None = None,
+    policy_hypothesis: dict[str, Any] | None = None,
     registry_shadow: bool = False,
     kube_context: str | None = None,
+    oracle_registry: OracleRegistry = DEFAULT_ORACLE_REGISTRY,
 ) -> dict[str, Any]:
     profile_path = Path(profile_path)
     output_root = Path(output_root)
-    context, resumed = _load_or_create_context(profile_path, output_root, mode, seed, resume)
+    try:
+        context, resumed = _load_or_create_context(profile_path, output_root, mode, seed, resume)
+    except (FileNotFoundError, OSError, ValueError) as exc:
+        output_root.mkdir(parents=True, exist_ok=True)
+        context = RunContext.create(
+            profile_path=profile_path,
+            mode=mode,
+            seed=seed,
+            output_root=output_root,
+        )
+        return _summary(
+            output_root,
+            status="method_invalid",
+            context=context,
+            completed=[],
+            error=str(exc),
+        )
+    completed: list[str] = []
+    if resumed:
+        try:
+            completed = _validate_resume_artifacts(output_root, context)
+        except (FileNotFoundError, OSError, ValueError, json.JSONDecodeError) as exc:
+            return _summary(
+                output_root,
+                status="method_invalid",
+                context=context,
+                completed=[],
+                error=f"invalid resume state: {exc}",
+            )
     manifest = {
         "schema_version": "chaosatlas-run-manifest-v1",
         "run_id": context.run_id,
@@ -983,7 +1190,7 @@ def run_closed_loop(
         "mode": context.mode,
         "seed": context.seed,
         "input_snapshot_sha256": context.input_snapshot_sha256,
-        "claim_scope": "runtime" if mode == "live" else "static/synthetic",
+        "claim_scope": "runtime" if mode == "live" else "planned",
         "kube_context": kube_context,
     }
     (output_root / "run_manifest.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -1000,10 +1207,6 @@ def run_closed_loop(
     )
     _write_text(output_root / "execution_contract.json", json.dumps(execution_contract, indent=2, ensure_ascii=False) + "\n")
 
-    completed: list[str] = []
-    if resumed:
-        checkpoint = load_checkpoint(output_root)
-        completed = list(checkpoint.get("completed_stages") or [])
     profile: dict[str, Any] | None = None
     inventory: dict[str, Any] | None = None
     detection: dict[str, Any] | None = None
@@ -1029,8 +1232,8 @@ def run_closed_loop(
                 facts_hint = _read_json(profile_path)
                 project_id = str(facts_hint.get("project_id") or "")
                 facts_path = _facts_path(project_id)
-                adapter = OfflineProjectAdapter(facts_path, workspace_root=Path(__file__).resolve().parents[1])
-                onboard = adapter.onboard(profile_path, Path(__file__).resolve().parents[1])
+                adapter = OfflineProjectAdapter(facts_path, workspace_root=_REPOSITORY_ROOT)
+                onboard = adapter.onboard(profile_path, _REPOSITORY_ROOT)
             _stage(output_root, completed, "onboard", onboard)
             valid_onboard_status = {"ready_for_static_analysis", "ready_for_runtime"}
             if onboard.get("status") not in valid_onboard_status:
@@ -1040,12 +1243,12 @@ def run_closed_loop(
         else:
             profile = _read_json(profile_path)
             project_id = str(profile.get("project_id") or "")
-            adapter = None if mode == "live" else OfflineProjectAdapter(_facts_path(project_id), workspace_root=Path(__file__).resolve().parents[1])
+            adapter = None if mode == "live" else OfflineProjectAdapter(_facts_path(project_id), workspace_root=_REPOSITORY_ROOT)
 
         if mode == "live":
             assert profile is not None
             try:
-                _runtime_oracle(profile)
+                _runtime_oracle(profile, oracle_registry=oracle_registry)
             except ValueError as exc:
                 summary = _summary(output_root, status="environment_blocked", context=context, completed=completed, error=str(exc))
                 _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
@@ -1160,6 +1363,8 @@ def run_closed_loop(
                 hypothesis_input,
                 provider=advisory_provider,
             )
+            if isinstance(policy_hypothesis, dict):
+                hypotheses["policy_hypothesis"] = policy_hypothesis
             hypotheses["input"] = hypothesis_input
             _stage(output_root, completed, "hypotheses", hypotheses, claim_scope="advisory", aliases=(REQUIRED_ALIASES["hypotheses"],))
         else:
@@ -1207,7 +1412,7 @@ def run_closed_loop(
                 ) or first_planned_candidate
             elif mode == "live" and profile is not None:
                 try:
-                    oracle_service = _runtime_oracle(profile)["service"]
+                    oracle_service = _runtime_oracle(profile, oracle_registry=oracle_registry)["service"]
                 except ValueError:
                     oracle_service = ""
                 first_planned_candidate = next(
@@ -1253,11 +1458,37 @@ def run_closed_loop(
         if first_candidate is None:
             raise ValueError("no candidate survived server deployment detection")
         plan = {"candidate_id": first_candidate.get("candidate_id"), "expected_invariant": "business_oracle_success"}
+        _write_support_artifact(
+            output_root,
+            "candidate_selection",
+            {
+                "candidate_count": int((ranked or {}).get("candidate_count") or len((candidate_space or {}).get("candidates", []))),
+                "candidate_ids": [
+                    str(item.get("candidate_id"))
+                    for item in (ranked or {}).get("candidates", [])
+                    if isinstance(item, dict) and item.get("candidate_id")
+                ],
+                "selected_candidate_ids": [str(first_candidate.get("candidate_id"))],
+                "selection_mode": "explicit" if candidate_id else "deterministic_ranked_prefix",
+                "knowledge_card_ids": list((ranked or {}).get("knowledge_card_ids") or []),
+                "knowledge_view_sha256": (ranked or {}).get("knowledge_view_sha256"),
+            },
+        )
+        _write_support_artifact(
+            output_root,
+            "stop_decision",
+            {
+                "stop_reason": "budget_pending",
+                "budget": 1,
+                "next_candidate_id": str(first_candidate.get("candidate_id")),
+                "evaluated_candidate_ids": [],
+            },
+        )
 
         if mode == "live":
             assert profile is not None and inventory is not None
             try:
-                runtime_oracle = _runtime_oracle(profile)
+                runtime_oracle = _runtime_oracle(profile, oracle_registry=oracle_registry)
             except ValueError as exc:
                 summary = _summary(output_root, status="environment_blocked", context=context, completed=completed, error=str(exc))
                 _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
@@ -1266,15 +1497,20 @@ def run_closed_loop(
                 (
                     item for item in (candidate_space or {}).get("candidates", [])
                     if str(item.get("target")) == runtime_oracle["service"]
+                    or str(item.get("service_target")) == runtime_oracle["service"]
                 ),
                 None,
             )
-            if oracle_candidate is None:
+            if oracle_candidate is None and runtime_oracle.get("candidate_scope") != "business_path":
                 summary = _summary(output_root, status="environment_blocked", context=context, completed=completed, error="live business oracle service has no matching candidate")
                 _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
                 return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
             if candidate_id:
-                target_matches_oracle = first_candidate.get("target") == runtime_oracle["service"]
+                target_matches_oracle = (
+                    first_candidate.get("target") == runtime_oracle["service"]
+                    or first_candidate.get("service_target") == runtime_oracle["service"]
+                    or runtime_oracle.get("candidate_scope") == "business_path"
+                )
                 backend_route_match = False
                 if first_candidate.get("fault_family") == "backend_pod_kill":
                     target_service = str(first_candidate.get("service_target") or "")
@@ -1289,7 +1525,7 @@ def run_closed_loop(
                     _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
                     return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
             else:
-                first_candidate = oracle_candidate
+                first_candidate = oracle_candidate or ((ranked or {}).get("candidates") or [None])[0]
             planned_candidate_ids = {
                 str(item) for item in ((evidence_plan.get("selection") or {}).get("candidate_ids") or [])
             }
@@ -1306,7 +1542,13 @@ def run_closed_loop(
                 summary = _summary(output_root, status="environment_blocked", context=context, completed=completed, error="live runtime preflight blocked execution")
                 _finalize_phase6(output_root, status=summary["status"], execution_contract=execution_contract, completed=completed)
                 return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
-            scenario = _live_scenario(profile=profile, inventory=inventory, candidate=first_candidate, scenario_id=context.run_id)
+            scenario = _live_scenario(
+                profile=profile,
+                inventory=inventory,
+                candidate=first_candidate,
+                scenario_id=context.run_id,
+                oracle_registry=oracle_registry,
+            )
             compiled = compile_scenario(scenario)
             if compiled.get("status") != "verified":
                 raise ValueError("live scenario compilation failed: " + "; ".join(compiled.get("errors", [])))
@@ -1322,6 +1564,13 @@ def run_closed_loop(
                     allow_live=True, oracle=runtime_oracle,
                     kube_context=kube_context,
                 )
+                business_oracle = oracle_registry.create(
+                    runtime_oracle,
+                    namespace=namespace,
+                    kube_context=kube_context,
+                    default_probe=lifecycle_executor._default_probe,
+                )
+                lifecycle_executor.hooks["probe"] = business_oracle.probe
                 namespace_policy = profile.get("namespace_policy") or {}
                 isolated_api = bool(namespace_policy.get("disposable") or (namespace_policy.get("isolation_required") and namespace.startswith("chaosatlas-run-")))
                 api_executor = KubernetesApiFaultExecutor(
@@ -1362,17 +1611,20 @@ def run_closed_loop(
                 )
 
                 def live_executor(manifest: dict[str, Any], phase: dict[str, Any] | None = None, fault: dict[str, Any] | None = None) -> dict[str, Any]:
+                    def probe_for_manifest(probe_phase: str) -> dict[str, Any]:
+                        return business_oracle.probe(probe_phase, manifest)
+
                     if manifest.get("kind") == "ChaosAtlasKubernetesFault":
-                        api_executor.probe = lambda probe_phase: lifecycle_executor._default_probe(probe_phase, manifest)
+                        api_executor.probe = probe_for_manifest
                         return api_executor(manifest, phase, fault)
                     if manifest.get("kind") == "ChaosAtlasNativeFault":
-                        native_executor.probe = lambda probe_phase: lifecycle_executor._default_probe(probe_phase, manifest)
+                        native_executor.probe = probe_for_manifest
                         return native_executor(manifest, phase, fault)
                     if manifest.get("kind") == "ChaosAtlasNativeHttpFault":
-                        native_http_executor.probe = lambda probe_phase: lifecycle_executor._default_probe(probe_phase, manifest)
+                        native_http_executor.probe = probe_for_manifest
                         return native_http_executor(manifest, phase, fault)
                     if manifest.get("kind") == "ChaosAtlasControlPlaneFault":
-                        control_plane_executor.probe = lambda probe_phase: lifecycle_executor._default_probe(probe_phase, manifest)
+                        control_plane_executor.probe = probe_for_manifest
                         return control_plane_executor(manifest, phase=phase, fault=fault)
                     return lifecycle_executor(manifest, phase, fault)
             execution = run_scenario(scenario, compiled=compiled, dry_run=False, executor=live_executor)
@@ -1422,6 +1674,9 @@ def run_closed_loop(
             _stage(output_root, completed, "execute", execution, claim_scope="runtime")
             _stage(output_root, completed, "observe", {"observation": phase_fault.get("observation") or {"status": phase_fault.get("outcome_status")}, "evidence_refs": evidence_refs, "claim_scope": "runtime"}, claim_scope="runtime")
             status = str(execution.get("status") or "environment_blocked")
+            phase_status = str(phase_fault.get("status") or status)
+            if status == "injection_not_confirmed" and phase_status == "business_not_reachable":
+                status = "business_not_reachable"
             defense_evidence = _live_defense_evidence(
                 phase_fault,
                 observation_window_s=runtime_oracle.get("observation_window_s"),
@@ -1440,12 +1695,30 @@ def run_closed_loop(
                 baseline_status = str((phase_fault.get("baseline") or {}).get("status") or "")
                 phase_fault["outcome_status"] = "degraded" if baseline_status == "pass" else "business_not_reachable"
             classification = _classify_live_outcome(
-                status,
+                phase_status,
                 bool(phase_fault.get("injection_confirmed")),
                 str(phase_fault.get("outcome_status") or ""),
                 defense_evidence,
             )
-            _stage(output_root, completed, "classify", {"result": classification, "claim_scope": "runtime", "attestation": phase_fault.get("attestation"), "defense_evidence": defense_evidence, "evidence_refs": evidence_refs, "promotion_allowed": False}, claim_scope="runtime", aliases=(REQUIRED_ALIASES["classify"],))
+            valid_reproductions = 1 if str(phase_fault.get("outcome_status") or "") in {
+                "observed", "rate_limit_observed", "dependency_unreachable_observed"
+            } else 0
+            _stage(
+                output_root,
+                completed,
+                "classify",
+                {
+                    "result": classification,
+                    "claim_scope": "runtime",
+                    "attestation": phase_fault.get("attestation"),
+                    "defense_evidence": defense_evidence,
+                    "evidence_refs": evidence_refs,
+                    "valid_reproductions": valid_reproductions,
+                    "promotion_allowed": False,
+                },
+                claim_scope="runtime",
+                aliases=(REQUIRED_ALIASES["classify"],),
+            )
             updated_case, ingested, draft = _live_rca_projection(
                 profile=profile,
                 inventory=inventory,
@@ -1464,6 +1737,7 @@ def run_closed_loop(
                 "claim_scope": "runtime",
                 "transition": ingested.get("transition"),
                 "promotion": ingested.get("promotion"),
+                "valid_reproductions": valid_reproductions,
             }
             _stage(output_root, completed, "rca", rca_payload, claim_scope="runtime", aliases=(REQUIRED_ALIASES["rca"],))
             _stage(output_root, completed, "learn", draft, claim_scope="runtime", aliases=(REQUIRED_ALIASES["learn"],))
@@ -1504,19 +1778,19 @@ def run_closed_loop(
             final_status = "live_completed" if status == "executed" else status
         else:
             if "baseline" not in completed:
-                _stage(output_root, completed, "baseline", {"status": "planned", "plan": plan, "claim_scope": "synthetic"}, claim_scope="synthetic")
+                _stage(output_root, completed, "baseline", {"status": "planned", "plan": plan, "claim_scope": "planned"}, claim_scope="planned")
             if "execute" not in completed or "observe" not in completed:
-                execution = FakeExecutor().run(plan)
+                execution = PlanExecutor().run(plan)
             if "execute" not in completed:
-                _stage(output_root, completed, "execute", execution, claim_scope="synthetic")
+                _stage(output_root, completed, "execute", execution, claim_scope="planned")
             if "observe" not in completed:
-                _stage(output_root, completed, "observe", execution.get("observation", {}), claim_scope="synthetic")
+                _stage(output_root, completed, "observe", execution.get("observation", {}), claim_scope="planned")
             if "classify" not in completed:
-                _stage(output_root, completed, "classify", {"result": "not_run", "claim_scope": "synthetic", "evidence_status": "synthetic", "reason": "offline fake executor"}, claim_scope="synthetic", aliases=(REQUIRED_ALIASES["classify"],))
+                _stage(output_root, completed, "classify", {"result": "not_run", "claim_scope": "planned", "evidence_status": "not_run", "reason": "dry-run plan executor"}, claim_scope="planned", aliases=(REQUIRED_ALIASES["classify"],))
             if "rca" not in completed:
-                _stage(output_root, completed, "rca", {"rca_status": "not_run", "claim_scope": "synthetic", "reason": "runtime evidence unavailable"}, claim_scope="synthetic", aliases=(REQUIRED_ALIASES["rca"],))
+                _stage(output_root, completed, "rca", {"rca_status": "not_run", "claim_scope": "planned", "reason": "runtime evidence unavailable"}, claim_scope="planned", aliases=(REQUIRED_ALIASES["rca"],))
             if "learn" not in completed:
-                _stage(output_root, completed, "learn", {"knowledge_status": "none", "claim_scope": "synthetic", "promotion_allowed": False, "reason": "fake evidence cannot promote knowledge"}, claim_scope="synthetic", aliases=(REQUIRED_ALIASES["learn"],))
+                _stage(output_root, completed, "learn", {"knowledge_status": "none", "claim_scope": "planned", "promotion_allowed": False, "reason": "planned evidence cannot promote knowledge"}, claim_scope="planned", aliases=(REQUIRED_ALIASES["learn"],))
             if "promote_defense" not in completed:
                 if defense_history_root is None:
                     promotion = {
@@ -1532,14 +1806,32 @@ def run_closed_loop(
                         output_root=output_root,
                         knowledge_write_root=knowledge_write_root,
                     )
-                _stage(output_root, completed, "promote_defense", promotion, claim_scope="synthetic")
+                _stage(output_root, completed, "promote_defense", promotion, claim_scope="planned")
             if "regression" not in completed:
                 intents = [{"candidate_id": item.get("candidate_id"), "status": "draft", "executable": False, "reason": "requires runtime validation"} for item in (candidate_space or {}).get("candidates", [])]
-                _stage(output_root, completed, "regression", {"intents": intents, "claim_scope": "synthetic"}, claim_scope="synthetic", aliases=(REQUIRED_ALIASES["regression"],))
-            cleanup = {"status": "verified", "cleanup_confirmed": True, "evidence_status": "synthetic", "claim_scope": "synthetic"}
+                _stage(output_root, completed, "regression", {"intents": intents, "claim_scope": "planned"}, claim_scope="planned", aliases=(REQUIRED_ALIASES["regression"],))
+            cleanup = {"status": "not_run", "cleanup_confirmed": False, "evidence_status": "not_run", "claim_scope": "planned"}
             _write_text(output_root / "cleanup_report.json", json.dumps(cleanup, indent=2, ensure_ascii=False) + "\n")
             final_status = "dry_run_ready"
-        summary = _summary(output_root, status=final_status, context=context, completed=completed)
+        _write_support_artifact(
+            output_root,
+            "stop_decision",
+            {
+                "stop_reason": "single_candidate_complete" if mode == "live" else "planning_complete",
+                "budget": 1,
+                "next_candidate_id": None,
+                "evaluated_candidate_ids": [str(first_candidate.get("candidate_id"))] if mode == "live" else [],
+            },
+        )
+        summary = _summary(
+            output_root,
+            status=final_status,
+            context=context,
+            completed=completed,
+            candidate_count=int((candidate_space or {}).get("candidate_count") or len((candidate_space or {}).get("candidates", []))),
+            selected_candidate_ids=[str(first_candidate.get("candidate_id"))],
+            advisory_status=(hypotheses or {}).get("advisory_status", "deterministic_fallback"),
+        )
         _finalize_phase6(
             output_root,
             status=summary["status"],
@@ -1563,7 +1855,86 @@ def run_closed_loop(
         return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
 
 
+class RunEngine:
+    """Single composition boundary for dry-run, live, and live-batch runs."""
+
+    def __init__(self, dependencies: RunDependencies | None = None) -> None:
+        self.dependencies = dependencies or RunDependencies()
+
+    def _run_candidate(self, **kwargs: Any) -> dict[str, Any]:
+        """Execute one candidate through the same stage machine in every mode."""
+        return run_closed_loop(
+            **kwargs,
+            live_executor=self.dependencies.live_executor,
+            live_adapter=self.dependencies.live_adapter,
+            live_evidence_collector=self.dependencies.live_evidence_collector,
+            live_preflight=self.dependencies.live_preflight,
+            oracle_registry=self.dependencies.oracle_registry,
+        )
+
+    def run_candidate(self, request: RunRequest) -> dict[str, Any]:
+        """Run one planned candidate for internal reproduction controllers."""
+        return self._run_candidate(
+            profile_path=request.profile_path,
+            output_root=request.output_root,
+            mode=request.mode,
+            seed=request.seed,
+            resume=request.resume,
+            knowledge_root=request.knowledge_root,
+            approve_live=request.approve_live,
+            candidate_id=request.candidate_id,
+            defense_history_root=request.defense_history_root,
+            knowledge_write_root=request.knowledge_write_root,
+            advisory_provider=request.advisory_provider,
+            policy_hypothesis=request.policy_hypothesis,
+            registry_shadow=request.registry_shadow,
+            kube_context=request.kube_context,
+        )
+
+    def run(self, request: RunRequest) -> dict[str, Any]:
+        if request.mode == "live":
+            from chaosatlas.orchestration.batch import run_live_batch
+
+            candidate_ids = [request.candidate_id] if request.candidate_id else None
+            max_candidates = request.max_candidates
+            if not request.all_candidates and max_candidates is None:
+                max_candidates = 1
+            return run_live_batch(
+                profile_path=request.profile_path,
+                output_root=request.output_root,
+                candidate_ids=candidate_ids,
+                max_candidates=max_candidates,
+                approve_live=request.approve_live,
+                kube_context=request.kube_context,
+                resume=request.resume,
+                policy_mode=request.policy_mode,
+                policy_state_path=request.policy_state_path,
+                policy_context=request.policy_context,
+                policy_budget=request.policy_budget,
+                knowledge_root=request.knowledge_root,
+                knowledge_write_root=request.knowledge_write_root,
+                seed=request.seed,
+                oracle_registry=self.dependencies.oracle_registry,
+                live_executor=self.dependencies.live_executor,
+                live_adapter=self.dependencies.live_adapter,
+                live_evidence_collector=self.dependencies.live_evidence_collector,
+                live_preflight=self.dependencies.live_preflight,
+                candidate_runner=self._run_candidate,
+                advisory_provider=request.advisory_provider,
+                defense_history_root=request.defense_history_root,
+                registry_shadow=request.registry_shadow,
+            )
+        return self.run_candidate(request)
+
+
 def main(argv: list[str] | None = None) -> int:
+    """Compatibility entry point; the packaged CLI owns all argument routing."""
+    from chaosatlas.cli import main as cli_main
+
+    return cli_main(argv)
+
+    # Retained below temporarily as unreachable parser source for downstream
+    # patch compatibility; all supported invocations return through cli_main.
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
     run = subparsers.add_parser("run")
@@ -1588,7 +1959,7 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--policy-mode", choices=("legacy", "observe", "shadow", "guarded", "default"), default="legacy")
     run.add_argument("--policy-state", type=Path, help="policy state JSON for bounded batch selection")
     run.add_argument("--policy-context", type=Path, help="read-only policy context JSON for bounded batch selection")
-    run.add_argument("--policy-budget", type=int, default=1, help="number of policy-selected candidates")
+    run.add_argument("--policy-budget", type=int, default=20, help="number of policy-selected candidates")
     improve = subparsers.add_parser("improve", help="run a guarded deployment improvement retest")
     improve.add_argument("--profile", type=Path, required=True)
     improve.add_argument("--source-root", type=Path, required=True)
@@ -1621,7 +1992,7 @@ def main(argv: list[str] | None = None) -> int:
                 print(json.dumps({"status": "blocked_missing_advisory_provider", "reason": str(exc)}, ensure_ascii=True))
                 return 2
         if args.mode == "live" and (args.all_candidates or args.max_candidates is not None):
-            from tools.chaosatlas_batch import run_live_batch
+            from chaosatlas.orchestration.batch import run_live_batch
             policy_context = None
             if args.policy_context:
                 try:

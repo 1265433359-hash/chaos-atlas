@@ -79,6 +79,12 @@ class OfflineProjectAdapter:
         if str(inventory.get("project_id") or "").casefold() != str(self._facts().get("project_id") or "").casefold():
             return {"status": "method_invalid", "errors": ["inventory/facts project_id mismatch"], "candidates": []}
         facts = self._facts()
+        supported_faults = facts.get("supported_fault_families")
+        fault_families = (
+            [str(item) for item in supported_faults if str(item).strip()]
+            if isinstance(supported_faults, list)
+            else list(implemented_fault_families())
+        )
         source_pool: dict[str, Any] = {"status": "not_available"}
         manifest_root = facts.get("manifest_root")
         if manifest_root:
@@ -107,7 +113,7 @@ class OfflineProjectAdapter:
                 "namespace": inventory.get("namespace"),
                 "selector": selector,
                 "desired_replicas": int(item.get("desired_replicas") or 0),
-                "fault_families": list(implemented_fault_families()),
+                "fault_families": list(fault_families),
                 "recovery_contract": {
                     "replacement_identity_required": True,
                     "ready_required": True,
@@ -209,6 +215,11 @@ class KnowledgeProvider:
                         "test_node": value.get("test_node"),
                         "hypothesis": value.get("hypothesis"),
                         "root_cause": value.get("root_cause"),
+                        "weakness_status": value.get("weakness_status"),
+                        "applicability_conditions": value.get("applicability_conditions") or [],
+                        "exclusion_conditions": value.get("exclusion_conditions") or [],
+                        "closed_boundary": value.get("closed_boundary") is True,
+                        "valid_reproductions": value.get("valid_reproductions", 0),
                         "next_evidence": value.get("next_evidence") or [],
                     })
         return {

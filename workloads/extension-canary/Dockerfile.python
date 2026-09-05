@@ -1,0 +1,8 @@
+FROM python:3.12-alpine
+COPY python_server.py /opt/chaosatlas/python_server.py
+COPY queue-extension-capability /opt/chaosatlas/queue-extension-capability
+COPY pool-extension-capability /opt/chaosatlas/pool-extension-capability
+COPY pause-extension-capability /opt/chaosatlas/pause-extension-capability
+USER 65532
+EXPOSE 8080
+CMD ["python", "/opt/chaosatlas/python_server.py"]

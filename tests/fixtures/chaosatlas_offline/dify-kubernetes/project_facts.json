@@ -1,0 +1,37 @@
+{
+  "schema_version": "chaosatlas-offline-facts-v1",
+  "project_id": "dify-kubernetes",
+  "project_commit": "dify-k8s-minikube-20260901",
+  "namespace": "dify-k8s-lab",
+  "supported_fault_families": ["pod_kill", "container_kill"],
+  "services": [
+    "dify-k8s",
+    "dify-k8s-agent-backend",
+    "dify-k8s-api",
+    "dify-k8s-beat",
+    "dify-k8s-local-sandbox",
+    "dify-k8s-plugin-daemon",
+    "dify-k8s-sandbox",
+    "dify-k8s-ssrf-proxy",
+    "dify-k8s-web",
+    "dify-k8s-worker"
+  ],
+  "deployments": [
+    {"name": "dify-k8s-agent-backend", "selector": {"component": "agent-backend"}, "desired_replicas": 1},
+    {"name": "dify-k8s-api", "selector": {"component": "api"}, "desired_replicas": 1},
+    {"name": "dify-k8s-beat", "selector": {"component": "beat"}, "desired_replicas": 1},
+    {"name": "dify-k8s-local-sandbox", "selector": {"component": "local-sandbox"}, "desired_replicas": 1},
+    {"name": "dify-k8s-plugin-daemon", "selector": {"component": "plugin-daemon"}, "desired_replicas": 1},
+    {"name": "dify-k8s-proxy", "selector": {"component": "proxy"}, "desired_replicas": 1},
+    {"name": "dify-k8s-sandbox", "selector": {"component": "sandbox"}, "desired_replicas": 1},
+    {"name": "dify-k8s-ssrf-proxy", "selector": {"component": "ssrf-proxy"}, "desired_replicas": 1},
+    {"name": "dify-k8s-web", "selector": {"component": "web"}, "desired_replicas": 1},
+    {"name": "dify-k8s-worker", "selector": {"component": "worker"}, "desired_replicas": 1}
+  ],
+  "dependencies": [
+    {"source": "dify-k8s", "target": "dify-k8s-proxy", "relation": "http"},
+    {"source": "dify-k8s-api", "target": "dify-k8s-worker", "relation": "queue"},
+    {"source": "dify-k8s-api", "target": "dify-k8s-redis-master", "relation": "redis"},
+    {"source": "dify-k8s-api", "target": "dify-k8s-postgresql", "relation": "database"}
+  ]
+}

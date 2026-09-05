@@ -2,7 +2,7 @@ import base64
 
 from tools.compile_scenario_node import compile_scenario
 from tools.deployment_capability import build_deployment_node
-from tools._legacy_chaosatlas import _live_scenario
+from chaosatlas.orchestration.engine import _live_scenario
 
 
 def _scenario(fault_family: str, parameters: dict):

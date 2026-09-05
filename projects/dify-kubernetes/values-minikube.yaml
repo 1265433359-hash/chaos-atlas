@@ -1,0 +1,87 @@
+# Disposable, test-only Dify deployment for the chaosatlas-dify Minikube cluster.
+# Secrets are injected at install time with Helm --set-string and are intentionally
+# not stored in this file.
+
+global:
+  edition: SELF_HOSTED
+
+image:
+  api:
+    tag: "1.17.0"
+    pullPolicy: IfNotPresent
+  web:
+    tag: "1.17.0"
+    pullPolicy: IfNotPresent
+  sandbox:
+    tag: "0.2.15"
+    pullPolicy: IfNotPresent
+  pluginDaemon:
+    tag: "0.6.10-local"
+    pullPolicy: IfNotPresent
+  agentBackend:
+    tag: "1.17.0"
+    pullPolicy: IfNotPresent
+  localSandbox:
+    tag: "1.17.0"
+    pullPolicy: IfNotPresent
+  proxy:
+    tag: latest
+    pullPolicy: IfNotPresent
+  ssrfProxy:
+    tag: latest
+    pullPolicy: IfNotPresent
+
+api:
+  persistence:
+    persistentVolumeClaim:
+      accessModes: ReadWriteOnce
+      size: 2Gi
+
+pluginDaemon:
+  persistence:
+    persistentVolumeClaim:
+      accessModes: ReadWriteOnce
+      size: 2Gi
+
+ssrfProxy:
+  enabled: true
+
+apiWebsocket:
+  enabled: false
+
+agentBackend:
+  extraEnv:
+    # Required by Dify 1.17.0 Agent Stub file/config transfer validation.
+    - name: DIFY_AGENT_SANDBOX_FILES_BASE_URL
+      value: http://dify-k8s-api:5001
+
+postgresql:
+  architecture: standalone
+  primary:
+    persistence:
+      accessModes:
+        - ReadWriteOnce
+      size: 4Gi
+
+redis:
+  architecture: standalone
+  sentinel:
+    enabled: false
+  master:
+    persistence:
+      accessModes:
+        - ReadWriteOnce
+      size: 1Gi
+
+weaviate:
+  image:
+    registry: docker.io
+    repo: semitechnologies/weaviate
+    tag: "1.27.0"
+    pullPolicy: IfNotPresent
+  replicas: 1
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30080

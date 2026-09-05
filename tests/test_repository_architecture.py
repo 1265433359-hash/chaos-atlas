@@ -22,6 +22,27 @@ def test_inventory_classifies_product_and_evidence(tmp_path):
     assert inventory["summary"]["files"] == 2
 
 
+def test_inventory_skips_external_state_leaks_and_dependencies(tmp_path):
+    from scripts.repository_inventory import build_inventory
+
+    retained = tmp_path / "src" / "chaosatlas" / "core.py"
+    retained.parent.mkdir(parents=True)
+    retained.write_text("x", encoding="utf-8")
+    for relative in (
+        ".runs/run/result.json",
+        ".email-notify-outbox/pending/message.json",
+        "environment-reports/raw/.env",
+        "projects/chaosatlas-apps/medusa/node_modules/pkg/index.js",
+    ):
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True)
+        path.write_text("generated", encoding="utf-8")
+
+    inventory = build_inventory(tmp_path)
+
+    assert [entry["path"] for entry in inventory["files"]] == ["src/chaosatlas/core.py"]
+
+
 def test_migration_manifest_rejects_sensitive_files(tmp_path):
     from scripts.migration_manifest import build_manifest
 
@@ -40,30 +61,22 @@ def test_migration_manifest_rejects_sensitive_files(tmp_path):
         build_manifest(inventory)
 
 
-def test_cli_defaults_to_dry_run_and_fails_closed_without_facts(monkeypatch, tmp_path, capsys):
+def test_cli_defaults_to_dry_run_and_fails_closed_without_facts(tmp_path, capsys):
     from chaosatlas import cli
 
     profile = tmp_path / "profile.json"
     profile.write_text(json.dumps({"project_id": "demo"}), encoding="utf-8")
-    monkeypatch.setattr(
-        cli,
-        "_run_legacy",
-        lambda argv: (_ for _ in ()).throw(AssertionError("legacy execution")),
-    )
-
     result = cli.main(["run", "--profile", str(profile), "--evidence-root", str(tmp_path / "evidence")])
 
     assert result == 1
     assert "method_invalid" in capsys.readouterr().out
 
 
-def test_cli_live_is_rejected_before_legacy_dispatch(monkeypatch, tmp_path, capsys):
+def test_cli_live_is_rejected_before_engine_dispatch(tmp_path, capsys):
     from chaosatlas import cli
 
     profile = tmp_path / "profile.json"
     profile.write_text(json.dumps({"project_id": "demo"}), encoding="utf-8")
-    monkeypatch.setattr(cli, "_run_legacy", lambda argv: (_ for _ in ()).throw(AssertionError("legacy execution")))
-
     assert cli.main(["run", "--profile", str(profile), "--mode", "live", "--evidence-root", "runs/demo"]) == 2
     assert "approve-live" in capsys.readouterr().err
 
@@ -109,16 +122,11 @@ def test_acceptance_can_target_an_explicit_product_root(tmp_path):
     assert resolve_product_root(tmp_path, str(product_root)) == product_root.resolve()
 
 
-def test_live_legacy_path_resolves_inside_product_repository(monkeypatch, tmp_path):
+def test_cli_uses_packaged_run_engine():
     from chaosatlas import cli
+    from chaosatlas.orchestration.engine import RunEngine
 
-    product_root = tmp_path / "product"
-    tool = product_root / "tools" / "chaosatlas.py"
-    tool.parent.mkdir(parents=True)
-    tool.write_text("# compatibility entry\n", encoding="utf-8")
-    monkeypatch.setattr(cli, "__file__", str(product_root / "src" / "chaosatlas" / "cli.py"))
-
-    assert cli._legacy_tool_path() == tool
+    assert cli.RunEngine is RunEngine
 
 
 def test_product_snapshot_excludes_python_caches_and_generated_metadata(tmp_path):
@@ -167,7 +175,7 @@ def test_product_snapshot_compatibility_wrapper_imports_package(tmp_path):
     assert "usage:" in completed.stdout
 
 
-def test_product_snapshot_keeps_minimal_legacy_runtime_delegate(tmp_path):
+def test_product_snapshot_uses_packaged_run_engine_without_legacy_delegate(tmp_path):
     from scripts.build_product_snapshot import build_snapshot
 
     source = tmp_path / "source"
@@ -175,10 +183,15 @@ def test_product_snapshot_keeps_minimal_legacy_runtime_delegate(tmp_path):
     package.mkdir(parents=True)
     (package / "__init__.py").write_text("", encoding="utf-8")
     (package / "cli.py").write_text("def main(argv=None): return 0\n", encoding="utf-8")
+    orchestration = package / "orchestration"
+    orchestration.mkdir()
+    (orchestration / "__init__.py").write_text("", encoding="utf-8")
+    (orchestration / "engine.py").write_text("class RunEngine: pass\n", encoding="utf-8")
     (source / "tools").mkdir()
-    (source / "tools" / "chaosatlas.py").write_text("legacy", encoding="utf-8")
+    (source / "tools" / "chaosatlas.py").write_text("compatibility wrapper", encoding="utf-8")
 
     destination = tmp_path / "snapshot"
     build_snapshot(source, destination)
 
-    assert (destination / "tools" / "_legacy_chaosatlas.py").read_text(encoding="utf-8") == "legacy"
+    assert (destination / "src" / "chaosatlas" / "orchestration" / "engine.py").is_file()
+    assert not (destination / "tools" / "_legacy_chaosatlas.py").exists()

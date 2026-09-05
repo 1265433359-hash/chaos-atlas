@@ -8,7 +8,7 @@ import hashlib
 import json
 from typing import Any, Callable
 
-from tools.fault_executor import validate_attestation
+from tools.fault_executor import observation_verdict, validate_attestation
 from tools.run_chaos_experiment import run_kubectl
 
 
@@ -106,7 +106,11 @@ def build_mutation(fault_family: str, snapshot: dict[str, Any], parameters: dict
                 raise ValueError("config drift value must be non-empty")
             key = "chaosatlas.dev/config-drift"
         changed = {**annotations, key: value}
-        restore = annotations if annotations else None
+        # Merge patches do not remove keys omitted from an object. Explicitly
+        # send null for a test annotation that was absent in the snapshot.
+        restore = dict(annotations)
+        if key not in annotations:
+            restore[key] = None
         return {
             "fault_family": family,
             "snapshot": snapshot_copy,
@@ -219,7 +223,9 @@ class KubernetesApiFaultExecutor:
             return self.runner(args, timeout=timeout)
 
     def _get(self, kind: str, name: str) -> tuple[dict[str, Any] | None, str | None]:
-        resource = "secret" if kind.lower() == "secret" else "deployment"
+        resource = {"secret": "secret", "deployment": "deployment", "statefulset": "statefulset", "daemonset": "daemonset"}.get(kind.lower())
+        if resource is None:
+            return None, f"unsupported Kubernetes target kind: {kind}"
         code, stdout, stderr = self._run(["get", resource, name, "-n", self.namespace, "-o", "json"])
         if code != 0:
             return None, (stderr or stdout).strip() or f"kubectl exit {code}"
@@ -230,7 +236,9 @@ class KubernetesApiFaultExecutor:
         return value if isinstance(value, dict) else None, None
 
     def _patch(self, kind: str, name: str, patch: dict[str, Any]) -> tuple[int, str, str]:
-        resource = "secret" if kind.lower() == "secret" else "deployment"
+        resource = {"secret": "secret", "deployment": "deployment", "statefulset": "statefulset", "daemonset": "daemonset"}.get(kind.lower())
+        if resource is None:
+            return 1, "", f"unsupported Kubernetes target kind: {kind}"
         return self._run(["patch", resource, name, "-n", self.namespace, "--type=merge", "-p", json.dumps(patch, separators=(",", ":"))])
 
     def run(self, manifest: dict[str, Any], *, action_id: str = "kubernetes-api-fault", fault: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -259,8 +267,8 @@ class KubernetesApiFaultExecutor:
             return {**base, "status": "method_invalid", "errors": ["business probe is required"]}
         if family == "secret_rotation" and target_kind != "Secret":
             return {**base, "status": "method_invalid", "errors": ["secret_rotation targetRef.kind must be Secret"]}
-        if family != "secret_rotation" and target_kind != "Deployment":
-            return {**base, "status": "method_invalid", "errors": ["Kubernetes deployment fault targetRef.kind must be Deployment"]}
+        if family != "secret_rotation" and target_kind not in {"Deployment", "StatefulSet", "DaemonSet"}:
+            return {**base, "status": "method_invalid", "errors": ["Kubernetes fault targetRef.kind must be Deployment, StatefulSet or DaemonSet"]}
         snapshot, error = self._get(target_kind, name)
         if snapshot is None:
             return {**base, "status": "environment_blocked", "errors": [error or "deployment snapshot unavailable"]}
@@ -270,7 +278,7 @@ class KubernetesApiFaultExecutor:
             return {**base, "status": "method_invalid", "errors": [str(exc)]}
         result = {
             **base,
-            "target": {"kind": "Deployment", "name": name, "namespace": namespace},
+            "target": {"kind": target_kind, "name": name, "namespace": namespace},
             "snapshot_sha256": mutation["snapshot_sha256"],
             "baseline": None,
             "injection": {"applied": False, "confirmed": False},
@@ -337,7 +345,7 @@ class KubernetesApiFaultExecutor:
         comparison_eligible = all((baseline_ok, injection_ok, observation_ok, recovery_ok, cleanup_ok)) and bool(observation.get("samples"))
         attestation = validate_attestation({"baseline": baseline_ok, "injection": injection_ok, "observation": observation_ok, "recovery": recovery_ok, "cleanup": cleanup_ok, "independent_oracle": baseline_ok and observation_ok, "comparison_eligible": comparison_eligible})
         result["attestation"] = {"schema_version": "chaosatlas-runtime-result-v1", "valid": attestation.valid, "missing": list(attestation.missing), "comparison_eligible": comparison_eligible, "baseline": baseline_ok, "injection": injection_ok, "observation": observation_ok, "recovery": recovery_ok, "cleanup": cleanup_ok, "independent_oracle": baseline_ok and observation_ok}
-        result.update({"injection_confirmed": injection_ok, "injected_count": 1 if injection_ok else 0, "recovery_confirmed": recovery_ok, "cleanup_confirmed": cleanup_ok, "promotion_allowed": attestation.valid, "verdict": "observation_pending" if result.get("status") == "executed" else result.get("status")})
+        result.update({"injection_confirmed": injection_ok, "injected_count": 1 if injection_ok else 0, "recovery_confirmed": recovery_ok, "cleanup_confirmed": cleanup_ok, "promotion_allowed": attestation.valid, "verdict": observation_verdict(observation, result.get("status"), result.get("outcome_status"))})
         return result
 
     def __call__(self, manifest: dict[str, Any], phase: dict[str, Any] | None = None, fault: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -409,7 +417,7 @@ class ControlPlaneDelayExecutor:
             "cleanup_confirmed": cleanup_ok,
             "promotion_allowed": attestation.valid,
             "outcome_status": "observed" if observation.get("status") == "pass" else str(observation.get("status") or result.get("status")),
-            "verdict": "observation_pending" if result.get("status") == "executed" else result.get("status"),
+            "verdict": observation_verdict(result.get("observation"), result.get("status"), result.get("outcome_status")),
         })
         return result
 

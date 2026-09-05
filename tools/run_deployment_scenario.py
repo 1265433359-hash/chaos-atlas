@@ -11,9 +11,11 @@ from typing import Any, Callable
 try:
     from tools.compile_scenario_node import compile_scenario
     from tools.deployment_capability import validate_scenario_node
+    from tools.fault_executor import observation_verdict
 except ModuleNotFoundError:
     from compile_scenario_node import compile_scenario
     from deployment_capability import validate_scenario_node
+    from fault_executor import observation_verdict
 
 
 Executor = Callable[[dict[str, Any], dict[str, Any], dict[str, Any]], dict[str, Any]]
@@ -51,7 +53,11 @@ def run_scenario(
                     response = {"status": "environment_blocked", "error": error, "errors": [error]}
                 if not isinstance(response, dict):
                     response = {"status": "method_invalid", "error": "executor returned non-object"}
-                record.update({"status": response.get("status", "ok"), "error": response.get("error"), "errors": list(response.get("errors") or ([response.get("error")] if response.get("error") else [])), "action_id": response.get("action_id"), "mutation_ref": response.get("mutation_ref"), "resource_uid": response.get("resource_uid"), "injected_count": int(response.get("injected_count", 0) or 0), "injection_confirmed": bool(response.get("injection_confirmed") or int(response.get("injected_count", 0) or 0) >= 1), "cleanup_confirmed": bool(response.get("cleanup_confirmed")), "verdict": response.get("verdict") or response.get("oracle_verdict"), "raw_status": response.get("raw_status"), "outcome_status": response.get("outcome_status"), "observation_contract": response.get("observation_contract"), "baseline": response.get("baseline"), "observation": response.get("observation"), "recovery": response.get("recovery"), "cleanup": response.get("cleanup"), "attestation": response.get("attestation"), "mechanism_evidence": response.get("mechanism_evidence")})
+                response_status = response.get("status", "ok")
+                response_verdict = response.get("verdict") or response.get("oracle_verdict")
+                if response_verdict in {None, "observation_pending"}:
+                    response_verdict = observation_verdict(response.get("observation"), response_status, response.get("outcome_status"))
+                record.update({"status": response_status, "error": response.get("error"), "errors": list(response.get("errors") or ([response.get("error")] if response.get("error") else [])), "action_id": response.get("action_id"), "mutation_ref": response.get("mutation_ref"), "resource_uid": response.get("resource_uid"), "injected_count": int(response.get("injected_count", 0) or 0), "injection_confirmed": bool(response.get("injection_confirmed") or int(response.get("injected_count", 0) or 0) >= 1), "cleanup_confirmed": bool(response.get("cleanup_confirmed")), "verdict": response_verdict, "raw_status": response.get("raw_status"), "outcome_status": response.get("outcome_status"), "observation_contract": response.get("observation_contract"), "baseline": response.get("baseline"), "observation": response.get("observation"), "recovery": response.get("recovery"), "cleanup": response.get("cleanup"), "attestation": response.get("attestation"), "mechanism_evidence": response.get("mechanism_evidence")})
             fault_results.append(record)
         if not dry_run and any(item.get("status") in {"environment_blocked", "apply_failed", "method_invalid"} for item in fault_results):
             status = next(item["status"] for item in fault_results if item.get("status") in {"environment_blocked", "apply_failed", "method_invalid"})

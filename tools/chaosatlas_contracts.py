@@ -32,7 +32,7 @@ STAGES = (
 )
 _STAGE_SET = set(STAGES)
 _STATUSES = {"completed", "failed", "blocked", "skipped", "not_run"}
-_CLAIM_SCOPES = {"static", "synthetic", "advisory", "runtime", "none"}
+_CLAIM_SCOPES = {"static", "synthetic", "planned", "advisory", "runtime", "none"}
 
 
 def _canonical(value: Any) -> str:

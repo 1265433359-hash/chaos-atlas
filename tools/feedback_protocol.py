@@ -12,6 +12,8 @@ import json
 from datetime import datetime, timezone
 from typing import Any, Iterable
 
+from tools.reproduction_policy import MIN_STABLE_REPRODUCTIONS
+
 
 CLASSIFICATIONS = {
     "confirmed_weakness",
@@ -157,9 +159,9 @@ def classify_outcome(result: dict[str, Any]) -> str:
     evidence = result.get("evidence") or {}
     availability_label = result.get("availability_label") or result.get("oracle_label")
     evidence_complete = all(_truthy(evidence, key) for key in REQUIRED_AVAILABILITY_EVIDENCE)
-    if availability_label in {"availability_degraded", "recovery_timeout", "probe_restart_escape", "no_readiness_false_recovery"} and evidence_complete and int(result.get("valid_reproductions", 0)) >= 2:
+    if availability_label in {"availability_degraded", "recovery_timeout", "probe_restart_escape", "no_readiness_false_recovery"} and evidence_complete and int(result.get("valid_reproductions", 0)) >= MIN_STABLE_REPRODUCTIONS:
         return "confirmed_weakness"
-    if result.get("oracle_label") == "weakness" and all(_truthy(evidence, key) for key in REQUIRED_WEAKNESS_EVIDENCE) and int(result.get("valid_reproductions", 0)) >= 2:
+    if result.get("oracle_label") == "weakness" and all(_truthy(evidence, key) for key in REQUIRED_WEAKNESS_EVIDENCE) and int(result.get("valid_reproductions", 0)) >= MIN_STABLE_REPRODUCTIONS:
         return "confirmed_weakness"
     defense_claim_type = str(result.get("defense_claim_type") or "")
     defense_complete = (

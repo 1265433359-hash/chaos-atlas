@@ -21,7 +21,8 @@ vendor/         external source copies, never product source
 
 | Current path | Lifecycle class | GitHub policy |
 | --- | --- | --- |
-| `tools/` and `tools/tests/` | Product source and regression tests | Track |
+| `tools/` | Compatibility modules and implementation helpers | Track |
+| `tests/` | Product contract and regression tests | Track |
 | `docs/` | Product and research documentation | Track when reviewed |
 | `reporting/` | Human-review material and issue drafts | Track selected reviewed reports |
 | `governance/` | Repository and data policy | Track |
@@ -31,20 +32,28 @@ vendor/         external source copies, never product source
 | `artifacts/experiments/*/sources/` | External upstream source | Keep local or archive externally |
 | `.tmp-*`, `.pytest-tmp-*`, `.venv-*` | Local execution state | Ignore |
 | `.email-notify-outbox/`, `.planning/`, `.secrets/` | Local state or credentials | Ignore |
+| `%LOCALAPPDATA%/ChaosAtlas/runs/` | Default unreviewed runtime output | Keep outside the repository |
+| `%LOCALAPPDATA%/ChaosAtlas/archive/` | Local cleanup archives with manifests | Keep outside the repository |
 
 ## Mainline Entry Points
 
-- `tools/chaosatlas.py`: offline and live closed-loop CLI.
-- `tools/run_closed_loop.py`: single-run lifecycle orchestration.
-- `tools/chaosatlas_batch.py`: guarded/legacy/shadow batch execution.
+- `src/chaosatlas/cli.py`: the supported dry-run and live CLI.
+- `src/chaosatlas/orchestration/engine.py`: the single `RunEngine` composition boundary and candidate lifecycle.
+- `src/chaosatlas/orchestration/batch.py`: the shared bounded candidate loop used by both single-candidate and batch live requests.
+- `src/chaosatlas/oracles/`: the `WorkflowOracle` contract and registry for HTTP, gRPC, Dify, and project extensions.
+- `tools/chaosatlas.py`, `tools/run_closed_loop.py`, and `tools/chaosatlas_batch.py`: compatibility CLI wrappers only; they delegate to the packaged CLI.
 - `tools/kubernetes_project_adapter.py`: read-only project inventory and dependency portrait.
 - `tools/experiment_policy.py` and `tools/stop_policy.py`: candidate selection and stopping.
 - `tools/knowledge_updater.py` and `tools/weakness_promotion_stage.py`: knowledge feedback and promotion gates.
-- `tools/tests/`: deterministic contract and regression coverage.
+- `tests/`: deterministic contract and regression coverage.
 
 ## Evidence Rule
 
 Every retained runtime result should have a project, run identity, source/provenance hash, lifecycle status, cleanup status, and review status. A file that is merely a local rehearsal, cache, duplicate, or failed temporary attempt belongs outside the mainline snapshot even when it remains on disk.
+
+New commands obtain external defaults from `src/chaosatlas/workspace.py`.
+`CHAOSATLAS_STATE_ROOT` is the only supported override for the state root.
+Run `scripts/check_workspace_hygiene.py` to detect local-state regressions.
 
 ## Migration Rule
 

@@ -20,6 +20,7 @@ if __package__ in (None, ""):
 
 from tools.compile_rca_regression import compile_regression_intents
 from tools.rca_loop import _contains_sensitive_value, evaluate_knowledge_promotion
+from tools.reproduction_policy import MIN_STABLE_REPRODUCTIONS, STABLE_REPRODUCTION_STOP_RULE
 
 
 REQUIRED_RUN_ARTIFACTS = (
@@ -294,19 +295,19 @@ def record_promotion_conflict(
 def promote_from_history(
     *, history_root: Path, output_root: Path, knowledge_write_root: Path | None = None
 ) -> dict[str, Any]:
-    """Promote two independent, same-identity weakness runs to local reuse."""
+    """Promote three independent, same-identity weakness runs to local reuse."""
 
     selection = select_history_children(Path(history_root))
     selected = list(selection["selected"])
     rejected = list(selection["rejected"])
     output_root = Path(output_root)
     output_root.mkdir(parents=True, exist_ok=True)
-    if len(selected) < 2:
+    if len(selected) < MIN_STABLE_REPRODUCTIONS:
         payload = _stage_payload(
             status="not_run",
             selected=selected,
             rejected=rejected,
-            reason="fewer_than_two_complete_runs",
+            reason="fewer_than_three_complete_runs",
         )
         _write_json(output_root / "knowledge_promotion.json", payload)
         return payload
@@ -372,7 +373,7 @@ def promote_from_history(
             "counter_evidence": [],
             "promotion_audit": promotion,
             "next_evidence": sorted({item for run in runs for item in run["next_evidence"]}) or ["repeat_business_oracle", "verify_recovery_after_fault_removal"],
-            "stop_rule": "stop after two valid reproductions or one clean falsification",
+            "stop_rule": STABLE_REPRODUCTION_STOP_RULE,
             "regression_recipe": {"oracle": first["symptom"].get("oracle") or "project business oracle", "selected_next_action": None},
         }
         snapshot = {"card": card, "run_ids": [run["run_id"] for run in runs]}

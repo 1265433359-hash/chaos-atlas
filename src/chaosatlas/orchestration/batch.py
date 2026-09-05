@@ -11,7 +11,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable
 
-from tools._legacy_chaosatlas import _runtime_oracle, run_closed_loop
+from chaosatlas.orchestration.engine import _runtime_oracle
+from chaosatlas.oracles import DEFAULT_ORACLE_REGISTRY, OracleRegistry
 from tools.experiment_policy import new_policy_state
 from tools.experiment_policy_feedback import ingest_runtime_result, write_policy_state
 from tools.kubernetes_project_adapter import KubernetesProjectAdapter
@@ -21,6 +22,7 @@ from tools.weakness_promotion_stage import promote_from_history
 from tools.hypothesis_registry import build_hypothesis_registry, build_project_portrait
 from tools.registry_shadow import evaluate_registry_quality
 from tools.registry_policy_signal import build_registry_policy_signal
+from tools.reproduction_policy import MIN_STABLE_REPRODUCTIONS
 
 
 def _safe_name(value: Any) -> str:
@@ -45,7 +47,7 @@ def build_batch_manifest(
     selected_candidate_ids: list[str],
     approve_live: bool,
     policy_mode: str = "legacy",
-    policy_budget: int = 1,
+    policy_budget: int = 20,
     policy_state_sha256: str | None = None,
     policy_context_sha256: str | None = None,
     seed: int = 1001,
@@ -176,33 +178,58 @@ def enrich_batch_result_from_artifacts(result: dict[str, Any], child_root: Path)
 
 
 def summarize_batch_results(results: list[dict[str, Any]], *, planned_count: int) -> dict[str, Any]:
-    """Aggregate child outcomes without upgrading blocked or dirty runs."""
+    """Aggregate child outcomes without upgrading blocked or unstable runs.
+
+    A child directory is one live trial.  Its raw classification and RCA
+    status are not enough to establish a stable finding: the same outcome
+    must have at least ``MIN_STABLE_REPRODUCTIONS`` valid, independent
+    reproductions before it is counted as confirmed.
+    """
     completed = 0
     blocked = 0
     failed = 0
     cleanup_failed = 0
     confirmed_findings = 0
     rca_confirmed = 0
+    stable_reproduction_verified = 0
+    reproduction_gate_incomplete = 0
     knowledge_promoted = 0
     for item in results:
         status = str(_child_value(item, "status", "failed"))
         cleanup_status = str(_child_value(item, "cleanup_status", ""))
         if cleanup_status == "failed":
             cleanup_failed += 1
-        if status == "environment_blocked":
+        if status in {"environment_blocked", "business_not_reachable"}:
             blocked += 1
         elif status in {"method_invalid", "failed"}:
             failed += 1
         if status == "live_completed" and cleanup_status != "failed":
             completed += 1
-        classification = str(_child_value(item, "classification", ""))
-        if (
+        valid_reproductions = _child_value(item, "valid_reproductions", 0)
+        try:
+            valid_reproductions = int(valid_reproductions or 0)
+        except (TypeError, ValueError):
+            valid_reproductions = 0
+        if valid_reproductions >= MIN_STABLE_REPRODUCTIONS:
+            stable_reproduction_verified += 1
+        output_root = _child_value(item, "output")
+        child_root = Path(output_root) if isinstance(output_root, str) and output_root else None
+        feedback = normalize_runtime_feedback(item, child_root)
+        normalized_classification = str(feedback.get("classification") or "")
+        stable_finding = (
+            feedback.get("eligible") is True
+            and normalized_classification == "confirmed_weakness"
+        )
+        if stable_finding:
+            confirmed_findings += 1
+        elif (
             status == "live_completed"
             and cleanup_status != "failed"
-            and classification in {"availability_degraded", "functional_degraded", "data_integrity_risk"}
+            and str(_child_value(item, "classification", "")) in {"availability_degraded", "functional_degraded", "data_integrity_risk", "confirmed_weakness"}
+            and valid_reproductions < MIN_STABLE_REPRODUCTIONS
         ):
-            confirmed_findings += 1
-        if str(_child_value(item, "rca_status", "")) == "confirmed":
+            reproduction_gate_incomplete += 1
+        if stable_finding and str(feedback.get("rca_status") or "") == "confirmed":
             rca_confirmed += 1
         if str(_child_value(item, "knowledge_status", "")) == "promoted":
             knowledge_promoted += 1
@@ -227,6 +254,9 @@ def summarize_batch_results(results: list[dict[str, Any]], *, planned_count: int
         "cleanup_failed_count": cleanup_failed,
         "confirmed_finding_count": confirmed_findings,
         "rca_confirmed_count": rca_confirmed,
+        "stable_reproduction_required": MIN_STABLE_REPRODUCTIONS,
+        "stable_reproduction_verified_count": stable_reproduction_verified,
+        "reproduction_gate_incomplete_count": reproduction_gate_incomplete,
         "knowledge_promoted_count": knowledge_promoted,
         "results": results,
     }
@@ -309,16 +339,33 @@ def _adapter_inventory(adapter: Any, profile: dict[str, Any]) -> dict[str, Any]:
     return method(profile) if required else method()
 
 
-def build_live_batch_plan(*, profile: dict[str, Any], adapter: Any) -> dict[str, Any]:
-    """Discover only candidates whose target is covered by the business Oracle."""
-    oracle = _runtime_oracle(profile)
+def build_live_batch_plan(
+    *,
+    profile: dict[str, Any],
+    adapter: Any,
+    oracle_registry: OracleRegistry = DEFAULT_ORACLE_REGISTRY,
+) -> dict[str, Any]:
+    """Discover candidates covered by the configured business Oracle.
+
+    A service oracle covers its matching deployment.  A business-path oracle,
+    such as Dify Chatflow through the proxy, covers all discovered workloads;
+    the business result then tells policy whether the disrupted workload was
+    actually on the path.
+    """
+    oracle = _runtime_oracle(profile, oracle_registry=oracle_registry)
     inventory = _adapter_inventory(adapter, profile)
     detection = adapter.detect_server_deployment(inventory)
     candidate_space = adapter.map_test_nodes(detection)
+    candidate_scope = str(oracle.get("candidate_scope") or "service")
     candidates = [
         dict(item)
         for item in candidate_space.get("candidates") or []
-        if isinstance(item, dict) and str(item.get("target")) == oracle["service"]
+        if isinstance(item, dict)
+        and (
+            candidate_scope == "business_path"
+            or str(item.get("target")) == oracle["service"]
+            or str(item.get("service_target")) == oracle["service"]
+        )
     ]
     portrait = build_project_portrait(inventory, detection, candidate_space, cards=[])
     registry = build_hypothesis_registry(inventory, detection, candidate_space, cards=[])
@@ -328,7 +375,13 @@ def build_live_batch_plan(*, profile: dict[str, Any], adapter: Any) -> dict[str,
         "status": "ready" if candidates and candidate_space.get("status") == "verified" else "environment_blocked",
         "project_id": inventory.get("project_id"),
         "namespace": inventory.get("namespace"),
-        "oracle": {"service": oracle["service"], "remote_port": oracle["remote_port"], "entrypoint": oracle["entrypoint"]},
+        "oracle": {
+            "kind": oracle["kind"],
+            "service": oracle["service"],
+            "remote_port": oracle["remote_port"],
+            "entrypoint": oracle["entrypoint"],
+            "candidate_scope": candidate_scope,
+        },
         "inventory_sha256": inventory.get("inventory_sha256"),
         "project_commit": inventory.get("project_commit"),
         "candidate_ids": [str(item.get("candidate_id")) for item in candidates],
@@ -377,10 +430,15 @@ def run_live_batch(
     policy_mode: str = "legacy",
     policy_state_path: Path | None = None,
     policy_context: dict[str, Any] | None = None,
-    policy_budget: int = 1,
+    policy_budget: int = 20,
     knowledge_root: Path | None = None,
     knowledge_write_root: Path | None = None,
     seed: int = 1001,
+    oracle_registry: OracleRegistry = DEFAULT_ORACLE_REGISTRY,
+    candidate_runner: Callable[..., dict[str, Any]] | None = None,
+    advisory_provider: Callable[[dict[str, Any]], Any] | None = None,
+    defense_history_root: Path | None = None,
+    registry_shadow: bool = False,
 ) -> dict[str, Any]:
     """Run each selected candidate in its own immutable child output directory."""
     profile_path = Path(profile_path)
@@ -395,7 +453,20 @@ def run_live_batch(
         raise FileExistsError(f"refusing non-empty batch output: {output_root}")
     profile = json.loads(profile_path.read_text(encoding="utf-8"))
     adapter = live_adapter or KubernetesProjectAdapter(profile=profile, kube_context=kube_context)
-    plan = build_live_batch_plan(profile=profile, adapter=adapter)
+    if candidate_runner is None:
+        from chaosatlas.orchestration.engine import RunDependencies, RunEngine
+
+        candidate_engine = RunEngine(
+            RunDependencies(
+                oracle_registry=oracle_registry,
+                live_executor=live_executor,
+                live_adapter=adapter,
+                live_evidence_collector=live_evidence_collector,
+                live_preflight=live_preflight,
+            )
+        )
+        candidate_runner = candidate_engine._run_candidate
+    plan = build_live_batch_plan(profile=profile, adapter=adapter, oracle_registry=oracle_registry)
     candidates = list(plan.get("candidates") or [])
     by_id = {str(item.get("candidate_id")): item for item in candidates}
     requested_ids = [str(item) for item in candidate_ids] if candidate_ids else [str(item.get("candidate_id")) for item in candidates]
@@ -569,18 +640,18 @@ def run_live_batch(
             if candidate_id not in results_by_id:
                 append_batch_state(batch_state_path, candidate_id=candidate_id, state="planned")
                 try:
-                    result = run_closed_loop(
+                    result = candidate_runner(
                         profile_path=profile_path,
                         output_root=child,
                         mode="live",
-                        live_executor=live_executor,
-                        live_adapter=adapter,
-                        live_evidence_collector=live_evidence_collector,
-                        live_preflight=live_preflight,
                         approve_live=approve_live,
                         candidate_id=candidate_id,
                         seed=int(seed),
                         knowledge_root=knowledge_root,
+                        defense_history_root=defense_history_root,
+                        knowledge_write_root=knowledge_write_root,
+                        advisory_provider=advisory_provider,
+                        registry_shadow=registry_shadow,
                         kube_context=kube_context,
                     )
                 except Exception as exc:
@@ -652,18 +723,18 @@ def run_live_batch(
             continue
         child = output_root / "runs" / _safe_name(candidate_id)
         try:
-            result = run_closed_loop(
+            result = candidate_runner(
                 profile_path=profile_path,
                 output_root=child,
                 mode="live",
-                live_executor=live_executor,
-                live_adapter=adapter,
-                live_evidence_collector=live_evidence_collector,
-                live_preflight=live_preflight,
                 approve_live=approve_live,
                 candidate_id=candidate_id,
                 seed=int(seed),
                 knowledge_root=knowledge_root,
+                defense_history_root=defense_history_root,
+                knowledge_write_root=knowledge_write_root,
+                advisory_provider=advisory_provider,
+                registry_shadow=registry_shadow,
                 kube_context=kube_context,
             )
         except Exception as exc:

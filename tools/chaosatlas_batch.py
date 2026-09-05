@@ -4,10 +4,8 @@ import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
 from chaosatlas.cli import main
 
-# The product snapshot keeps the historical live batch implementation under
-# ``_legacy_chaosatlas_batch.py`` during migration.  Re-export its public
-# entry point so the compatibility CLI and direct Python callers share one
-# implementation.
+# Re-export the unified package implementation for compatibility with existing
+# scripts that still import ``tools.chaosatlas_batch``.
 _LEGACY_EXPORTS = {
     "append_batch_state",
     "append_policy_record",
@@ -23,9 +21,9 @@ _LEGACY_EXPORTS = {
 def __getattr__(name):
     if name not in _LEGACY_EXPORTS:
         raise AttributeError(name)
-    from tools import _legacy_chaosatlas_batch
+    from chaosatlas.orchestration import batch
 
-    value = getattr(_legacy_chaosatlas_batch, name)
+    value = getattr(batch, name)
     globals()[name] = value
     return value
 

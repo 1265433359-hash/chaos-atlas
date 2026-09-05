@@ -1,3 +1,6 @@
+import sys
+import types
+
 import pytest
 
 from tools.chaosatlas_hypothesis import (
@@ -56,3 +59,20 @@ def test_ranked_candidates_records_knowledge_snapshot(candidate_space):
 
     assert result["knowledge_card_ids"] == ["FA-1"]
     assert result["knowledge_view_sha256"]
+
+
+def test_rank_candidates_falls_back_when_legacy_registry_is_missing(monkeypatch, candidate_space):
+    legacy_engine = types.ModuleType("tools.decision_engine")
+
+    def missing_registry(*_args, **_kwargs):
+        raise ModuleNotFoundError("No module named 'project_registry'", name="project_registry")
+
+    legacy_engine.rank = missing_registry
+    monkeypatch.setitem(sys.modules, "tools.decision_engine", legacy_engine)
+
+    result = rank_candidates(candidate_space, cards=[], rca_snapshot={"schema_version": 1})
+
+    assert result["runtime_retrieval"] is False
+    assert result["ranking_fallback"] is True
+    assert result["ranking_fallback_reason"] == "missing_legacy_dependency:project_registry"
+    assert result["candidate_count"] == 2

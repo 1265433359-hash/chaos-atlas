@@ -4,6 +4,7 @@ from tools.compile_scenario_node import compile_scenario
 from tools.deployment_capability import build_deployment_node
 from tools.kubernetes_fault_executor import KubernetesApiFaultExecutor, build_mutation
 from tools.kubernetes_lifecycle_executor import KubernetesLifecycleExecutor
+import tools.kubernetes_lifecycle_executor as lifecycle_module
 
 
 def _scenario(family, parameters):
@@ -126,6 +127,27 @@ def test_dns_read_only_capability_is_inapplicable(tmp_path):
     assert result["attestation"]["valid"] is False
 
 
+def test_dns_delay_crd_gap_requests_network_fallback(tmp_path, monkeypatch):
+    calls = []
+
+    def fake_run(args, timeout=20, kube_context=None):
+        calls.append(args)
+        return 1, "", "field delay does not exist"
+
+    monkeypatch.setattr(lifecycle_module, "run_kubectl", fake_run)
+    executor = KubernetesLifecycleExecutor(
+        root=tmp_path, namespace="lab", allowed_namespaces={"lab"}, allow_live=True,
+    )
+
+    result = executor._default_dns_capability_probe(
+        [{"name": "web-1"}], {"spec": {"action": "delay"}}
+    )
+
+    assert result["status"] == "fallback_required"
+    assert "spec.delay" in result["reason"]
+    assert calls[0][:3] == ["explain", "dnschaos.spec.delay", "--api-version=chaos-mesh.org/v1alpha1"]
+
+
 def test_dns_read_only_capability_can_use_network_fallback(tmp_path):
     applied = []
 
@@ -153,10 +175,11 @@ def test_dns_read_only_capability_can_use_network_fallback(tmp_path):
             "dns_fallback_builder": fallback,
             "apply": lambda manifest: applied.append(manifest) or {"return_code": 0},
             "wait_lifecycle": lambda *_args: (True, {"records": []}, []),
-            "probe": lambda phase, _manifest: {"status": "pass", "samples": [{"phase": phase}]},
-            "delete": lambda *_args: {"absent_confirmed": True},
-        },
-    )
+                "probe": lambda phase, _manifest: {"status": "pass", "samples": [{"phase": phase}]},
+                "delete": lambda *_args: {"absent_confirmed": True},
+                "cleanup_mesh": lambda **_kwargs: {"status": "verified", "confirmed": True},
+            },
+        )
     result = executor.run({
         "kind": "DNSChaos", "metadata": {"name": "dns-fault", "namespace": "lab"},
         "spec": {"action": "error", "selector": {"namespaces": ["lab"], "labelSelectors": {"app": "web"}}, "patterns": ["web"]},

@@ -164,6 +164,35 @@ class DeepSeekAdvisoryProvider:
         return value
 
 
+def create_deepseek_policy_provider(
+    *,
+    api_key_file: Path | None = None,
+    base_url: str = "https://api.deepseek.com/v1",
+    model: str = "deepseek-v4-flash",
+    timeout: int = 180,
+) -> Any:
+    """Create the project-agnostic policy provider over DeepSeek."""
+
+    api_key = read_deepseek_api_key(api_key_file)
+    try:
+        from tools.chaos_eater_adapter.llm_backend import OpenAICompatBackend
+        from tools.llm_policy import OpenAICompatPolicyProvider
+    except ModuleNotFoundError:
+        from chaos_eater_adapter.llm_backend import OpenAICompatBackend
+        from llm_policy import OpenAICompatPolicyProvider
+    backend = OpenAICompatBackend(
+        base_url=base_url,
+        api_key=api_key,
+        model=model,
+        timeout=timeout,
+        json_mode=True,
+        temperature=0.0,
+        max_output_tokens=2200,
+        disable_thinking=True,
+    )
+    return OpenAICompatPolicyProvider(backend)
+
+
 def create_deepseek_advisory_provider(
     *,
     api_key_file: Path | None = None,

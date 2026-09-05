@@ -22,10 +22,6 @@ import urllib.error
 import urllib.request
 from typing import Any, Protocol
 
-from chaos_eater_adapter.mapping import fault_type_of
-from chaos_eater_adapter.schemas import FAULT_TYPE_NAMES
-
-
 class LLMBackend(Protocol):
     name: str
 
@@ -151,6 +147,10 @@ class MockBackend:
         return f"mock:seed{self.seed}"
 
     def complete(self, system: str, user: str, format_instructions: str) -> tuple[str, dict[str, Any]]:
+        # Keep the OpenAI-compatible backend usable when the optional
+        # ChaosEater scenario modules are not installed.
+        from chaos_eater_adapter.mapping import fault_type_of
+
         by_type: dict[str, list[dict[str, Any]]] = {}
         for candidate in self.candidates:
             fault_type = fault_type_of(candidate)

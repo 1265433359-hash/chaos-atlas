@@ -1,7 +1,7 @@
 # 统一 RunEngine 设计
 
 日期：2026-09-04  
-状态：待实施  
+状态：已实施（HTTP live canary 已通过；Chatflow 因模型账户余额不足而阻塞）
 项目：ChaosAtlas
 
 ## 1. 目的

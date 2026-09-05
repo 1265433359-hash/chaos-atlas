@@ -28,7 +28,7 @@ def test_config_reload_changes_only_reload_annotation_and_restores_it():
     annotations = mutation["patch"]["spec"]["template"]["metadata"]["annotations"]
     restore = mutation["restore_patch"]["spec"]["template"]["metadata"]["annotations"]
     assert annotations["chaosatlas.dev/reload-token"] == "r1"
-    assert restore == {"existing": "keep"}
+    assert restore == {"existing": "keep", "chaosatlas.dev/reload-token": None}
 
 
 def test_config_drift_rejects_empty_drift_value():
@@ -50,7 +50,14 @@ def test_executor_restores_config_annotations_and_accepts_confirmed_outage_as_ev
             patch = json.loads(args[-1])
             state["spec"].update(patch.get("spec") or {})
             if "template" in (patch.get("spec") or {}):
-                state["spec"]["template"]["metadata"] = patch["spec"]["template"]["metadata"]
+                metadata = patch["spec"]["template"].get("metadata") or {}
+                annotations = dict(state["spec"]["template"]["metadata"].get("annotations") or {})
+                for key, value in (metadata.get("annotations") or {}).items():
+                    if value is None:
+                        annotations.pop(key, None)
+                    else:
+                        annotations[key] = value
+                state["spec"]["template"]["metadata"]["annotations"] = annotations
             return 0, "patched", ""
         raise AssertionError(args)
 

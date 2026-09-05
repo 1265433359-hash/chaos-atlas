@@ -1,0 +1,58 @@
+{
+  "schema_version": "chaosatlas-project-profile-v1",
+  "project_id": "dify-kubernetes-http-canary",
+  "project_commit": "dify-k8s-minikube-20260901",
+  "revision_kind": "digest",
+  "namespace_policy": {
+    "allowed_namespaces": ["dify-k8s-lab"],
+    "isolation_required": true,
+    "cluster_profile": "chaosatlas-dify"
+  },
+  "source": {
+    "manifest_roots": ["projects/dify-kubernetes", ".tmp-dify-helm-chart/dify"],
+    "source_roots": ["projects/dify-kubernetes", ".tmp-dify-helm-chart/dify"]
+  },
+  "business_oracles": [
+    {
+      "id": "dify-api-health-canary",
+      "kind": "http",
+      "service": "dify-k8s-api",
+      "remote_port": 5001,
+      "local_port": 18090,
+      "entrypoint": "/health",
+      "expected_status": 200,
+      "success_contract": "http_200",
+      "timeout_s": 10,
+      "count": 3,
+      "baseline_retry_window_s": 30,
+      "observation_window_s": 60,
+      "probe_retry_interval_s": 2
+    }
+  ],
+  "observability": {
+    "logs": {"provider": "kubectl", "required": true},
+    "events": {"provider": "kubectl", "required": true},
+    "traces": {"provider": "none", "required": false}
+  },
+  "recovery": {
+    "deadline_s": 180,
+    "require_business_probe": true,
+    "require_cleanup": true
+  },
+  "cleanup": {"owner": "chaosatlas", "must_be_empty": true},
+  "sensitive_data_policy": {
+    "redact_fields": ["password", "secret", "token", "authorization"],
+    "allow_redacted_placeholders": true
+  },
+  "runtime_contract": {
+    "backend": "kubernetes_chaos_mesh",
+    "kube_context": "chaosatlas-dify",
+    "supported_fault_families": ["pod_kill"]
+  },
+  "fault_support": {
+    "pod_kill": {
+      "status": "supported",
+      "reason": "operational lifecycle canary only; it does not replace the Chatflow business oracle"
+    }
+  }
+}

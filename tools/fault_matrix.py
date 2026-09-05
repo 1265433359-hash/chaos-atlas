@@ -7,6 +7,16 @@ from typing import Any
 from tools.fault_catalog import fault_catalog
 
 
+MATRIX_STATUSES = (
+    "supported",
+    "planned",
+    "inapplicable",
+    "blocked_by_platform_prerequisite",
+    "not_reachable",
+    "unsupported",
+)
+
+
 def build_fault_matrix(profile: dict[str, Any]) -> dict[str, Any]:
     project_id = str(profile.get("project_id") or "")
     runtime = profile.get("runtime_contract") or {}
@@ -27,7 +37,7 @@ def build_fault_matrix(profile: dict[str, Any]) -> dict[str, Any]:
         else:
             status = "planned"
             reason = "executor contract is not implemented"
-        if status not in {"supported", "planned", "inapplicable"}:
+        if status not in MATRIX_STATUSES:
             status = "inapplicable"
             reason = f"invalid profile status: {status}"
         faults.append({
@@ -37,10 +47,12 @@ def build_fault_matrix(profile: dict[str, Any]) -> dict[str, Any]:
             "risk_level": spec.get("risk_level"),
             "status": status,
             "reason": reason,
+            "execution_eligible": status == "supported",
         })
     return {
         "schema_version": "chaosatlas-fault-matrix-v1",
         "project_id": project_id,
         "fault_count": len(faults),
         "faults": faults,
+        "status_counts": {status: sum(1 for item in faults if item["status"] == status) for status in MATRIX_STATUSES},
     }

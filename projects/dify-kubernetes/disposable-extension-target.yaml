@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dify-k8s-chaosatlas-extension-target
+  labels:
+    app: dify-k8s-chaosatlas-extension-target
+    chaosatlas.dev/disposable: "true"
+    chaosatlas.dev/owner: chaosatlas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dify-k8s-chaosatlas-extension-target
+  template:
+    metadata:
+      labels:
+        app: dify-k8s-chaosatlas-extension-target
+        chaosatlas.dev/disposable: "true"
+        chaosatlas.dev/owner: chaosatlas
+        chaosatlas.dev/extension-agent: queue-pool-io-time
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: extension-agent
+          image: chaosatlas/extension-python:20260903
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: disposable-io
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 2
+      volumes:
+        - name: disposable-io
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dify-k8s-chaosatlas-extension-target
+  labels:
+    chaosatlas.dev/disposable: "true"
+    chaosatlas.dev/owner: chaosatlas
+spec:
+  selector:
+    app: dify-k8s-chaosatlas-extension-target
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http

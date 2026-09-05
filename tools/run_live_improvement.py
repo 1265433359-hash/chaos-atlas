@@ -267,16 +267,16 @@ def run_live_improvement(
             summary = {"status": "deployment_blocked", "reason": "patched deployment did not become available", "readiness": readiness}
             _write(output_root / "summary.json", summary)
             return summary
-        from tools.chaosatlas import run_closed_loop
+        from chaosatlas.orchestration.engine import RunEngine, RunRequest
 
         try:
-            runtime = run_closed_loop(
+            runtime = RunEngine().run_candidate(RunRequest(
                 profile_path=Path(profile_path),
                 output_root=runtime_root,
                 mode="live",
                 seed=seed,
                 approve_live=True,
-            )
+            ))
         except Exception as exc:
             runtime = {"status": "method_invalid", "error": f"live_retest_exception:{type(exc).__name__}: {exc}"}
         _write(output_root / "runtime_result.json", runtime)

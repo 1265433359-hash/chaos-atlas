@@ -600,7 +600,7 @@ def actions_for_case(
                 "cleanup": ["washout_verification", "recovery_check"],
                 "output_schema": "runtime",
                 "stop_conditions": [
-                    "stop after two valid reproductions or one clean falsification",
+                    "stop after three valid reproductions or one clean falsification",
                     "abort when the real business path cannot be exercised",
                 ],
                 },

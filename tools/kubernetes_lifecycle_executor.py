@@ -23,6 +23,7 @@ from typing import Any, Callable
 import yaml
 
 from tools.dns_network_fallback import build_dns_network_fallback
+from tools.chaos_mesh_cleanup import cleanup_namespace_chaos_resources
 from tools.run_chaos_experiment import (
     check_mutation,
     delete_resource,
@@ -37,7 +38,7 @@ from tools.run_chaos_experiment import (
     wait_for_target_ready,
     wait_for_container_ready,
 )
-from tools.fault_executor import validate_attestation
+from tools.fault_executor import observation_verdict, validate_attestation
 
 
 HookMap = dict[str, Callable[..., Any]]
@@ -98,7 +99,9 @@ class KubernetesLifecycleExecutor:
         if path.exists():
             raise FileExistsError(path)
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(yaml.safe_dump(manifest, sort_keys=False), encoding="utf-8")
+        api_manifest = deepcopy(manifest)
+        api_manifest.pop("chaosatlas_extension", None)
+        path.write_text(yaml.safe_dump(api_manifest, sort_keys=False), encoding="utf-8")
         return path
 
     @staticmethod
@@ -321,6 +324,21 @@ class KubernetesLifecycleExecutor:
         """Check that the target container can safely mutate resolver state."""
         if not target_pods:
             return {"status": "inapplicable", "reason": "DNSChaos target pod list is empty", "checked_pods": []}
+        manifest_spec = _manifest.get("spec") if isinstance(_manifest, dict) else {}
+        if str((manifest_spec or {}).get("action") or "") == "delay":
+            code, stdout, stderr = run_kubectl(
+                ["explain", "dnschaos.spec.delay", "--api-version=chaos-mesh.org/v1alpha1"],
+                timeout=20,
+                kube_context=self.kube_context,
+            )
+            if code != 0:
+                return {
+                    "status": "fallback_required",
+                    "resolver_writable": None,
+                    "checked_pods": [],
+                    "reason": "installed DNSChaos CRD does not expose spec.delay; use NetworkChaos DNS fallback",
+                    "probe_error": (stderr or stdout).strip()[:500],
+                }
         checked: list[dict[str, Any]] = []
         for item in target_pods:
             pod = str(item.get("name") or "").strip()
@@ -422,10 +440,110 @@ class KubernetesLifecycleExecutor:
         )
 
     def _apply(self, manifest: dict[str, Any], path: Path) -> dict[str, Any]:
-        return _apply_default(manifest, path, kube_context=self.kube_context)
+        # Compiler metadata is for the local evidence record, not a CRD field.
+        api_manifest = deepcopy(manifest)
+        api_manifest.pop("chaosatlas_extension", None)
+        return _apply_default(api_manifest, path, kube_context=self.kube_context)
 
     def _delete(self, kind: str, namespace: str, name: str) -> dict[str, Any]:
         return delete_resource(kind, namespace, name, kube_context=self.kube_context)
+
+    def _target_pod_names_for_cleanup(self, manifest: dict[str, Any]) -> set[str]:
+        """Resolve selector-scoped child ownership for Chaos Mesh cleanup."""
+        spec = manifest.get("spec") if isinstance(manifest, dict) else {}
+        if not isinstance(spec, dict):
+            return set()
+
+        selectors: list[dict[str, Any]] = []
+        top_level = spec.get("selector")
+        if isinstance(top_level, dict):
+            selectors.append(top_level)
+        target = spec.get("target")
+        nested = target.get("selector") if isinstance(target, dict) else None
+        if isinstance(nested, dict):
+            selectors.append(nested)
+
+        owned_pods: set[str] = set()
+        for selector in selectors:
+            namespaces = selector.get("namespaces") or []
+            if not isinstance(namespaces, list) or namespaces != [self.namespace]:
+                continue
+            labels = selector.get("labelSelectors")
+            if not isinstance(labels, dict) or not labels:
+                continue
+            label_query = ",".join(f"{key}={value}" for key, value in sorted(labels.items()))
+            code, stdout, _stderr = run_kubectl(
+                ["get", "pods", "-n", self.namespace, "-l", label_query, "-o", "json"],
+                timeout=30,
+                kube_context=self.kube_context,
+            )
+            if code != 0:
+                continue
+            try:
+                document = json.loads(stdout)
+            except json.JSONDecodeError:
+                continue
+            owned_pods.update(
+                str((item.get("metadata") or {}).get("name"))
+                for item in document.get("items") or []
+                if isinstance(item, dict) and (item.get("metadata") or {}).get("name")
+            )
+        return owned_pods
+
+    def _cleanup_mesh_resources(self, owned_pod_names: set[str], manifest: dict[str, Any] | None = None) -> dict[str, Any]:
+        if isinstance(manifest, dict):
+            owned_pod_names = set(owned_pod_names) | self._target_pod_names_for_cleanup(manifest)
+        cleanup_hook = self.hooks.get("cleanup_mesh")
+        if cleanup_hook is not None:
+            try:
+                return cleanup_hook(
+                    namespace=self.namespace,
+                    owner="chaosatlas",
+                    owned_pod_names=sorted(owned_pod_names),
+                )
+            except TypeError:
+                return cleanup_hook(self.namespace, sorted(owned_pod_names))
+        return cleanup_namespace_chaos_resources(
+            self.namespace,
+            owner="chaosatlas",
+            owned_pod_names=owned_pod_names,
+            kube_context=self.kube_context,
+        )
+
+    def _collect_recovery_signals(
+        self,
+        manifest: dict[str, Any],
+        target_pods: list[dict[str, Any]],
+    ) -> dict[str, Any] | None:
+        recovery_hook = self.hooks.get("recovery_signals")
+        if recovery_hook is not None:
+            return recovery_hook(manifest=manifest, target_pods=target_pods)
+        if self.oracle.get("kind") != "dify_chatflow":
+            return None
+        selector = self._selector(manifest)
+        workload_ok, workload_state, workload_errors = self._wait_target_ready(
+            self.namespace,
+            selector,
+            len(target_pods) or None,
+            set(),
+        )
+        try:
+            business = self._hook("probe", self._default_probe)("recovery", manifest)
+        except Exception as exc:
+            business = {
+                "status": "inconclusive",
+                "samples": [],
+                "reason": f"recovery_probe_failed:{type(exc).__name__}",
+            }
+        return {
+            "chaos_mesh": None,
+            "workload": {
+                "confirmed": bool(workload_ok),
+                "state": workload_state,
+                "errors": workload_errors,
+            },
+            "business": business,
+        }
 
     def _write_result(self, action_id: str, result: dict[str, Any]) -> Path:
         path = self.root / "runtime" / f"{_safe_name(action_id)}.json"
@@ -532,6 +650,8 @@ class KubernetesLifecycleExecutor:
             self._write_result(action_id, result)
             return result
 
+        target_pods = ((gate.get("checks") or {}).get("target_pods") or [])
+
         try:
             apply_result = self._hook("apply", lambda value: self._apply(value, mutation_path))(manifest)
             result["injection"]["apply"] = apply_result
@@ -555,7 +675,6 @@ class KubernetesLifecycleExecutor:
                     lifecycle.append("observe")
 
                     selector = self._selector(manifest)
-                    target_pods = ((gate.get("checks") or {}).get("target_pods") or [])
                     pre_uids = {str(item.get("uid")) for item in target_pods if item.get("uid")}
                     if kind == "PodChaos" and str((manifest.get("spec") or {}).get("action")) == "container-kill":
                         target_pod_names = {
@@ -593,7 +712,31 @@ class KubernetesLifecycleExecutor:
         finally:
             if applied:
                 cleanup = self._hook("delete", self._delete)(kind, namespace, name)
-                result["cleanup"] = {"confirmed": bool(cleanup.get("absent_confirmed")), **cleanup}
+                target_pod_names = {
+                    str(item.get("name"))
+                    for item in target_pods
+                    if isinstance(item, dict) and item.get("name")
+                }
+                mesh_cleanup = self._cleanup_mesh_resources(target_pod_names, manifest)
+                main_cleanup_confirmed = bool(cleanup.get("absent_confirmed"))
+                mesh_cleanup_confirmed = bool(mesh_cleanup.get("confirmed"))
+                result["cleanup"] = {
+                    "confirmed": main_cleanup_confirmed and mesh_cleanup_confirmed,
+                    "resource": cleanup,
+                    "chaos_mesh": mesh_cleanup,
+                }
+                recovery_signals = self._collect_recovery_signals(manifest, target_pods)
+                if recovery_signals is not None:
+                    recovery_signals["chaos_mesh"] = bool(result["recovery"].get("confirmed"))
+                    result["recovery"]["signals"] = recovery_signals
+                    workload = recovery_signals.get("workload") or {}
+                    business = recovery_signals.get("business") or {}
+                    if (
+                        not result["recovery"].get("confirmed")
+                        and workload.get("confirmed") is True
+                        and business.get("status") == "pass"
+                    ):
+                        result["recovery"]["diagnosis"] = "control_plane_status_timeout"
                 lifecycle.append("cleanup")
                 if not result["cleanup"]["confirmed"]:
                     result["status"] = "cleanup_failed"
@@ -635,6 +778,11 @@ class KubernetesLifecycleExecutor:
         result["injection_confirmed"] = injection_ok
         result["recovery_confirmed"] = recovery_ok
         result["cleanup_confirmed"] = cleanup_ok
+        result["verdict"] = observation_verdict(
+            result.get("observation"),
+            result.get("status"),
+            result.get("outcome_status"),
+        )
         self._write_result(action_id, result)
         return result
 
@@ -647,7 +795,7 @@ class KubernetesLifecycleExecutor:
             "injection_confirmed": bool((result.get("injection") or {}).get("confirmed")),
             "injected_count": 1 if (result.get("injection") or {}).get("confirmed") else 0,
             "cleanup_confirmed": bool((result.get("cleanup") or {}).get("confirmed")),
-            "verdict": "observation_pending" if result.get("status") == "executed" else result.get("status"),
+            "verdict": observation_verdict(result.get("observation"), result.get("status"), result.get("outcome_status")),
         }
 
 

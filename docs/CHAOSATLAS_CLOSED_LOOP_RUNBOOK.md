@@ -120,7 +120,7 @@ child from counting as a successful finding or policy update.
 
 ## Runtime weakness promotion
 
-Defense evidence and weakness evidence use separate promotion gates. After two
+Defense evidence and weakness evidence use separate promotion gates. After three
 independent runs reproduce the same runtime weakness, promote only the bounded
 weakness evidence:
 

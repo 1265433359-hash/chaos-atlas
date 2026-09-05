@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: extension-python
+  labels:
+    app.kubernetes.io/name: chaosatlas-extension
+    chaosatlas.dev/owner: chaosatlas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: extension-python
+  template:
+    metadata:
+      labels:
+        app: extension-python
+        chaosatlas.dev/owner: chaosatlas
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: python
+          image: chaosatlas/extension-python:20260904
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          volumeMounts:
+            - name: io-test
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 2
+      volumes:
+        - name: io-test
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: extension-python
+  labels:
+    chaosatlas.dev/owner: chaosatlas
+spec:
+  selector:
+    app: extension-python
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: extension-jvm
+  labels:
+    app.kubernetes.io/name: chaosatlas-extension
+    chaosatlas.dev/owner: chaosatlas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: extension-jvm
+  template:
+    metadata:
+      labels:
+        app: extension-jvm
+        chaosatlas.dev/owner: chaosatlas
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: jvm
+          image: chaosatlas/extension-jvm:20260903
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 2
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: extension-jvm
+  labels:
+    chaosatlas.dev/owner: chaosatlas
+spec:
+  selector:
+    app: extension-jvm
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
