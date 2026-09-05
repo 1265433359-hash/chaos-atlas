@@ -34,6 +34,8 @@ TRANSITIONS = {
 SAFE_ID = re.compile(r"^[a-z0-9][a-z0-9.-]{0,62}$")
 SENSITIVE_KEY = re.compile(r"(?:password|passwd|secret|token|authorization|cookie|api[_-]?key|private[_-]?key)", re.IGNORECASE)
 SENSITIVE_VALUE = re.compile(r"(?:-----BEGIN [A-Z ]*PRIVATE KEY-----|\bBearer\s+[A-Za-z0-9._~+/=-]{8,})", re.IGNORECASE)
+REDACTED = "<redacted>"
+STRUCTURAL_SECRET_KEYS = {"secretKeyRef", "secretRef", "runtimeGenerate", "imagePullSecrets"}
 
 
 def canonical_hash(value: Any) -> str:
@@ -61,7 +63,7 @@ def sensitive_paths(value: Any, path: str = "$") -> list[str]:
     if isinstance(value, dict):
         for key, item in value.items():
             child = f"{path}.{key}"
-            if SENSITIVE_KEY.search(str(key)) and item not in (None, False, "", [], {}):
+            if str(key) not in STRUCTURAL_SECRET_KEYS and SENSITIVE_KEY.search(str(key)) and item not in (None, False, "", [], {}):
                 matches.append(child)
             matches.extend(sensitive_paths(item, child))
     elif isinstance(value, list):
@@ -70,6 +72,23 @@ def sensitive_paths(value: Any, path: str = "$") -> list[str]:
     elif isinstance(value, str) and SENSITIVE_VALUE.search(value):
         matches.append(path)
     return sorted(set(matches))
+
+
+def redact_sensitive(value: Any) -> Any:
+    """Return a serializable copy that cannot retain detected credential values."""
+    if isinstance(value, dict):
+        result: dict[str, Any] = {}
+        for key, item in value.items():
+            if str(key) not in STRUCTURAL_SECRET_KEYS and SENSITIVE_KEY.search(str(key)) and item not in (None, False, "", [], {}):
+                result[str(key)] = REDACTED
+            else:
+                result[str(key)] = redact_sensitive(item)
+        return result
+    if isinstance(value, list):
+        return [redact_sensitive(item) for item in value]
+    if isinstance(value, str) and SENSITIVE_VALUE.search(value):
+        return REDACTED
+    return deepcopy(value)
 
 
 def transition_lease(lease: dict[str, Any], state: str) -> dict[str, Any]:
@@ -88,12 +107,25 @@ def validate_plan(plan: dict[str, Any]) -> list[str]:
         "required_checks", "status", "blockers", "plan_sha256",
     )
     errors = [f"missing {key}" for key in required if key not in plan]
-    if plan.get("schema_version") != "chaosatlas-isolation-plan-v1":
+    if plan.get("schema_version") not in {"chaosatlas-isolation-plan-v1", "chaosatlas-isolation-plan-v2"}:
         errors.append("unknown isolation plan schema")
     if plan.get("requested_isolation") not in ISOLATION_LEVELS or plan.get("effective_isolation") not in ISOLATION_LEVELS:
         errors.append("isolation level must be L1, L2 or L3")
     elif ISOLATION_LEVELS.index(plan["effective_isolation"]) < ISOLATION_LEVELS.index(plan["requested_isolation"]):
         errors.append("effective isolation cannot be lower than requested isolation")
+    if plan.get("schema_version") == "chaosatlas-isolation-plan-v2":
+        if plan.get("proposed_isolation") not in ISOLATION_LEVELS or plan.get("mechanism_minimum_isolation") not in ISOLATION_LEVELS:
+            errors.append("proposed and mechanism minimum isolation must be L1, L2 or L3")
+        else:
+            floor = max(
+                ISOLATION_LEVELS.index(plan["requested_isolation"]),
+                ISOLATION_LEVELS.index(plan["proposed_isolation"]),
+                ISOLATION_LEVELS.index(plan["mechanism_minimum_isolation"]),
+            )
+            if ISOLATION_LEVELS.index(plan["effective_isolation"]) < floor:
+                errors.append("effective isolation cannot be lower than any isolation input")
+        if not isinstance(plan.get("isolation_reasons"), list):
+            errors.append("isolation_reasons must be a list")
     if plan.get("status") not in {"ready", "blocked"}:
         errors.append("plan status must be ready or blocked")
     if plan.get("synthetic_data_only") is not True:
@@ -115,8 +147,10 @@ def validate_lease(lease: dict[str, Any]) -> list[str]:
         "cleanup_attempts", "lease_sha256",
     )
     errors = [f"missing {key}" for key in required if key not in lease]
-    if lease.get("schema_version") != "chaosatlas-environment-lease-v1":
+    if lease.get("schema_version") not in {"chaosatlas-environment-lease-v1", "chaosatlas-environment-lease-v2"}:
         errors.append("unknown environment lease schema")
+    if lease.get("schema_version") == "chaosatlas-environment-lease-v2" and not isinstance(lease.get("runtime_locator"), dict):
+        errors.append("runtime_locator must be an object")
     if lease.get("state") not in LEASE_STATES:
         errors.append("unknown lease state")
     if lease.get("isolation_level") not in ISOLATION_LEVELS:

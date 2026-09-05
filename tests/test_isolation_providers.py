@@ -21,9 +21,14 @@ class FakeKubernetes:
             name = metadata.get("name")
             kind = value.get("kind")
             value.setdefault("metadata", {})["uid"] = f"uid-{kind}-{name}"
+            if kind in {"Deployment", "StatefulSet"}:
+                value["metadata"]["generation"] = 1
+                value["status"] = {"observedGeneration": 1, "readyReplicas": 1, "availableReplicas": 1, "currentReplicas": 1, "updatedReplicas": 1}
             self.objects[(kind.lower(), namespace, name)] = value
             return 0, "applied", ""
         if command[0] == "get" and command[1] == "namespace":
+            if command[2] == "kube-system":
+                return 0, json.dumps({"metadata": {"name": "kube-system", "uid": "cluster-uid"}}), ""
             value = self.objects.get(("namespace", None, command[2]))
             return (0, json.dumps(value), "") if value else (1, "", "NotFound")
         if command[:3] == ["get", "pods", "-n"]:
@@ -46,6 +51,7 @@ def test_adopted_l1_release_never_deletes_namespace(tmp_path):
     calls = []
     namespace = {"metadata": {"name": "fixture-lab", "uid": "source-uid"}}
     pods = {"items": [{"metadata": {"uid": "pod-uid"}, "status": {"phase": "Running", "conditions": [{"type": "Ready", "status": "True"}]}}]}
+    workload = {"apiVersion": "apps/v1", "kind": "Deployment", "metadata": {"name": "app", "generation": 1}, "spec": {"replicas": 1}, "status": {"observedGeneration": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1}}
 
     def runner(args, timeout=60, input_text=None):
         calls.append(args)
@@ -54,6 +60,10 @@ def test_adopted_l1_release_never_deletes_namespace(tmp_path):
             return 0, json.dumps(namespace), ""
         if command[:3] == ["get", "pods", "-n"]:
             return 0, json.dumps(pods), ""
+        if command[:3] == ["get", "deployments,statefulsets", "-n"]:
+            return 0, json.dumps({"items": [workload]}), ""
+        if command[:2] == ["get", "deployment"]:
+            return 0, json.dumps(workload), ""
         raise AssertionError(command)
 
     profile = {"project_id": "fixture", "project_commit": "r", "namespace_policy": {"allowed_namespaces": ["fixture-lab"]}, "runtime_contract": {"kube_context": "test"}, "isolation": {"l1": {"mode": "adopted-test-replica", "dedicated_test_replica": True}, "synthetic_data_only": True}}
@@ -73,6 +83,8 @@ def test_minikube_provider_uses_only_exact_generated_profile(tmp_path):
 
     def runner(args, timeout=900, env=None):
         calls.append(args)
+        if args[:3] == ["profile", "list", "--output"]:
+            return 0, json.dumps({"valid": [{"Name": item} for item in existing]}), ""
         profile = args[args.index("--profile") + 1]
         if args[0] == "start":
             existing.add(profile)
@@ -87,8 +99,12 @@ def test_minikube_provider_uses_only_exact_generated_profile(tmp_path):
     profile = {"project_id": "fixture", "project_commit": "r", "isolation": {"l3": {"mode": "ephemeral-cluster", "resource_budget": {"cpu": 2, "memory": "2048mb", "disk": "5g"}}, "synthetic_data_only": True}}
     capability = {"fault_id": "api_server_delay", "target_id": None, "required_isolation": "L3", "capability_status": "blocked"}
     plan = IsolationPlanner().plan(profile=profile, capability=capability)
-    provider = MinikubeIsolationProvider(root=tmp_path / "runtime", runner=runner, cache_seed_root=tmp_path / "empty-cache")
-    manager = IsolationManager(store=LeaseStore(tmp_path / "store"), providers=ProviderRegistry([provider]))
+    def docker_runner(args, timeout=60, input_text=None, env=None):
+        profile_name = args[args.index("--filter") + 1].split("=", 1)[1]
+        return 0, ("container-id\n" if profile_name in existing else ""), ""
+
+    provider = MinikubeIsolationProvider(root=tmp_path / "runtime", runner=runner, docker_runner=docker_runner, cache_seed_root=tmp_path / "empty-cache")
+    manager = IsolationManager(store=LeaseStore(tmp_path / "store", coordination_root=tmp_path / "coordination"), providers=ProviderRegistry([provider]))
     lease = manager.prepare(plan)
     assert lease["state"] == "ready"
     assert lease["target_name"].startswith("ca-l3-fixture-")
@@ -146,3 +162,105 @@ def test_ephemeral_l1_uses_same_owned_lifecycle_and_leaves_zero_residue(tmp_path
     assert lease["target_name"].startswith("ca-l1-fixture-")
     assert manager.release(lease["lease_id"])["state"] == "released"
     assert not runner.objects
+
+
+def _ready_lease(*, cluster_uid="cluster-uid"):
+    return {
+        "target_name": "ca-l2-fixture-abc",
+        "runtime_locator": {"provider": "kubernetes-l2", "kube_context": "test", "cluster_uid": cluster_uid},
+        "resources": [{"kind": "Deployment", "namespace": "ca-l2-fixture-abc", "name": "app", "actual_uid": "uid-app"}],
+    }
+
+
+def test_ready_rejects_one_ready_and_one_pending_pod():
+    def runner(args, timeout=60, input_text=None):
+        command = args[2:] if args[:2] == ["--context", "test"] else args
+        if command[:2] == ["get", "namespace"]:
+            uid = "cluster-uid" if command[2] == "kube-system" else "namespace-uid"
+            return 0, json.dumps({"metadata": {"uid": uid}}), ""
+        if command[:3] == ["get", "pods", "-n"]:
+            return 0, json.dumps({"items": [
+                {"metadata": {}, "status": {"phase": "Running", "conditions": [{"type": "Ready", "status": "True"}]}},
+                {"metadata": {}, "status": {"phase": "Pending", "conditions": []}},
+            ]}), ""
+        if command[:2] == ["get", "deployment"]:
+            return 0, json.dumps({"metadata": {"generation": 1}, "spec": {"replicas": 1}, "status": {"observedGeneration": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1}}), ""
+        raise AssertionError(command)
+
+    provider = KubernetesIsolationProvider(name="kubernetes-l2", level="L2", runner=runner)
+    result = provider.verify_ready({"kube_context": "test", "ready_timeout_s": 1}, _ready_lease())
+    assert result["status"] == "blocked"
+    assert result["checks"]["pod_count"] == 2
+    assert result["checks"]["all_pods_ready"] is False
+
+
+def test_ready_rejects_incomplete_rollout_even_when_pod_is_ready():
+    def runner(args, timeout=60, input_text=None):
+        command = args[2:] if args[:2] == ["--context", "test"] else args
+        if command[:2] == ["get", "namespace"]:
+            uid = "cluster-uid" if command[2] == "kube-system" else "namespace-uid"
+            return 0, json.dumps({"metadata": {"uid": uid}}), ""
+        if command[:3] == ["get", "pods", "-n"]:
+            return 0, json.dumps({"items": [{"metadata": {}, "status": {"phase": "Running", "conditions": [{"type": "Ready", "status": "True"}]}}]}), ""
+        if command[:2] == ["get", "deployment"]:
+            return 0, json.dumps({"metadata": {"generation": 2}, "spec": {"replicas": 2}, "status": {"observedGeneration": 1, "readyReplicas": 1, "availableReplicas": 1, "updatedReplicas": 1}}), ""
+        raise AssertionError(command)
+
+    result = KubernetesIsolationProvider(name="kubernetes-l2", level="L2", runner=runner).verify_ready({"kube_context": "test", "ready_timeout_s": 1}, _ready_lease())
+    assert result["status"] == "blocked"
+    assert result["checks"]["all_workloads_ready"] is False
+
+
+def test_cleanup_can_recover_namespace_created_before_uid_was_recorded():
+    lease = _ready_lease()
+    lease.update({"lease_id": "lease-abc", "owner_labels": {"chaosatlas.dev/managed": "true", "chaosatlas.dev/lease-id": "lease-abc"}})
+    lease["resources"] = [{"kind": "Namespace", "namespace": None, "name": lease["target_name"], "actual_uid": None}]
+    deleted = []
+
+    def runner(args, timeout=60, input_text=None):
+        command = args[2:] if args[:2] == ["--context", "test"] else args
+        if command[:3] == ["get", "namespace", "kube-system"]:
+            return 0, json.dumps({"metadata": {"uid": "cluster-uid"}}), ""
+        if command[:2] == ["get", "namespace"]:
+            return 0, json.dumps({"metadata": {"uid": "created-uid", "labels": lease["owner_labels"]}}), ""
+        if command[:2] == ["delete", "namespace"]:
+            deleted.append(command[2])
+            return 0, "deleted", ""
+        raise AssertionError(command)
+
+    result = KubernetesIsolationProvider(name="kubernetes-l2", level="L2", runner=runner).cleanup({"kube_context": "test"}, lease)
+    assert result["status"] == "released"
+    assert deleted == [lease["target_name"]]
+
+
+def test_cleanup_blocks_when_pinned_cluster_identity_changes():
+    lease = _ready_lease(cluster_uid="original")
+    lease.update({"lease_id": "lease-abc", "owner_labels": {"chaosatlas.dev/managed": "true", "chaosatlas.dev/lease-id": "lease-abc"}})
+    lease["resources"] = [{"kind": "Namespace", "namespace": None, "name": lease["target_name"], "actual_uid": "uid"}]
+
+    def runner(args, timeout=60, input_text=None):
+        return 0, json.dumps({"metadata": {"uid": "different"}}), ""
+
+    result = KubernetesIsolationProvider(name="kubernetes-l2", level="L2", runner=runner).cleanup({"kube_context": "test"}, lease)
+    assert result == {"status": "blocked", "reason": "cluster_identity_mismatch"}
+
+
+def test_minikube_unknown_profile_inventory_fails_closed(tmp_path):
+    def runner(args, timeout=900, env=None):
+        return 124, "", "minikube command unavailable"
+
+    provider = MinikubeIsolationProvider(root=tmp_path / "wrong", runner=runner, docker_runner=lambda *args, **kwargs: (0, "", ""), cache_seed_root=tmp_path / "empty")
+    lease = {
+        "lease_id": "lease-abc",
+        "target_name": "ca-l3-fixture-abc",
+        "runtime_locator": {"provider": "minikube-l3", "runtime_root": str(tmp_path / "pinned"), "driver": "docker"},
+        "external_profiles": [{"provider": "minikube", "name": "ca-l3-fixture-abc"}],
+        "resources": [],
+    }
+    cleanup = provider.cleanup({}, lease)
+    absence = provider.verify_absent({}, lease)
+    assert cleanup["status"] == "blocked"
+    assert "presence_unknown" in cleanup["reason"]
+    assert absence["confirmed"] is False
+    assert "unknown" in absence["errors"][0]
+    assert str(provider._paths(lease)[0]).startswith(str((tmp_path / "pinned").resolve()))

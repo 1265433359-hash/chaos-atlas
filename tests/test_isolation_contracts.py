@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
+import json
 import pytest
 
 from chaosatlas.isolation.contracts import transition_lease, validate_lease, validate_plan, with_hash
@@ -32,6 +33,24 @@ def test_planner_never_lowers_isolation_and_forces_control_plane_to_l3():
     assert plan["provider"] == "minikube-l3"
     assert plan["status"] == "ready"
     assert validate_plan(plan) == []
+
+
+@pytest.mark.parametrize("requested", ["L1", "L2", "L3"])
+@pytest.mark.parametrize("proposed", ["L1", "L2", "L3"])
+def test_planner_uses_maximum_of_required_proposed_and_mechanism_floor(requested, proposed):
+    level = max((requested, proposed), key=("L1", "L2", "L3").index)
+    config = {"mode": "ephemeral-cluster"} if level == "L3" else ({"mode": "ephemeral-target", "blueprint": {"resources": [{"apiVersion": "apps/v1", "kind": "Deployment", "metadata": {"name": "x"}, "spec": {"selector": {"matchLabels": {"app": "x"}}, "template": {"metadata": {"labels": {"app": "x"}}, "spec": {"containers": [{"name": "x", "image": "pause:3.9"}]}}}}]}} if level == "L2" else {"mode": "ephemeral-app-clone", "blueprint": {"resources": [{"apiVersion": "apps/v1", "kind": "Deployment", "metadata": {"name": "x"}, "spec": {"selector": {"matchLabels": {"app": "x"}}, "template": {"metadata": {"labels": {"app": "x"}}, "spec": {"containers": [{"name": "x", "image": "pause:3.9"}]}}}}]}})
+    plan = IsolationPlanner().plan(profile=_profile(level.lower(), config), capability=_capability(requested), proposed_isolation=proposed)
+    assert plan["effective_isolation"] == level
+    assert plan["proposed_isolation"] == proposed
+    assert validate_plan(plan) == []
+
+
+def test_memory_mechanism_floor_never_downgrades_proposed_l3():
+    plan = IsolationPlanner().plan(profile=_profile("l3", {"mode": "ephemeral-cluster"}), capability=_capability("L1", "stress_memory"), target={}, proposed_isolation="L3")
+    assert plan["mechanism_minimum_isolation"] == "L2"
+    assert plan["effective_isolation"] == "L3"
+    assert "unbounded_memory_target_requires_ephemeral_target" in plan["isolation_reasons"]
 
 
 def test_planner_blocks_missing_l2_target_facts_and_inapplicable_capability():
@@ -91,6 +110,8 @@ def test_planner_blocks_sensitive_material_without_copying_its_value_to_reason()
     assert plan["status"] == "blocked"
     assert any(item.startswith("sensitive_material_detected:") for item in plan["blockers"])
     assert all("do-not-copy-this" not in item for item in plan["blockers"])
+    assert "do-not-copy-this" not in json.dumps(plan)
+    assert plan["blueprint"]["resources"][0]["data"]["api_token"] == "<redacted>"
 
 
 def test_planner_covers_all_32_plus_9_catalog_defaults():

@@ -15,10 +15,11 @@ from chaosatlas.workspace import state_root
 
 
 class LeaseStore:
-    def __init__(self, root: str | Path | None = None) -> None:
+    def __init__(self, root: str | Path | None = None, *, coordination_root: str | Path | None = None) -> None:
         self.root = Path(root).expanduser().resolve() if root else state_root() / "isolation"
         self.leases = self.root / "leases"
         self.audits = self.root / "audits"
+        self.coordination_root = Path(coordination_root).expanduser().resolve() if coordination_root else (state_root() / "isolation-coordination").resolve()
 
     def _atomic_write(self, path: Path, value: dict[str, Any]) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -58,10 +59,9 @@ class LeaseStore:
         return deepcopy(lease)
 
     @contextmanager
-    def creation_lock(self):
-        """Serialize active-lease checks across processes without stale locks."""
-        self.root.mkdir(parents=True, exist_ok=True)
-        path = self.root / ".creation.lock"
+    def _file_lock(self, path: Path, *, purpose: str, blocking: bool = False):
+        """Hold a byte-range lock that the OS releases after interruption or exit."""
+        path.parent.mkdir(parents=True, exist_ok=True)
         stream = path.open("a+b")
         acquired = False
         try:
@@ -73,13 +73,15 @@ class LeaseStore:
             try:
                 if os.name == "nt":
                     import msvcrt
-                    msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+                    mode = msvcrt.LK_LOCK if blocking else msvcrt.LK_NBLCK
+                    msvcrt.locking(stream.fileno(), mode, 1)
                 else:
                     import fcntl
-                    fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    mode = fcntl.LOCK_EX | (0 if blocking else fcntl.LOCK_NB)
+                    fcntl.flock(stream.fileno(), mode)
                 acquired = True
             except OSError as exc:
-                raise RuntimeError("isolation lease creation is already in progress") from exc
+                raise RuntimeError(f"isolation {purpose} is already in progress") from exc
             yield
         finally:
             try:
@@ -93,6 +95,56 @@ class LeaseStore:
                         fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
             finally:
                 stream.close()
+
+    @contextmanager
+    def creation_lock(self):
+        """Serialize active-lease checks across all stores on this machine."""
+        with self._file_lock(self.coordination_root / ".creation.lock", purpose="lease creation"):
+            yield
+
+    @contextmanager
+    def operation_lock(self, lease_id: str, *, blocking: bool = False):
+        if not SAFE_ID.fullmatch(str(lease_id or "")):
+            raise ValueError(f"unsafe lease identity: {lease_id}")
+        with self._file_lock(self.root / "operations" / f"{lease_id}.lock", purpose=f"lease operation for {lease_id}", blocking=blocking):
+            yield
+
+    def claim_l3(self, lease: dict[str, Any]) -> None:
+        """Persist the single whole-machine L3 owner while under creation_lock."""
+        path = self.coordination_root / "active-l3.json"
+        if path.exists():
+            try:
+                active = json.loads(path.read_text(encoding="utf-8-sig"))
+            except (OSError, json.JSONDecodeError, UnicodeError) as exc:
+                raise RuntimeError(f"whole-machine L3 claim is damaged: {exc}") from exc
+            raise RuntimeError(f"an L3 Minikube isolation lease is already active: {active.get('lease_id', 'unknown')}")
+        self._atomic_write(path, {
+            "lease_id": lease["lease_id"],
+            "store_root": str(self.root),
+            "provider": lease["provider"],
+            "created_at": lease["created_at"],
+        })
+
+    def assert_l3_available(self) -> None:
+        path = self.coordination_root / "active-l3.json"
+        if path.exists():
+            try:
+                active = json.loads(path.read_text(encoding="utf-8-sig"))
+            except (OSError, json.JSONDecodeError, UnicodeError) as exc:
+                raise RuntimeError(f"whole-machine L3 claim is damaged: {exc}") from exc
+            raise RuntimeError(f"an L3 Minikube isolation lease is already active: {active.get('lease_id', 'unknown')}")
+
+    def release_l3_claim(self, lease_id: str) -> None:
+        path = self.coordination_root / "active-l3.json"
+        if not path.exists():
+            return
+        try:
+            active = json.loads(path.read_text(encoding="utf-8-sig"))
+        except (OSError, json.JSONDecodeError, UnicodeError) as exc:
+            raise RuntimeError(f"whole-machine L3 claim is damaged: {exc}") from exc
+        if active.get("lease_id") != lease_id or Path(str(active.get("store_root") or "")).resolve() != self.root:
+            raise RuntimeError("refusing to release another isolation store's L3 claim")
+        path.unlink()
 
     def load(self, lease_id: str) -> dict[str, Any]:
         if not SAFE_ID.fullmatch(str(lease_id or "")):

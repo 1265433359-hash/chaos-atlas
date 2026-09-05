@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import threading
 
 import pytest
 
@@ -105,3 +106,58 @@ def test_damaged_lease_stops_reaper_without_guessing_cleanup(tmp_path):
     with pytest.raises(ValueError, match="integrity"):
         manager.reap_expired()
     assert provider.cleanup_calls == 0
+
+
+def test_reaper_skips_a_prepare_that_holds_the_operation_lock(tmp_path):
+    entered = threading.Event()
+    proceed = threading.Event()
+
+    class BlockingProvider(FakeProvider):
+        def prepare(self, plan, lease, mutate):
+            entered.set()
+            assert proceed.wait(5)
+            super().prepare(plan, lease, mutate)
+
+    store = LeaseStore(tmp_path, coordination_root=tmp_path / "coordination")
+    manager = IsolationManager(store=store, providers=ProviderRegistry([BlockingProvider()]))
+    result = []
+    worker = threading.Thread(target=lambda: result.append(manager.prepare(_plan(), ttl_minutes=1)))
+    worker.start()
+    assert entered.wait(5)
+    assert manager.reap_expired(now=datetime.now(timezone.utc) + timedelta(minutes=2)) == []
+    proceed.set()
+    worker.join(5)
+    assert result and result[0]["state"] == "ready"
+    assert manager.release(result[0]["lease_id"])["state"] == "released"
+
+
+def test_whole_machine_l3_claim_applies_across_store_roots(tmp_path):
+    coordination = tmp_path / "coordination"
+    first = LeaseStore(tmp_path / "one", coordination_root=coordination)
+    second = LeaseStore(tmp_path / "two", coordination_root=coordination)
+    lease = {"lease_id": "lease-global-one", "provider": "minikube-l3", "created_at": datetime.now(timezone.utc).isoformat()}
+    with first.creation_lock():
+        first.assert_l3_available()
+        first.claim_l3(lease)
+    with second.creation_lock():
+        with pytest.raises(RuntimeError, match="already active"):
+            second.assert_l3_available()
+    first.release_l3_claim("lease-global-one")
+    with second.creation_lock():
+        second.assert_l3_available()
+
+
+def test_keyboard_interrupt_runs_owned_cleanup_before_propagating(tmp_path):
+    class InterruptedProvider(FakeProvider):
+        def prepare(self, plan, lease, mutate):
+            super().prepare(plan, lease, mutate)
+            raise KeyboardInterrupt()
+
+    provider = InterruptedProvider()
+    store = LeaseStore(tmp_path, coordination_root=tmp_path / "coordination")
+    manager = IsolationManager(store=store, providers=ProviderRegistry([provider]))
+    with pytest.raises(KeyboardInterrupt):
+        manager.prepare(_plan())
+    leases = store.list()
+    assert len(leases) == 1 and leases[0]["state"] == "released"
+    assert provider.cleanup_calls == 1

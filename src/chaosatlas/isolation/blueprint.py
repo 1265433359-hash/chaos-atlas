@@ -6,13 +6,9 @@ from copy import deepcopy
 from typing import Any
 
 
-ALLOWED_KINDS = {"ConfigMap", "Secret", "Service", "Deployment", "StatefulSet", "NetworkPolicy", "ResourceQuota", "LimitRange"}
+ALLOWED_KINDS = {"ConfigMap", "Secret", "Service", "Deployment", "StatefulSet", "Job", "PersistentVolumeClaim"}
 FORBIDDEN_POD_KEYS = {"hostNetwork", "hostPID", "hostIPC", "hostUsers"}
 FORBIDDEN_REFERENCE_KEYS = {
-    "envFrom",
-    "secretKeyRef",
-    "configMapKeyRef",
-    "persistentVolumeClaim",
     "imagePullSecrets",
     "serviceAccount",
     "serviceAccountName",
@@ -31,7 +27,7 @@ def _walk(value: Any):
             yield from _walk(item)
 
 
-def _validate_resource(resource: dict[str, Any]) -> list[str]:
+def _validate_resource(resource: dict[str, Any], declared: dict[str, set[str]]) -> list[str]:
     errors: list[str] = []
     kind = str(resource.get("kind") or "")
     if kind not in ALLOWED_KINDS:
@@ -41,6 +37,19 @@ def _validate_resource(resource: dict[str, Any]) -> list[str]:
         errors.append(f"{kind or 'resource'} name is required")
     if kind == "Secret" and (resource.get("data") or resource.get("stringData")):
         errors.append("blueprint Secret values are forbidden")
+    if kind == "Secret":
+        generated = resource.get("runtimeGenerate")
+        if not isinstance(generated, dict) or not isinstance(generated.get("keys"), list) or not generated.get("keys"):
+            errors.append("blueprint Secret must declare non-empty runtimeGenerate.keys")
+        elif any(not isinstance(key, str) or not key or len(key) > 128 for key in generated["keys"]):
+            errors.append("runtimeGenerate.keys contains an invalid key")
+        templates = generated.get("templates") if isinstance(generated, dict) else None
+        if templates is not None and (not isinstance(templates, dict) or any(not isinstance(key, str) or not isinstance(value, str) for key, value in templates.items())):
+            errors.append("runtimeGenerate.templates must map keys to string templates")
+    if kind == "PersistentVolumeClaim":
+        spec = resource.get("spec") if isinstance(resource.get("spec"), dict) else {}
+        if any(spec.get(key) not in (None, "", {}, []) for key in ("dataSource", "dataSourceRef", "selector", "volumeName")):
+            errors.append("PersistentVolumeClaim source binding is forbidden")
     for mapping in _walk(resource):
         if any(mapping.get(key) is not None and mapping.get(key) is not False for key in FORBIDDEN_POD_KEYS):
             errors.append("host namespace sharing is forbidden")
@@ -49,6 +58,21 @@ def _validate_resource(resource: dict[str, Any]) -> list[str]:
         for key in FORBIDDEN_REFERENCE_KEYS:
             if key in mapping and mapping.get(key) not in (None, False, "", [], {}):
                 errors.append(f"{key} is forbidden")
+        for key, expected_kind in (("secretKeyRef", "Secret"), ("configMapKeyRef", "ConfigMap")):
+            reference = mapping.get(key)
+            if isinstance(reference, dict) and str(reference.get("name") or "") not in declared[expected_kind]:
+                errors.append(f"{key} must reference a resource created by this lease")
+        env_from = mapping.get("envFrom")
+        if isinstance(env_from, list):
+            for source in env_from:
+                source = source if isinstance(source, dict) else {}
+                for key, expected_kind in (("secretRef", "Secret"), ("configMapRef", "ConfigMap")):
+                    reference = source.get(key)
+                    if isinstance(reference, dict) and str(reference.get("name") or "") not in declared[expected_kind]:
+                        errors.append(f"envFrom {key} must reference a resource created by this lease")
+        claim = mapping.get("persistentVolumeClaim")
+        if isinstance(claim, dict) and str(claim.get("claimName") or "") not in declared["PersistentVolumeClaim"]:
+            errors.append("persistentVolumeClaim must reference a resource created by this lease")
         if mapping.get("hostPort") not in (None, 0, ""):
             errors.append("hostPort is forbidden")
         security = mapping.get("securityContext") if isinstance(mapping.get("securityContext"), dict) else {}
@@ -69,7 +93,13 @@ def compile_blueprint(
     resources = blueprint.get("resources") if isinstance(blueprint.get("resources"), list) else []
     if not resources:
         raise ValueError("blueprint resources are required")
-    errors = [error for item in resources if isinstance(item, dict) for error in _validate_resource(item)]
+    declared = {kind: set() for kind in ("ConfigMap", "Secret", "PersistentVolumeClaim")}
+    for item in resources:
+        if isinstance(item, dict) and str(item.get("kind") or "") in declared:
+            name = str(((item.get("metadata") or {}).get("name")) or "")
+            if name:
+                declared[str(item["kind"])].add(name)
+    errors = [error for item in resources if isinstance(item, dict) for error in _validate_resource(item, declared)]
     if len(resources) != sum(isinstance(item, dict) for item in resources):
         errors.append("every blueprint resource must be an object")
     if errors:
@@ -83,7 +113,7 @@ def compile_blueprint(
             metadata.pop(key, None)
         metadata["namespace"] = namespace
         metadata["labels"] = {**{str(k): str(v) for k, v in (metadata.get("labels") or {}).items()}, **owner_labels}
-        if item.get("kind") in {"Deployment", "StatefulSet"}:
+        if item.get("kind") in {"Deployment", "StatefulSet", "Job"}:
             template_metadata = item.setdefault("spec", {}).setdefault("template", {}).setdefault("metadata", {})
             template_metadata["labels"] = {
                 **{str(k): str(v) for k, v in (template_metadata.get("labels") or {}).items()},

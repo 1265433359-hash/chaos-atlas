@@ -6,7 +6,7 @@ import re
 from copy import deepcopy
 from typing import Any
 
-from chaosatlas.isolation.contracts import ISOLATION_LEVELS, canonical_hash, sensitive_paths, with_hash
+from chaosatlas.isolation.contracts import ISOLATION_LEVELS, canonical_hash, redact_sensitive, sensitive_paths, with_hash
 
 
 def _safe_fragment(value: Any) -> str:
@@ -34,13 +34,21 @@ class IsolationPlanner:
         if proposed not in ISOLATION_LEVELS:
             blockers.append("invalid_proposed_isolation")
             proposed = requested
-        effective = ISOLATION_LEVELS[max(ISOLATION_LEVELS.index(requested), ISOLATION_LEVELS.index(proposed))]
+        mechanism_minimum = "L1"
+        isolation_reasons = [f"capability_required:{requested}", f"proposed:{proposed}"]
         if capability.get("fault_id") == "api_server_delay":
-            effective = "L3"
+            mechanism_minimum = "L3"
+            isolation_reasons.append("control_plane_fault_requires_disposable_cluster")
         if capability.get("fault_id") == "stress_memory":
             limits = (((target or {}).get("deployment") or {}).get("resources") or {}).get("limits") or {}
             if not limits.get("memory"):
-                effective = "L2"
+                mechanism_minimum = "L2"
+                isolation_reasons.append("unbounded_memory_target_requires_ephemeral_target")
+        effective = ISOLATION_LEVELS[max(
+            ISOLATION_LEVELS.index(requested),
+            ISOLATION_LEVELS.index(proposed),
+            ISOLATION_LEVELS.index(mechanism_minimum),
+        )]
         status = str(capability.get("capability_status") or "")
         if status in {"inapplicable", "unsupported"}:
             blockers.append(f"capability_{status}")
@@ -82,35 +90,44 @@ class IsolationPlanner:
             blockers.append("project_id_required")
         exposed = sensitive_paths({"config": config, "target": target})
         blockers.extend(f"sensitive_material_detected:{path}" for path in exposed)
+        safe_config = redact_sensitive(config)
+        safe_target = redact_sensitive(target)
         identity = {
             "project_id": project_id,
             "project_revision": str(profile.get("project_commit") or ""),
             "capability_id": str(capability.get("fault_id") or ""),
             "target_id": capability.get("target_id"),
             "requested_isolation": requested,
+            "proposed_isolation": proposed,
+            "mechanism_minimum_isolation": mechanism_minimum,
             "effective_isolation": effective,
             "provider": provider,
             "mode": mode,
             "source_namespace": source_namespace,
-            "config": config,
-            "target_sha256": canonical_hash(target or {}),
+            "config": safe_config,
+            "target_sha256": canonical_hash(safe_target or {}),
         }
         plan = {
-            "schema_version": "chaosatlas-isolation-plan-v1",
+            "schema_version": "chaosatlas-isolation-plan-v2",
             "plan_id": f"plan-{canonical_hash(identity)[:20]}",
             "project_id": project_id,
             "project_revision": str(profile.get("project_commit") or ""),
             "capability_id": str(capability.get("fault_id") or ""),
             "target_id": capability.get("target_id"),
             "requested_isolation": requested,
+            "proposed_isolation": proposed,
+            "mechanism_minimum_isolation": mechanism_minimum,
             "effective_isolation": effective,
+            "isolation_reasons": isolation_reasons,
             "provider": provider,
             "mode": mode,
             "source_namespace": source_namespace or None,
             "target_namespace_or_profile": f"ca-{effective.lower()}-{_safe_fragment(project_id)}-<lease>",
             "resource_budget": deepcopy(config.get("resource_budget") or {"cpu": "2", "memory": "2Gi", "pods": 20}),
-            "blueprint": deepcopy(config.get("blueprint")) if isinstance(config.get("blueprint"), dict) else None,
-            "target": deepcopy(target),
+            "ready_timeout_s": int(config.get("ready_timeout_s") or 180),
+            "expected_workloads": deepcopy(config.get("expected_workloads") or []),
+            "blueprint": deepcopy(safe_config.get("blueprint")) if isinstance(safe_config.get("blueprint"), dict) else None,
+            "target": deepcopy(safe_target),
             "kube_context": str(config.get("kube_context") or ((profile.get("runtime_contract") or {}).get("kube_context")) or "") or None,
             "synthetic_data_only": True,
             "forbidden_source_kinds": ["Secret", "PersistentVolume", "PersistentVolumeClaim"],

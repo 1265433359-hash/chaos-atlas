@@ -28,8 +28,6 @@ class IsolationManager:
     def _new_lease(self, plan: dict[str, Any], ttl_minutes: int) -> dict[str, Any]:
         if self.store.active(project_id=str(plan["project_id"])):
             raise RuntimeError(f"project already has an active isolation lease: {plan['project_id']}")
-        if plan["provider"] == "minikube-l3" and self.store.active(provider="minikube-l3"):
-            raise RuntimeError("an L3 Minikube isolation lease is already active")
         if ttl_minutes < 1 or ttl_minutes > 240:
             raise ValueError("ttl_minutes must be between 1 and 240")
         lease_id = f"lease-{uuid.uuid4().hex[:16]}"
@@ -38,7 +36,7 @@ class IsolationManager:
         target_name = f"ca-{plan['effective_isolation'].lower()}-{project}-{suffix}"
         created = _now()
         lease = {
-            "schema_version": "chaosatlas-environment-lease-v1",
+            "schema_version": "chaosatlas-environment-lease-v2",
             "lease_id": lease_id,
             "plan_id": plan["plan_id"],
             "project_id": plan["project_id"],
@@ -49,6 +47,7 @@ class IsolationManager:
             "expires_at": (created + timedelta(minutes=ttl_minutes)).isoformat(),
             "owner_labels": {"chaosatlas.dev/managed": "true", "chaosatlas.dev/lease-id": lease_id, "chaosatlas.dev/project": str(plan["project_id"])},
             "target_name": target_name,
+            "runtime_locator": {},
             "plan": deepcopy(plan),
             "resources": [],
             "external_profiles": [],
@@ -65,62 +64,83 @@ class IsolationManager:
         if not provider.supports(plan):
             raise ValueError(f"isolation provider does not support plan: {plan['provider']}")
         with self.store.creation_lock():
+            if plan["provider"] == "minikube-l3":
+                self.store.assert_l3_available()
             lease = self._new_lease(plan, ttl_minutes)
+            locator = provider.capture_runtime_locator(plan, lease) if hasattr(provider, "capture_runtime_locator") else {"provider": plan["provider"]}
+            if not isinstance(locator, dict) or not locator:
+                raise RuntimeError("provider did not return a runtime locator")
+            lease["runtime_locator"] = deepcopy(locator)
+            lease = with_hash(lease, "lease_sha256")
             self.store.save(lease, require_new=True)
-        lease = transition_lease(lease, "preparing")
-        self.store.save(lease)
+            if plan["provider"] == "minikube-l3":
+                self.store.claim_l3(lease)
 
-        def mutate(action: str, payload: dict[str, Any]) -> None:
-            nonlocal lease
-            lease = self.store.load(lease["lease_id"])
-            if action == "register_resource":
-                lease["resources"].append(deepcopy(payload))
-            elif action == "update_resource_uid":
-                match = next((item for item in lease["resources"] if item.get("kind") == payload.get("kind") and item.get("namespace") == payload.get("namespace") and item.get("name") == payload.get("name")), None)
-                if match is None:
-                    raise ValueError("resource UID update has no registered identity")
-                match["actual_uid"] = payload.get("actual_uid")
-            elif action == "register_profile":
-                lease["external_profiles"].append(deepcopy(payload))
-            elif action == "update_profile":
-                match = next((item for item in lease["external_profiles"] if item.get("provider") == payload.get("provider") and item.get("name") == payload.get("name")), None)
-                if match is None:
-                    raise ValueError("profile update has no registered identity")
-                match["state"] = payload.get("state")
-            else:
-                raise ValueError(f"unknown lease mutation: {action}")
-            lease = with_hash(lease, "lease_sha256")
+        with self.store.operation_lock(lease["lease_id"], blocking=True):
+            lease = transition_lease(lease, "preparing")
             self.store.save(lease)
 
-        try:
-            preflight_errors = provider.preflight(plan)
-            if preflight_errors:
-                raise RuntimeError("; ".join(preflight_errors))
-            provider.prepare(plan, lease, mutate)
-            lease = self.store.load(lease["lease_id"])
-            ready = provider.verify_ready(plan, lease)
-            audit = _audit(lease["lease_id"], "ready_verified" if ready.get("status") == "verified" else "ready_blocked", ready.get("checks") or {}, list(ready.get("errors") or []))
-            self.store.save_audit(audit, "ready")
-            if ready.get("status") != "verified":
-                raise RuntimeError("; ".join(ready.get("errors") or ["environment is not Ready"]))
-            lease = transition_lease(lease, "ready")
-            self.store.save(lease)
-            return lease
-        except Exception as exc:
-            lease = self.store.load(lease["lease_id"])
-            lease["last_error"] = f"{type(exc).__name__}: {exc}"
-            lease = with_hash(lease, "lease_sha256")
-            if lease["state"] == "preparing":
-                lease = transition_lease(lease, "prepare_failed")
-            self.store.save(lease)
-            return self.release(lease["lease_id"])
+            def mutate(action: str, payload: dict[str, Any]) -> None:
+                nonlocal lease
+                lease = self.store.load(lease["lease_id"])
+                if action == "register_resource":
+                    lease["resources"].append(deepcopy(payload))
+                elif action == "update_resource_uid":
+                    match = next((item for item in lease["resources"] if item.get("kind") == payload.get("kind") and item.get("namespace") == payload.get("namespace") and item.get("name") == payload.get("name")), None)
+                    if match is None:
+                        raise ValueError("resource UID update has no registered identity")
+                    match["actual_uid"] = payload.get("actual_uid")
+                elif action == "register_profile":
+                    lease["external_profiles"].append(deepcopy(payload))
+                elif action == "update_profile":
+                    match = next((item for item in lease["external_profiles"] if item.get("provider") == payload.get("provider") and item.get("name") == payload.get("name")), None)
+                    if match is None:
+                        raise ValueError("profile update has no registered identity")
+                    match["state"] = payload.get("state")
+                else:
+                    raise ValueError(f"unknown lease mutation: {action}")
+                lease = with_hash(lease, "lease_sha256")
+                self.store.save(lease)
+
+            try:
+                preflight_errors = provider.preflight(plan)
+                if preflight_errors:
+                    raise RuntimeError("; ".join(preflight_errors))
+                provider.prepare(plan, lease, mutate)
+                lease = self.store.load(lease["lease_id"])
+                ready = provider.verify_ready(plan, lease)
+                audit = _audit(lease["lease_id"], "ready_verified" if ready.get("status") == "verified" else "ready_blocked", ready.get("checks") or {}, list(ready.get("errors") or []))
+                self.store.save_audit(audit, "ready")
+                if ready.get("status") != "verified":
+                    raise RuntimeError("; ".join(ready.get("errors") or ["environment is not Ready"]))
+                lease = transition_lease(lease, "ready")
+                self.store.save(lease)
+                return lease
+            except BaseException as exc:
+                interrupted = not isinstance(exc, Exception)
+                lease = self.store.load(lease["lease_id"])
+                lease["last_error"] = f"{type(exc).__name__}: {exc}"
+                lease = with_hash(lease, "lease_sha256")
+                if lease["state"] == "preparing":
+                    lease = transition_lease(lease, "prepare_failed")
+                self.store.save(lease)
+                released = self._release_locked(lease["lease_id"])
+                if interrupted:
+                    raise
+                return released
 
     def status(self, lease_id: str) -> dict[str, Any]:
         return self.store.load(lease_id)
 
     def release(self, lease_id: str) -> dict[str, Any]:
+        with self.store.operation_lock(lease_id, blocking=True):
+            return self._release_locked(lease_id)
+
+    def _release_locked(self, lease_id: str) -> dict[str, Any]:
         lease = self.store.load(lease_id)
         if lease["state"] == "released":
+            if lease.get("provider") == "minikube-l3":
+                self.store.release_l3_claim(lease_id)
             return lease
         provider = self.providers.get(str(lease["provider"]))
         if lease["state"] != "releasing":
@@ -146,6 +166,8 @@ class IsolationManager:
         self.store.save(lease)
         audit = _audit(lease_id, "cleanup_verified" if verified else "cleanup_failed", {"cleanup": cleanup, "absence": absence}, errors)
         self.store.save_audit(audit, f"cleanup-{lease['cleanup_attempts']}")
+        if verified and lease.get("provider") == "minikube-l3":
+            self.store.release_l3_claim(lease_id)
         return lease
 
     def recover(self, lease_id: str) -> dict[str, Any]:
@@ -159,8 +181,14 @@ class IsolationManager:
                 continue
             expires = datetime.fromisoformat(str(lease["expires_at"]))
             if expires <= current:
-                if lease["state"] not in {"expired", "releasing", "cleanup_failed", "prepare_failed"}:
-                    lease = transition_lease(lease, "expired")
-                    self.store.save(lease)
-                results.append(self.release(lease["lease_id"]))
+                try:
+                    with self.store.operation_lock(str(lease["lease_id"])):
+                        lease = self.store.load(str(lease["lease_id"]))
+                        if lease["state"] not in {"expired", "releasing", "cleanup_failed", "prepare_failed"}:
+                            lease = transition_lease(lease, "expired")
+                            self.store.save(lease)
+                        results.append(self._release_locked(lease["lease_id"]))
+                except RuntimeError as exc:
+                    if "already in progress" not in str(exc):
+                        raise
         return results

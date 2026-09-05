@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import secrets
 import shutil
 import subprocess
 import time
@@ -40,6 +41,14 @@ def default_minikube_runner(args: list[str], *, timeout: int = 900, input_text: 
         return 124, "", f"{type(exc).__name__}: {exc}"
 
 
+def default_docker_runner(args: list[str], *, timeout: int = 60, input_text: str | None = None, env: dict[str, str] | None = None) -> tuple[int, str, str]:
+    try:
+        result = subprocess.run(["docker", *args], input=input_text, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout, check=False, env=env)
+        return result.returncode, result.stdout or "", result.stderr or ""
+    except (OSError, subprocess.SubprocessError) as exc:
+        return 124, "", f"{type(exc).__name__}: {exc}"
+
+
 class ProviderRegistry:
     def __init__(self, providers: list[Any] | None = None) -> None:
         self._providers: dict[str, Any] = {}
@@ -68,15 +77,16 @@ class KubernetesIsolationProvider:
     def supports(self, plan: dict[str, Any]) -> bool:
         return plan.get("provider") == self.name and plan.get("effective_isolation") == self.level
 
-    def _args(self, plan: dict[str, Any], args: list[str]) -> list[str]:
-        context = str(plan.get("kube_context") or "")
+    def _args(self, plan: dict[str, Any], args: list[str], lease: dict[str, Any] | None = None) -> list[str]:
+        locator = (lease or {}).get("runtime_locator") if isinstance((lease or {}).get("runtime_locator"), dict) else {}
+        context = str(locator.get("kube_context") or plan.get("kube_context") or "")
         return ["--context", context, *args] if context else list(args)
 
-    def _run(self, plan: dict[str, Any], args: list[str], *, timeout: int = 60, input_text: str | None = None) -> tuple[int, str, str]:
-        return self.runner(self._args(plan, args), timeout=timeout, input_text=input_text)
+    def _run(self, plan: dict[str, Any], args: list[str], *, lease: dict[str, Any] | None = None, timeout: int = 60, input_text: str | None = None) -> tuple[int, str, str]:
+        return self.runner(self._args(plan, args, lease), timeout=timeout, input_text=input_text)
 
-    def _json(self, plan: dict[str, Any], args: list[str]) -> tuple[dict[str, Any] | None, str | None]:
-        code, stdout, stderr = self._run(plan, [*args, "-o", "json"])
+    def _json(self, plan: dict[str, Any], args: list[str], *, lease: dict[str, Any] | None = None) -> tuple[dict[str, Any] | None, str | None]:
+        code, stdout, stderr = self._run(plan, [*args, "-o", "json"], lease=lease)
         if code != 0:
             return None, (stderr or stdout).strip() or f"kubectl exit {code}"
         try:
@@ -84,6 +94,24 @@ class KubernetesIsolationProvider:
         except json.JSONDecodeError as exc:
             return None, f"invalid kubectl JSON: {exc}"
         return (value, None) if isinstance(value, dict) else (None, "kubectl response is not an object")
+
+    def capture_runtime_locator(self, plan: dict[str, Any], _lease: dict[str, Any]) -> dict[str, Any]:
+        value, error = self._json(plan, ["get", "namespace", "kube-system"])
+        cluster_uid = str(((value or {}).get("metadata") or {}).get("uid") or "")
+        if error or not cluster_uid:
+            raise RuntimeError(f"cannot identify Kubernetes cluster: {error or 'kube-system UID missing'}")
+        return {"provider": self.name, "kube_context": str(plan.get("kube_context") or ""), "cluster_uid": cluster_uid}
+
+    def _runtime_identity_error(self, plan: dict[str, Any], lease: dict[str, Any]) -> str | None:
+        locator = lease.get("runtime_locator") if isinstance(lease.get("runtime_locator"), dict) else {}
+        expected = str(locator.get("cluster_uid") or "")
+        value, error = self._json(plan, ["get", "namespace", "kube-system"], lease=lease)
+        actual = str(((value or {}).get("metadata") or {}).get("uid") or "")
+        if error:
+            return f"cluster_identity_unavailable:{error}"
+        if not expected or actual != expected:
+            return "cluster_identity_mismatch"
+        return None
 
     def preflight(self, plan: dict[str, Any]) -> list[str]:
         if plan.get("status") != "ready":
@@ -108,9 +136,12 @@ class KubernetesIsolationProvider:
         ]
 
     def prepare(self, plan: dict[str, Any], lease: dict[str, Any], mutate: Callable[[str, dict[str, Any]], None]) -> None:
+        identity_error = self._runtime_identity_error(plan, lease)
+        if identity_error:
+            raise RuntimeError(identity_error)
         if plan.get("mode") == "adopted-test-replica":
             namespace = str(plan["source_namespace"])
-            value, error = self._json(plan, ["get", "namespace", namespace])
+            value, error = self._json(plan, ["get", "namespace", namespace], lease=lease)
             if error or value is None:
                 raise RuntimeError(error or "adopted namespace unavailable")
             mutate("register_resource", {"kind": "Namespace", "namespace": None, "name": namespace, "expected_uid": str((value.get("metadata") or {}).get("uid") or ""), "actual_uid": str((value.get("metadata") or {}).get("uid") or ""), "cleanup_policy": "release_only"})
@@ -119,10 +150,10 @@ class KubernetesIsolationProvider:
         labels = {str(k): str(v) for k, v in (lease.get("owner_labels") or {}).items()}
         mutate("register_resource", {"kind": "Namespace", "namespace": None, "name": namespace, "expected_uid": None, "actual_uid": None, "cleanup_policy": "delete"})
         manifest = self._namespace_manifest(namespace, labels)
-        code, stdout, stderr = self._run(plan, ["apply", "-f", "-"], input_text=json.dumps(manifest))
+        code, stdout, stderr = self._run(plan, ["apply", "-f", "-"], lease=lease, input_text=json.dumps(manifest))
         if code != 0:
             raise RuntimeError((stderr or stdout).strip() or "namespace apply failed")
-        namespace_value, error = self._json(plan, ["get", "namespace", namespace])
+        namespace_value, error = self._json(plan, ["get", "namespace", namespace], lease=lease)
         if error or namespace_value is None:
             raise RuntimeError(error or "created namespace unavailable")
         mutate("update_resource_uid", {"kind": "Namespace", "namespace": None, "name": namespace, "actual_uid": str((namespace_value.get("metadata") or {}).get("uid") or "")})
@@ -137,65 +168,148 @@ class KubernetesIsolationProvider:
             kind = str(resource.get("kind") or "")
             name = str((resource.get("metadata") or {}).get("name") or "")
             mutate("register_resource", {"kind": kind, "namespace": namespace, "name": name, "expected_uid": None, "actual_uid": None, "cleanup_policy": "namespace"})
-            code, stdout, stderr = self._run(plan, ["apply", "-f", "-"], input_text=json.dumps(resource))
+            apply_resource = deepcopy(resource)
+            if kind == "Secret":
+                generated = apply_resource.pop("runtimeGenerate", {})
+                keys = generated.get("keys") if isinstance(generated, dict) else []
+                values = {str(key): secrets.token_urlsafe(32) for key in keys}
+                templates = generated.get("templates") if isinstance(generated, dict) and isinstance(generated.get("templates"), dict) else {}
+                for key, template in templates.items():
+                    rendered = str(template)
+                    for generated_key, generated_value in values.items():
+                        rendered = rendered.replace("${" + generated_key + "}", generated_value)
+                    values[str(key)] = rendered
+                apply_resource["stringData"] = values
+            code, stdout, stderr = self._run(plan, ["apply", "-f", "-"], lease=lease, input_text=json.dumps(apply_resource))
             if code != 0:
                 raise RuntimeError((stderr or stdout).strip() or f"{kind}/{name} apply failed")
-            value, error = self._json(plan, ["get", kind.lower(), name, "-n", namespace])
+            value, error = self._json(plan, ["get", kind.lower(), name, "-n", namespace], lease=lease)
             if error or value is None:
                 raise RuntimeError(error or f"{kind}/{name} unavailable after apply")
             mutate("update_resource_uid", {"kind": kind, "namespace": namespace, "name": name, "actual_uid": str((value.get("metadata") or {}).get("uid") or "")})
+            annotations = (resource.get("metadata") or {}).get("annotations") or {}
+            if kind == "Job" and annotations.get("chaosatlas.dev/wait-before-next") == "true":
+                self._wait_for_job(plan, lease, namespace, name)
+
+    def _wait_for_job(self, plan: dict[str, Any], lease: dict[str, Any], namespace: str, name: str) -> None:
+        timeout_s = max(1, min(int(plan.get("ready_timeout_s") or 180), 600))
+        deadline = time.monotonic() + timeout_s
+        last_error = "Job has not completed"
+        while True:
+            value, error = self._json(plan, ["get", "job", name, "-n", namespace], lease=lease)
+            status = (value or {}).get("status") or {}
+            spec = (value or {}).get("spec") or {}
+            completions = int(spec.get("completions") if spec.get("completions") is not None else 1)
+            if not error and int(status.get("succeeded") or 0) >= completions:
+                return
+            if int(status.get("failed") or 0) > int(spec.get("backoffLimit") or 0):
+                raise RuntimeError(f"Job/{name} exceeded its failure budget")
+            last_error = error or "Job has not completed"
+            if time.monotonic() >= deadline:
+                raise RuntimeError(f"Job/{name} completion timeout: {last_error}")
+            time.sleep(1)
 
     def verify_ready(self, plan: dict[str, Any], lease: dict[str, Any]) -> dict[str, Any]:
         namespace = str(plan.get("source_namespace") if plan.get("mode") == "adopted-test-replica" else lease.get("target_name") or "")
-        timeout_s = max(1, min(int((plan.get("config") or {}).get("ready_timeout_s") or 180), 600))
+        timeout_s = max(1, min(int(plan.get("ready_timeout_s") or 180), 600))
         deadline = time.monotonic() + timeout_s
-        last: dict[str, Any] = {"namespace": False, "pod_count": 0, "all_pods_ready": False}
+        expected_workloads = [
+            {"kind": str(item.get("kind")), "name": str(item.get("name"))}
+            for item in lease.get("resources") or []
+            if item.get("kind") in {"Deployment", "StatefulSet", "Job"}
+        ]
+        expected_workloads.extend(
+            {"kind": str(item.get("kind") or "Deployment"), "name": str(item.get("name") or "")}
+            for item in plan.get("expected_workloads") or []
+            if isinstance(item, dict) and item.get("name")
+        )
+        last: dict[str, Any] = {"namespace": False, "pod_count": 0, "all_pods_ready": False, "workloads": []}
         last_error = "namespace missing"
         while True:
-            namespace_value, error = self._json(plan, ["get", "namespace", namespace])
+            identity_error = self._runtime_identity_error(plan, lease)
+            namespace_value, error = self._json(plan, ["get", "namespace", namespace], lease=lease) if not identity_error else (None, identity_error)
             if error or namespace_value is None:
                 last_error = error or "namespace missing"
             else:
-                pods, pod_error = self._json(plan, ["get", "pods", "-n", namespace])
+                if not expected_workloads and plan.get("mode") == "adopted-test-replica":
+                    discovered, discovery_error = self._json(plan, ["get", "deployments,statefulsets", "-n", namespace], lease=lease)
+                    if discovery_error:
+                        last_error = discovery_error
+                        if time.monotonic() >= deadline:
+                            return {"status": "blocked", "checks": last, "errors": [last_error]}
+                        time.sleep(1)
+                        continue
+                    expected_workloads = [
+                        {"kind": str(item.get("kind") or ""), "name": str(((item.get("metadata") or {}).get("name")) or "")}
+                        for item in (discovered or {}).get("items") or []
+                        if isinstance(item, dict) and item.get("kind") in {"Deployment", "StatefulSet"} and (item.get("metadata") or {}).get("name")
+                    ]
+                pods, pod_error = self._json(plan, ["get", "pods", "-n", namespace], lease=lease)
                 items = [item for item in (pods or {}).get("items") or [] if isinstance(item, dict)]
-                running = [item for item in items if str((item.get("status") or {}).get("phase") or "") == "Running"]
-                failed = [item for item in items if str((item.get("status") or {}).get("phase") or "") == "Failed"]
-                ready = bool(running) and not failed and all(
+                active_pods = [item for item in items if str((item.get("status") or {}).get("phase") or "") != "Succeeded"]
+                ready = bool(active_pods) and all(
+                    str((item.get("status") or {}).get("phase") or "") == "Running"
+                    and
                     not (item.get("metadata") or {}).get("deletionTimestamp")
                     and any(condition.get("type") == "Ready" and condition.get("status") == "True" for condition in (item.get("status") or {}).get("conditions") or [])
-                    for item in running
+                    for item in active_pods
                 )
-                last = {"namespace": True, "pod_count": len(items), "all_pods_ready": ready}
-                last_error = pod_error or ("" if ready else "no Ready workload Pods")
-                if ready and not pod_error:
+                workload_checks = []
+                workloads_ready = bool(expected_workloads)
+                for expected in expected_workloads:
+                    value, workload_error = self._json(plan, ["get", expected["kind"].lower(), expected["name"], "-n", namespace], lease=lease)
+                    spec = (value or {}).get("spec") or {}
+                    metadata = (value or {}).get("metadata") or {}
+                    status = (value or {}).get("status") or {}
+                    desired = int(spec.get("replicas") if spec.get("replicas") is not None else 1)
+                    generation = int(metadata.get("generation") or 0)
+                    observed = int(status.get("observedGeneration") or 0)
+                    current_ready = (
+                        not workload_error
+                        and observed >= generation
+                        and int(status.get("readyReplicas") or 0) >= desired
+                        and int(status.get("availableReplicas") or status.get("currentReplicas") or 0) >= desired
+                        and (expected["kind"] != "Deployment" or int(status.get("updatedReplicas") or 0) >= desired)
+                    )
+                    if expected["kind"] == "Job":
+                        completions = int(spec.get("completions") if spec.get("completions") is not None else 1)
+                        current_ready = not workload_error and int(status.get("succeeded") or 0) >= completions and int(status.get("failed") or 0) == 0
+                    workload_checks.append({**expected, "desired": desired, "ready": current_ready, "error": workload_error})
+                    workloads_ready = workloads_ready and current_ready
+                last = {"namespace": True, "pod_count": len(items), "active_pod_count": len(active_pods), "all_pods_ready": ready, "workloads": workload_checks, "all_workloads_ready": workloads_ready}
+                last_error = pod_error or ("" if ready and workloads_ready else "Pods or expected workloads are not Ready")
+                if ready and workloads_ready and not pod_error:
                     return {"status": "verified", "checks": last, "errors": []}
             if time.monotonic() >= deadline:
                 return {"status": "blocked", "checks": last, "errors": [last_error]}
             time.sleep(1)
 
     def cleanup(self, plan: dict[str, Any], lease: dict[str, Any]) -> dict[str, Any]:
+        identity_error = self._runtime_identity_error(plan, lease)
+        if identity_error:
+            return {"status": "blocked", "reason": identity_error}
         if plan.get("mode") == "adopted-test-replica":
             return {"status": "released", "deleted": False, "reason": "adopted namespace is never deleted"}
         namespace = str(lease.get("target_name") or "")
         if not re.fullmatch(r"ca-l[12]-[a-z0-9-]+", namespace):
             return {"status": "blocked", "reason": "unsafe namespace identity"}
         expected = next((item for item in lease.get("resources") or [] if item.get("kind") == "Namespace" and item.get("name") == namespace), None)
-        value, error = self._json(plan, ["get", "namespace", namespace])
+        value, error = self._json(plan, ["get", "namespace", namespace], lease=lease)
         if _is_not_found(error):
             return {"status": "released", "deleted": False, "already_absent": True}
         metadata = (value or {}).get("metadata") or {}
         labels = metadata.get("labels") or {}
-        if not expected or not expected.get("actual_uid") or str(metadata.get("uid") or "") != str(expected.get("actual_uid")):
+        if not expected or (expected.get("actual_uid") and str(metadata.get("uid") or "") != str(expected.get("actual_uid"))):
             return {"status": "blocked", "reason": "cleanup_blocked_identity_mismatch"}
         if labels.get("chaosatlas.dev/lease-id") != lease.get("lease_id") or labels.get("chaosatlas.dev/managed") != "true":
             return {"status": "blocked", "reason": "cleanup_blocked_ownership_mismatch"}
-        code, stdout, stderr = self._run(plan, ["delete", "namespace", namespace, "--wait=false"])
+        code, stdout, stderr = self._run(plan, ["delete", "namespace", namespace, "--wait=false"], lease=lease)
         return {"status": "released" if code == 0 else "blocked", "deleted": code == 0, "reason": None if code == 0 else (stderr or stdout).strip()}
 
     def verify_absent(self, plan: dict[str, Any], lease: dict[str, Any]) -> dict[str, Any]:
         if plan.get("mode") == "adopted-test-replica":
             namespace = str(plan.get("source_namespace") or "")
-            value, error = self._json(plan, ["get", "namespace", namespace])
+            value, error = self._json(plan, ["get", "namespace", namespace], lease=lease)
             expected = next((item for item in lease.get("resources") or [] if item.get("cleanup_policy") == "release_only"), {})
             if not expected:
                 return {"confirmed": True, "adoption_not_started": True, "errors": []}
@@ -204,7 +318,7 @@ class KubernetesIsolationProvider:
         namespace = str(lease.get("target_name") or "")
         last_error = ""
         for _ in range(30):
-            value, error = self._json(plan, ["get", "namespace", namespace])
+            value, error = self._json(plan, ["get", "namespace", namespace], lease=lease)
             if value is None and _is_not_found(error):
                 return {"confirmed": True, "namespace_absent": True, "errors": []}
             last_error = error or "namespace still exists"
@@ -215,22 +329,38 @@ class KubernetesIsolationProvider:
 class MinikubeIsolationProvider:
     name = "minikube-l3"
 
-    def __init__(self, *, root: str | Path, runner: Runner | None = None, cache_seed_root: str | Path | None = None) -> None:
+    def __init__(self, *, root: str | Path, runner: Runner | None = None, docker_runner: Runner | None = None, cache_seed_root: str | Path | None = None) -> None:
         self.root = Path(root).expanduser().resolve()
         self.runner = runner or default_minikube_runner
+        self.docker_runner = docker_runner or default_docker_runner
         self.cache_seed_root = Path(cache_seed_root).expanduser().resolve() if cache_seed_root else (Path.home() / ".minikube" / "cache" / "preloaded-tarball").resolve()
 
     def supports(self, plan: dict[str, Any]) -> bool:
         return plan.get("provider") == self.name and plan.get("effective_isolation") == "L3"
 
+    def capture_runtime_locator(self, plan: dict[str, Any], _lease: dict[str, Any]) -> dict[str, Any]:
+        return {
+            "provider": self.name,
+            "runtime_root": str(self.root),
+            "driver": str(((plan.get("blueprint") or {}).get("driver")) or "docker"),
+        }
+
+    def _root(self, lease: dict[str, Any]) -> Path:
+        locator = lease.get("runtime_locator") if isinstance(lease.get("runtime_locator"), dict) else {}
+        raw = str(locator.get("runtime_root") or "")
+        if not raw:
+            raise RuntimeError("Minikube runtime locator is missing")
+        return Path(raw).expanduser().resolve()
+
     def _paths(self, lease: dict[str, Any]) -> tuple[Path, Path, Path, Path]:
         profile = str(lease.get("target_name") or "")
-        minikube_home = (self.root / "minikube").resolve()
-        kubeconfig = (self.root / "kubeconfigs" / f"{lease['lease_id']}.config").resolve()
+        root = self._root(lease)
+        minikube_home = (root / "minikube").resolve()
+        kubeconfig = (root / "kubeconfigs" / f"{lease['lease_id']}.config").resolve()
         profile_dir = (minikube_home / ".minikube" / "profiles" / profile).resolve()
         machine_dir = (minikube_home / ".minikube" / "machines" / profile).resolve()
         for value in (minikube_home, kubeconfig, profile_dir, machine_dir):
-            if self.root not in value.parents:
+            if root not in value.parents:
                 raise RuntimeError("unsafe Minikube runtime path")
         return minikube_home, kubeconfig, profile_dir, machine_dir
 
@@ -254,7 +384,7 @@ class MinikubeIsolationProvider:
             if not source.is_file() or source.stat().st_size == 0:
                 continue
             destination = (destination_root / source.name).resolve()
-            if self.root not in destination.parents:
+            if self._root(lease) not in destination.parents:
                 raise RuntimeError("unsafe Minikube cache destination")
             mutate("register_resource", {"kind": "ExternalPath", "namespace": None, "name": str(destination), "expected_uid": None, "actual_uid": None, "cleanup_policy": "delete_file"})
             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -297,31 +427,64 @@ class MinikubeIsolationProvider:
         ready = code == 0 and stdout.lower().count("running") >= 2
         return {"status": "verified" if ready else "blocked", "checks": {"profile": profile, "status_running": ready}, "errors": [] if ready else [(stderr or stdout).strip() or "minikube is not Ready"]}
 
+    def _profile_presence(self, lease: dict[str, Any]) -> dict[str, Any]:
+        profile = str(lease.get("target_name") or "")
+        list_code, list_out, list_err = self._run(["profile", "list", "--output", "json"], lease, timeout=60)
+        if list_code != 0:
+            return {"status": "unknown", "reason": (list_err or list_out).strip() or f"minikube profile list exit {list_code}"}
+        try:
+            inventory = json.loads(list_out or "{}")
+        except json.JSONDecodeError as exc:
+            return {"status": "unknown", "reason": f"invalid Minikube profile inventory JSON: {exc}"}
+        profiles: set[str] = set()
+        for item in inventory.get("valid") or inventory.get("profiles") or []:
+            if isinstance(item, dict):
+                profiles.add(str(item.get("Name") or item.get("name") or ""))
+            elif isinstance(item, str):
+                profiles.add(item)
+        driver = str(((lease.get("runtime_locator") or {}).get("driver")) or "docker")
+        container_present = False
+        if driver == "docker":
+            code, stdout, stderr = self.docker_runner(
+                ["ps", "-a", "--filter", f"label=name.minikube.sigs.k8s.io={profile}", "--format", "{{.ID}}"],
+                timeout=60,
+            )
+            if code != 0:
+                return {"status": "unknown", "reason": (stderr or stdout).strip() or f"docker ps exit {code}"}
+            container_present = bool(stdout.strip())
+        present = profile in profiles or container_present
+        return {"status": "present" if present else "absent", "profile_listed": profile in profiles, "container_present": container_present}
+
     def cleanup(self, plan: dict[str, Any], lease: dict[str, Any]) -> dict[str, Any]:
         profile = str(lease.get("target_name") or "")
         registered = any(item.get("name") == profile and item.get("provider") == "minikube" for item in lease.get("external_profiles") or [])
         if not registered or not re.fullmatch(r"ca-l3-[a-z0-9-]+", profile) or profile in {"minikube", "chaosatlas-apps"}:
             return {"status": "blocked", "reason": "cleanup_blocked_profile_identity"}
-        code, stdout, stderr = self._run(["delete", "--profile", profile], lease)
-        if code != 0:
-            status_code, status_out, status_err = self._run(["status", "--profile", profile, "--output", "json"], lease, timeout=60)
-            if status_code == 0:
-                return {"status": "blocked", "reason": (stderr or stdout or status_err or status_out).strip()}
+        presence = self._profile_presence(lease)
+        if presence["status"] == "unknown":
+            return {"status": "blocked", "reason": f"profile_presence_unknown:{presence['reason']}"}
+        code, stdout, stderr = (0, "", "")
+        if presence["status"] == "present":
+            code, stdout, stderr = self._run(["delete", "--profile", profile], lease)
+            if code != 0:
+                after = self._profile_presence(lease)
+                if after["status"] != "absent":
+                    return {"status": "blocked", "reason": (stderr or stdout or after.get("reason") or "profile delete failed").strip()}
         for item in lease.get("resources") or []:
             if item.get("kind") != "ExternalPath" or item.get("cleanup_policy") != "delete_file":
                 continue
             path = Path(str(item.get("name") or "")).resolve()
-            if self.root not in path.parents:
+            if self._root(lease) not in path.parents:
                 return {"status": "blocked", "reason": "cleanup_blocked_external_path"}
             if path.is_file() or path.is_symlink():
                 path.unlink()
-        return {"status": "released", "reason": None, "already_absent": code != 0}
+        return {"status": "released", "reason": None, "already_absent": presence["status"] == "absent"}
 
     def verify_absent(self, plan: dict[str, Any], lease: dict[str, Any]) -> dict[str, Any]:
         profile = str(lease.get("target_name") or "")
-        code, stdout, stderr = self._run(["status", "--profile", profile, "--output", "json"], lease, timeout=60)
+        presence = self._profile_presence(lease)
         _, kubeconfig, profile_dir, machine_dir = self._paths(lease)
-        profile_absent = code != 0 and not profile_dir.exists() and not machine_dir.exists()
+        profile_absent = presence["status"] == "absent" and not profile_dir.exists() and not machine_dir.exists()
         kubeconfig_absent = not kubeconfig.exists()
         lease_files_absent = all(
             not Path(str(item.get("name") or "")).exists()
@@ -330,6 +493,8 @@ class MinikubeIsolationProvider:
         )
         absent = profile_absent and kubeconfig_absent and lease_files_absent
         errors = []
+        if presence["status"] == "unknown":
+            errors.append(f"profile presence unknown: {presence.get('reason')}")
         if not profile_absent:
             errors.append("minikube profile or profile directory still exists")
         if not kubeconfig_absent:
