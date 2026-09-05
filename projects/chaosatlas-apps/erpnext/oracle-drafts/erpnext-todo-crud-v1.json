@@ -50,7 +50,7 @@
     "request_id": "delete",
     "strategy": "exact_owned_ids"
   },
-  "contract_sha256": "f57cf5afce93e96a1d5f4792514c5259179a3d7c0fd06f38ecf5a08528f89b0f",
+  "contract_sha256": "c7501bc822458c2dc25cbf8afe7a785426902a1ac01e6fa12c3b76344cb3c731",
   "credential_refs": [
     {
       "id": "erpnext-test-api-token",
@@ -77,18 +77,35 @@
         "todo_name": "$.data.name"
       },
       "id": "create-owned-todo",
+      "json_body": {
+        "description": "ChaosAtlas synthetic {run_id}",
+        "priority": "Low",
+        "status": "Open"
+      },
       "request_id": "create"
     },
     {
       "id": "read-todo",
+      "path_variables": {
+        "todo_name": "{todo_name}"
+      },
       "request_id": "read"
     },
     {
       "id": "update-status",
+      "json_body": {
+        "status": "Closed"
+      },
+      "path_variables": {
+        "todo_name": "{todo_name}"
+      },
       "request_id": "update"
     },
     {
       "id": "read-updated-todo",
+      "path_variables": {
+        "todo_name": "{todo_name}"
+      },
       "request_id": "read"
     }
   ],

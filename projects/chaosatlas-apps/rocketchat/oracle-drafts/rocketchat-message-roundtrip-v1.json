@@ -56,7 +56,7 @@
     "request_id": "delete-room",
     "strategy": "exact_owned_ids"
   },
-  "contract_sha256": "b59fdc29b116f63ac863431895332bd072a65ee2a81fa27b2a82ac4affd080e0",
+  "contract_sha256": "212ff223c14caf03c2eb7ddbb6b62b29438bcef978bfcfb8d2e7f1727d8371cb",
   "credential_refs": [
     {
       "id": "rocketchat-test-user",
@@ -83,6 +83,9 @@
         "room_id": "$.channel._id"
       },
       "id": "create-owned-room",
+      "json_body": {
+        "name": "ca-{run_id}"
+      },
       "request_id": "create-room"
     },
     {
@@ -90,10 +93,18 @@
         "message_id": "$.message._id"
       },
       "id": "post-owned-message",
+      "json_body": {
+        "roomId": "{room_id}",
+        "text": "ChaosAtlas synthetic {run_id}"
+      },
       "request_id": "post-message"
     },
     {
       "id": "poll-messages",
+      "query": {
+        "count": 20,
+        "roomId": "{room_id}"
+      },
       "request_id": "read-messages"
     }
   ],

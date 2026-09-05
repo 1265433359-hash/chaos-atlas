@@ -54,7 +54,7 @@
     "request_id": "delete",
     "strategy": "exact_owned_ids"
   },
-  "contract_sha256": "a2613a14028d7247e5376177ac3afde1b7482dc78395a250a068151c8f35b71f",
+  "contract_sha256": "c06d73426f972f11e68bfef01c9840000d114208e8485edab9dfb2b3d9811f92",
   "credential_refs": [
     {
       "id": "immich-test-api-key",
@@ -82,14 +82,28 @@
       },
       "id": "upload-synthetic-image",
       "idempotency_key": "{run_id}-asset",
+      "multipart": {
+        "assetData": "fixture:synthetic_png",
+        "deviceAssetId": "{run_id}-asset",
+        "deviceId": "chaosatlas",
+        "fileCreatedAt": "fixture_timestamp",
+        "fileModifiedAt": "fixture_timestamp",
+        "isFavorite": "false"
+      },
       "request_id": "upload"
     },
     {
       "id": "read-metadata",
+      "path_variables": {
+        "asset_id": "{asset_id}"
+      },
       "request_id": "read"
     },
     {
       "id": "download-original",
+      "path_variables": {
+        "asset_id": "{asset_id}"
+      },
       "request_id": "download"
     }
   ],
