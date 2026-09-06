@@ -35,9 +35,12 @@ git diff --check：通过
 
 这些结果证明计划生成和分母保留，不证明业务事务、故障能力或机制已经真实验证。
 
+随后通过 `scripts/run_four_app_phase1.py` 对当前 `chaosatlas-apps` 集群完成真实只读验收：4/4 工作负载 Ready、4/4 服务 Oracle 通过、4/4 统一 RunEngine dry-run 通过。原始材料位于 `%LOCALAPPDATA%\\ChaosAtlas\\runs\\four-app-phase1-20260906`。该结果证明环境可进入后续阶段，不改变 19 项能力阻断状态。
+
 ## 证据边界与后续准入
 
 - `real_fault_execution=false`；没有真实故障证据，不能声称四项目 41 项已支持。
 - 没有三次独立真实复现、机制证据、恢复清理和敏感审查全通过的案例，因此没有 Issue 草稿。
+- P5 复现门现要求每次有唯一 `run_id`、唯一 `reset_id`，并引用已记录的 baseline/control；重复记录不能被计入独立复现。
 - 首次真实事务仍需人工批准冻结契约（步骤、对象范围、断言、补偿、哈希）；批准后才可使用 P5RunCoordinator 的 live 路径。
 - 综合验收报告为 `partial`，唯一失败是现存并被 Dify 挂载的 `environment-reports` 卫生门；其余 compileall、架构契约、Sock Shop/Online Boutique dry-run 和 product-boundary 均通过。
