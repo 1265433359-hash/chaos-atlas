@@ -220,17 +220,18 @@ def assess_core_capabilities(
     for fault_id, spec in catalog.items():
         if fault_id == "api_server_delay":
             disposable_cluster = bool(((profile.get("isolation") or {}).get("disposable_cluster")))
-            status = "canary_required" if disposable_cluster else "blocked"
+            runtime_verified = runtime.get("api_server_delay_runtime_verified") is True
+            status = "canary_required" if disposable_cluster or runtime_verified else "blocked"
             records.append(_record(
                 profile=profile,
                 fault_id=fault_id,
                 spec=spec,
                 node=None,
                 status=status,
-                reason_code="live_canary_required" if disposable_cluster else "disposable_cluster_required",
-                reason="disposable control-plane environment is available" if disposable_cluster else "API-server delay requires a disposable cluster",
-                prerequisites=[] if disposable_cluster else ["disposable_cluster"],
-                evidence_grade="E1" if disposable_cluster else "E0",
+                reason_code="live_canary_required" if disposable_cluster or runtime_verified else "disposable_cluster_required",
+                reason=("verified disposable control-plane canary is available; project-specific canary is still required" if runtime_verified and not disposable_cluster else "disposable control-plane environment is available" if disposable_cluster else "API-server delay requires a disposable cluster"),
+                prerequisites=[] if disposable_cluster or runtime_verified else ["disposable_cluster"],
+                evidence_grade="E1" if disposable_cluster or runtime_verified else "E0",
             ))
             continue
         if not nodes:

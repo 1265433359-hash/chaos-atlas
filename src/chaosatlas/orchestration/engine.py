@@ -7,6 +7,7 @@ import hashlib
 import json
 import shutil
 import sys
+import traceback
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Callable
@@ -920,7 +921,13 @@ def _collect_live_evidence(*, collector: Any, output_root: Path, namespace: str,
     if lifecycle_complete and observation_valid and recovery_confirmed and cleanup_confirmed:
         recovery_state = recovery.get("state") if isinstance(recovery.get("state"), dict) else {}
         event_record = next((item for item in records if item.get("kind") == "kubernetes_event"), {})
+        # Windows can reject otherwise valid evidence paths once the external
+        # run root and candidate identity are combined.  Keep the source ref
+        # deterministic but bounded; the full run id remains in the payload.
         mechanism_source_ref = f"runtime/kubernetes/mechanism/{evidence_prefix}-service-boundary.json"
+        if len(str(output_root / mechanism_source_ref)) >= 240:
+            suffix = hashlib.sha256(evidence_prefix.encode("utf-8")).hexdigest()[:12]
+            mechanism_source_ref = f"runtime/kubernetes/mechanism/m-{suffix}.json"
         recovery_mode = str(recovery_state.get("recovery_mode") or "pod_replacement")
         if recovery_mode == "container_restart":
             mechanism_interpretation = (
@@ -1009,13 +1016,21 @@ def _live_lifecycle_evidence(*, output_root: Path, evidence_prefix: str, claim_s
     for index, item in enumerate(fault.get("mechanism_evidence") or []):
         if not isinstance(item, dict):
             continue
+        # Executors may report a planned mechanism reference without being
+        # able to materialize it (for example, a control-plane mutator can
+        # return lifecycle evidence but no workload log).  Missing optional
+        # mechanism evidence must not abort an otherwise valid run; it is
+        # retained as unavailable evidence by the caller's evidence plan.
+        source_ref = str(item.get("source_ref") or "")
+        if not source_ref or not (output_root / source_ref.replace("\\", "/")).is_file():
+            continue
         try:
             evidence = collect_file_evidence(
                 root=output_root,
                 evidence_id=str(item.get("evidence_id") or f"{evidence_prefix}-mechanism-{index + 1}"),
                 kind=str(item.get("kind") or "runtime_log"),
                 claim_scope=claim_scope,
-                source_ref=str(item.get("source_ref") or ""),
+                source_ref=source_ref,
                 interpretation=str(item.get("interpretation") or "mechanism evidence captured by the live executor"),
                 satisfies=["mechanism_evidence"],
             )
@@ -1866,6 +1881,11 @@ def run_closed_loop(
         )
         return {**summary, "input_snapshot_sha256": context.input_snapshot_sha256, "resumed": resumed}
     except Exception as exc:
+        # Preserve a bounded diagnostic outside the user-facing error string;
+        # it is essential for repairing evidence-pipeline defects while the
+        # run remains method-invalid and must never be treated as runtime proof.
+        detail = traceback.format_exc(limit=12)
+        _write_text(output_root / "method_error_trace.txt", detail)
         summary = _summary(output_root, status="method_invalid", context=context, completed=completed, error=str(exc))
         if not (output_root / "checkpoint.json").exists():
             write_checkpoint(output_root, next_stage=STAGES[len(completed)] if len(completed) < len(STAGES) else None, completed_stages=completed)

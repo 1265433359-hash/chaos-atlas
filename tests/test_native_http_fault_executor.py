@@ -127,3 +127,13 @@ def test_invalid_business_baseline_is_not_mislabeled_as_injection_failure():
         False,
         "",
     ) == "business_not_reachable"
+
+
+def test_missing_optional_mechanism_reference_does_not_abort_lifecycle(tmp_path):
+    records = _live_lifecycle_evidence(
+        output_root=tmp_path,
+        evidence_prefix="r-missing",
+        claim_scope="deployment:web",
+        fault={"attestation": {}, "mechanism_evidence": [{"source_ref": "runtime/kubernetes/mechanism/missing.json"}]},
+    )
+    assert records == []

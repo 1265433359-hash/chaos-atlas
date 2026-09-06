@@ -65,3 +65,10 @@ def test_core_assessment_preserves_profile_boundary_and_allows_declared_safe_nat
     assert boundary["original_status"] == "not_reachable"
     native = next(item for item in records if item["fault_id"] == "disk_pressure")
     assert native["capability_status"] == "canary_required"
+
+
+def test_api_server_delay_uses_verified_platform_evidence_as_canary_boundary():
+    runtime = {**_runtime(), "api_server_delay_runtime_verified": True}
+    api = next(item for item in assess_core_capabilities(_profile(), [_node()], runtime) if item["fault_id"] == "api_server_delay")
+    assert api["capability_status"] == "canary_required"
+    assert api["evidence_grade"] == "E1"

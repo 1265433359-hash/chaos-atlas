@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import json
 from pathlib import Path
 import subprocess
@@ -153,6 +154,35 @@ def main(argv: list[str] | None = None) -> int:
         if code != 0 and not item.get("always"):
             failed = True
     (output / "lifecycle-exit-codes.json").write_text(json.dumps(exit_codes, indent=2) + "\n", encoding="utf-8")
+    evidence: dict[str, Any] = {
+        "schema_version": "chaosatlas-platform-runtime-evidence-v1",
+        "checked_at": datetime.now(timezone.utc).isoformat(),
+        "scope": "platform",
+        "disposable_cluster": True,
+        "kube_context": context,
+        "api_server_delay": {"verified": False, "attestation": {"valid": False}, "source": "run/batch_summary.json"},
+    }
+    batch_summary = run_output / "batch_summary.json"
+    if batch_summary.is_file():
+        try:
+            batch = json.loads(batch_summary.read_text(encoding="utf-8-sig"))
+            item = (batch.get("results") or [None])[0]
+            item_output = Path(str(item.get("output"))) if isinstance(item, dict) and item.get("output") else None
+            summary = json.loads((item_output / "summary.json").read_text(encoding="utf-8-sig")) if item_output else {}
+            business_files = sorted((item_output / "runtime" / "business").glob("*.json")) if item_output else []
+            business = json.loads(business_files[0].read_text(encoding="utf-8-sig")) if business_files else {}
+            attestation = business.get("attestation") if isinstance(business.get("attestation"), dict) else {}
+            cleanup = business.get("cleanup") if isinstance(business.get("cleanup"), dict) else {}
+            evidence["api_server_delay"] = {
+                "verified": summary.get("status") == "live_completed" and attestation.get("valid") is True and cleanup.get("verified") is True,
+                "attestation": attestation,
+                "observation": {"status": (business.get("observation") or {}).get("status"), "samples": (business.get("observation") or {}).get("samples") or []},
+                "cleanup": cleanup,
+                "source": "run/batch_summary.json",
+            }
+        except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError):
+            pass
+    (output / "platform-runtime-evidence.json").write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
     return 0 if not failed and exit_codes.get("delete") == 0 else 2
 
 

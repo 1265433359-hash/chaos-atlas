@@ -60,3 +60,14 @@ def test_runtime_probe_rejects_context_mismatch(tmp_path):
     (tmp_path / "httpchaos-runtime-evidence.json").write_text(json.dumps(payload), encoding="utf-8")
     result = probe_runtime_backends(runner=_ready_runner(), kube_context="test", evidence_root=tmp_path)
     assert result["httpchaos_runtime_verified"] is False
+
+
+def test_runtime_probe_accepts_verified_disposable_control_plane_evidence(tmp_path):
+    payload = {
+        "schema_version": "chaosatlas-platform-runtime-evidence-v1",
+        "kube_context": "test",
+        "api_server_delay": {"verified": True, "attestation": {"valid": True}},
+    }
+    (tmp_path / "platform-runtime-evidence.json").write_text(json.dumps(payload), encoding="utf-8")
+    result = probe_runtime_backends(runner=_ready_runner(), kube_context="test", evidence_root=tmp_path)
+    assert result["api_server_delay_runtime_verified"] is True

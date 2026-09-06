@@ -81,6 +81,32 @@ def _load_httpchaos_evidence(root: str | Path | None, kube_context: str | None) 
     }
 
 
+def _load_platform_evidence(root: str | Path | None, kube_context: str | None) -> dict[str, Any]:
+    """Load verified disposable control-plane canary evidence."""
+    if root is None:
+        return {"verified": False, "reason": "no external platform evidence root"}
+    path = Path(root).expanduser().resolve() / "platform-runtime-evidence.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        return {"verified": False, "reason": f"evidence unavailable: {type(exc).__name__}"}
+    if not isinstance(payload, dict) or payload.get("schema_version") != "chaosatlas-platform-runtime-evidence-v1":
+        return {"verified": False, "reason": "unsupported platform evidence schema"}
+    record = payload.get("api_server_delay") if isinstance(payload.get("api_server_delay"), dict) else {}
+    evidence_context = str(payload.get("kube_context") or "")
+    context_matches = evidence_context == str(kube_context or "")
+    platform_scope = payload.get("scope") == "platform" and payload.get("disposable_cluster") is True and evidence_context.startswith("chaosatlas-")
+    if not context_matches and not platform_scope:
+        return {"verified": False, "reason": "evidence Kubernetes context mismatch"}
+    verified = record.get("verified") is True and (record.get("attestation") or {}).get("valid") is True
+    return {
+        "verified": verified,
+        "reason": "verified disposable api_server_delay canary" if verified else "api_server_delay canary is not verified",
+        "evidence_ref": str(path),
+        "attestation_valid": (record.get("attestation") or {}).get("valid") is True,
+    }
+
+
 def probe_runtime_backends(*, runner: Runner, kube_context: str | None, evidence_root: str | Path | None = None) -> dict[str, Any]:
     crds: dict[str, dict[str, Any]] = {}
     for backend, resource in CORE_CRDS.items():
@@ -133,6 +159,7 @@ def probe_runtime_backends(*, runner: Runner, kube_context: str | None, evidence
         selected_namespace, mesh_pods = partial_mesh
 
     http_evidence = _load_httpchaos_evidence(evidence_root, kube_context)
+    platform_evidence = _load_platform_evidence(evidence_root, kube_context)
     return {
         "schema_version": "chaosatlas-runtime-capability-probe-v1",
         "checked_at": datetime.now(timezone.utc).isoformat(),
@@ -146,6 +173,8 @@ def probe_runtime_backends(*, runner: Runner, kube_context: str | None, evidence
         "crds": crds,
         "httpchaos_runtime_verified": http_evidence.get("verified") is True,
         "httpchaos_runtime_evidence": http_evidence,
+        "api_server_delay_runtime_verified": platform_evidence.get("verified") is True,
+        "platform_runtime_evidence": platform_evidence,
         "read_only": True,
         "injection_performed": False,
     }
