@@ -582,6 +582,23 @@ class KubernetesLifecycleExecutor:
             "cleanup": {"confirmed": False},
             "errors": [],
         }
+        workflow_context = {"run_id": action_id, "namespace": self.namespace, "action_id": action_id}
+        workflow_prepared = False
+
+        def workflow_call(name: str, default: Any) -> Any:
+            callback = self.hooks.get(name)
+            if callback is None:
+                return default
+            try:
+                value = callback(workflow_context)
+            except Exception as exc:
+                return {"status": "failed", "reason_code": type(exc).__name__}
+            return value if isinstance(value, dict) else {"status": "failed", "reason_code": "invalid_workflow_result"}
+
+        def workflow_cleanup() -> dict[str, Any]:
+            if not workflow_prepared:
+                return {"status": "not_required", "cleanup_confirmed": True}
+            return workflow_call("cleanup_fixture", {"status": "not_required", "cleanup_confirmed": True})
         applied = False
         gate = self._hook(
             "gate",
@@ -644,12 +661,25 @@ class KubernetesLifecycleExecutor:
                     self._write_result(action_id, result)
                     return result
 
+        prepared_fixture = workflow_call("prepare_fixture", {"status": "not_required", "cleanup_confirmed": True})
+        if prepared_fixture.get("status") not in {"prepared", "not_required"}:
+            result["status"] = "business_fixture_prepare_failed"
+            result["business_fixture"] = prepared_fixture
+            result["errors"].append("business workflow fixture preparation failed")
+            self._write_result(action_id, result)
+            return result
+        workflow_prepared = prepared_fixture.get("status") == "prepared"
+        result["business_fixture"] = prepared_fixture
+
         baseline = self._hook("probe", self._default_probe)("baseline", manifest)
         result["baseline"] = baseline
         lifecycle.append("baseline")
         if baseline.get("status") != "pass":
             result["status"] = "business_not_reachable"
             result["errors"].append("independent business baseline did not pass")
+            business_cleanup = workflow_cleanup()
+            result["cleanup"] = {"confirmed": business_cleanup.get("cleanup_confirmed") is True,
+                                  "business": business_cleanup}
             self._write_result(action_id, result)
             return result
 
@@ -712,6 +742,7 @@ class KubernetesLifecycleExecutor:
                     result["errors"].extend(recovery_errors)
                     lifecycle.append("recover")
                     result["status"] = "executed" if recovered else "recovery_timeout"
+                    result["business_evidence"] = workflow_call("collect_evidence", {"status": "not_required"})
         finally:
             if applied:
                 cleanup = self._hook("delete", self._delete)(kind, namespace, name)
@@ -728,6 +759,9 @@ class KubernetesLifecycleExecutor:
                     "resource": cleanup,
                     "chaos_mesh": mesh_cleanup,
                 }
+                business_cleanup = workflow_cleanup()
+                result["cleanup"]["business"] = business_cleanup
+                result["cleanup"]["confirmed"] = result["cleanup"]["confirmed"] and business_cleanup.get("cleanup_confirmed") is True
                 recovery_signals = self._collect_recovery_signals(manifest, target_pods)
                 if recovery_signals is not None:
                     recovery_signals["chaos_mesh"] = bool(result["recovery"].get("confirmed"))

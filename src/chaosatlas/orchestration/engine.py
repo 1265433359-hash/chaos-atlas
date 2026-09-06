@@ -1590,6 +1590,11 @@ def run_closed_loop(
                     default_probe=lifecycle_executor._default_probe,
                 )
                 lifecycle_executor.hooks["probe"] = business_oracle.probe
+                # All live candidates use the same WorkflowOracle lifecycle;
+                # probe-only Oracles retain no-op fixture methods.
+                lifecycle_executor.hooks["prepare_fixture"] = business_oracle.prepare_fixture
+                lifecycle_executor.hooks["collect_evidence"] = business_oracle.collect_evidence
+                lifecycle_executor.hooks["cleanup_fixture"] = business_oracle.cleanup_fixture
                 namespace_policy = profile.get("namespace_policy") or {}
                 isolated_api = bool(namespace_policy.get("disposable") or (namespace_policy.get("isolation_required") and namespace.startswith("chaosatlas-run-")))
                 api_executor = KubernetesApiFaultExecutor(
