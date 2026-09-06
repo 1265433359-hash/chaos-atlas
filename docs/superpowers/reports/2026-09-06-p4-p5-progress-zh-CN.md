@@ -42,6 +42,9 @@
 观测结果为：Immich ping `200`、其 openapi 路径 `404`；Medusa regions/products 在无 key 时均 `400`；Rocket.Chat info `404`、settings.public `200`；ERPNext 两个候选路径 `404`。
 这些结果只说明当前路径/认证组合的 HTTP 行为，不能证明接口不存在或业务能力不支持；原始业务响应没有落盘。
 
+按 2A/3A 的最小范围只读核对了四个测试 namespace 的 Secret 元数据（名称、UID、类型、键名），没有读取任何值：Immich 有 `immich-db`，Medusa 有 `medusa-secrets`，Rocket.Chat 有其 MongoDB/应用 Secret，ERPNext 有 `erpnext-admin`。
+这些 Secret 不是自动等价于应用管理员或事务测试身份；当前尚未验证可用的业务凭据，也未创建账号或发送通知。
+
 ## 测试证据
 
 全量测试：**459 passed**。本轮新增 v3 入口、工厂、结构化 builder 和 API 只读采集回归；原始输出：
