@@ -3,19 +3,16 @@
 from __future__ import annotations
 
 import argparse
-import binascii
 from datetime import datetime, timezone
 import hashlib
 import json
 import os
 from pathlib import Path
 import subprocess
-import struct
 import sys
 import time
 from types import SimpleNamespace
 from typing import Any
-import zlib
 
 REPOSITORY = Path(__file__).resolve().parents[1]
 if str(REPOSITORY) not in sys.path:
@@ -26,69 +23,11 @@ from chaosatlas.isolation.manager import IsolationManager
 from chaosatlas.isolation.providers import KubernetesIsolationProvider, ProviderRegistry
 from chaosatlas.oracles.identity_bootstrap import BOOTSTRAPPERS, KubernetesIdentityEnvironment
 from chaosatlas.oracles.recovery_ledger import RecoveryLedger
+from chaosatlas.oracles.synthetic_fixtures import create_unique_png, verify_png
 from chaosatlas.oracles.transaction_contracts import validate_transaction_contract
 from chaosatlas.workspace import is_within, runs_root
 from scripts.run_transaction_identity_acceptance import PROJECTS, _plan, _profile, _scan_persisted_values, _write
 from scripts.run_transaction_oracle_acceptance import run as run_transaction
-
-
-def _chunk(kind: bytes, payload: bytes) -> bytes:
-    return struct.pack(">I", len(payload)) + kind + payload + struct.pack(">I", binascii.crc32(kind + payload) & 0xFFFFFFFF)
-
-
-def create_unique_png(path: Path) -> dict[str, Any]:
-    """Create a tiny unique RGBA fixture, then decode and validate it separately."""
-    width, height = 2, 2
-    pixels = os.urandom(width * height * 4)
-    rows = b"".join(b"\x00" + pixels[index:index + width * 4] for index in range(0, len(pixels), width * 4))
-    payload = (
-        b"\x89PNG\r\n\x1a\n"
-        + _chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0))
-        + _chunk(b"IDAT", zlib.compress(rows))
-        + _chunk(b"IEND", b"")
-    )
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(payload)
-    return verify_png(path)
-
-
-def verify_png(path: Path) -> dict[str, Any]:
-    """Bounded PNG decoder used independently from the fixture encoder."""
-    payload = path.read_bytes()
-    if not payload.startswith(b"\x89PNG\r\n\x1a\n") or len(payload) > 1048576:
-        raise ValueError("invalid bounded PNG signature")
-    offset, header, compressed, ended = 8, None, bytearray(), False
-    while offset < len(payload):
-        if offset + 12 > len(payload):
-            raise ValueError("truncated PNG chunk")
-        length = struct.unpack(">I", payload[offset:offset + 4])[0]
-        if length > 1048576 or offset + 12 + length > len(payload):
-            raise ValueError("invalid PNG chunk length")
-        kind = payload[offset + 4:offset + 8]
-        data = payload[offset + 8:offset + 8 + length]
-        expected_crc = struct.unpack(">I", payload[offset + 8 + length:offset + 12 + length])[0]
-        if binascii.crc32(kind + data) & 0xFFFFFFFF != expected_crc:
-            raise ValueError("invalid PNG chunk checksum")
-        if kind == b"IHDR":
-            if header is not None or length != 13:
-                raise ValueError("invalid PNG header")
-            header = struct.unpack(">IIBBBBB", data)
-        elif kind == b"IDAT":
-            compressed.extend(data)
-        elif kind == b"IEND":
-            ended = True
-            offset += 12 + length
-            break
-        offset += 12 + length
-    if header != (2, 2, 8, 6, 0, 0, 0) or not ended or offset != len(payload):
-        raise ValueError("unexpected PNG structure")
-    decoded = zlib.decompress(bytes(compressed))
-    if len(decoded) != 18 or decoded[0] != 0 or decoded[9] != 0:
-        raise ValueError("unexpected decoded PNG raster")
-    return {
-        "decoder": "stdlib-crc-zlib-rgba8-v1", "width": 2, "height": 2,
-        "byte_length": len(payload), "sha256": hashlib.sha256(payload).hexdigest(),
-    }
 
 
 def _contract(approval_dir: Path, project: str) -> tuple[Path, dict[str, Any]]:

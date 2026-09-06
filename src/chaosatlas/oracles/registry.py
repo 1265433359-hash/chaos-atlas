@@ -6,6 +6,10 @@ from dataclasses import dataclass
 from typing import Any, Callable
 
 from chaosatlas.oracles.contracts import ProbeWorkflowOracle, WorkflowOracle
+from chaosatlas.oracles.transaction_factory import (
+    TransactionOracleDependencies,
+    TransactionOracleFactory,
+)
 from tools.dify_chatflow_oracle import DifyChatflowOracle
 
 
@@ -14,6 +18,7 @@ class OracleRuntime:
     namespace: str
     kube_context: str | None = None
     default_probe: Callable[[str, dict[str, Any]], dict[str, Any]] | None = None
+    transaction_dependencies: TransactionOracleDependencies | None = None
 
 
 OracleFactory = Callable[[dict[str, Any], OracleRuntime], WorkflowOracle]
@@ -46,6 +51,7 @@ class OracleRegistry:
         namespace: str,
         kube_context: str | None = None,
         default_probe: Callable[[str, dict[str, Any]], dict[str, Any]] | None = None,
+        transaction_dependencies: TransactionOracleDependencies | None = None,
     ) -> WorkflowOracle:
         kind = str(oracle.get("kind") or "http").strip().lower()
         factory = self._factories.get(kind)
@@ -57,6 +63,7 @@ class OracleRegistry:
                 namespace=str(namespace),
                 kube_context=str(kube_context).strip() if kube_context else None,
                 default_probe=default_probe,
+                transaction_dependencies=transaction_dependencies,
             ),
         )
         if not isinstance(workflow, WorkflowOracle):
@@ -82,11 +89,18 @@ def _dify_factory(oracle: dict[str, Any], runtime: OracleRuntime) -> WorkflowOra
     return ProbeWorkflowOracle(probe, "dify_chatflow")
 
 
+def _transaction_factory(_oracle: dict[str, Any], runtime: OracleRuntime) -> WorkflowOracle:
+    if runtime.transaction_dependencies is None:
+        raise ValueError("transaction_http oracle requires explicit lease-bound dependencies")
+    return TransactionOracleFactory.from_dependencies(runtime.transaction_dependencies).build()
+
+
 def build_default_oracle_registry() -> OracleRegistry:
     registry = OracleRegistry()
     registry.register("http", _lifecycle_factory("http"))
     registry.register("grpc", _lifecycle_factory("grpc"))
     registry.register("dify_chatflow", _dify_factory)
+    registry.register("transaction_http", _transaction_factory)
     return registry
 
 

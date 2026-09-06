@@ -103,6 +103,18 @@ def test_oracle_self_check_mutates_real_observations_only_in_memory(tmp_path):
     assert replay.cleanup()['cleanup_confirmed'] is True
 
 
+def test_probe_exposes_only_bounded_assertion_samples(tmp_path):
+    replay = session(tmp_path)
+    assert replay.prepare(run_id='run-samples')['status'] == 'prepared'
+
+    result = replay.probe('baseline')
+
+    assert result['status'] == 'pass'
+    assert result['samples']
+    assert all(set(sample) == {'assertion_id', 'status'} for sample in result['samples'])
+    assert replay.cleanup()['cleanup_confirmed'] is True
+
+
 def test_oracle_self_check_requires_successful_real_observations(tmp_path):
     replay = session(tmp_path)
     with pytest.raises(ValueError, match='successful prepare'):

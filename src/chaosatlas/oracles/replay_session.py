@@ -288,7 +288,16 @@ class ReplaySession:
             for identifier in self._contract['probe_steps']:
                 observations[identifier] = self._read(self._steps[identifier], self._contract['probe_assertions'])
             result = evaluate_assertions({'assertions': self._contract['probe_assertions']}, observations, self._variables)
-            return {**result, 'phase': phase, 'claim_scope': 'synthetic_test_only' if self._contract['approval']['record'].get('reviewer') == 'synthetic-test-only' else 'real_business_transaction'}
+            samples = [
+                {'assertion_id': assertion_id, 'status': 'pass' if passed else 'fail'}
+                for assertion_id, passed in sorted((result.get('assertions') or {}).items())
+            ]
+            return {
+                **result,
+                'phase': phase,
+                'samples': samples,
+                'claim_scope': 'synthetic_test_only' if self._contract['approval']['record'].get('reviewer') == 'synthetic-test-only' else 'real_business_transaction',
+            }
 
     def self_check(self):
         """Prove each business assertion rejects one in-memory counterfactual.

@@ -27,3 +27,20 @@ def test_factory_does_not_accept_live_without_approved_lease(tmp_path):
         assert 'verified LeaseRuntime' in str(exc)
     else:
         raise AssertionError('live construction must remain gated')
+
+
+def test_managed_factory_closes_runtime_after_cleanup(tmp_path):
+    runtime = Runtime()
+    transport = Transport()
+    closed = []
+    runtime.open = lambda: transport
+    runtime.close = lambda: closed.append(True)
+    oracle = TransactionOracleFactory(
+        runtime=runtime, contract=frozen(), fixtures={}, credential_headers=lambda _: {},
+        ledger_root=tmp_path, journal=lambda _: None, synthetic_test_only=True,
+    ).build()
+
+    oracle.cleanup_fixture({"run_id": "synthetic-run"})
+    oracle.cleanup_fixture({"run_id": "synthetic-run"})
+
+    assert closed == [True]

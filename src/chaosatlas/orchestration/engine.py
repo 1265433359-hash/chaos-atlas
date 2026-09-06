@@ -37,7 +37,13 @@ from tools.compile_scenario_node import compile_scenario
 from tools.deployment_capability import build_deployment_node, build_scenario_node
 from tools.run_deployment_scenario import run_scenario
 from tools.kubernetes_lifecycle_executor import KubernetesLifecycleExecutor
-from chaosatlas.oracles import DEFAULT_ORACLE_REGISTRY, OracleRegistry
+from chaosatlas.oracles import (
+    DEFAULT_ORACLE_REGISTRY,
+    LeaseTransactionDependencyFactory,
+    OracleRegistry,
+    TransactionOracleDependencies,
+    bind_transaction_oracle_profile,
+)
 from tools.kubernetes_fault_executor import KubernetesApiFaultExecutor, ControlPlaneDelayExecutor
 from tools.minikube_control_plane_mutator import MinikubeControlPlaneMutator
 from tools.native_resource_fault_executor import NativeResourceFaultExecutor
@@ -60,6 +66,7 @@ from tools.knowledge_migration_audit import build_consumption_report
 from tools.hypothesis_registry import build_hypothesis_registry, build_project_portrait
 from tools.registry_shadow import build_registry_shadow, evaluate_registry_quality
 from tools.reproduction_policy import MIN_STABLE_REPRODUCTIONS
+from chaosatlas.orchestration.workflow_executor import WorkflowBoundFaultExecutor
 
 
 @dataclass(frozen=True)
@@ -89,11 +96,15 @@ class RunRequest:
     isolation_fault: str | None = None
     approve_isolation: bool = False
     isolation_ttl_minutes: int = 60
+    oracle_approval_dir: Path | None = None
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "profile_path", Path(self.profile_path))
         object.__setattr__(self, "output_root", Path(self.output_root))
-        for name in ("knowledge_root", "defense_history_root", "knowledge_write_root", "policy_state_path"):
+        for name in (
+            "knowledge_root", "defense_history_root", "knowledge_write_root",
+            "policy_state_path", "oracle_approval_dir",
+        ):
             value = getattr(self, name)
             if value is not None:
                 object.__setattr__(self, name, Path(value))
@@ -119,6 +130,8 @@ class RunRequest:
             raise ValueError("isolation_ttl_minutes must be between 1 and 240")
         if self.isolation_fault and (self.all_candidates or (self.max_candidates is not None and self.max_candidates != 1)):
             raise ValueError("one isolated lease may execute exactly one candidate")
+        if self.oracle_approval_dir is not None and (self.mode != "live" or not self.isolation_fault):
+            raise ValueError("approved transaction Oracle execution requires isolated live mode")
 
 
 @dataclass(frozen=True)
@@ -130,6 +143,9 @@ class RunDependencies:
     live_adapter: Any | None = None
     live_evidence_collector: Any | None = None
     live_preflight: Any | None = None
+    transaction_dependencies_factory: Callable[
+        [dict[str, Any], str, str | None, Path], TransactionOracleDependencies
+    ] | None = None
 
 
 class PlanExecutor:
@@ -1221,6 +1237,9 @@ def run_closed_loop(
     registry_shadow: bool = False,
     kube_context: str | None = None,
     oracle_registry: OracleRegistry = DEFAULT_ORACLE_REGISTRY,
+    transaction_dependencies_factory: Callable[
+        [dict[str, Any], str, str | None, Path], TransactionOracleDependencies
+    ] | None = None,
 ) -> dict[str, Any]:
     profile_path = Path(profile_path)
     output_root = Path(output_root)
@@ -1631,11 +1650,21 @@ def run_closed_loop(
                     allow_live=True, oracle=runtime_oracle,
                     kube_context=kube_context,
                 )
+                transaction_dependencies = None
+                if runtime_oracle.get("kind") == "transaction_http":
+                    if transaction_dependencies_factory is None:
+                        raise ValueError(
+                            "transaction_http oracle requires an explicit isolated runtime dependency factory"
+                        )
+                    transaction_dependencies = transaction_dependencies_factory(
+                        runtime_oracle, namespace, kube_context, output_root,
+                    )
                 business_oracle = oracle_registry.create(
                     runtime_oracle,
                     namespace=namespace,
                     kube_context=kube_context,
                     default_probe=lifecycle_executor._default_probe,
+                    transaction_dependencies=transaction_dependencies,
                 )
                 lifecycle_executor.hooks["probe"] = business_oracle.probe
                 # All live candidates use the same WorkflowOracle lifecycle;
@@ -1686,18 +1715,20 @@ def run_closed_loop(
                     def probe_for_manifest(probe_phase: str) -> dict[str, Any]:
                         return business_oracle.probe(probe_phase, manifest)
 
+                    def execute_specialized(executor: Any) -> dict[str, Any]:
+                        executor.probe = probe_for_manifest
+                        return WorkflowBoundFaultExecutor(executor, business_oracle)(
+                            manifest, phase, fault,
+                        )
+
                     if manifest.get("kind") == "ChaosAtlasKubernetesFault":
-                        api_executor.probe = probe_for_manifest
-                        return api_executor(manifest, phase, fault)
+                        return execute_specialized(api_executor)
                     if manifest.get("kind") == "ChaosAtlasNativeFault":
-                        native_executor.probe = probe_for_manifest
-                        return native_executor(manifest, phase, fault)
+                        return execute_specialized(native_executor)
                     if manifest.get("kind") == "ChaosAtlasNativeHttpFault":
-                        native_http_executor.probe = probe_for_manifest
-                        return native_http_executor(manifest, phase, fault)
+                        return execute_specialized(native_http_executor)
                     if manifest.get("kind") == "ChaosAtlasControlPlaneFault":
-                        control_plane_executor.probe = probe_for_manifest
-                        return control_plane_executor(manifest, phase=phase, fault=fault)
+                        return execute_specialized(control_plane_executor)
                     return lifecycle_executor(manifest, phase, fault)
             execution = run_scenario(scenario, compiled=compiled, dry_run=False, executor=live_executor)
             phase_fault = ((execution.get("phases") or [{}])[0].get("faults") or [{}])[0]
@@ -1940,6 +1971,10 @@ class RunEngine:
 
     def _run_candidate(self, **kwargs: Any) -> dict[str, Any]:
         """Execute one candidate through the same stage machine in every mode."""
+        transaction_dependencies_factory = kwargs.pop(
+            "transaction_dependencies_factory",
+            self.dependencies.transaction_dependencies_factory,
+        )
         return run_closed_loop(
             **kwargs,
             live_executor=self.dependencies.live_executor,
@@ -1947,6 +1982,7 @@ class RunEngine:
             live_evidence_collector=self.dependencies.live_evidence_collector,
             live_preflight=self.dependencies.live_preflight,
             oracle_registry=self.dependencies.oracle_registry,
+            transaction_dependencies_factory=transaction_dependencies_factory,
         )
 
     def run_candidate(self, request: RunRequest) -> dict[str, Any]:
@@ -1987,7 +2023,27 @@ class RunEngine:
                     }
                 from chaosatlas.orchestration.isolated_run import run_isolated_live
 
-                def execute_isolated(profile_path: Path, output_root: Path, kube_context: str | None) -> dict[str, Any]:
+                def execute_isolated(
+                    profile_path: Path,
+                    output_root: Path,
+                    kube_context: str | None,
+                    isolation_context: Any,
+                ) -> dict[str, Any]:
+                    transaction_factory = None
+                    if request.oracle_approval_dir is not None:
+                        transaction_factory = LeaseTransactionDependencyFactory(
+                            manager=isolation_context.manager,
+                            lease_id=isolation_context.lease_id,
+                            approval_dir=request.oracle_approval_dir,
+                            project_id=isolation_context.project_id,
+                        )
+
+                    def isolated_candidate_runner(**kwargs: Any) -> dict[str, Any]:
+                        return self._run_candidate(
+                            **kwargs,
+                            transaction_dependencies_factory=transaction_factory,
+                        )
+
                     return run_live_batch(
                         profile_path=profile_path,
                         output_root=output_root,
@@ -2006,7 +2062,7 @@ class RunEngine:
                         live_adapter=None,
                         live_evidence_collector=self.dependencies.live_evidence_collector,
                         live_preflight=self.dependencies.live_preflight,
-                        candidate_runner=self._run_candidate,
+                        candidate_runner=isolated_candidate_runner,
                         advisory_provider=request.advisory_provider,
                         defense_history_root=request.defense_history_root,
                         registry_shadow=request.registry_shadow,
@@ -2018,6 +2074,12 @@ class RunEngine:
                     fault_id=request.isolation_fault,
                     ttl_minutes=request.isolation_ttl_minutes,
                     execute=execute_isolated,
+                    profile_transform=(
+                        (lambda profile: bind_transaction_oracle_profile(
+                            profile, request.oracle_approval_dir,
+                        ))
+                        if request.oracle_approval_dir is not None else None
+                    ),
                 )
 
             candidate_ids = [request.candidate_id] if request.candidate_id else None

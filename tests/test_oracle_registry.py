@@ -1,5 +1,13 @@
-from chaosatlas.oracles import OracleRegistry, ProbeWorkflowOracle, build_default_oracle_registry
+import pytest
+
+from chaosatlas.oracles import (
+    OracleRegistry,
+    ProbeWorkflowOracle,
+    TransactionOracleDependencies,
+    build_default_oracle_registry,
+)
 from chaosatlas.orchestration.engine import RunEngine, RunRequest, _runtime_oracle
+from test_transaction_v3_session import Runtime, Transport, frozen
 
 
 def test_builtin_http_oracle_uses_workflow_contract():
@@ -58,6 +66,34 @@ def test_registry_rejects_unknown_oracle_kind():
         assert "does not support unknown" in str(exc)
     else:
         raise AssertionError("unknown oracle kind was accepted")
+
+
+def test_registered_transaction_oracle_requires_explicit_dependencies(tmp_path):
+    registry = build_default_oracle_registry()
+    assert registry.supports("transaction_http")
+
+    with pytest.raises(ValueError, match="lease-bound dependencies"):
+        registry.create(
+            {"kind": "transaction_http"}, namespace="test-lab",
+        )
+
+    runtime = Runtime()
+    transport = Transport()
+    runtime.open = lambda: transport
+    workflow = registry.create(
+        {"kind": "transaction_http"}, namespace="test-lab",
+        transaction_dependencies=TransactionOracleDependencies(
+            runtime=runtime,
+            contract=frozen(),
+            fixtures={},
+            credential_headers=lambda _reference: {},
+            ledger_root=tmp_path,
+            journal=lambda _event: None,
+            synthetic_test_only=True,
+        ),
+    )
+
+    assert workflow.replayer.transport is transport
 
 
 def test_single_live_run_uses_shared_candidate_loop_with_budget_one(monkeypatch, tmp_path):

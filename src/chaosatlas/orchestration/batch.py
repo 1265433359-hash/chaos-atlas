@@ -13,6 +13,7 @@ from typing import Any, Callable
 
 from chaosatlas.orchestration.engine import _find_candidate, _runtime_oracle
 from chaosatlas.oracles import DEFAULT_ORACLE_REGISTRY, OracleRegistry
+from chaosatlas.oracles.transaction_factory import TransactionOracleDependencies
 from tools.experiment_policy import new_policy_state
 from tools.experiment_policy_feedback import ingest_runtime_result, write_policy_state
 from tools.kubernetes_project_adapter import KubernetesProjectAdapter
@@ -184,6 +185,26 @@ def enrich_batch_result_from_artifacts(result: dict[str, Any], child_root: Path)
             cleanup = {}
         if isinstance(cleanup, dict) and cleanup.get("status"):
             enriched["cleanup_status"] = cleanup["status"]
+    execute_path = child_root / "execute.json"
+    if execute_path.is_file() and "injection_confirmed" not in enriched:
+        try:
+            execute = json.loads(execute_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            execute = {}
+        payload = execute.get("payload") if isinstance(execute, dict) else {}
+        faults = [
+            fault
+            for phase in (payload or {}).get("phases") or []
+            if isinstance(phase, dict)
+            for fault in phase.get("faults") or []
+            if isinstance(fault, dict)
+        ]
+        enriched["injection_confirmed"] = bool(faults) and all(
+            fault.get("injection_confirmed") is True for fault in faults
+        )
+        enriched["injection_confirmation"] = [
+            fault.get("injection_confirmation") for fault in faults
+        ]
     return enriched
 
 
@@ -479,6 +500,9 @@ def run_live_batch(
     advisory_provider: Callable[[dict[str, Any]], Any] | None = None,
     defense_history_root: Path | None = None,
     registry_shadow: bool = False,
+    transaction_dependencies_factory: Callable[
+        [dict[str, Any], str, str | None, Path], TransactionOracleDependencies
+    ] | None = None,
 ) -> dict[str, Any]:
     """Run each selected candidate in its own immutable child output directory."""
     profile_path = Path(profile_path)
@@ -503,6 +527,7 @@ def run_live_batch(
                 live_adapter=adapter,
                 live_evidence_collector=live_evidence_collector,
                 live_preflight=live_preflight,
+                transaction_dependencies_factory=transaction_dependencies_factory,
             )
         )
         candidate_runner = candidate_engine._run_candidate
@@ -684,7 +709,7 @@ def run_live_batch(
             if candidate_id not in results_by_id:
                 append_batch_state(batch_state_path, candidate_id=candidate_id, state="planned")
                 try:
-                    result = candidate_runner(
+                    candidate_kwargs = dict(
                         profile_path=profile_path,
                         output_root=child,
                         mode="live",
@@ -698,6 +723,9 @@ def run_live_batch(
                         registry_shadow=registry_shadow,
                         kube_context=kube_context,
                     )
+                    if transaction_dependencies_factory is not None:
+                        candidate_kwargs["transaction_dependencies_factory"] = transaction_dependencies_factory
+                    result = candidate_runner(**candidate_kwargs)
                 except Exception as exc:
                     result = {"status": "method_invalid", "error": str(exc)}
                 result = enrich_batch_result_from_artifacts(
@@ -767,7 +795,7 @@ def run_live_batch(
             continue
         child = _candidate_output_root(output_root, candidate_id)
         try:
-            result = candidate_runner(
+            candidate_kwargs = dict(
                 profile_path=profile_path,
                 output_root=child,
                 mode="live",
@@ -781,6 +809,9 @@ def run_live_batch(
                 registry_shadow=registry_shadow,
                 kube_context=kube_context,
             )
+            if transaction_dependencies_factory is not None:
+                candidate_kwargs["transaction_dependencies_factory"] = transaction_dependencies_factory
+            result = candidate_runner(**candidate_kwargs)
         except Exception as exc:
             result = {"status": "failed", "error": str(exc)}
         result = enrich_batch_result_from_artifacts(

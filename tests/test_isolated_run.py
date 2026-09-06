@@ -78,10 +78,16 @@ def test_isolated_live_binds_ready_lease_and_always_releases(tmp_path):
     manager = FakeManager()
     observed = {}
 
-    def execute(profile_path, output_root, context):
+    def execute(profile_path, output_root, context, isolation_context):
         runtime = json.loads(profile_path.read_text(encoding="utf-8"))
-        observed.update({"profile": runtime, "output": output_root, "context": context})
-        return {"status": "completed", "executed_count": 1, "completed_count": 1}
+        observed.update({
+            "profile": runtime, "output": output_root, "context": context,
+            "isolation_context": isolation_context,
+        })
+        return {
+            "status": "completed", "executed_count": 1, "completed_count": 1,
+            "results": [{"injection_confirmed": True}],
+        }
 
     result = run_isolated_live(
         profile_path=_profile(tmp_path / "project"),
@@ -94,9 +100,11 @@ def test_isolated_live_binds_ready_lease_and_always_releases(tmp_path):
 
     assert result["status"] == "completed"
     assert result["isolation"]["status"] == "verified"
+    assert result["isolation"]["injection_performed"] is True
     assert result["isolation"]["cleanup_state"] == "released"
     assert manager.released == ["lease-1234567890abcdef"]
     assert observed["context"] == "test-context"
+    assert observed["isolation_context"].lease_id == "lease-1234567890abcdef"
     assert observed["profile"]["namespace_policy"]["allowed_namespaces"] == ["ca-l2-demo-1234567890"]
     assert observed["profile"]["runtime_contract"]["supported_fault_families"] == ["image_pull_failure"]
     assert "blueprint" not in observed["profile"]["isolation"]["l2"]
@@ -109,12 +117,16 @@ def test_isolated_live_marks_cleanup_failure_partial(tmp_path):
         output_root=tmp_path / "run",
         fault_id="image_pull_failure",
         ttl_minutes=30,
-        execute=lambda *_: {"status": "completed", "executed_count": 1},
+        execute=lambda *_: {
+            "status": "completed", "executed_count": 1,
+            "results": [{"injection_confirmed": False}],
+        },
         manager=manager,
     )
 
     assert result["status"] == "partial"
     assert result["isolation"]["cleanup_state"] == "cleanup_failed"
+    assert result["isolation"]["injection_performed"] is False
 
 
 def test_run_request_requires_explicit_isolation_approval():

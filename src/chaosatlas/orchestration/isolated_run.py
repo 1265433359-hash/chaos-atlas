@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from dataclasses import dataclass
 import hashlib
 import json
 from pathlib import Path
@@ -15,7 +16,17 @@ from chaosatlas.isolation.planner import IsolationPlanner
 from chaosatlas.isolation.providers import KubernetesIsolationProvider, MinikubeIsolationProvider, ProviderRegistry
 
 
-Executor = Callable[[Path, Path, str | None], dict[str, Any]]
+@dataclass(frozen=True)
+class IsolationExecutionContext:
+    manager: IsolationManager
+    lease_id: str
+    project_id: str
+    namespace: str
+    kube_context: str | None
+
+
+Executor = Callable[[Path, Path, str | None, IsolationExecutionContext], dict[str, Any]]
+ProfileTransform = Callable[[dict[str, Any]], dict[str, Any]]
 
 
 def _write_json(path: Path, value: dict[str, Any]) -> None:
@@ -134,6 +145,7 @@ def run_isolated_live(
     ttl_minutes: int,
     execute: Executor,
     manager: IsolationManager | None = None,
+    profile_transform: ProfileTransform | None = None,
 ) -> dict[str, Any]:
     """Prepare, bind, execute and always release one isolated live run."""
     output_root = Path(output_root).expanduser().resolve()
@@ -183,14 +195,32 @@ def run_isolated_live(
             plan=plan,
             lease=lease,
         )
+        if profile_transform is not None:
+            runtime_profile = profile_transform(runtime_profile)
+            if not isinstance(runtime_profile, dict):
+                raise TypeError("isolated runtime profile transform must return an object")
         runtime_profile_path = output_root / "runtime-profile.json"
         _write_json(runtime_profile_path, runtime_profile)
         lifecycle["runtime_profile_sha256"] = hashlib.sha256(runtime_profile_path.read_bytes()).hexdigest()
         lifecycle["status"] = "running"
         _write_json(lifecycle_path, lifecycle)
         context = str((lease.get("runtime_locator") or {}).get("kube_context") or plan.get("kube_context") or "") or None
-        inner = execute(runtime_profile_path, output_root / "run", context)
-        lifecycle["injection_performed"] = int(inner.get("executed_count") or 0) > 0
+        inner = execute(
+            runtime_profile_path,
+            output_root / "run",
+            context,
+            IsolationExecutionContext(
+                manager=active_manager,
+                lease_id=str(lease["lease_id"]),
+                project_id=str(profile.get("project_id") or ""),
+                namespace=str(lease.get("target_name") or ""),
+                kube_context=context,
+            ),
+        )
+        lifecycle["injection_performed"] = any(
+            isinstance(item, dict) and item.get("injection_confirmed") is True
+            for item in (inner.get("results") or [])
+        )
         lifecycle["inner_status"] = inner.get("status")
     except (OSError, UnicodeError, json.JSONDecodeError, ValueError, RuntimeError, KeyError, TypeError) as exc:
         lifecycle["errors"].append(f"{type(exc).__name__}: {exc}")

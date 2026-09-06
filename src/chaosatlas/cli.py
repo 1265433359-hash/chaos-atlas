@@ -237,6 +237,7 @@ def _run_live(args: argparse.Namespace) -> tuple[dict, int]:
         isolation_fault=args.isolation_fault,
         approve_isolation=bool(args.approve_isolation),
         isolation_ttl_minutes=args.isolation_ttl_minutes,
+        oracle_approval_dir=Path(args.oracle_approval_dir) if args.oracle_approval_dir else None,
     ))
     status = str(result.get("status") or "method_invalid")
     return result, 0 if status in {"live_completed", "completed"} else 2
@@ -278,6 +279,10 @@ def _parser() -> argparse.ArgumentParser:
     run.add_argument("--isolation-fault", help="prepare an owned isolation route for exactly one live fault family")
     run.add_argument("--approve-isolation", action="store_true", help="approve creation and verified cleanup of the declared isolation route")
     run.add_argument("--isolation-ttl-minutes", type=int, default=60)
+    run.add_argument(
+        "--oracle-approval-dir",
+        help="exact in-repository approved transaction batch for an isolated live run",
+    )
 
     inventory = subparsers.add_parser("inventory", help="Build a repository inventory.")
     inventory.add_argument("--root", default=".")
