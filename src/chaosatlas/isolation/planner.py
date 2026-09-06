@@ -126,6 +126,7 @@ class IsolationPlanner:
             "target_namespace_or_profile": f"ca-{effective.lower()}-{_safe_fragment(project_id)}-<lease>",
             "resource_budget": deepcopy(config.get("resource_budget") or {"cpu": "2", "memory": "2Gi", "pods": 20}),
             "ready_timeout_s": int(config.get("ready_timeout_s") or 180),
+            "cleanup_timeout_s": int(config.get("cleanup_timeout_s") or 90),
             "expected_workloads": deepcopy(config.get("expected_workloads") or []),
             "blueprint": deepcopy(safe_config.get("blueprint")) if isinstance(safe_config.get("blueprint"), dict) else None,
             "target": deepcopy(safe_target),

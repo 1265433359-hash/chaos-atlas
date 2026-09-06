@@ -34,6 +34,25 @@ def _causal_digest(candidate: dict[str, Any], oracle_ids: list[str]) -> str:
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
+def _valid_outer_isolation(run_dir: Path, evidence_root: Path) -> tuple[bool, str | None]:
+    """Require the owning isolation lifecycle when a run is nested below one."""
+    current = run_dir
+    while current == evidence_root or evidence_root in current.parents:
+        path = current / "isolation-lifecycle.json"
+        if path.is_file():
+            lifecycle = _read(path)
+            valid = bool(
+                lifecycle
+                and lifecycle.get("status") == "verified"
+                and lifecycle.get("cleanup_state") == "released"
+            )
+            return valid, None if valid else str(path.relative_to(evidence_root)).replace("\\", "/")
+        if current == evidence_root:
+            break
+        current = current.parent
+    return True, None
+
+
 class CapabilityEvidenceIndex:
     """A secret-free lookup over valid completed live runs."""
 
@@ -63,6 +82,10 @@ class CapabilityEvidenceIndex:
             if summary.get("status") != "live_completed":
                 continue
             run_dir = summary_path.parent
+            isolation_valid, isolation_ref = _valid_outer_isolation(run_dir, evidence_root)
+            if not isolation_valid:
+                warnings.append(f"outer isolation lifecycle is not verified: {isolation_ref}")
+                continue
             cleanup = _read(run_dir / "cleanup_report.json")
             finding = _payload(_read(run_dir / "finding_report.json"))
             if not cleanup or cleanup.get("status") != "verified":

@@ -247,6 +247,32 @@ def test_cleanup_blocks_when_pinned_cluster_identity_changes():
     assert result == {"status": "blocked", "reason": "cluster_identity_mismatch"}
 
 
+def test_kubernetes_absence_confirmation_waits_for_slow_namespace_deletion(monkeypatch):
+    lease = _ready_lease(cluster_uid="cluster-uid")
+    calls = 0
+
+    def runner(args, timeout=60, input_text=None):
+        nonlocal calls
+        command = args[2:] if args[:2] == ["--context", "test"] else args
+        if command[:3] == ["get", "namespace", "kube-system"]:
+            return 0, json.dumps({"metadata": {"uid": "cluster-uid"}}), ""
+        if command[:2] == ["get", "namespace"]:
+            calls += 1
+            if calls < 4:
+                return 0, json.dumps({"metadata": {"uid": "namespace-uid"}}), ""
+            return 1, "", "Error from server (NotFound): namespaces not found"
+        raise AssertionError(command)
+
+    monkeypatch.setattr("chaosatlas.isolation.providers.time.sleep", lambda _seconds: None)
+    result = KubernetesIsolationProvider(name="kubernetes-l2", level="L2", runner=runner).verify_absent(
+        {"kube_context": "test", "cleanup_timeout_s": 90},
+        lease,
+    )
+
+    assert result["confirmed"] is True
+    assert calls == 4
+
+
 def test_minikube_unknown_profile_inventory_fails_closed(tmp_path):
     def runner(args, timeout=900, env=None):
         return 124, "", "minikube command unavailable"

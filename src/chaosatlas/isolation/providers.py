@@ -318,11 +318,15 @@ class KubernetesIsolationProvider:
             return {"confirmed": unchanged, "adopted_namespace_unchanged": unchanged, "errors": [] if unchanged else [error or "adopted namespace identity changed"]}
         namespace = str(lease.get("target_name") or "")
         last_error = ""
-        for _ in range(30):
+        timeout_s = max(1, min(int(plan.get("cleanup_timeout_s") or 90), 300))
+        deadline = time.monotonic() + timeout_s
+        while True:
             value, error = self._json(plan, ["get", "namespace", namespace], lease=lease)
             if value is None and _is_not_found(error):
                 return {"confirmed": True, "namespace_absent": True, "errors": []}
             last_error = error or "namespace still exists"
+            if time.monotonic() >= deadline:
+                break
             time.sleep(0.5)
         return {"confirmed": False, "namespace_absent": False, "errors": [last_error]}
 

@@ -28,7 +28,7 @@
 
 ## 已测试
 
-最终完整仓库测试：`491 passed in 14.85s`。覆盖故障效果确认、负向 fail-closed、恢复业务探针、短路径、Minikube 代理校验、preflight 路由、HTTPChaos namespace、disposable canary 汇总、blueprint 路径边界、双重批准、单候选限制和清理失败降级。
+最终完整仓库测试：`493 passed in 15.38s`。覆盖故障效果确认、负向 fail-closed、恢复业务探针、短路径、Minikube 代理校验、preflight 路由、HTTPChaos namespace、disposable canary 汇总、blueprint 路径边界、双重批准、单候选限制、慢 namespace 清理和外层隔离证据门。
 
 ## 真实证据
 
@@ -85,6 +85,20 @@
 - Medusa 当前汇总为 `blocked 15 / canary_required 17 / inapplicable 5 / supported 4`；
 - 相比上一轮 `blocked 18 / canary_required 18 / inapplicable 5 / supported 0`，三项 Kubernetes API L2 能力已由真实外部证据提升；原有 `pod_kill` 也由历史证据保持 supported；
 - 三项故障的 target 级证据均为 E2，但 `stable_reproduction_count` 为 1，Secret rotation 为 2，尚未达到三次稳定复现门槛。
+
+### Immich 副本诊断（未解锁）
+
+证据目录：
+
+- `%LOCALAPPDATA%/ChaosAtlas/runs/isolated-run-immich-secret-20260906-a`
+- `%LOCALAPPDATA%/ChaosAtlas/runs/isolated-run-immich-secret-20260906-b`
+- `%LOCALAPPDATA%/ChaosAtlas/runs/isolated-run-immich-secret-20260906-c`
+
+第一次副本中 Postgres 与 Valkey Ready，但 Immich Server 因 `getaddrinfo EAI_AGAIN immich-postgres` 未 Ready；RunEngine 未注入并自动释放租约。最小新 Pod 和带相同 NetworkPolicy 的最小 Pod 均能解析 DNS，说明不能把该现象归因于集群整体 DNS 故障。
+
+第二次副本与 Secret 轮换的内层 RunEngine 完成，但包含 StatefulSet 的命名空间在原 15 秒确认窗内尚未消失，外层正确返回 `partial/cleanup_failed`；随后使用同一持久化租约恢复并确认 `released`。第三次再次出现相同 DNS 启动错误，达到重复同因停止条件后中断，并通过租约恢复确认 released。未通过的 Immich blueprint 已从正式 profile 撤下，因此 Immich 矩阵没有被提升。
+
+该过程产生两项通用加固：Kubernetes namespace absence 确认改为计划可配置、默认 90 秒且最多 300 秒；能力证据索引若发现祖先 `isolation-lifecycle.json`，必须同时满足 `status=verified` 和 `cleanup_state=released`，否则该子运行完全不计入 E2/E3。
 
 ## 当前仍 blocked 的主要原因
 
