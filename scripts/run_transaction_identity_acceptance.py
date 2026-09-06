@@ -84,7 +84,7 @@ def _plan(profile: dict[str, Any]) -> dict[str, Any]:
 def _scan_persisted_values(root: Path) -> list[str]:
     pattern = re.compile(
         r'"(?:password|passwd|token|authorization|cookie|api[_-]?key)"\s*:\s*"'
-        r'(?!<redacted>|Aa1!\$\{|(?:postgres|mongodb)://[^"$]*\$\{)[^"\r\n]+"'
+        r'(?!<redacted>|[^"\r\n]*\$\{[A-Za-z0-9_-]+\}|(?:postgres|mongodb)://[^"$]*\$\{)[^"\r\n]+"'
         r'|-----BEGIN [A-Z ]*PRIVATE KEY-----|\bBearer\s+[A-Za-z0-9._~+/=-]{8,}',
         re.IGNORECASE,
     )

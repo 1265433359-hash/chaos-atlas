@@ -12,9 +12,15 @@ from chaosatlas.oracles.identity_bootstrap import (
     bootstrap_medusa,
     bootstrap_rocketchat,
 )
+from scripts.run_transaction_identity_acceptance import _scan_persisted_values
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+@pytest.fixture(autouse=True)
+def _no_identity_bootstrap_sleep(monkeypatch):
+    monkeypatch.setattr("chaosatlas.oracles.identity_bootstrap.time.sleep", lambda _seconds: None)
 
 
 class FakeEnvironment:
@@ -53,6 +59,20 @@ def _assert_report_has_no_values(report, *values):
     encoded = json.dumps(report, sort_keys=True)
     for value in values:
         assert value not in encoded
+
+
+def test_sensitive_value_scan_ignores_runtime_templates_but_flags_materialized_credentials(tmp_path):
+    template = tmp_path / "template.json"
+    template.write_text(
+        json.dumps({"authorization": "token ${api-key}:${api-secret}"}), encoding="utf-8",
+    )
+    assert _scan_persisted_values(tmp_path) == []
+
+    materialized = tmp_path / "materialized.json"
+    materialized.write_text(
+        json.dumps({"authorization": "token concrete-key:concrete-secret"}), encoding="utf-8",
+    )
+    assert _scan_persisted_values(tmp_path) == ["materialized.json"]
 
 
 def test_bootstrap_immich_binds_new_user_api_key_without_reporting_credentials():
@@ -101,87 +121,69 @@ def test_bootstrap_rocketchat_binds_synthetic_user_without_reporting_credentials
 
 
 def test_bootstrap_erpnext_binds_token_and_keeps_session_out_of_report():
+    authorization = "token api-key-value:api-secret-value"
     environment = FakeEnvironment(
-        secrets={("erpnext-runtime-secrets", "admin-password"): "admin-password-value"},
+        secrets={("erpnext-bootstrap-identity", "authorization"): authorization},
         responses=[
-            (200, {"message": "Logged In", "__cookie": "sid=session-value"}),
-            (200, {"data": {"name": "chaosatlas-oracle@example.com"}}),
-            (200, {"message": {"api_key": "api-key-value", "api_secret": "api-secret-value"}}),
             (200, {"data": []}),
-            (200, {"data": []}),
+            *[(200, {"data": []}) for _ in range(12)],
         ],
     )
     report, fixtures = bootstrap_erpnext(environment)
     assert fixtures == {}
-    authorization = "token api-key-value:api-secret-value"
     assert environment.bindings == [(
         "erpnext-transaction-auth", "transaction-todo-user", "chaosatlas-oracle@example.com",
         {"authorization": authorization},
     )]
-    _assert_report_has_no_values(report, "admin-password-value", "session-value", authorization)
+    assert {request[0] for request in environment.requests} == {"GET"}
+    assert report["authorization_stability_checks"] == 12
+    _assert_report_has_no_values(report, authorization)
 
 
-def test_bootstrap_erpnext_retries_only_the_read_only_authorization_check(monkeypatch):
+def test_bootstrap_erpnext_retries_only_transient_read_only_authorization_checks(monkeypatch):
     monkeypatch.setattr("chaosatlas.oracles.identity_bootstrap.time.sleep", lambda _seconds: None)
+    authorization = "token api-key-value:api-secret-value"
     environment = FakeEnvironment(
-        secrets={("erpnext-runtime-secrets", "admin-password"): "admin-password-value"},
+        secrets={("erpnext-bootstrap-identity", "authorization"): authorization},
         responses=[
-            (200, {"message": "Logged In", "__cookie": "sid=session-value"}),
-            (200, {"data": {"name": "chaosatlas-oracle@example.com"}}),
-            (200, {"message": {"api_key": "api-key-value", "api_secret": "api-secret-value"}}),
+            (502, {}),
             (401, {}),
             (200, {"data": []}),
-            (200, {"data": []}),
+            *[(200, {"data": []}) for _ in range(12)],
         ],
     )
     bootstrap_erpnext(environment)
     methods_and_paths = [(method, path) for method, path, _kwargs in environment.requests]
-    assert methods_and_paths[-3:] == [
-        ("GET", "/api/resource/ToDo"),
-        ("GET", "/api/resource/ToDo"),
-        ("GET", "/api/resource/ToDo"),
-    ]
-    assert methods_and_paths.count(("POST", "/api/method/frappe.core.doctype.user.user.generate_keys")) == 1
+    assert methods_and_paths == [("GET", "/api/resource/ToDo")] * 15
 
 
-def test_bootstrap_erpnext_falls_back_to_basic_api_auth_without_reporting_credentials(monkeypatch):
+def test_bootstrap_erpnext_retries_the_documented_token_scheme_without_reporting_credentials(monkeypatch):
     monkeypatch.setattr("chaosatlas.oracles.identity_bootstrap.time.sleep", lambda _seconds: None)
+    authorization = "token api-key-value:api-secret-value"
     environment = FakeEnvironment(
-        secrets={("erpnext-runtime-secrets", "admin-password"): "admin-password-value"},
+        secrets={("erpnext-bootstrap-identity", "authorization"): authorization},
         responses=[
-            (200, {"message": "Logged In", "__cookie": "sid=session-value"}),
-            (200, {"data": {"name": "chaosatlas-oracle@example.com"}}),
-            (200, {"message": {"api_key": "api-key-value", "api_secret": "api-secret-value"}}),
             (401, {}),
             (200, {"data": []}),
-            (200, {"data": []}),
+            *[(200, {"data": []}) for _ in range(12)],
         ],
     )
 
     report, _fixtures = bootstrap_erpnext(environment)
 
-    authorization = environment.bindings[0][3]["authorization"]
-    assert authorization.startswith("Basic ")
-    assert environment.requests[3][2]["headers"]["Authorization"].startswith("token ")
-    assert environment.requests[4][2]["headers"]["Authorization"] == authorization
-    _assert_report_has_no_values(report, "api-key-value", "api-secret-value", authorization)
+    assert environment.bindings[0][3]["authorization"] == authorization
+    assert environment.requests[0][2]["headers"]["Authorization"] == authorization
+    assert environment.requests[1][2]["headers"]["Authorization"] == authorization
+    _assert_report_has_no_values(report, authorization)
 
 
 def test_bootstrap_erpnext_failed_auth_reports_only_safe_user_diagnostics(monkeypatch):
     monkeypatch.setattr("chaosatlas.oracles.identity_bootstrap.time.sleep", lambda _seconds: None)
+    authorization = "token api-key-value:api-secret-value"
     environment = FakeEnvironment(
-        secrets={("erpnext-runtime-secrets", "admin-password"): "admin-password-value"},
+        secrets={("erpnext-bootstrap-identity", "authorization"): authorization},
         responses=[
-            (200, {"message": "Logged In", "__cookie": "sid=session-value"}),
-            (200, {"data": {"name": "chaosatlas-oracle@example.com"}}),
-            (200, {"message": {"api_key": "api-key-value", "api_secret": "api-secret-value"}}),
             *[(401, {}) for _ in range(11)],
-            (200, {"data": [{
-                "name": "chaosatlas-oracle@example.com",
-                "enabled": 1,
-                "user_type": "System User",
-                "api_key": "api-key-value",
-            }]}),
         ],
     )
 
@@ -189,11 +191,39 @@ def test_bootstrap_erpnext_failed_auth_reports_only_safe_user_diagnostics(monkey
         bootstrap_erpnext(environment)
 
     message = str(raised.value)
-    assert "user_found=true" in message
-    assert "enabled=true" in message
-    assert "system_user=true" in message
-    assert "api_key_matches=true" in message
-    _assert_report_has_no_values(message, "admin-password-value", "session-value", "api-key-value", "api-secret-value")
+    assert message == "ERPNext pre-web API credential verification failed with HTTP 401"
+    _assert_report_has_no_values(message, authorization)
+
+
+def test_bootstrap_erpnext_retries_transient_401_after_exact_secret_readback(monkeypatch):
+    monkeypatch.setattr("chaosatlas.oracles.identity_bootstrap.time.sleep", lambda _seconds: None)
+    authorization = "token api-key-value:api-secret-value"
+    environment = FakeEnvironment(
+        secrets={("erpnext-bootstrap-identity", "authorization"): authorization},
+        responses=[
+            (200, {"data": []}),
+            (401, {}),
+            *[(200, {"data": []}) for _ in range(12)],
+        ],
+    )
+
+    report, _fixtures = bootstrap_erpnext(environment)
+
+    assert report["status"] == "initialized"
+    assert [request[0:2] for request in environment.requests[-13:]] == [
+        ("GET", "/api/resource/ToDo")
+    ] * 13
+
+
+def test_bootstrap_erpnext_rejects_non_token_bootstrap_credential_before_http():
+    environment = FakeEnvironment(
+        secrets={("erpnext-bootstrap-identity", "authorization"): "Basic unsupported"},
+    )
+
+    with pytest.raises(ValueError, match="token scheme"):
+        bootstrap_erpnext(environment)
+
+    assert environment.requests == []
 
 
 def test_bootstrap_medusa_binds_seed_channel_and_emits_only_business_fixtures():
@@ -255,3 +285,32 @@ def test_project_blueprint_declares_empty_lease_owned_transaction_secret(project
     }
     assert set(secret["runtimeGenerate"]["keys"]) == keys
     assert "stringData" not in secret and "data" not in secret
+
+
+def test_erpnext_blueprint_prepares_identity_before_web_workloads_without_literal_credentials():
+    path = REPO_ROOT / "projects" / "chaosatlas-apps" / "erpnext" / "isolation" / "l2-blueprint.json"
+    blueprint = json.loads(path.read_text(encoding="utf-8"))
+    resources = blueprint["resources"]
+    bootstrap_secret = next(
+        item for item in resources
+        if item.get("kind") == "Secret" and item["metadata"].get("name") == "erpnext-bootstrap-identity"
+    )
+    assert bootstrap_secret["runtimeGenerate"] == {
+        "keys": ["api-key", "api-secret"],
+        "templates": {"authorization": "token ${api-key}:${api-secret}"},
+    }
+    create_site_index = next(
+        index for index, item in enumerate(resources)
+        if item.get("kind") == "Job" and item["metadata"].get("name") == "erpnext-create-site"
+    )
+    gunicorn_index = next(
+        index for index, item in enumerate(resources)
+        if item.get("kind") == "Deployment" and item["metadata"].get("name") == "erpnext-gunicorn"
+    )
+    assert create_site_index < gunicorn_index
+    job = resources[create_site_index]["spec"]["template"]["spec"]
+    env = {item["name"]: item["valueFrom"]["secretKeyRef"] for item in job["containers"][0]["env"]}
+    assert env["CHAOSATLAS_API_KEY"] == {"name": "erpnext-bootstrap-identity", "key": "api-key"}
+    assert env["CHAOSATLAS_API_SECRET"] == {"name": "erpnext-bootstrap-identity", "key": "api-secret"}
+    encoded = json.dumps(blueprint, sort_keys=True)
+    assert "api-key-value" not in encoded and "api-secret-value" not in encoded

@@ -9,8 +9,10 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import subprocess
 import struct
 import sys
+import time
 from types import SimpleNamespace
 from typing import Any
 import zlib
@@ -23,6 +25,7 @@ from chaosatlas.isolation.lease_store import LeaseStore
 from chaosatlas.isolation.manager import IsolationManager
 from chaosatlas.isolation.providers import KubernetesIsolationProvider, ProviderRegistry
 from chaosatlas.oracles.identity_bootstrap import BOOTSTRAPPERS, KubernetesIdentityEnvironment
+from chaosatlas.oracles.recovery_ledger import RecoveryLedger
 from chaosatlas.oracles.transaction_contracts import validate_transaction_contract
 from chaosatlas.workspace import is_within, runs_root
 from scripts.run_transaction_identity_acceptance import PROJECTS, _plan, _profile, _scan_persisted_values, _write
@@ -115,8 +118,126 @@ def _fixture_file(project_root: Path, project: str, fixtures: dict[str, Any]) ->
     return path, validation
 
 
-def run(*, repository: Path, approval_dir: Path, output: Path, context: str, projects: list[str]) -> dict[str, Any]:
+def _transaction_command(*, contract: Path, store: Path, lease_id: str, service: str,
+                         port: int, fixtures: Path, evidence: Path, run_id: str,
+                         scenario: str, crash_marker: Path | None = None) -> list[str]:
+    command = [
+        sys.executable, str(REPOSITORY / "scripts" / "run_transaction_oracle_acceptance.py"),
+        "--contract", str(contract), "--lease-store", str(store),
+        "--lease-id", lease_id, "--service", service, "--port", str(port),
+        "--fixtures", str(fixtures), "--evidence-root", str(evidence),
+        "--run-id", run_id, "--scenario", scenario,
+    ]
+    if crash_marker is not None:
+        command.extend(["--crash-marker", str(crash_marker)])
+    return command
+
+
+def _terminate_process_tree(process: subprocess.Popen[str]) -> int:
+    if os.name == "nt":
+        killed = subprocess.run(
+            ["taskkill", "/PID", str(process.pid), "/T", "/F"],
+            capture_output=True, text=True, timeout=30, check=False,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+        )
+        if killed.returncode != 0 and process.poll() is None:
+            raise RuntimeError("external process-tree termination failed")
+    elif process.poll() is None:
+        process.terminate()
+    return process.wait(timeout=30)
+
+
+def _journal_write_count(path: Path) -> int:
+    if not path.is_file():
+        return 0
+    count = 0
+    for line in path.read_text(encoding="utf-8").splitlines():
+        value = json.loads(line)
+        if value.get("event") == "request" and value.get("method") != "GET":
+            count += 1
+    return count
+
+
+def _cross_process_recovery(*, contract: Path, store: Path, lease_id: str, service: str,
+                            port: int, fixtures: Path, project_root: Path,
+                            run_id: str) -> dict[str, Any]:
+    crash_root = project_root / "crash"
+    recovery_root = project_root / "recovery"
+    marker = crash_root / "crash-window.json"
+    environment = dict(os.environ)
+    environment["PYTHONPYCACHEPREFIX"] = str(project_root / "pycache")
+    process = subprocess.Popen(
+        _transaction_command(
+            contract=contract, store=store, lease_id=lease_id, service=service,
+            port=port, fixtures=fixtures, evidence=crash_root, run_id=run_id,
+            scenario="crash-after-response", crash_marker=marker,
+        ),
+        cwd=str(REPOSITORY), env=environment, stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT, text=True,
+        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+    )
+    deadline = time.monotonic() + 120
+    while not marker.is_file():
+        if process.poll() is not None:
+            output = process.stdout.read(2000) if process.stdout else ""
+            raise RuntimeError("termination window was not reached: " + output[:500])
+        if time.monotonic() >= deadline:
+            _terminate_process_tree(process)
+            raise TimeoutError("termination window evidence timed out")
+        time.sleep(0.25)
+    marker_value = json.loads(marker.read_text(encoding="utf-8"))
+    worker_pid = marker_value.get("process_id")
+    if type(worker_pid) is not int or worker_pid <= 0 or process.poll() is not None:
+        _terminate_process_tree(process)
+        raise RuntimeError("termination marker process identity mismatch")
+    crash_exit = _terminate_process_tree(process)
+    if process.stdout:
+        process.stdout.close()
+    before = RecoveryLedger(store.parent / "transactions").load(run_id)
+    states_before = {key: value["state"] for key, value in before["operations"].items()}
+    if before.get("lifecycle") != "active" or "outcome_unknown" not in states_before.values():
+        raise RuntimeError("external termination did not preserve an unknown write outcome")
+    recovered = subprocess.run(
+        _transaction_command(
+            contract=contract, store=store, lease_id=lease_id, service=service,
+            port=port, fixtures=fixtures, evidence=recovery_root, run_id=run_id,
+            scenario="recover",
+        ),
+        cwd=str(REPOSITORY), env=environment, capture_output=True, text=True,
+        timeout=300, check=False,
+        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+    )
+    summary_path = recovery_root / "acceptance-summary.json"
+    summary = json.loads(summary_path.read_text(encoding="utf-8")) if summary_path.is_file() else {}
+    crash_writes = _journal_write_count(crash_root / "transaction-journal.jsonl")
+    recovery_writes = _journal_write_count(recovery_root / "transaction-journal.jsonl")
+    observation = {
+        "schema_version": "chaosatlas-cross-process-recovery-acceptance-v1",
+        "status": "passed" if (
+            crash_exit != 0 and recovered.returncode == 0
+            and summary.get("status") == "passed"
+            and crash_writes == 1 and recovery_writes == 0
+        ) else "failed",
+        "external_termination_confirmed": crash_exit != 0,
+        "launcher_process_id": process.pid,
+        "worker_process_id": worker_pid,
+        "pre_recovery_lifecycle": before["lifecycle"],
+        "pre_recovery_operation_states": states_before,
+        "recovery_exit_code": recovered.returncode,
+        "write_requests_before_termination": crash_writes,
+        "write_requests_during_recovery": recovery_writes,
+        "server_fault_injection_performed": False,
+        "recovery_summary": summary,
+    }
+    _write(project_root / "cross-process-recovery-summary.json", observation)
+    return observation
+
+
+def run(*, repository: Path, approval_dir: Path, output: Path, context: str,
+        projects: list[str], scenario: str = "baseline") -> dict[str, Any]:
     repository, approval_dir, output = repository.resolve(), approval_dir.resolve(), output.resolve()
+    if scenario not in {"baseline", "response-loss", "process-recovery"}:
+        raise ValueError("unsupported four-project acceptance scenario")
     external = runs_root().resolve()
     if not is_within(approval_dir, repository / "projects"):
         raise ValueError("approval directory must be under repository projects")
@@ -133,7 +254,12 @@ def run(*, repository: Path, approval_dir: Path, output: Path, context: str, pro
     result: dict[str, Any] = {
         "schema_version": "chaosatlas-four-project-transaction-acceptance-v1",
         "started_at": datetime.now(timezone.utc).isoformat(), "context": context,
-        "claim_scope": "real_business_transaction_baseline_only",
+        "claim_scope": {
+            "baseline": "real_business_transaction_and_oracle_self_check",
+            "response-loss": "real_client_response_loss_recovery",
+            "process-recovery": "real_cross_process_recovery",
+        }[scenario],
+        "scenario": scenario, "server_fault_injection_performed": False,
         "fault_injection_performed": False, "projects": [],
     }
     for project in projects:
@@ -162,12 +288,19 @@ def run(*, repository: Path, approval_dir: Path, output: Path, context: str, pro
             environment = None
             fixture_path, fixture_validation = _fixture_file(output / project, project, fixtures)
             run_id = f"h4-{project}-{lease['lease_id'].removeprefix('lease-')}"
-            transaction = run_transaction(SimpleNamespace(
-                contract=str(contract_path), lease_store=str(output / "state"),
-                lease_id=lease["lease_id"], service=spec["service"], port=spec["port"],
-                fixtures=str(fixture_path), evidence_root=str(output / project / "transaction"),
-                run_id=run_id,
-            ))
+            if scenario == "process-recovery":
+                transaction = _cross_process_recovery(
+                    contract=contract_path, store=output / "state", lease_id=lease["lease_id"],
+                    service=spec["service"], port=spec["port"], fixtures=fixture_path,
+                    project_root=output / project, run_id=run_id,
+                )
+            else:
+                transaction = run_transaction(SimpleNamespace(
+                    contract=str(contract_path), lease_store=str(output / "state"),
+                    lease_id=lease["lease_id"], service=spec["service"], port=spec["port"],
+                    fixtures=str(fixture_path), evidence_root=str(output / project / "transaction"),
+                    run_id=run_id, scenario=scenario, crash_marker=None,
+                ))
             lease = manager.status(lease["lease_id"])
             item.update({
                 "status": "verified" if transaction.get("status") == "passed" else "failed",
@@ -186,9 +319,19 @@ def run(*, repository: Path, approval_dir: Path, output: Path, context: str, pro
                     if current.get("state") != "released":
                         current = manager.recover(lease["lease_id"])
                     item["cleanup_state"] = current.get("state")
+                    attempts = int(current.get("cleanup_attempts") or 0)
+                    repeated = manager.release(lease["lease_id"])
+                    item["duplicate_cleanup"] = {
+                        "status": "verified" if (
+                            repeated.get("state") == "released"
+                            and int(repeated.get("cleanup_attempts") or 0) == attempts
+                        ) else "failed",
+                        "state": repeated.get("state"),
+                        "cleanup_attempts_unchanged": int(repeated.get("cleanup_attempts") or 0) == attempts,
+                    }
                 except Exception as exc:
                     item["errors"].append({"reason_code": "cleanup_" + type(exc).__name__})
-            if item.get("cleanup_state") != "released":
+            if item.get("cleanup_state") != "released" or (item.get("duplicate_cleanup") or {}).get("status") != "verified":
                 item["status"] = "failed"
             _write(output / project / "h4-project-summary.json", item)
             result["projects"].append(item)
@@ -211,13 +354,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--context", default="chaosatlas-apps")
     parser.add_argument("--project", action="append", choices=tuple(PROJECTS), dest="projects")
+    parser.add_argument(
+        "--scenario", choices=("baseline", "response-loss", "process-recovery"),
+        default="baseline",
+    )
     parser.add_argument("--approve-live", action="store_true")
     args = parser.parse_args(argv)
     if not args.approve_live:
         parser.error("--approve-live is required for real business transactions")
     summary = run(
         repository=args.root, approval_dir=args.approval_dir, output=args.output,
-        context=args.context, projects=args.projects or list(PROJECTS),
+        context=args.context, projects=args.projects or list(PROJECTS), scenario=args.scenario,
     )
     print(json.dumps({
         "status": summary["status"],

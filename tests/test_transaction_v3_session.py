@@ -85,6 +85,30 @@ def test_v3_public_entry_normal_and_fresh_probe(tmp_path):
     assert sum(c['method'] == 'DELETE' for c in transport.calls) == 1
 
 
+def test_oracle_self_check_mutates_real_observations_only_in_memory(tmp_path):
+    transport = Transport()
+    replay = session(tmp_path, transport=transport)
+    assert replay.prepare(run_id='run-self-check')['status'] == 'prepared'
+
+    result = replay.self_check()
+
+    assert result == {
+        'schema_version': 'chaosatlas-oracle-self-check-v1',
+        'status': 'pass',
+        'claim_scope': 'synthetic_oracle_self_check',
+        'source': 'in_memory_real_response_observations',
+        'mutations': [{'assertion_id': 'value', 'counterfactual_detected': True}],
+    }
+    assert replay.probe('fresh-after-self-check')['status'] == 'pass'
+    assert replay.cleanup()['cleanup_confirmed'] is True
+
+
+def test_oracle_self_check_requires_successful_real_observations(tmp_path):
+    replay = session(tmp_path)
+    with pytest.raises(ValueError, match='successful prepare'):
+        replay.self_check()
+
+
 @pytest.mark.parametrize('fault', ['lost', 'missing-id'])
 def test_uncertain_or_bad_write_response_reconciles_but_never_passes_business(tmp_path, fault):
     replay = session(tmp_path, transport=Transport(create_fault=fault))

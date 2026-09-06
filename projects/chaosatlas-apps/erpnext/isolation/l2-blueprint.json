@@ -9,6 +9,15 @@
     {
       "apiVersion": "v1",
       "kind": "Secret",
+      "metadata": {"name": "erpnext-bootstrap-identity"},
+      "runtimeGenerate": {
+        "keys": ["api-key", "api-secret"],
+        "templates": {"authorization": "token ${api-key}:${api-secret}"}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Secret",
       "metadata": {
         "name": "erpnext-transaction-auth",
         "annotations": {
@@ -24,6 +33,14 @@
       "metadata": {"name": "erpnext-mariadb-config"},
       "data": {
         "my.cnf": "[mysqld]\nskip-character-set-client-handshake\nskip-innodb-read-only-compressed\ncharacter-set-server=utf8mb4\ncollation-server=utf8mb4_unicode_ci\n"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {"name": "erpnext-identity-bootstrap"},
+      "data": {
+        "bootstrap.py": "import os\nimport frappe\n\nfrappe.set_user('Administrator')\nrole_name = 'ChaosAtlas Transaction'\nprincipal = 'chaosatlas-oracle@example.com'\nif not frappe.db.exists('Role', role_name):\n    frappe.get_doc({'doctype': 'Role', 'role_name': role_name, 'desk_access': 1}).insert(ignore_permissions=True)\npermission = {'parent': 'ToDo', 'role': role_name, 'permlevel': 0}\nif not frappe.db.exists('Custom DocPerm', permission):\n    frappe.get_doc({'doctype': 'Custom DocPerm', **permission, 'read': 1, 'write': 1, 'create': 1}).insert(ignore_permissions=True)\nif frappe.db.exists('User', principal):\n    user = frappe.get_doc('User', principal)\nelse:\n    user = frappe.get_doc({'doctype': 'User', 'email': principal, 'first_name': 'ChaosAtlas Oracle', 'enabled': 1, 'user_type': 'System User', 'send_welcome_email': 0, 'roles': [{'role': role_name}]})\n    user.flags.no_welcome_mail = True\n    user.insert(ignore_permissions=True)\nuser.api_key = os.environ['CHAOSATLAS_API_KEY']\nuser.api_secret = os.environ['CHAOSATLAS_API_SECRET']\nuser.save(ignore_permissions=True)\nfrappe.clear_cache(user=principal)\nfrappe.db.commit()\n"
       }
     },
     {
@@ -166,8 +183,8 @@
           "spec": {
             "restartPolicy": "OnFailure",
             "initContainers": [{"name": "wait-for-dependencies", "image": "docker.io/frappe/erpnext:v16.34.1", "command": ["bash", "-ec"], "args": ["until (echo > /dev/tcp/erpnext-mariadb-sts/3306) >/dev/null 2>&1; do sleep 2; done; until (echo > /dev/tcp/erpnext-valkey-cache/6379) >/dev/null 2>&1; do sleep 2; done; until (echo > /dev/tcp/erpnext-valkey-queue/6379) >/dev/null 2>&1; do sleep 2; done"]}],
-            "containers": [{"name": "create-site", "image": "docker.io/frappe/erpnext:v16.34.1", "command": ["bash", "-ec"], "args": ["bench new-site erpnext.local --mariadb-user-host-login-scope='%' --db-root-username root --db-root-password \"$MARIADB_ROOT_PASSWORD\" --admin-password \"$ADMIN_PASSWORD\" --install-app erpnext --set-default"], "env": [{"name": "MARIADB_ROOT_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "erpnext-runtime-secrets", "key": "mariadb-root-password"}}}, {"name": "ADMIN_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "erpnext-runtime-secrets", "key": "admin-password"}}}], "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}]}],
-            "volumes": [{"name": "sites", "persistentVolumeClaim": {"claimName": "erpnext-sites"}}]
+            "containers": [{"name": "create-site", "image": "docker.io/frappe/erpnext:v16.34.1", "command": ["bash", "-ec"], "args": ["bench new-site erpnext.local --mariadb-user-host-login-scope='%' --db-root-username root --db-root-password \"$MARIADB_ROOT_PASSWORD\" --admin-password \"$ADMIN_PASSWORD\" --install-app erpnext --set-default; bench --site erpnext.local console < /opt/chaosatlas/bootstrap.py"], "env": [{"name": "MARIADB_ROOT_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "erpnext-runtime-secrets", "key": "mariadb-root-password"}}}, {"name": "ADMIN_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "erpnext-runtime-secrets", "key": "admin-password"}}}, {"name": "CHAOSATLAS_API_KEY", "valueFrom": {"secretKeyRef": {"name": "erpnext-bootstrap-identity", "key": "api-key"}}}, {"name": "CHAOSATLAS_API_SECRET", "valueFrom": {"secretKeyRef": {"name": "erpnext-bootstrap-identity", "key": "api-secret"}}}], "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}, {"name": "identity-bootstrap", "mountPath": "/opt/chaosatlas", "readOnly": true}]}],
+            "volumes": [{"name": "sites", "persistentVolumeClaim": {"claimName": "erpnext-sites"}}, {"name": "identity-bootstrap", "configMap": {"name": "erpnext-identity-bootstrap"}}]
           }
         }
       }

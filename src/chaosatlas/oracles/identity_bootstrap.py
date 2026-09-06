@@ -55,6 +55,52 @@ def _bearer(value: str) -> dict[str, str]:
     return {"Authorization": "Bearer " + value}
 
 
+def _erpnext_authorization_check(
+    environment: IdentityEnvironment, authorizations: list[str], *, attempts: int = 11,
+) -> tuple[BootstrapResponse, str]:
+    if not authorizations or attempts < 1:
+        raise ValueError("ERPNext authorization check requires bounded candidates")
+    response = None
+    authorization = authorizations[0]
+    for attempt in range(attempts):
+        authorization = authorizations[attempt % len(authorizations)]
+        response = environment.request(
+            "GET", "/api/resource/ToDo", headers={"Authorization": authorization},
+            query={"limit_page_length": 1},
+        )
+        if response.status not in {401, 502, 503, 504} or attempt == attempts - 1:
+            break
+        time.sleep(3)
+    assert response is not None
+    return response, authorization
+
+
+def _erpnext_authorization_stability(
+    environment: IdentityEnvironment, authorization: str, *,
+    required_successes: int = 12, attempts: int = 60,
+) -> int:
+    if required_successes < 1 or attempts < required_successes:
+        raise ValueError("ERPNext authorization stability requires bounded checks")
+    consecutive = 0
+    for attempt in range(attempts):
+        response, _ = _erpnext_authorization_check(
+            environment, [authorization], attempts=1,
+        )
+        if response.status == 200:
+            consecutive += 1
+            if consecutive == required_successes:
+                return consecutive
+        elif response.status in {401, 502, 503, 504}:
+            consecutive = 0
+        else:
+            raise ValueError(
+                f"ERPNext authorization stability HTTP status was {response.status}"
+            )
+        if attempt < attempts - 1:
+            time.sleep(1)
+    raise ValueError("ERPNext authorization did not reach the bounded stability gate")
+
+
 def bootstrap_immich(environment: IdentityEnvironment) -> tuple[dict[str, Any], dict[str, Any]]:
     admin_email, user_email = "chaosatlas-admin@invalid", "chaosatlas-oracle@invalid"
     admin_password = environment.read_secret("immich-bootstrap-identity", "admin-password")
@@ -122,64 +168,17 @@ def bootstrap_rocketchat(environment: IdentityEnvironment) -> tuple[dict[str, An
 
 def bootstrap_erpnext(environment: IdentityEnvironment) -> tuple[dict[str, Any], dict[str, Any]]:
     principal_id = "chaosatlas-oracle@example.com"
-    admin_password = environment.read_secret("erpnext-runtime-secrets", "admin-password")
-    login = _body(environment.request("POST", "/api/method/login", body={
-        "usr": "Administrator", "pwd": admin_password,
-    }), 200)
-    cookie = str(login.get("__cookie") or "")
-    if not cookie:
-        raise ValueError("ERPNext bootstrap login did not establish a bounded session")
-    session = {"Cookie": cookie}
-    created = environment.request("POST", "/api/resource/User", headers=session, body={
-        "email": principal_id, "first_name": "ChaosAtlas Oracle", "enabled": 1,
-        "user_type": "System User", "send_welcome_email": 0,
-    })
-    if created.status not in {200, 409}:
-        _body(created, 200)
-    generated = _body(environment.request(
-        "POST", "/api/method/frappe.core.doctype.user.user.generate_keys",
-        headers=session, body={"user": principal_id},
-    ), 200).get("message") or {}
-    api_key = str(generated.get("api_key") or "")
-    api_secret = str(generated.get("api_secret") or "")
-    if not api_key or not api_secret:
-        raise ValueError("ERPNext did not return a bounded API credential")
-    token_authorization = f"token {api_key}:{api_secret}"
-    basic_authorization = "Basic " + base64.b64encode(
-        f"{api_key}:{api_secret}".encode("utf-8")
-    ).decode("ascii")
-    authorization = token_authorization
-    authorization_check = None
-    for attempt in range(11):
-        authorization = token_authorization if attempt % 2 == 0 else basic_authorization
-        authorization_check = environment.request(
-            "GET", "/api/resource/ToDo", headers={"Authorization": authorization},
-            query={"limit_page_length": 1},
-        )
-        if authorization_check.status != 401 or attempt == 10:
-            break
-        time.sleep(3)
+    token_authorization = environment.read_secret(
+        "erpnext-bootstrap-identity", "authorization",
+    )
+    if not token_authorization.startswith("token "):
+        raise ValueError("ERPNext bootstrap token scheme is invalid")
+    authorization_check, authorization = _erpnext_authorization_check(
+        environment, [token_authorization],
+    )
     if authorization_check.status != 200:
-        diagnostics_response = environment.request(
-            "GET", "/api/resource/User", headers=session,
-            query={
-                "fields": json.dumps(["name", "enabled", "user_type", "api_key"]),
-                "filters": json.dumps([["name", "=", principal_id]]),
-                "limit_page_length": 2,
-            },
-        )
-        diagnostics_body = _body(diagnostics_response, 200)
-        rows = diagnostics_body.get("data") or []
-        user = rows[0] if len(rows) == 1 and isinstance(rows[0], dict) else {}
-        flags = {
-            "user_found": len(rows) == 1,
-            "enabled": user.get("enabled") in {1, True},
-            "system_user": user.get("user_type") == "System User",
-            "api_key_matches": hmac.compare_digest(str(user.get("api_key") or ""), api_key),
-        }
-        details = ",".join(f"{name}={str(value).lower()}" for name, value in flags.items())
         raise ValueError(
-            f"ERPNext API credential verification failed with HTTP {authorization_check.status} ({details})"
+            f"ERPNext pre-web API credential verification failed with HTTP {authorization_check.status}"
         )
     binding = environment.bind_secret(
         "erpnext-transaction-auth", "transaction-todo-user", principal_id,
@@ -188,14 +187,14 @@ def bootstrap_erpnext(environment: IdentityEnvironment) -> tuple[dict[str, Any],
     persisted_authorization = environment.read_secret("erpnext-transaction-auth", "authorization")
     if not hmac.compare_digest(persisted_authorization, authorization):
         raise ValueError("ERPNext transaction credential changed during Secret binding")
-    _body(environment.request(
-        "GET", "/api/resource/ToDo", headers={"Authorization": persisted_authorization},
-        query={"limit_page_length": 1},
-    ), 200)
+    stability_checks = _erpnext_authorization_stability(
+        environment, persisted_authorization,
+    )
     return {
         "project_id": "erpnext", "status": "initialized", "principal_id": principal_id,
         "principal_role": "transaction-todo-user", "notifications_enabled": False,
         "credential_binding": binding,
+        "authorization_stability_checks": stability_checks,
     }, {}
 
 

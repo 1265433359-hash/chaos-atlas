@@ -11,8 +11,10 @@ import argparse
 from datetime import datetime, timezone
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
+import time
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -21,7 +23,7 @@ from chaosatlas.isolation.contracts import validate_plan
 from chaosatlas.isolation.lease_store import LeaseStore
 from chaosatlas.isolation.manager import IsolationManager
 from chaosatlas.isolation.providers import KubernetesIsolationProvider, ProviderRegistry
-from chaosatlas.oracles.replay import TransactionWorkflowOracle
+from chaosatlas.oracles.replay import HttpObservation, ResponseLost, TransactionWorkflowOracle, UrllibHttpTransport
 from chaosatlas.oracles.replay_session import ReplaySession
 from chaosatlas.oracles.secret_headers import SecretHeaders
 from chaosatlas.oracles.runtime_binding import LeaseRuntime
@@ -66,6 +68,70 @@ def _finalize_transaction(workflow: TransactionWorkflowOracle, replay: ReplaySes
     return {"status": "not_required", "cleanup_confirmed": True}
 
 
+class AfterFirstWriteTransport(UrllibHttpTransport):
+    """Delegate real HTTP, then run one acceptance-only post-response action."""
+
+    def __init__(self, delegate: UrllibHttpTransport, action) -> None:
+        if not isinstance(delegate, UrllibHttpTransport) or not callable(action):
+            raise ValueError("real HTTP delegate and response action required")
+        self._delegate = delegate
+        self._action = action
+        self._triggered = False
+        self.base_url = delegate.base_url
+        self.max_response_bytes = delegate.max_response_bytes
+
+    def send(self, **kwargs: Any) -> HttpObservation:
+        response = self._delegate.send(**kwargs)
+        if not self._triggered and kwargs.get("method") != "GET":
+            self._triggered = True
+            self._action(kwargs, response)
+        return response
+
+
+def _scenario_transport(transport: UrllibHttpTransport, *, scenario: str, run_id: str,
+                        journal, evidence_root: Path, crash_marker: Path | None) -> UrllibHttpTransport:
+    if scenario in {"baseline", "recover"}:
+        return transport
+
+    def evidence(event: str, request: dict[str, Any], response: HttpObservation) -> None:
+        journal({
+            "schema_version": "chaosatlas-transaction-acceptance-event-v1",
+            "event": event,
+            "run_id": run_id,
+            "method": request["method"],
+            "path_sha256": hashlib.sha256(str(request["path"]).encode("utf-8")).hexdigest(),
+            "response_status": response.status,
+            "server_fault_injection_performed": False,
+        })
+
+    if scenario == "response-loss":
+        def discard(request: dict[str, Any], response: HttpObservation) -> None:
+            evidence("client_response_discarded", request, response)
+            raise ResponseLost("acceptance runner discarded one complete real response")
+        return AfterFirstWriteTransport(transport, discard)
+    if scenario == "crash-after-response":
+        if crash_marker is None or crash_marker.parent != evidence_root:
+            raise ValueError("crash marker must be an exact file under the evidence root")
+        def hold_for_external_termination(request: dict[str, Any], response: HttpObservation) -> None:
+            evidence("external_termination_window_open", request, response)
+            marker = {
+                "schema_version": "chaosatlas-external-termination-window-v1",
+                "run_id": run_id,
+                "process_id": os.getpid(),
+                "method": request["method"],
+                "path_sha256": hashlib.sha256(str(request["path"]).encode("utf-8")).hexdigest(),
+                "response_status": response.status,
+                "server_fault_injection_performed": False,
+            }
+            crash_marker.write_text(
+                json.dumps(marker, ensure_ascii=True, sort_keys=True) + "\n", encoding="utf-8",
+            )
+            while True:
+                time.sleep(30)
+        return AfterFirstWriteTransport(transport, hold_for_external_termination)
+    raise ValueError("unknown transaction acceptance scenario")
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     repository = Path(__file__).resolve().parents[1]
     contract_path = Path(args.contract).resolve()
@@ -81,6 +147,9 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     if errors or contract.get("status") != "frozen" or record.get("reviewer") == "synthetic-test-only":
         raise ValueError("only a valid frozen contract with actual human approval may run")
     fixtures = _load_fixtures(fixtures_path, contract["inputs"], repository)
+    scenario = str(getattr(args, "scenario", "baseline"))
+    if scenario not in {"baseline", "response-loss", "crash-after-response", "recover"}:
+        raise ValueError("unsupported transaction acceptance scenario")
     evidence_root.mkdir(parents=True, exist_ok=False)
     store = LeaseStore(args.lease_store)
     lease = store.load(args.lease_id)
@@ -94,25 +163,60 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         with journal_path.open("a", encoding="utf-8", newline="\n") as stream:
             stream.write(json.dumps(event, ensure_ascii=True, sort_keys=True) + "\n")
     transport = runtime.open()
+    crash_marker = Path(args.crash_marker).resolve() if getattr(args, "crash_marker", None) else None
+    transport = _scenario_transport(
+        transport, scenario=scenario, run_id=args.run_id, journal=journal,
+        evidence_root=evidence_root, crash_marker=crash_marker,
+    )
     resolver = SecretHeaders(runtime, contract["credential_refs"])
     replay = ReplaySession(contract, transport, credential_headers=resolver, fixtures=fixtures,
                            runtime=runtime, ledger=RecoveryLedger(Path(args.lease_store).resolve().parent / "transactions"), journal=journal,
                            synthetic_test_only=False, environment_releaser=runtime.release)
     workflow = TransactionWorkflowOracle(replay)
-    prepared = probe = cleanup = None
+    prepared = probe = cleanup = self_check = None
     try:
-        prepared = workflow.prepare_fixture({"run_id": args.run_id})
-        probe = workflow.probe("baseline", {"run_id": args.run_id}) if prepared.get("status") == "prepared" else {"status": "not_run"}
+        if scenario == "recover":
+            cleanup = replay.recover(run_id=args.run_id)
+            prepared = {"status": "recovered", "cleanup": cleanup}
+            probe = {"status": "not_run"}
+        else:
+            prepared = workflow.prepare_fixture({"run_id": args.run_id})
+            probe = workflow.probe("baseline", {"run_id": args.run_id}) if prepared.get("status") == "prepared" else {"status": "not_run"}
+            self_check = replay.self_check() if prepared.get("status") == "prepared" else {"status": "not_run"}
     finally:
-        cleanup = _finalize_transaction(workflow, replay, args.run_id, prepared)
+        if cleanup is None:
+            cleanup = _finalize_transaction(workflow, replay, args.run_id, prepared)
         runtime.close()
-    status = "passed" if prepared and prepared.get("status") == "prepared" and probe and probe.get("status") == "pass" and cleanup and cleanup.get("cleanup_confirmed") else "failed"
+    if scenario == "baseline":
+        passed = bool(
+            prepared and prepared.get("status") == "prepared"
+            and probe and probe.get("status") == "pass"
+            and self_check and self_check.get("status") == "pass"
+            and cleanup and cleanup.get("cleanup_confirmed")
+        )
+    elif scenario == "response-loss":
+        passed = bool(
+            prepared and prepared.get("status") == "prepare_failed"
+            and prepared.get("reason_code") == "ResponseLost"
+            and cleanup and cleanup.get("cleanup_confirmed")
+        )
+    else:
+        passed = bool(scenario == "recover" and cleanup and cleanup.get("cleanup_confirmed"))
+    status = "passed" if passed else "failed"
     summary = {
         "schema_version": "chaosatlas-transaction-acceptance-v2", "status": status,
-        "claim_scope": "real_business_transaction", "project_id": contract["project_id"],
+        "claim_scope": {
+            "baseline": "real_business_transaction",
+            "response-loss": "real_client_response_loss_recovery",
+            "recover": "real_cross_process_recovery",
+        }.get(scenario, "external_termination_in_progress"),
+        "scenario": scenario,
+        "server_fault_injection_performed": False,
+        "project_id": contract["project_id"],
         "project_revision": contract["project_revision"], "oracle_id": contract["oracle_id"],
         "contract_sha256": contract["contract_sha256"], "run_id": args.run_id,
-        "prepared": prepared, "baseline_probe": probe, "cleanup": cleanup,
+        "prepared": prepared, "baseline_probe": probe, "oracle_self_check": self_check,
+        "cleanup": cleanup,
         "principal_binding": principal_binding,
         "completed_at": datetime.now(timezone.utc).isoformat(),
     }
@@ -130,6 +234,11 @@ def main() -> int:
     parser.add_argument("--fixtures")
     parser.add_argument("--evidence-root", required=True)
     parser.add_argument("--run-id", required=True)
+    parser.add_argument(
+        "--scenario", choices=("baseline", "response-loss", "crash-after-response", "recover"),
+        default="baseline",
+    )
+    parser.add_argument("--crash-marker")
     args = parser.parse_args()
     try:
         summary = run(args)

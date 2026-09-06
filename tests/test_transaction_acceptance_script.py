@@ -2,7 +2,13 @@ import json
 
 import pytest
 
-from scripts.run_transaction_oracle_acceptance import _finalize_transaction, _load_fixtures
+from chaosatlas.oracles.replay import HttpObservation, ResponseLost, UrllibHttpTransport
+from scripts.run_transaction_oracle_acceptance import (
+    AfterFirstWriteTransport,
+    _finalize_transaction,
+    _load_fixtures,
+    _scenario_transport,
+)
 
 
 def test_external_byte_fixture_reference_is_loaded_without_entering_contract(tmp_path):
@@ -45,3 +51,47 @@ def test_prepare_failure_reuses_completed_cleanup_instead_of_calling_it_twice():
 
     replay = type('Replay', (), {'_run_id': 'run-test'})()
     assert _finalize_transaction(Workflow(), replay, 'run-test', {'cleanup': completed}) is completed
+
+
+class StubLiveTransport(UrllibHttpTransport):
+    def __init__(self):
+        super().__init__('http://127.0.0.1:12345')
+        self.calls = []
+
+    def send(self, **kwargs):
+        self.calls.append(kwargs)
+        return HttpObservation(201, b'{"id":"real-response"}')
+
+
+def test_post_response_action_runs_once_and_only_after_a_real_write_response():
+    delegate = StubLiveTransport()
+    actions = []
+    transport = AfterFirstWriteTransport(
+        delegate, lambda request, response: actions.append((request['path'], response.status)),
+    )
+
+    get = dict(method='GET', path='/read', query={}, json_body=None, multipart={}, headers={}, timeout_s=1)
+    post = dict(method='POST', path='/write', query={}, json_body={}, multipart={}, headers={}, timeout_s=1)
+    assert transport.send(**get).status == 201
+    assert transport.send(**post).status == 201
+    assert transport.send(**post).status == 201
+    assert actions == [('/write', 201)]
+    assert len(delegate.calls) == 3
+
+
+def test_response_loss_scenario_discards_one_complete_response_without_server_fault(tmp_path):
+    delegate = StubLiveTransport()
+    events = []
+    transport = _scenario_transport(
+        delegate, scenario='response-loss', run_id='run-test', journal=events.append,
+        evidence_root=tmp_path, crash_marker=None,
+    )
+    request = dict(method='POST', path='/write', query={}, json_body={}, multipart={}, headers={}, timeout_s=1)
+
+    with pytest.raises(ResponseLost, match='discarded one complete real response'):
+        transport.send(**request)
+
+    assert len(delegate.calls) == 1
+    assert events[0]['event'] == 'client_response_discarded'
+    assert events[0]['response_status'] == 201
+    assert events[0]['server_fault_injection_performed'] is False

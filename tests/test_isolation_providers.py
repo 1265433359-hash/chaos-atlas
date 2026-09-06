@@ -261,6 +261,54 @@ def test_ready_rejects_incomplete_rollout_even_when_pod_is_ready():
     assert result["checks"]["all_workloads_ready"] is False
 
 
+def test_ready_rejects_deleted_registered_guard_even_when_workloads_are_ready():
+    lease = _ready_lease()
+    lease["owner_labels"] = {
+        "chaosatlas.dev/managed": "true",
+        "chaosatlas.dev/lease-id": "lease-test",
+    }
+    lease["resources"].append({
+        "kind": "NetworkPolicy", "namespace": lease["target_name"],
+        "name": "chaosatlas-boundary", "actual_uid": "uid-policy",
+    })
+
+    def runner(args, timeout=60, input_text=None):
+        command = args[2:] if args[:2] == ["--context", "test"] else args
+        if command[:3] == ["get", "namespace", "kube-system"]:
+            return 0, json.dumps({"metadata": {"uid": "cluster-uid"}}), ""
+        if command[:2] == ["get", "namespace"]:
+            return 0, json.dumps({"metadata": {
+                "uid": "namespace-uid", "labels": lease["owner_labels"],
+            }}), ""
+        if command[:3] == ["get", "pods", "-n"]:
+            return 0, json.dumps({"items": [{
+                "metadata": {}, "status": {"phase": "Running", "conditions": [
+                    {"type": "Ready", "status": "True"},
+                ]},
+            }]}), ""
+        if command[:2] == ["get", "deployment"]:
+            return 0, json.dumps({
+                "metadata": {"uid": "uid-app", "generation": 1, "labels": lease["owner_labels"]},
+                "spec": {"replicas": 1},
+                "status": {"observedGeneration": 1, "readyReplicas": 1,
+                           "availableReplicas": 1, "updatedReplicas": 1},
+            }), ""
+        if command[:2] == ["get", "networkpolicy"]:
+            return 1, "", "Error from server (NotFound)"
+        raise AssertionError(command)
+
+    result = KubernetesIsolationProvider(
+        name="kubernetes-l2", level="L2", runner=runner,
+    ).verify_ready({"kube_context": "test", "ready_timeout_s": 1}, lease)
+    assert result["status"] == "blocked"
+    assert result["checks"]["all_pods_ready"] is True
+    assert result["checks"]["all_workloads_ready"] is True
+    assert result["checks"]["all_registered_resources_ready"] is False
+    assert result["errors"] == [
+        "NetworkPolicy/chaosatlas-boundary missing or changed after registration",
+    ]
+
+
 def test_cleanup_can_recover_namespace_created_before_uid_was_recorded():
     lease = _ready_lease()
     lease.update({"lease_id": "lease-abc", "owner_labels": {"chaosatlas.dev/managed": "true", "chaosatlas.dev/lease-id": "lease-abc"}})

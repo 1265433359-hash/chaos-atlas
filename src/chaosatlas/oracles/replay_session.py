@@ -44,6 +44,23 @@ def render(value, variables):
     return VARIABLE.sub(lambda m: str(variables[m.group(1)]), value)
 
 
+def _counterfactual(value: Any) -> Any:
+    if type(value) is bool:
+        return not value
+    if type(value) is int:
+        return value + 1
+    if type(value) is float:
+        return value + 1.0
+    if isinstance(value, str):
+        return "chaosatlas-self-check-mismatch"
+    if isinstance(value, dict) and value:
+        changed = deepcopy(value)
+        first = sorted(changed)[0]
+        changed[first] = _counterfactual(changed[first])
+        return changed
+    raise ValueError('assertion has no bounded counterfactual mutation')
+
+
 class ReplaySession:
     """Exact-ownership protocol. Synthetic sessions never earn live claims."""
 
@@ -272,6 +289,42 @@ class ReplaySession:
                 observations[identifier] = self._read(self._steps[identifier], self._contract['probe_assertions'])
             result = evaluate_assertions({'assertions': self._contract['probe_assertions']}, observations, self._variables)
             return {**result, 'phase': phase, 'claim_scope': 'synthetic_test_only' if self._contract['approval']['record'].get('reviewer') == 'synthetic-test-only' else 'real_business_transaction'}
+
+    def self_check(self):
+        """Prove each business assertion rejects one in-memory counterfactual.
+
+        Real response bodies and credential-bearing headers never leave this
+        session.  Only assertion identifiers and detection booleans are
+        returned for persistence by the acceptance runner.
+        """
+        if self._run_id is None or not self._observations:
+            raise ValueError('successful prepare required before Oracle self-check')
+        mutations = []
+        for original in self._contract['assertions']:
+            assertion = deepcopy(original)
+            variables = deepcopy(self._variables)
+            if 'expected_from' in assertion:
+                name = assertion['expected_from']
+                variables[name] = _counterfactual(variables[name])
+            elif 'expected' in assertion:
+                assertion['expected'] = _counterfactual(assertion['expected'])
+            else:
+                raise ValueError('assertion cannot be counterfactually mutated')
+            result = evaluate_assertions(
+                {'assertions': [assertion]}, self._observations, variables,
+            )
+            mutations.append({
+                'assertion_id': original['id'],
+                'counterfactual_detected': result['status'] == 'fail',
+            })
+        passed = bool(mutations) and all(item['counterfactual_detected'] for item in mutations)
+        return {
+            'schema_version': 'chaosatlas-oracle-self-check-v1',
+            'status': 'pass' if passed else 'fail',
+            'claim_scope': 'synthetic_oracle_self_check',
+            'source': 'in_memory_real_response_observations',
+            'mutations': mutations,
+        }
 
     def _cleanup_locked(self):
         errors = []

@@ -222,6 +222,39 @@ class KubernetesIsolationProvider:
                 raise RuntimeError(f"Job/{name} completion timeout: {last_error}")
             time.sleep(1)
 
+    def _registered_resource_checks(
+        self, plan: dict[str, Any], lease: dict[str, Any], namespace: str,
+    ) -> tuple[list[dict[str, Any]], list[str]]:
+        checks, errors = [], []
+        ownership = lease.get("owner_labels") or {}
+        for expected in lease.get("resources") or []:
+            kind, name = str(expected.get("kind") or ""), str(expected.get("name") or "")
+            resource_namespace = expected.get("namespace")
+            if not kind or not name or not expected.get("actual_uid"):
+                continue
+            if kind == "Namespace":
+                args = ["get", "namespace", name]
+            elif resource_namespace == namespace:
+                args = ["get", kind.lower(), name, "-n", namespace]
+            else:
+                continue
+            value, error = self._json(plan, args, lease=lease)
+            metadata = (value or {}).get("metadata") or {}
+            labels = metadata.get("labels") or {}
+            uid_matches = not error and str(metadata.get("uid") or "") == str(expected["actual_uid"])
+            ownership_matches = uid_matches and all(
+                labels.get(key) == str(wanted) for key, wanted in ownership.items()
+            )
+            ready = bool(uid_matches and ownership_matches)
+            checks.append({
+                "kind": kind, "name": name, "ready": ready,
+                "uid_matches": bool(uid_matches), "ownership_matches": bool(ownership_matches),
+                "error": error,
+            })
+            if not ready:
+                errors.append(f"{kind}/{name} missing or changed after registration")
+        return checks, errors
+
     def verify_ready(self, plan: dict[str, Any], lease: dict[str, Any]) -> dict[str, Any]:
         namespace = str(plan.get("source_namespace") if plan.get("mode") == "adopted-test-replica" else lease.get("target_name") or "")
         timeout_s = max(1, min(int(plan.get("ready_timeout_s") or 180), 600))
@@ -298,6 +331,13 @@ class KubernetesIsolationProvider:
                 last = {"namespace": True, "pod_count": len(items), "active_pod_count": len(active_pods), "all_pods_ready": ready, "workloads": workload_checks, "all_workloads_ready": workloads_ready}
                 last_error = pod_error or ("" if ready and workloads_ready else "Pods or expected workloads are not Ready")
                 if ready and workloads_ready and not pod_error:
+                    resource_checks, resource_errors = self._registered_resource_checks(
+                        plan, lease, namespace,
+                    )
+                    last["registered_resources"] = resource_checks
+                    last["all_registered_resources_ready"] = not resource_errors
+                    if resource_errors:
+                        return {"status": "blocked", "checks": last, "errors": resource_errors}
                     return {"status": "verified", "checks": last, "errors": []}
                 if terminal_job_failures:
                     return {"status": "blocked", "checks": last, "errors": terminal_job_failures}
