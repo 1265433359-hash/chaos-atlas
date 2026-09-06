@@ -1,0 +1,47 @@
+{
+  "schema_version": "chaosatlas-p3-v3-api-evidence-v1",
+  "captured_on": "2026-09-06",
+  "cluster_context": "chaosatlas-apps",
+  "scope": "fixed-version source and runtime identity evidence; no business transaction or fault injection",
+  "projects": [
+    {
+      "project_id": "immich",
+      "runtime_image_sha256": "f71a3a1f325972f620101773d4e23ad6d6eecb81cc53c464431080d5a1cf9a28",
+      "source_revision": "v2.6.3",
+      "source_artifacts": [
+        {"path_in_image": "/usr/src/app/server/dist/controllers/asset-media.controller.js", "sha256": "991bc9ae40a04232af1bba3d37fdd69799fc8756691719aafa20fde11a077cde"},
+        {"path_in_image": "/usr/src/app/server/dist/controllers/asset.controller.js", "sha256": "07d160f9206c65ebca2a4d93e63839c03690245d4f680d7dda9856627c8ed85a"},
+        {"path_in_image": "/usr/src/app/server/dist/controllers/asset-media.controller.js.map", "sha256": "0ccabcfafc003b695b010c861bec3657e156e2999d823528dde041bb071669e7"},
+        {"path_in_image": "/usr/src/app/server/dist/controllers/asset.controller.js.map", "sha256": "f52969dfaa15dada824ef3cac9d2860b557b4dc800e89d9716b828474e59b710"}
+      ]
+    },
+    {
+      "project_id": "medusa",
+      "runtime_image_sha256": "1bf4cc153e58a99cf34d92ee970d5494bf0d599899ee2481d691a849cba53464",
+      "source_revision": "2.20.1",
+      "source_artifacts": [
+        {"path_in_image": "/app/node_modules/@medusajs/medusa/dist/api/store/carts/route.js", "sha256": "920208e656d4cb5afe1861b905f9a95e45cfe37885c02e792a7ab777db0c9a40"},
+        {"path_in_image": "/app/node_modules/@medusajs/medusa/dist/api/store/carts/[id]/route.js", "sha256": "ed97b69c3bb1b73ea7705691e9bfa308d4a441351747f9746c4b777d2cfaa780"},
+        {"path_in_image": "/app/node_modules/@medusajs/medusa/dist/api/store/carts/[id]/line-items/route.js", "sha256": "b5452c142529f95eee03b51f7203c4d151b029f988e36c20ee47f1ad24f84c0f"}
+      ]
+    },
+    {
+      "project_id": "rocketchat",
+      "runtime_image_sha256": "c8ee1044c2c0503eddc1abc212240012ec9ba73e2cfa80d001cd23d582ec7c51",
+      "source_revision": "8.6.1",
+      "source_artifacts": [
+        {"path_in_image": "/app/bundle/programs/server/app/app.js.map", "sha256": "6b09a7ac3b48d329bf3f2dea1406bdcec4e2a9940eb0795c51ca2626de26edfc"}
+      ]
+    },
+    {
+      "project_id": "erpnext",
+      "runtime_image_sha256": "eee240a179ff494cb82ad067d853c8db3f87171d86324f4b326892654e342144",
+      "source_revision": "erpnext-v16.34.1+frappe-v16.33.0",
+      "source_artifacts": [
+        {"path_in_image": "/home/frappe/frappe-bench/apps/frappe/frappe/api/v1.py", "sha256": "93996b93c3aa647df279cf0f14641262bacdf3d28aa84d4cdd03f1f409827abc"},
+        {"path_in_image": "/home/frappe/frappe-bench/apps/frappe/frappe/core/doctype/user/user.py", "sha256": "a6b021144b88230779f66d0b23c6ec9944ad2bff07722cd69141feb4fe9221d0"},
+        {"path_in_image": "/home/frappe/frappe-bench/apps/frappe/frappe/auth.py", "sha256": "69e0a665d37a7ffe7b014db3d85de5443179491eea1a8e8262c8b8d6e818695b"}
+      ]
+    }
+  ]
+}

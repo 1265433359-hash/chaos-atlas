@@ -25,28 +25,18 @@
   },
   "assertions": [
     {
-      "expected_from": "room_id",
-      "id": "message-room",
-      "operator": "json_path_equals",
-      "path": "$.messages[0].rid",
+      "expected": {
+        "$.msg": "ChaosAtlas synthetic {run_id}",
+        "$.rid": "{room_id}",
+        "$.u._id": "{principal_id}"
+      },
+      "id": "one-owned-message",
+      "operator": "array_exactly_one_matches",
+      "path": "$.messages",
       "step_id": "poll-messages"
     },
     {
-      "expected_from": "principal_id",
-      "id": "message-sender",
-      "operator": "json_path_equals",
-      "path": "$.messages[0].u._id",
-      "step_id": "poll-messages"
-    },
-    {
-      "expected": "ChaosAtlas synthetic {run_id}",
-      "id": "message-body",
-      "operator": "json_path_equals",
-      "path": "$.messages[0].msg",
-      "step_id": "poll-messages"
-    },
-    {
-      "assertion_ref": "message-body",
+      "assertion_ref": "one-owned-message",
       "id": "message-visible",
       "operator": "eventually",
       "step_id": "poll-messages"
@@ -59,7 +49,7 @@
     "steps": [],
     "strategy": "disposable_environment"
   },
-  "contract_sha256": "ea28dff40c01a3e973e3a6bdeb06b592f7f3e2501d5b75af2250349244faf738",
+  "contract_sha256": "efa397746958f885f8ddba776b6d41a93af6736a501d2959aac72d72f6497582",
   "credential_refs": [
     {
       "header_keys": {
@@ -79,7 +69,7 @@
     "api:https://developer.rocket.chat/apidocs/get-channel-messages"
   ],
   "inputs": {},
-  "interpreter_version": "transaction-http-3.0",
+  "interpreter_version": "transaction-http-3.1",
   "oracle_id": "rocketchat-message-roundtrip-v3",
   "ownership": {
     "boundary": "lease_exclusive_disposable_environment",
@@ -88,28 +78,18 @@
   },
   "probe_assertions": [
     {
-      "expected_from": "room_id",
-      "id": "fresh-message-room",
-      "operator": "json_path_equals",
-      "path": "$.messages[0].rid",
+      "expected": {
+        "$.msg": "ChaosAtlas synthetic {run_id}",
+        "$.rid": "{room_id}",
+        "$.u._id": "{principal_id}"
+      },
+      "id": "fresh-one-owned-message",
+      "operator": "array_exactly_one_matches",
+      "path": "$.messages",
       "step_id": "poll-messages"
     },
     {
-      "expected_from": "principal_id",
-      "id": "fresh-message-sender",
-      "operator": "json_path_equals",
-      "path": "$.messages[0].u._id",
-      "step_id": "poll-messages"
-    },
-    {
-      "expected": "ChaosAtlas synthetic {run_id}",
-      "id": "fresh-message-body",
-      "operator": "json_path_equals",
-      "path": "$.messages[0].msg",
-      "step_id": "poll-messages"
-    },
-    {
-      "assertion_ref": "fresh-message-body",
+      "assertion_ref": "fresh-one-owned-message",
       "id": "fresh-message-visible",
       "operator": "eventually",
       "step_id": "poll-messages"

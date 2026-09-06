@@ -23,6 +23,29 @@ def test_v3_valid_minimal_protocol():
     assert validate_v3(contract()) == []
 
 
+def test_v3_accepts_bounded_exact_array_match():
+    value = contract()
+    value['assertions'][0] = {
+        'id': 'owned-message', 'step_id': 'read',
+        'operator': 'array_exactly_one_matches', 'path': '$.messages',
+        'expected': {'$.rid': '{lease_id}', '$.u._id': '{principal_id}'},
+    }
+    value['probe_assertions'] = [deepcopy(value['assertions'][0])]
+    assert validate_v3(value) == []
+
+
+@pytest.mark.parametrize('expected', [{}, {'not-a-path': 'x'}, {'$.id': None}, {'$.id': {'nested': True}}])
+def test_v3_rejects_unbounded_or_ambiguous_exact_array_match(expected):
+    value = contract()
+    value['assertions'][0] = {
+        'id': 'owned-message', 'step_id': 'read',
+        'operator': 'array_exactly_one_matches', 'path': '$.messages',
+        'expected': expected,
+    }
+    value['probe_assertions'] = [deepcopy(value['assertions'][0])]
+    assert validate_v3(value)
+
+
 def test_v3_accepts_logical_lease_owned_credential_slot():
     value = contract()
     value['credential_refs'] = [{

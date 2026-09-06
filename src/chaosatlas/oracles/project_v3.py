@@ -221,16 +221,26 @@ PAYLOADS: dict[str, dict[str, Any]] = {
         ],
         "probe_steps": ["poll-messages"],
         "assertions": [
-            {"id": "message-room", "operator": "json_path_equals", "step_id": "poll-messages", "path": "$.messages[0].rid", "expected_from": "room_id"},
-            {"id": "message-sender", "operator": "json_path_equals", "step_id": "poll-messages", "path": "$.messages[0].u._id", "expected_from": "principal_id"},
-            {"id": "message-body", "operator": "json_path_equals", "step_id": "poll-messages", "path": "$.messages[0].msg", "expected": "ChaosAtlas synthetic {run_id}"},
-            {"id": "message-visible", "operator": "eventually", "step_id": "poll-messages", "assertion_ref": "message-body"},
+            {
+                "id": "one-owned-message", "operator": "array_exactly_one_matches",
+                "step_id": "poll-messages", "path": "$.messages",
+                "expected": {
+                    "$.rid": "{room_id}", "$.u._id": "{principal_id}",
+                    "$.msg": "ChaosAtlas synthetic {run_id}",
+                },
+            },
+            {"id": "message-visible", "operator": "eventually", "step_id": "poll-messages", "assertion_ref": "one-owned-message"},
         ],
         "probe_assertions": [
-            {"id": "fresh-message-room", "operator": "json_path_equals", "step_id": "poll-messages", "path": "$.messages[0].rid", "expected_from": "room_id"},
-            {"id": "fresh-message-sender", "operator": "json_path_equals", "step_id": "poll-messages", "path": "$.messages[0].u._id", "expected_from": "principal_id"},
-            {"id": "fresh-message-body", "operator": "json_path_equals", "step_id": "poll-messages", "path": "$.messages[0].msg", "expected": "ChaosAtlas synthetic {run_id}"},
-            {"id": "fresh-message-visible", "operator": "eventually", "step_id": "poll-messages", "assertion_ref": "fresh-message-body"},
+            {
+                "id": "fresh-one-owned-message", "operator": "array_exactly_one_matches",
+                "step_id": "poll-messages", "path": "$.messages",
+                "expected": {
+                    "$.rid": "{room_id}", "$.u._id": "{principal_id}",
+                    "$.msg": "ChaosAtlas synthetic {run_id}",
+                },
+            },
+            {"id": "fresh-message-visible", "operator": "eventually", "step_id": "poll-messages", "assertion_ref": "fresh-one-owned-message"},
         ],
         "cleanup": _cleanup("The channel, message and synthetic account are destroyed with the fresh Rocket.Chat lease."),
     },

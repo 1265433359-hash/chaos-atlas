@@ -8,7 +8,7 @@ import re
 from typing import Any
 
 V3_SCHEMA = 'chaosatlas-transaction-oracle-v3'
-INTERPRETER = 'transaction-http-3.0'
+INTERPRETER = 'transaction-http-3.1'
 NAME = re.compile(r'[a-zA-Z][a-zA-Z0-9_-]{0,63}')
 PATH = re.compile(r'\$(?:\.[A-Za-z_][A-Za-z0-9_-]*|\[(?:0|[1-9][0-9]*)\])*')
 VARIABLE = re.compile(r'\{([A-Za-z][A-Za-z0-9_-]*)\}')
@@ -17,7 +17,11 @@ AUTH_HEADERS = {'authorization', 'x-api-key', 'x-auth-token', 'x-user-id', 'x-pu
 TOP = set('schema_version oracle_id project_id project_revision status evidence_sources credential_refs allowed_requests steps assertions ownership cleanup approval contract_sha256 timeouts probe_steps interpreter_version inputs runtime_scope probe_assertions'.split())
 STEP = set('id request_id json_body multipart query path_variables capture success on_response_loss ownership owned_operation'.split())
 CHECK = set('id operator path expected expected_from assertion_ref step_id'.split())
-OPERATORS = {'status_equals', 'status_in', 'json_path_equals', 'json_path_exists', 'sha256_equals', 'count_equals', 'body_contains', 'eventually'}
+OPERATORS = {
+    'status_equals', 'status_in', 'json_path_equals', 'json_path_exists',
+    'sha256_equals', 'count_equals', 'body_contains', 'eventually',
+    'array_exactly_one_matches',
+}
 
 
 def variables_in(value: Any) -> set[str]:
@@ -75,7 +79,7 @@ def _validate_v3(contract: dict[str, Any]) -> list[str]:
             op = item.get('operator')
             if op not in OPERATORS:
                 reject(f'{label}: unknown operator')
-            if op in {'json_path_equals', 'json_path_exists', 'count_equals'}:
+            if op in {'json_path_equals', 'json_path_exists', 'count_equals', 'array_exactly_one_matches'}:
                 path(item.get('path'))
             if op not in {'json_path_exists', 'eventually'} and (('expected' in item) == ('expected_from' in item)):
                 reject(f'{label}: exactly one expected value source required')
@@ -87,6 +91,15 @@ def _validate_v3(contract: dict[str, Any]) -> list[str]:
                 reject(f'{label}: invalid assertion dependency')
             if op == 'status_in' and (not isinstance(item.get('expected'), list) or not item['expected'] or any(type(x) is not int or not 100 <= x <= 599 for x in item['expected'])):
                 reject(f'{label}: invalid expected status list')
+            if op == 'array_exactly_one_matches':
+                expected = item.get('expected')
+                if not isinstance(expected, dict) or not 1 <= len(expected) <= 16:
+                    reject(f'{label}: exact array match requires a bounded field map')
+                else:
+                    for expected_path, expected_value in expected.items():
+                        path(expected_path)
+                        if isinstance(expected_value, (dict, list)) or expected_value is None:
+                            reject(f'{label}: exact array match values must be non-null scalars')
             seen.add(str(item.get('id')))
 
     try:

@@ -61,3 +61,25 @@ def test_h1_invalid_json_path_rejected_at_validation_and_evaluation():
         {"upload-synthetic-image": {"json": {"unrelated": "value"}}}, {},
     )
     assert result["status"] == "fail"
+
+
+def test_exact_array_match_ignores_order_but_rejects_duplicates_and_wrong_owner():
+    contract = {
+        "assertions": [{
+            "id": "owned-message", "step_id": "read",
+            "operator": "array_exactly_one_matches", "path": "$.messages",
+            "expected": {
+                "$.rid": "{room_id}", "$.u._id": "{principal_id}",
+                "$.msg": "synthetic {run_id}",
+            },
+        }],
+    }
+    variables = {"room_id": "room-1", "principal_id": "user-1", "run_id": "run-1"}
+    target = {"rid": "room-1", "u": {"_id": "user-1"}, "msg": "synthetic run-1"}
+    system = {"rid": "room-1", "u": {"_id": "system"}, "msg": "room created"}
+    observations = {"read": {"json": {"messages": [system, target]}}}
+    assert evaluate_assertions(contract, observations, variables)["status"] == "pass"
+    observations["read"]["json"]["messages"].append(dict(target))
+    assert evaluate_assertions(contract, observations, variables)["status"] == "fail"
+    observations["read"]["json"]["messages"] = [system, {**target, "u": {"_id": "other"}}]
+    assert evaluate_assertions(contract, observations, variables)["status"] == "fail"

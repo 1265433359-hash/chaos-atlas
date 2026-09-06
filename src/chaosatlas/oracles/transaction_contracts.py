@@ -16,7 +16,11 @@ SCHEMA = "chaosatlas-transaction-oracle-v2"
 SCHEMAS = {LEGACY_SCHEMA, SCHEMA, V3_SCHEMA}
 STATES = {"draft", "validated", "approved", "frozen"}
 METHODS = {"GET", "POST", "PUT", "PATCH", "DELETE"}
-ASSERTIONS = {"status_equals", "status_in", "json_path_equals", "json_path_exists", "sha256_equals", "count_equals", "eventually", "body_contains"}
+ASSERTIONS = {
+    "status_equals", "status_in", "json_path_equals", "json_path_exists",
+    "sha256_equals", "count_equals", "eventually", "body_contains",
+    "array_exactly_one_matches",
+}
 JSON_PATH = re.compile(r"\$(?:\.[A-Za-z_][A-Za-z0-9_-]*|\[(?:0|[1-9][0-9]*)\])*")
 
 
@@ -64,7 +68,7 @@ def validate_transaction_contract(contract: dict[str, Any]) -> list[str]:
     if not assertions or any(not isinstance(item, dict) or item.get("operator") not in ASSERTIONS or item.get("step_id") not in step_ids for item in assertions):
         errors.append("invalid or missing assertions")
     for item in assertions:
-        if isinstance(item, dict) and item.get("operator") in {"json_path_equals", "json_path_exists", "count_equals"}:
+        if isinstance(item, dict) and item.get("operator") in {"json_path_equals", "json_path_exists", "count_equals", "array_exactly_one_matches"}:
             if not isinstance(item.get("path"), str) or not JSON_PATH.fullmatch(item["path"]):
                 errors.append("invalid JSON path in assertion")
     cleanup = contract.get("cleanup") if isinstance(contract.get("cleanup"), dict) else {}
@@ -202,6 +206,20 @@ def _json_path(value: Any, path: str) -> Any:
     return current
 
 
+def _render_expected(value: Any, variables: dict[str, Any]) -> Any:
+    if isinstance(value, dict):
+        return {key: _render_expected(item, variables) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_render_expected(item, variables) for item in value]
+    if isinstance(value, str):
+        return re.sub(
+            r"\{([A-Za-z][A-Za-z0-9_-]*)\}",
+            lambda match: str(variables.get(match.group(1), match.group(0))),
+            value,
+        )
+    return value
+
+
 def evaluate_assertions(contract: dict[str, Any], observations: dict[str, dict[str, Any]], variables: dict[str, Any]) -> dict[str, Any]:
     """Evaluate the bounded assertion DSL without issuing requests or running code."""
     results: dict[str, bool] = {}
@@ -211,12 +229,7 @@ def evaluate_assertions(contract: dict[str, Any], observations: dict[str, dict[s
         observation = observations.get(str(assertion.get("step_id") or ""), {})
         operator = assertion.get("operator")
         expected = assertion.get("expected") if "expected" in assertion else variables.get(str(assertion.get("expected_from") or ""))
-        if isinstance(expected, str):
-            expected = re.sub(
-                r"\{([A-Za-z][A-Za-z0-9_-]*)\}",
-                lambda match: str(variables.get(match.group(1), match.group(0))),
-                expected,
-            )
+        expected = _render_expected(expected, variables)
         try:
             if "expected_from" in assertion and assertion["expected_from"] not in variables:
                 raise ValueError("missing expected variable")
@@ -235,6 +248,14 @@ def evaluate_assertions(contract: dict[str, Any], observations: dict[str, dict[s
                 passed = str(expected) in str(observation.get("body") or "")
             elif operator == "count_equals":
                 passed = len(_json_path(observation.get("json"), str(assertion.get("path") or ""))) == int(expected)
+            elif operator == "array_exactly_one_matches":
+                collection = _json_path(observation.get("json"), str(assertion.get("path") or ""))
+                if not isinstance(collection, list) or not isinstance(expected, dict):
+                    raise ValueError("exact array match requires an array and a field map")
+                passed = sum(
+                    all(_json_path(item, expected_path) == expected_value for expected_path, expected_value in expected.items())
+                    for item in collection
+                ) == 1
             elif operator == "eventually":
                 passed = results.get(str(assertion.get("assertion_ref") or ""), False)
             else:
