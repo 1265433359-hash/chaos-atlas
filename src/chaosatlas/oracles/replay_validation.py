@@ -28,6 +28,13 @@ def variables_in(value: Any) -> set[str]:
 
 
 def validate_v3(contract: dict[str, Any]) -> list[str]:
+    try:
+        return _validate_v3(contract)
+    except (TypeError, KeyError, ValueError, AttributeError, OverflowError):
+        return ['malformed v3 contract structure']
+
+
+def _validate_v3(contract: dict[str, Any]) -> list[str]:
     errors: list[str] = []
 
     def reject(message: str) -> None:
@@ -240,8 +247,8 @@ def validate_v3(contract: dict[str, Any]) -> list[str]:
                 owned[str(step.get('id'))] = captures
             elif step.get('owned_operation') not in owned or captures:
                 reject('write requires proven object ownership or earlier owned operation')
-        elif 'ownership' in step or 'on_response_loss' in step or 'owned_operation' in step:
-            reject('read step cannot declare write recovery semantics')
+        elif 'ownership' in step or 'on_response_loss' in step or 'owned_operation' in step or captures:
+            reject('read step cannot declare captures or write recovery semantics')
         available |= captures
     checks(contract.get('assertions'), available, 'assertions')
     checks(contract.get('probe_assertions'), available, 'probe_assertions')

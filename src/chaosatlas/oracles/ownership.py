@@ -12,7 +12,7 @@ class OwnershipUncertain(ValueError):
     pass
 
 
-def select_owned(payload: Any, spec: dict[str, Any], expected: dict[str, Any]) -> dict[str, Any]:
+def select_owned(payload: Any, spec: dict[str, Any], expected: dict[str, Any], *, expected_identity: dict[str, str] | None = None) -> dict[str, Any]:
     """Never pick an arbitrary first item; prove completeness and exact ownership."""
     if not expected or any(value is None for value in expected.values()):
         raise OwnershipUncertain('ownership requires nonempty explicit evidence')
@@ -36,7 +36,10 @@ def select_owned(payload: Any, spec: dict[str, Any], expected: dict[str, Any]) -
         for item in collection:
             if not isinstance(item, dict):
                 raise OwnershipUncertain('malformed ownership object')
-            if all(_json_path(item, key) == value and type(_json_path(item, key)) is type(value) for key, value in expected.items()):
+            owned = all(_json_path(item, key) == value and type(_json_path(item, key)) is type(value) for key, value in expected.items())
+            if expected_identity and all(_json_path(item, spec['identity'][key]) == value for key, value in expected_identity.items()) and not owned:
+                raise OwnershipUncertain('persisted identity has different ownership')
+            if owned:
                 matches.append(item)
         if len(matches) > 1:
             raise OwnershipUncertain('ambiguous ownership: multiple exact matches')
@@ -45,6 +48,8 @@ def select_owned(payload: Any, spec: dict[str, Any], expected: dict[str, Any]) -
         identities = {name: _json_path(matches[0], path) for name, path in spec['identity'].items()}
         if not identities or any(not isinstance(x, str) or not x or len(x) > 256 for x in identities.values()):
             raise OwnershipUncertain('invalid owned identity')
+        if expected_identity and identities != expected_identity:
+            raise OwnershipUncertain('same marker points to a replacement identity')
         return {'status': 'owned', 'identity': identities, 'evidence_sha256': canonical_hash({'expected': expected, 'identity': identities, 'count': 1, 'complete': True})}
     except (KeyError, TypeError, IndexError) as exc:
         raise OwnershipUncertain('ownership evidence missing or malformed') from exc

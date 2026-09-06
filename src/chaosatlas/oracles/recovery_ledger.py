@@ -12,17 +12,17 @@ from chaosatlas.isolation.contracts import SAFE_ID, sensitive_paths, verify_hash
 from chaosatlas.isolation.lease_store import LeaseStore
 from chaosatlas.workspace import is_within, state_root
 
-SCHEMA = 'chaosatlas-transaction-recovery-v1'
+SCHEMA = 'chaosatlas-transaction-recovery-v2'
 TRANSITIONS = {
     'not_sent': {'intent_persisted'},
     'intent_persisted': {'outcome_unknown', 'not_sent'},
     'outcome_unknown': {'owned_confirmed', 'absent_confirmed', 'cleanup_blocked'},
-    'owned_confirmed': {'cleanup_pending', 'cleanup_blocked'},
+    'owned_confirmed': {'cleanup_pending', 'cleanup_blocked', 'absent_confirmed'},
     'cleanup_pending': {'absent_confirmed', 'cleanup_blocked'},
     'cleanup_blocked': {'owned_confirmed', 'absent_confirmed', 'cleanup_pending'},
     'absent_confirmed': set(),
 }
-BINDING_KEYS = {'lease_id', 'cluster_uid', 'namespace_uid', 'namespace', 'context', 'service_uid', 'service', 'origin', 'principal_id', 'project_revision'}
+BINDING_KEYS = {'lease_id', 'cluster_uid', 'namespace_uid', 'namespace', 'context', 'service_uid', 'service', 'origin', 'principal_id', 'project_revision', 'service_spec_sha256'}
 ENTRY_KEYS = {'state', 'object_type', 'marker_sha256', 'identity', 'ownership_sha256', 'absence_sha256', 'reason_code'}
 
 
@@ -127,3 +127,22 @@ class RecoveryLedger:
     def cleanup_confirmed(self, run_id: str) -> bool:
         value = self.load(run_id)
         return all(entry['state'] in {'not_sent', 'absent_confirmed'} for entry in value['operations'].values())
+
+    def rebind_local_tunnel(self, run_id: str, binding: dict[str, str], contract_sha256: str) -> dict[str, Any]:
+        """After verifying live UIDs, allow only the local ephemeral port to change.
+
+        Caller holds operation() and has just verified the new lease tunnel.
+        No namespace, cluster, principal, service or revision may change.
+        """
+        from urllib.parse import urlsplit
+        value = self.load(run_id)
+        old = value['binding']
+        if value['contract_sha256'] != contract_sha256 or {k: v for k, v in old.items() if k != 'origin'} != {k: v for k, v in binding.items() if k != 'origin'}:
+            raise ValueError('recovery target, principal or contract identity mismatch')
+        for origin in (old['origin'], binding['origin']):
+            parsed = urlsplit(origin)
+            if parsed.scheme != 'http' or parsed.hostname != '127.0.0.1' or not parsed.port or parsed.path or parsed.query or parsed.fragment or parsed.username or parsed.password:
+                raise ValueError('only a verified local tunnel can be rebound')
+        value['binding'] = deepcopy(binding)
+        value['sequence'] += 1
+        return self._save(value)

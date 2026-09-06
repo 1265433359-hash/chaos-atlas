@@ -16,7 +16,7 @@ def setup_runtime(tmp_path):
     objects = {
         'cluster': {'metadata': {'uid': 'cluster-uid'}},
         'namespace': {'metadata': {'uid': 'namespace-uid'}},
-        'service': {'metadata': {'uid': 'service-uid'}, 'spec': {'ports': [{'port': 80}]}},
+        'service': {'metadata': {'uid': 'service-uid'}, 'spec': {'ports': [{'port': 80}], 'selector': {'app': 'test'}}},
     }
     calls = []
     def runner(args, **kwargs):
@@ -74,3 +74,29 @@ def test_target_change_after_open_is_rejected(tmp_path, monkeypatch):
     objects['service']['metadata']['uid'] = 'replacement'
     with pytest.raises(ValueError, match='target changed'):
         runtime.verify({'service': 'test-service', 'mode': 'dedicated'}, SimpleNamespace(base_url=runtime.binding['origin']))
+
+
+def test_selected_image_is_verified_and_selector_change_rejected(tmp_path, monkeypatch):
+    runtime, lease, objects, calls = setup_runtime(tmp_path)
+    monkeypatch.setattr(runtime, '_lease', lambda: lease)
+    runtime._binding = {**runtime._read_identity(lease), 'origin': 'http://127.0.0.1:12345'}
+    runtime._tunnel = SimpleNamespace(poll=lambda: None)
+    provider = runtime.manager.providers.get('test')
+    original = provider._json
+    image = ['sha256:' + 'a' * 64]
+    def query(plan, args, **kwargs):
+        if 'pods' in args:
+            assert args[-2:] == ['-l', 'app=test']
+            return {'items': [{'status': {'containerStatuses': [{'ready': True, 'imageID': image[0]}]}}]}, None
+        return original(plan, args, **kwargs)
+    monkeypatch.setattr(provider, '_json', query)
+    scope = {'service': 'test-service', 'mode': 'dedicated', 'image_digest': image[0]}
+    transport = SimpleNamespace(base_url=runtime.binding['origin'])
+    assert runtime.verify(scope, transport) == runtime.binding
+    image[0] = 'sha256:' + 'b' * 64
+    with pytest.raises(ValueError, match='approved ready image'):
+        runtime.verify(scope, transport)
+    image[0] = scope['image_digest']
+    objects['service']['spec']['selector']['app'] = 'foreign'
+    with pytest.raises(ValueError, match='target changed'):
+        runtime.verify(scope, transport)

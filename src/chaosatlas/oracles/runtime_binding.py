@@ -10,7 +10,7 @@ import threading
 from typing import Any
 
 from chaosatlas.isolation.manager import IsolationManager
-from chaosatlas.isolation.contracts import validate_lease, verify_hash
+from chaosatlas.isolation.contracts import canonical_hash, validate_lease, verify_hash
 from chaosatlas.isolation.providers import KubernetesIsolationProvider
 
 
@@ -68,10 +68,13 @@ class LeaseRuntime:
             raise ValueError('namespace identity is outside lease')
         if not svc.get('metadata', {}).get('uid') or svc.get('spec', {}).get('type') == 'ExternalName':
             raise ValueError('service must have a local Kubernetes identity')
+        if not isinstance(svc['spec'].get('selector'), dict) or not svc['spec']['selector']:
+            raise ValueError('service requires namespace-local pod selectors')
         return {
             'lease_id': self.lease_id, 'cluster_uid': locator['cluster_uid'], 'namespace_uid': ns['metadata']['uid'],
             'namespace': namespace, 'context': context, 'service_uid': svc['metadata']['uid'], 'service': self.service,
             'principal_id': self.principal_id, 'project_revision': self.project_revision,
+            'service_spec_sha256': canonical_hash(svc['spec']),
         }
 
     def open(self):
@@ -120,6 +123,24 @@ class LeaseRuntime:
             raise ValueError('HTTP target differs from lease binding')
         if scope['mode'] == 'disposable' and lease['plan']['mode'] == 'adopted-test-replica':
             raise ValueError('disposable transaction cannot use adopted database')
+        digest = scope.get('image_digest')
+        if not isinstance(digest, str) or not re.fullmatch(r'sha256:[a-f0-9]{64}', digest):
+            raise ValueError('approved application image digest required')
+        provider = self.manager.providers.get(lease['provider'])
+        service, error = provider._json(lease['plan'], ['-n', current['namespace'], 'get', 'service', self.service], lease=lease)
+        if error or canonical_hash((service or {}).get('spec')) != current['service_spec_sha256']:
+            raise ValueError('service routing changed during verification')
+        selector = service['spec']['selector']
+        if any(not re.fullmatch(r'[A-Za-z0-9_./-]+', k) or not re.fullmatch(r'[A-Za-z0-9_.-]+', v) for k, v in selector.items()):
+            raise ValueError('unsupported service selector')
+        pods, error = provider._json(lease['plan'], ['-n', current['namespace'], 'get', 'pods', '-l', ','.join(f'{k}={v}' for k, v in sorted(selector.items()))], lease=lease)
+        items = (pods or {}).get('items')
+        if error or not isinstance(items, list) or not 1 <= len(items) <= 100:
+            raise ValueError('bound application pods unavailable')
+        for pod in items:
+            statuses = pod.get('status', {}).get('containerStatuses', [])
+            if not any(s.get('ready') is True and str(s.get('imageID', '')).split('@')[-1] == digest for s in statuses):
+                raise ValueError('selected pod does not run approved ready image')
         return current
 
     def release(self):

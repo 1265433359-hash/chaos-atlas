@@ -187,7 +187,14 @@ def _render(value: Any, variables: dict[str, Any], fixtures: dict[str, Any]) -> 
 
 
 class TransactionReplayer:
-    """Execute only requests encoded in one frozen v2 contract."""
+    """Public versioned replay entry; v2 remains synthetic compatibility only."""
+
+    def __new__(cls, contract, transport, **kwargs):
+        from chaosatlas.oracles.replay_validation import V3_SCHEMA
+        if contract.get('schema_version') == V3_SCHEMA:
+            from chaosatlas.oracles.replay_session import ReplaySession
+            return ReplaySession(contract, transport, **kwargs)
+        return super().__new__(cls)
 
     def __init__(
         self,
