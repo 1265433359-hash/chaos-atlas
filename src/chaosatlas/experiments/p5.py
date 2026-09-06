@@ -190,6 +190,10 @@ def evaluate_experiment_evidence(
     baselines = [item for item in rows if item.get("role") == "baseline"]
     controls = [item for item in rows if item.get("role") == "control"]
     reproductions = [item for item in rows if item.get("role") == "reproduction"]
+    attempt_ids = [str(item.get("attempt_id") or "") for item in rows if item.get("attempt_id")]
+    unique_attempt_ids = len(attempt_ids) == len(set(attempt_ids))
+    baseline_ids = {str(item.get("attempt_id") or "") for item in baselines}
+    control_ids = {str(item.get("attempt_id") or "") for item in controls}
     valid_reproductions = [
         item for item in reproductions
         if item.get("claim_scope") == "real_runtime"
@@ -199,7 +203,14 @@ def evaluate_experiment_evidence(
         and item.get("recovery_status") == "pass"
         and item.get("cleanup_status") == "pass"
         and (expected_causal_key is None or item.get("causal_key") == expected_causal_key)
+        and str(item.get("run_id") or "")
+        and str(item.get("reset_id") or "")
+        and str(item.get("baseline_ref") or "") in baseline_ids
+        and str(item.get("control_ref") or "") in control_ids
     ]
+    run_ids = [str(item.get("run_id") or "") for item in valid_reproductions]
+    reset_ids = [str(item.get("reset_id") or "") for item in valid_reproductions]
+    independent_identity = bool(valid_reproductions) and len(run_ids) == len(set(run_ids)) and len(reset_ids) == len(set(reset_ids))
     baseline_clean = bool(baselines) and all(item.get("anomaly_observed") is False and item.get("status") == "pass" for item in baselines)
     control_clean = bool(controls) and all(item.get("anomaly_observed") is False and item.get("status") == "pass" for item in controls)
     mechanism = bool(valid_reproductions) and all(item.get("mechanism_status") == "pass" for item in valid_reproductions)
@@ -209,6 +220,11 @@ def evaluate_experiment_evidence(
     causal_scope = bool(expected_causal_key) and bool(valid_reproductions) and all(item.get("causal_key") == expected_causal_key for item in valid_reproductions)
     gates = {
         "three_independent_reproductions": len(valid_reproductions) >= MIN_STABLE_REPRODUCTIONS,
+        "independent_reproduction_identity": independent_identity,
+        "pairing_complete": unique_attempt_ids and all(
+            str(item.get("baseline_ref") or "") in baseline_ids and str(item.get("control_ref") or "") in control_ids
+            for item in valid_reproductions
+        ),
         "baseline_clean": baseline_clean,
         "paired_control_clean": control_clean,
         "mechanism_evidence": mechanism,

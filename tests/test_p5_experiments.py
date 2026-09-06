@@ -60,10 +60,10 @@ def test_hypothesis_is_falsifiable_and_advisory():
 
 
 def _attempts():
-    baseline = {"role": "baseline", "status": "pass", "anomaly_observed": False}
-    control = {"role": "control", "status": "pass", "anomaly_observed": False}
+    baseline = {"role": "baseline", "attempt_id": "b1", "status": "pass", "anomaly_observed": False}
+    control = {"role": "control", "attempt_id": "c1", "status": "pass", "anomaly_observed": False}
     reps = [
-        {"role": "reproduction", "attempt_id": f"r{i}", "claim_scope": "real_runtime", "injection_confirmed": True, "anomaly_observed": True, "mechanism_status": "pass", "recovery_status": "pass", "cleanup_status": "pass", "causal_key": "k"}
+        {"role": "reproduction", "attempt_id": f"r{i}", "run_id": f"run{i}", "reset_id": f"reset{i}", "baseline_ref": "b1", "control_ref": "c1", "claim_scope": "real_runtime", "injection_confirmed": True, "anomaly_observed": True, "mechanism_status": "pass", "recovery_status": "pass", "cleanup_status": "pass", "causal_key": "k"}
         for i in range(1, 4)
     ]
     return [baseline, control, *reps]
@@ -78,6 +78,12 @@ def test_evidence_requires_three_reproductions_and_controls():
     insufficient = evaluate_experiment_evidence(_attempts()[:-1], expected_causal_key="k", sensitive_review="passed")
     assert insufficient["issue_eligible"] is False
     assert "three_independent_reproductions" in insufficient["rejected_reason_codes"]
+
+    duplicated = _attempts()
+    duplicated[-1]["run_id"] = duplicated[-2]["run_id"]
+    checked = evaluate_experiment_evidence(duplicated, expected_causal_key="k", sensitive_review="passed")
+    assert checked["issue_eligible"] is False
+    assert "independent_reproduction_identity" in checked["rejected_reason_codes"]
 
 
 def test_issue_draft_is_blocked_until_all_gates_pass():
