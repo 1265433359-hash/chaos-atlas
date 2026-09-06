@@ -12,6 +12,7 @@ import time
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Callable
+from urllib.parse import urlsplit
 
 from chaosatlas.isolation.blueprint import compile_blueprint, derive_l2_blueprint
 
@@ -402,6 +403,31 @@ class MinikubeIsolationProvider:
             return list(plan.get("blockers") or ["provider_isolation_level_mismatch"])
         return []
 
+    @staticmethod
+    def _runtime_proxy_args(blueprint: dict[str, Any], runtime: str) -> list[str]:
+        raw = blueprint.get("runtime_proxy")
+        if raw in (None, {}):
+            return []
+        if runtime != "docker":
+            raise RuntimeError("runtime_proxy requires the Minikube docker container runtime")
+        if not isinstance(raw, dict) or set(raw) - {"HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY"}:
+            raise RuntimeError("runtime_proxy only allows HTTP_PROXY, HTTPS_PROXY and NO_PROXY")
+        args: list[str] = []
+        for key in sorted(raw):
+            value = raw[key]
+            if not isinstance(value, str) or not value or len(value) > 512 or any(char in value for char in "\r\n\x00"):
+                raise RuntimeError(f"runtime_proxy {key} is invalid")
+            if key in {"HTTP_PROXY", "HTTPS_PROXY"}:
+                parsed = urlsplit(value)
+                if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:
+                    raise RuntimeError("runtime_proxy URLs must be http(s) origins and must not contain credentials")
+                if parsed.path not in {"", "/"}:
+                    raise RuntimeError("runtime_proxy URLs must not contain a path")
+            elif not re.fullmatch(r"[A-Za-z0-9.*,:_/-]+", value):
+                raise RuntimeError("runtime_proxy NO_PROXY contains unsupported characters")
+            args.extend(["--docker-env", f"{key}={value}"])
+        return args
+
     def prepare(self, plan: dict[str, Any], lease: dict[str, Any], mutate: Callable[[str, dict[str, Any]], None]) -> None:
         profile = str(lease.get("target_name") or "")
         if not re.fullmatch(r"ca-l3-[a-z0-9-]+", profile) or profile in {"minikube", "chaosatlas-apps"}:
@@ -419,6 +445,7 @@ class MinikubeIsolationProvider:
         if driver not in {"docker", "hyperv"} or runtime not in {"containerd", "docker"} or cni not in {"", "calico"}:
             raise RuntimeError("unsupported Minikube driver, container runtime or CNI")
         args = ["start", "--profile", profile, "--driver", driver, "--container-runtime", runtime, "--cpus", str(budget.get("cpu") or 2), "--memory", str(budget.get("memory") or "4096mb"), "--disk-size", str(budget.get("disk") or "10g")]
+        args.extend(self._runtime_proxy_args(plan.get("blueprint") or {}, runtime))
         if cni:
             args.extend(["--cni", cni])
         code, stdout, stderr = self._run(args, lease)

@@ -6,6 +6,7 @@ import copy
 import base64
 import hashlib
 import json
+import time
 from typing import Any, Callable
 
 from tools.fault_executor import observation_verdict, validate_attestation
@@ -45,6 +46,16 @@ def _restorable_view(value: dict[str, Any], kind: str) -> dict[str, Any]:
         return {key: copy.deepcopy(value.get(key)) for key in ("data", "stringData", "type") if key in value}
     spec = value.get("spec") if isinstance(value.get("spec"), dict) else {}
     return {"spec": copy.deepcopy(spec)}
+
+
+def _contains_subset(value: Any, expected: Any) -> bool:
+    if isinstance(expected, dict):
+        return isinstance(value, dict) and all(
+            key in value and _contains_subset(value[key], item) for key, item in expected.items()
+        )
+    if isinstance(expected, list):
+        return isinstance(value, list) and value == expected
+    return value == expected
 
 
 def build_mutation(fault_family: str, snapshot: dict[str, Any], parameters: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -188,6 +199,7 @@ def build_mutation(fault_family: str, snapshot: dict[str, Any], parameters: dict
             "patch": {"spec": {"template": {"spec": {"nodeSelector": selector}}}},
             "restore_patch": {"spec": {"template": {"spec": {"nodeSelector": original_selector if original_selector else None}}}},
             "changed_path": f"/spec/template/spec/nodeSelector/{key}",
+            "evidence_parameters": {"node_selector_key": key, "node_selector_value": value},
         }
     raise ValueError(f"unsupported Kubernetes API fault family: {family}")
 
@@ -206,6 +218,8 @@ class KubernetesApiFaultExecutor:
         kube_context: str | None = None,
         isolated: bool = False,
         disposable_cluster: bool = False,
+        injection_timeout: float = 60,
+        poll_interval: float = 1,
     ) -> None:
         self.namespace = str(namespace or "").strip()
         self.allowed_namespaces = {str(item).strip() for item in allowed_namespaces if str(item).strip()}
@@ -215,6 +229,8 @@ class KubernetesApiFaultExecutor:
         self.kube_context = str(kube_context).strip() if kube_context else None
         self.isolated = bool(isolated)
         self.disposable_cluster = bool(disposable_cluster)
+        self.injection_timeout = max(0.0, float(injection_timeout))
+        self.poll_interval = max(0.0, float(poll_interval))
 
     def _run(self, args: list[str], timeout: int = 30) -> tuple[int, str, str]:
         try:
@@ -241,6 +257,81 @@ class KubernetesApiFaultExecutor:
             return 1, "", f"unsupported Kubernetes target kind: {kind}"
         return self._run(["patch", resource, name, "-n", self.namespace, "--type=merge", "-p", json.dumps(patch, separators=(",", ":"))])
 
+    def _pods(self, snapshot: dict[str, Any]) -> tuple[list[dict[str, Any]], str | None]:
+        selector = ((snapshot.get("spec") or {}).get("selector") or {}).get("matchLabels") or {}
+        if not isinstance(selector, dict) or not selector:
+            return [], "workload selector is unavailable"
+        label = ",".join(f"{key}={value}" for key, value in sorted(selector.items()))
+        code, stdout, stderr = self._run(["get", "pods", "-n", self.namespace, "-l", label, "-o", "json"])
+        if code != 0:
+            return [], (stderr or stdout).strip() or f"kubectl exit {code}"
+        try:
+            value = json.loads(stdout)
+        except json.JSONDecodeError as exc:
+            return [], f"invalid Pod JSON: {exc}"
+        return [item for item in value.get("items") or [] if isinstance(item, dict)], None
+
+    def _confirm_injection(
+        self,
+        family: str,
+        target_kind: str,
+        name: str,
+        snapshot: dict[str, Any],
+        mutation: dict[str, Any],
+    ) -> dict[str, Any]:
+        deadline = time.monotonic() + self.injection_timeout
+        attempts = 0
+        last_error: str | None = None
+        observed_reasons: set[str] = set()
+        while True:
+            attempts += 1
+            current, error = self._get(target_kind, name)
+            if error or current is None:
+                last_error = error or "mutated target is unavailable"
+            elif family == "secret_rotation":
+                key = str((mutation.get("evidence_parameters") or {}).get("key") or "")
+                expected = ((mutation.get("patch") or {}).get("data") or {}).get(key)
+                actual = (current.get("data") or {}).get(key)
+                if key and expected and actual == expected:
+                    return {"confirmed": True, "attempts": attempts, "mechanism": "secret_value_reflected"}
+                last_error = "rotated Secret key was not reflected"
+            elif family in {"image_pull_failure", "pod_unschedulable"}:
+                pods, pod_error = self._pods(snapshot)
+                if pod_error:
+                    last_error = pod_error
+                elif family == "image_pull_failure":
+                    expected_image = str(((mutation.get("evidence_parameters") or {}).get("image")) or "")
+                    for pod in pods:
+                        images = {str(item.get("image") or "") for item in (pod.get("spec") or {}).get("containers") or []}
+                        for status in (pod.get("status") or {}).get("containerStatuses") or []:
+                            waiting = ((status.get("state") or {}).get("waiting") or {}) if isinstance(status, dict) else {}
+                            reason = str(waiting.get("reason") or "")
+                            if reason:
+                                observed_reasons.add(reason)
+                            if expected_image in images and reason in {"ErrImagePull", "ImagePullBackOff"}:
+                                return {"confirmed": True, "attempts": attempts, "mechanism": "pod_image_pull_waiting", "observed_reasons": sorted(observed_reasons)}
+                    last_error = "no target Pod reached ErrImagePull or ImagePullBackOff"
+                else:
+                    params = mutation.get("evidence_parameters") or {}
+                    key = str(params.get("node_selector_key") or "")
+                    expected_value = str(params.get("node_selector_value") or "")
+                    for pod in pods:
+                        selector = (pod.get("spec") or {}).get("nodeSelector") or {}
+                        for condition in (pod.get("status") or {}).get("conditions") or []:
+                            reason = str(condition.get("reason") or "")
+                            if reason:
+                                observed_reasons.add(reason)
+                            if selector.get(key) == expected_value and condition.get("type") == "PodScheduled" and condition.get("status") == "False" and reason == "Unschedulable":
+                                return {"confirmed": True, "attempts": attempts, "mechanism": "pod_scheduling_condition", "observed_reasons": sorted(observed_reasons)}
+                    last_error = "no target Pod reached the Unschedulable condition"
+            elif _contains_subset(current, mutation.get("patch") or {}):
+                return {"confirmed": True, "attempts": attempts, "mechanism": "api_state_reflected"}
+            else:
+                last_error = "mutated API state was not reflected"
+            if time.monotonic() >= deadline:
+                return {"confirmed": False, "attempts": attempts, "mechanism": "runtime_effect_required", "observed_reasons": sorted(observed_reasons), "error": last_error}
+            time.sleep(self.poll_interval)
+
     def run(self, manifest: dict[str, Any], *, action_id: str = "kubernetes-api-fault", fault: dict[str, Any] | None = None) -> dict[str, Any]:
         metadata = manifest.get("metadata") if isinstance(manifest, dict) else {}
         spec = manifest.get("spec") if isinstance(manifest, dict) else {}
@@ -257,7 +348,8 @@ class KubernetesApiFaultExecutor:
             return {**base, "status": "method_invalid", "errors": ["targetRef.name and faultFamily are required"]}
         if namespace != self.namespace or namespace not in self.allowed_namespaces:
             return {**base, "status": "environment_blocked", "errors": ["mutation namespace is outside the allow-list"]}
-        if family in {"pod_unschedulable", "image_pull_failure"} and (not self.isolated or not self.namespace.startswith("chaosatlas-run-")):
+        owned_disposable_namespace = self.namespace.startswith(("chaosatlas-run-", "ca-l1-", "ca-l2-"))
+        if family in {"pod_unschedulable", "image_pull_failure"} and (not self.isolated or not owned_disposable_namespace):
             return {**base, "status": "environment_blocked", "errors": [f"{family} requires a disposable isolated namespace"]}
         if family == "api_server_delay":
             return {**base, "status": "environment_blocked", "errors": ["api_server_delay requires a disposable cluster control-plane executor"]}
@@ -302,8 +394,13 @@ class KubernetesApiFaultExecutor:
                 result["errors"].append((stderr or stdout).strip() or "kubectl patch failed")
                 return self._finalize(result)
             applied = True
-            result["injection"].update({"applied": True, "confirmed": True})
+            confirmation = self._confirm_injection(family, target_kind, name, snapshot, mutation)
+            result["injection"].update({"applied": True, "confirmed": confirmation["confirmed"], "confirmation": confirmation})
             result["lifecycle"].append("inject")
+            if not confirmation["confirmed"]:
+                result["status"] = "injection_not_confirmed"
+                result["errors"].append(str(confirmation.get("error") or "runtime mutation effect was not confirmed"))
+                return self._finalize(result)
             observed = self.probe("observe")
             result["observation"] = observed
             result["lifecycle"].append("observe")
@@ -315,6 +412,11 @@ class KubernetesApiFaultExecutor:
                 restored, restore_error = self._get(target_kind, name)
                 snapshot_match = restored is not None and _restorable_view(restored, target_kind) == _restorable_view(snapshot, target_kind)
                 recovery_confirmed = code == 0 and snapshot_match
+                try:
+                    recovery_probe = self.probe("recovery") if recovery_confirmed else {"status": "not_run", "samples": []}
+                except Exception as exc:
+                    recovery_probe = {"status": "error", "samples": [], "error": f"{type(exc).__name__}: {exc}"}
+                recovery_confirmed = recovery_confirmed and recovery_probe.get("status") == "pass"
                 replicas_match = ((restored.get("spec") or {}).get("replicas") if restored else None) == ((snapshot.get("spec") or {}).get("replicas"))
                 annotations_match = _annotations(restored) == _annotations(snapshot) if restored and target_kind == "Deployment" else snapshot_match
                 result["recovery"] = {
@@ -322,6 +424,7 @@ class KubernetesApiFaultExecutor:
                     "snapshot_match": snapshot_match,
                     "replicas_match": replicas_match,
                     "annotations_match": annotations_match,
+                    "business_probe": recovery_probe,
                     "patch": {"return_code": code, "stdout": stdout, "stderr": stderr},
                 }
                 result["lifecycle"].append("recover")

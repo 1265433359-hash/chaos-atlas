@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from tools.dify_chatflow_oracle import DifyChatflowOracle
-from chaosatlas.orchestration.batch import build_live_batch_plan, resolve_requested_candidate_ids
+from chaosatlas.orchestration.batch import _candidate_output_root, build_live_batch_plan, resolve_requested_candidate_ids
 from tools.experiment_policy import new_policy_state
 from tools.experiment_policy_feedback import ingest_runtime_result
 from tools.feedback_protocol import classify_outcome
@@ -10,6 +10,18 @@ from tools.policy_controller import normalize_runtime_feedback
 from tools.rca_loop import evaluate_knowledge_promotion
 from tools.stop_policy import evaluate_stop
 from chaosatlas.orchestration.batch import summarize_batch_results
+
+
+def test_candidate_output_root_reserves_windows_evidence_path_budget(tmp_path):
+    long_root = tmp_path / ("outer-" + "x" * 120)
+    candidate_id = "server:deployment:" + "a" * 80 + ":pod_unschedulable"
+
+    first = _candidate_output_root(long_root, candidate_id)
+    second = _candidate_output_root(long_root, candidate_id)
+
+    assert first == second
+    assert first.name.startswith("c-")
+    assert len(first.name) == 18
 from tools.run_chaos_experiment import wait_for_container_ready, wait_for_target_ready
 
 

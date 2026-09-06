@@ -35,3 +35,26 @@ def test_chaos_components_accepts_standard_chaos_mesh_namespace(monkeypatch):
         (["get", "pods", "-n", "chaos-testing"], "lab"),
         (["get", "pods", "-n", "chaos-mesh"], "lab"),
     ]
+
+
+def test_httpchaos_daemon_probe_uses_discovered_namespace(monkeypatch):
+    calls = []
+
+    def fake_run_kubectl(args, timeout=30, kube_context=None):
+        calls.append((args, kube_context))
+        if args[0] == "logs":
+            return 0, "", ""
+        return 0, "HTTPCHAOS_CAPABILITY_OK", ""
+
+    monkeypatch.setattr(gate, "run_kubectl", fake_run_kubectl)
+
+    result = gate.daemon_prerequisite(
+        "HTTPChaos",
+        ["chaos-daemon-0"],
+        namespace="chaos-mesh",
+        kube_context="lab",
+    )
+
+    assert result["status"] == "pass"
+    assert calls[0][0][2] == "chaos-mesh"
+    assert calls[1][0][2] == "chaos-mesh"

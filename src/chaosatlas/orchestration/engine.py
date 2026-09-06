@@ -929,7 +929,25 @@ def _collect_live_evidence(*, collector: Any, output_root: Path, namespace: str,
             suffix = hashlib.sha256(evidence_prefix.encode("utf-8")).hexdigest()[:12]
             mechanism_source_ref = f"runtime/kubernetes/mechanism/m-{suffix}.json"
         recovery_mode = str(recovery_state.get("recovery_mode") or "pod_replacement")
-        if recovery_mode == "container_restart":
+        injection = fault.get("injection") if isinstance(fault.get("injection"), dict) else {}
+        confirmation = fault.get("injection_confirmation") if isinstance(fault.get("injection_confirmation"), dict) else (injection.get("confirmation") if isinstance(injection.get("confirmation"), dict) else {})
+        confirmation_mechanism = str(confirmation.get("mechanism") or "")
+        if confirmation_mechanism == "secret_value_reflected":
+            mechanism_interpretation = (
+                "The owned test Secret mutation was reflected by the Kubernetes API, the bounded health Oracle "
+                "was observed, and the original Secret snapshot was restored; no Secret value is retained."
+            )
+        elif confirmation_mechanism == "pod_image_pull_waiting":
+            mechanism_interpretation = (
+                "A Pod from the owned disposable workload reached ErrImagePull/ImagePullBackOff for the injected "
+                "test image, followed by workload restoration and a passing bounded health Oracle."
+            )
+        elif confirmation_mechanism == "pod_scheduling_condition":
+            mechanism_interpretation = (
+                "A Pod from the owned disposable workload reached PodScheduled=False/Unschedulable for the injected "
+                "test selector, followed by workload restoration and a passing bounded health Oracle."
+            )
+        elif recovery_mode == "container_restart":
             mechanism_interpretation = (
                 "Kubernetes/Chaos Mesh lifecycle evidence connects confirmed injection, "
                 "target container restart within the existing Pod, business observation "
@@ -950,6 +968,7 @@ def _collect_live_evidence(*, collector: Any, output_root: Path, namespace: str,
             "fault_kind": fault.get("kind") or "unknown",
             "event_source_ref": event_record.get("source_ref"),
             "injection_confirmed": True,
+            "injection_confirmation": confirmation,
             "observation_status": observation.get("status"),
             "recovery_confirmed": True,
             "cleanup_confirmed": True,

@@ -280,3 +280,45 @@ def test_minikube_rejects_unapproved_cni_before_start(tmp_path):
     with pytest.raises(RuntimeError, match="unsupported.*CNI"):
         provider.prepare({"blueprint": {"driver": "docker", "container_runtime": "containerd", "cni": "unsafe-plugin"}, "resource_budget": {}}, lease, lambda action, payload: None)
     assert not any(call and call[0] == "start" for call in calls)
+
+
+def test_minikube_passes_allowlisted_credential_free_runtime_proxy(tmp_path):
+    calls = []
+
+    def runner(args, timeout=900, env=None):
+        calls.append(args)
+        return 0, "", ""
+
+    provider = MinikubeIsolationProvider(root=tmp_path / "runtime", runner=runner, docker_runner=lambda *args, **kwargs: (0, "", ""), cache_seed_root=tmp_path / "empty")
+    lease = {"lease_id": "lease-abc", "target_name": "ca-l3-fixture-abc", "runtime_locator": {"provider": "minikube-l3", "runtime_root": str(tmp_path / "runtime"), "driver": "docker"}, "external_profiles": [], "resources": []}
+    provider.prepare({"blueprint": {
+        "driver": "docker",
+        "container_runtime": "docker",
+        "runtime_proxy": {
+            "HTTP_PROXY": "http://host.docker.internal:7897",
+            "HTTPS_PROXY": "http://host.docker.internal:7897",
+            "NO_PROXY": "127.0.0.1,localhost,.svc,.cluster.local",
+        },
+    }, "resource_budget": {}}, lease, lambda action, payload: None)
+
+    start = next(call for call in calls if call[0] == "start")
+    values = [start[index + 1] for index, value in enumerate(start[:-1]) if value == "--docker-env"]
+    assert values == [
+        "HTTPS_PROXY=http://host.docker.internal:7897",
+        "HTTP_PROXY=http://host.docker.internal:7897",
+        "NO_PROXY=127.0.0.1,localhost,.svc,.cluster.local",
+    ]
+
+
+def test_minikube_rejects_proxy_credentials_before_start(tmp_path):
+    calls = []
+
+    def runner(args, timeout=900, env=None):
+        calls.append(args)
+        return 0, "", ""
+
+    provider = MinikubeIsolationProvider(root=tmp_path / "runtime", runner=runner, docker_runner=lambda *args, **kwargs: (0, "", ""), cache_seed_root=tmp_path / "empty")
+    lease = {"lease_id": "lease-abc", "target_name": "ca-l3-fixture-abc", "runtime_locator": {"provider": "minikube-l3", "runtime_root": str(tmp_path / "runtime"), "driver": "docker"}, "external_profiles": [], "resources": []}
+    with pytest.raises(RuntimeError, match="credentials"):
+        provider.prepare({"blueprint": {"driver": "docker", "container_runtime": "docker", "runtime_proxy": {"HTTPS_PROXY": "http://user:password@host.docker.internal:7897"}}, "resource_budget": {}}, lease, lambda action, payload: None)
+    assert not any(call and call[0] == "start" for call in calls)

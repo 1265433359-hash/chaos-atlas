@@ -323,7 +323,7 @@ def daemon_prerequisite(
             for daemon in daemon_names:
                 code, stdout, stderr = _call_with_optional_context(
                     run_kubectl,
-                    ["exec", "-n", "chaos-testing", daemon, "--", "sh", "-c", probe_script],
+                    ["exec", "-n", namespace, daemon, "--", "sh", "-c", probe_script],
                     timeout=30,
                     kube_context=kube_context,
                 )

@@ -32,6 +32,16 @@ def _safe_name(value: Any) -> str:
     return name[:160]
 
 
+def _candidate_output_root(output_root: Path, candidate_id: str) -> Path:
+    """Keep enough Windows path budget for atomic stage and evidence files."""
+    base = Path(output_root) / "runs"
+    path = base / _safe_name(candidate_id)
+    if len(str(path)) < 180:
+        return path
+    digest = hashlib.sha256(str(candidate_id).encode("utf-8")).hexdigest()[:16]
+    return base / f"c-{digest}"
+
+
 def _sha256_json(value: Any) -> str:
     return hashlib.sha256(
         json.dumps(value, ensure_ascii=True, sort_keys=True, separators=(",", ":")).encode("utf-8")
@@ -670,7 +680,7 @@ def run_live_batch(
                 stop_reason = "budget_exhausted"
                 break
             candidate_id = str(candidate_id)
-            child = output_root / "runs" / _safe_name(candidate_id)
+            child = _candidate_output_root(output_root, candidate_id)
             if candidate_id not in results_by_id:
                 append_batch_state(batch_state_path, candidate_id=candidate_id, state="planned")
                 try:
@@ -755,7 +765,7 @@ def run_live_batch(
     for candidate_id in selected_ids:
         if latest_states.get(candidate_id) in terminal_states:
             continue
-        child = output_root / "runs" / _safe_name(candidate_id)
+        child = _candidate_output_root(output_root, candidate_id)
         try:
             result = candidate_runner(
                 profile_path=profile_path,

@@ -14,6 +14,14 @@ from typing import Any, Callable
 Runner = Callable[..., tuple[int, str, str]]
 OracleRunner = Callable[[list[str], Path], tuple[int, str, str]]
 CHAOS_RESOURCES = ("podchaos", "networkchaos", "stresschaos", "httpchaos", "dnschaos", "iochaos", "timechaos", "schedules", "workflows")
+CHAOS_MESH_FAULTS = {
+    "pod_kill", "backend_pod_kill", "container_kill", "stress_cpu", "stress_memory",
+    "network_loss", "network_partition", "network_delay", "network_bandwidth",
+    "network_duplicate", "network_corrupt", "dns_failure", "dns_delay",
+    "http_delay", "http_abort", "http_status_error", "http_response_corrupt",
+    "dependency_error", "connection_reset", "extension.io_delay", "extension.io_error",
+    "extension.time_offset", "extension.jvm_gc_pause",
+}
 
 
 class KubernetesPreflight:
@@ -176,7 +184,7 @@ class KubernetesPreflight:
             for name, value in (self.profile.get("fault_support") or {}).items()
             if isinstance(value, dict) and str(value.get("status") or "").lower() in {"supported", "implemented"}
         }
-        chaos_required = bool(supported_faults - {"api_server_delay"})
+        chaos_required = bool(supported_faults & CHAOS_MESH_FAULTS)
         residual: dict[str, Any] = {}
         if chaos_required:
             for resource in CHAOS_RESOURCES:

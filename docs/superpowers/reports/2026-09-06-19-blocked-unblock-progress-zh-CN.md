@@ -4,7 +4,7 @@
 
 ## 结论
 
-本轮没有把任何项目能力直接改写为 `supported`。新增了统一的外部 runtime evidence 接口，并执行了真实 canary；`api_server_delay` 已在平台级别从 `blocked` 进入 `canary_required`，四项目其余 blocked 保持证据约束。
+本轮没有把任何项目能力直接改写为 `supported`。新增了统一的外部 runtime evidence 接口，并执行了真实 canary；`api_server_delay` 已在平台级别从 `blocked` 进入 `canary_required`。另外，Medusa 的真实可销毁副本已完成 `secret_rotation`、`image_pull_failure`、`pod_unschedulable` 三项机制 canary，但它们尚未接入四项目静态矩阵的自动隔离绑定，且未执行事务 Oracle，因此四项目矩阵仍保持现有证据等级。
 
 ## 已实现
 
@@ -14,21 +14,29 @@
 - 新增 `scripts/run_httpchaos_runtime_canary.py`，复用统一 `KubernetesLifecycleExecutor`，生成 namespace/selector/mode 受限的 HTTPChaos canary 和可审查证据。
 - `run_api_server_delay_disposable.py` 支持本地镜像、期望响应体和容器 command/args，便于在无外网时进行真实 disposable control-plane 验收。
 - RunEngine 机制证据文件使用确定性短哈希，修复 Windows 长路径导致 `method_invalid` 的问题。
+- RunEngine 的候选输出目录增加确定性短路径回退，修复外置运行根较长时子阶段原子文件仍可能超过 Windows 路径预算的问题。
+- `KubernetesApiFaultExecutor` 不再把 `kubectl patch` 成功直接当作注入成功：Secret 必须由 API 读回新值，镜像故障必须观察到 `ErrImagePull/ImagePullBackOff`，不可调度必须观察到 `PodScheduled=False/Unschedulable`。
+- Kubernetes API 故障恢复除资源快照一致外，还必须通过恢复后的业务探针；失败时 attestation 无效。
+- 新增 `scripts/run_kubernetes_api_disposable_canary.py`，通过统一的 `IsolationManager -> RunEngine -> Oracle -> attestation` 路径，在一个 L3 父集群中为每项故障创建独立的完整 Medusa L2 副本，逐项释放子租约并最终释放父集群。
+- Minikube 隔离 Provider 支持经过严格校验、无凭据的容器运行时代理参数，用于可销毁节点拉取系统镜像；代理地址不会写入项目 profile。
+- runtime preflight 只在所选故障确实使用 Chaos Mesh 时要求其 CRD，原生 Kubernetes API 故障不再被错误阻断。
+- HTTPChaos daemon 前置探针使用实际发现的 Chaos Mesh namespace，不再硬编码 `chaos-testing`。
 
 ## 已测试
 
-`tests/test_capability_runtime_probe.py`、`tests/test_httpchaos_runtime_canary.py` 和 disposable canary 测试共 9 项通过。修改前后的完整仓库测试需在提交前再次执行。
+完整仓库测试：`483 passed in 15.61s`。覆盖新增的故障效果确认、负向 fail-closed、恢复业务探针、短路径、Minikube 代理校验、preflight 路由、HTTPChaos namespace 和 disposable canary 汇总逻辑。
 
 ## 真实证据
 
 ### HTTPChaos（Medusa）
 
-证据目录：`%LOCALAPPDATA%/ChaosAtlas/runs/httpchaos-medusa-canary-20260906-b`
+证据目录：`%LOCALAPPDATA%/ChaosAtlas/runs/httpchaos-medusa-canary-20260906-c`
 
 - CRD、Chaos Mesh controller/daemon、目标 Pod、selector、端口均通过；
+- 修复 namespace 探针后，Chaos Daemon 内部诊断确认 `xt_TPROXY` 和 iptables mangle 可用，但 WSL2 内核缺少 ebtables/broute；
 - Chaos Daemon 的 tproxy/ebtables 正向探针失败，原因是 `http_tproxy_positive_evidence_missing`；
 - 未执行 `kubectl apply` 注入，`injection_performed=false`；
-- 因此 6 项 HTTPChaos 仍为 blocked，不能用 CRD 存在替代运行证据。
+- 因此 6 项 HTTPChaos 仍为 blocked。这已从“探针代码错误”收敛为当前 WSL2 内核能力不足，不能用 CRD 存在替代运行证据。
 
 ### API Server delay（disposable Minikube）
 
@@ -39,15 +47,41 @@
 - 修复路径后统一 RunEngine 状态为 `live_completed`，基线、注入、观察、恢复和清理均有效；
 - 平台级证据已接入 capability bootstrap。四个项目均由 `blocked 19 / canary_required 17 / inapplicable 5` 变为 `blocked 18 / canary_required 18 / inapplicable 5`；项目级业务 canary 仍待执行。
 
+### Kubernetes API L2 故障（disposable Medusa）
+
+证据目录：
+
+- `%LOCALAPPDATA%/ChaosAtlas/runs/kapi-c2`
+- `%LOCALAPPDATA%/ChaosAtlas/runs/kapi-c3`
+
+真实边界为一个 IsolationManager 所有的 disposable L3 Minikube 父集群；每项故障使用重新创建的完整 Medusa、PostgreSQL、Redis 和 migration L2 子副本。
+
+| 故障 | 运行机制证据 | 注入 | 恢复 | 清理 |
+| --- | --- | --- | --- | --- |
+| `secret_rotation` | `secret_value_reflected` | 已确认 | 快照与健康探针通过 | 子租约和父租约均 released |
+| `image_pull_failure` | `pod_image_pull_waiting` | 已观察 `ErrImagePull/ImagePullBackOff` | 快照与健康探针通过 | 子租约和父租约均 released |
+| `pod_unschedulable` | `pod_scheduling_condition` | 已观察 `PodScheduled=False/Unschedulable` | 快照与健康探针通过 | 子租约和父租约均 released |
+
+三项统一 RunEngine 状态均为 `live_completed`，lifecycle attestation 均为 valid，敏感信息扫描无命中。可确认的范围仅为“Medusa 可销毁副本上的故障机制、健康观察、恢复与清理”；本轮没有执行业务事务、没有三次独立复现，也没有形成应用缺陷结论。
+
+早期真实尝试留下了两类负向诊断：Calico 镜像和 kindnet 镜像在当前网络下无法直接拉取，完整副本未 Ready；相应父子资源均已释放。后续使用受校验的无凭据节点代理后才取得上述正向证据，失败尝试不计为能力通过。
+
 ## 当前仍 blocked 的主要原因
 
 1. HTTPChaos 6 项：需要同 context 的 tproxy/ebtables 正向注入证据；
 2. native HTTP 2 项：四项目没有已验证的 native HTTP 控制契约；
 3. native resource 3 项：没有项目级隔离资源 Agent；
-4. Secret rotation、image pull failure、pod unschedulable：缺少项目级 disposable target；
+4. Secret rotation、image pull failure、pod unschedulable：Medusa 已有独立机制 canary；四项目正式 profile 仍缺少由 RunEngine 自动申请、绑定和释放 disposable target 的通用路由，其他三个项目也尚无对应真实副本证据；
 5. extension time/queue/pool/runtime：缺少对应 disposable Agent 或控制契约；
 6. API Server delay：平台级已解除 blocked，四个项目仍是 `canary_required`，需要各项目业务路径 canary 才能进一步提升证据等级。
 
 ## 证据边界
 
-本报告区分“代码接口已实现”“测试通过”“真实运行证据存在”。未满足完整生命周期、业务效果和清理证明的能力继续保持 blocked；本轮没有使用模拟结果解锁矩阵。
+本报告区分“代码接口已实现”“测试通过”“真实运行证据存在”。未满足完整生命周期、事务业务效果、独立复现和清理证明的能力继续保持 blocked 或 canary_required；本轮没有使用模拟结果解锁矩阵，也没有把一次健康 canary 当作稳定业务结论。
+
+## 下一步
+
+1. 把 disposable target 的申请、profile 绑定和释放从专用验收脚本下沉到统一 RunEngine，消除手工外层编排；
+2. 为 Immich、ERPNext、Rocket.Chat 生成同等真实副本 blueprint，并分别完成三项 Kubernetes API 机制 canary；
+3. 在四项目已批准的事务契约上执行 baseline、注入期、恢复期 Oracle，之后才把相应矩阵项从 `blocked` 提升为 `canary_required`；
+4. HTTPChaos 改在具备 ebtables/broute 的 Linux 节点或远程测试集群验收，当前 WSL2 环境不继续做无效重试。
