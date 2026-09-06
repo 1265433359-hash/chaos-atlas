@@ -5,7 +5,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
-from chaosatlas.oracles.transaction_contracts import make_draft, validate_draft
+from chaosatlas.oracles.transaction_contracts import make_draft, make_v3_draft, validate_draft
 
 
 def _request(identifier: str, method: str, path: str) -> dict[str, str]:
@@ -69,3 +69,19 @@ class OracleBuilder:
             "approval": {"required": True, "record": None},
         }
         return validate_draft(make_draft(payload))
+
+    def build_v3(self, *, project_id: str, project_revision: str,
+                 structured_payload: dict[str, Any]) -> dict[str, Any]:
+        """Validate a generated v3 proposal without silently filling semantics.
+
+        Project IDs and source revisions are owned by the builder caller; all
+        executable request/ownership/cleanup fields must be supplied explicitly
+        and pass the strict v3 validator.
+        """
+        if not isinstance(structured_payload, dict):
+            raise ValueError('structured v3 payload must be an object')
+        payload = deepcopy(structured_payload)
+        payload['project_id'] = project_id
+        payload['project_revision'] = project_revision
+        payload.setdefault('approval', {'required': True, 'record': None})
+        return validate_draft(make_v3_draft(payload))

@@ -9,7 +9,7 @@ from copy import deepcopy
 import math
 import time
 import uuid
-from typing import Any
+from typing import Any, Callable
 
 from chaosatlas.isolation.contracts import SAFE_ID, canonical_hash
 from chaosatlas.oracles.ownership import OwnershipUncertain, select_owned
@@ -37,20 +37,27 @@ class ReplaySession:
 
     def __init__(self, contract, transport, *, credential_headers, fixtures, runtime,
                  ledger: RecoveryLedger, journal, sleep=time.sleep, monotonic=time.monotonic,
-                 synthetic_test_only=False):
+                 synthetic_test_only=False, environment_releaser: Callable[[], Any] | None = None):
         self._contract = deepcopy(contract)
         errors = validate_transaction_contract(self._contract)
         if errors or self._contract.get('status') != 'frozen':
             raise ValueError('v3 requires a valid frozen contract: ' + '; '.join(errors))
         if not callable(journal) or not isinstance(ledger, RecoveryLedger):
             raise ValueError('durable ledger and explicit evidence journal required')
-        # Live credentials/runtime integration must land and be tested before this
-        # interpreter is opened to application HTTP. A fake may not claim live.
+        # Live HTTP is opened only through a verified LeaseRuntime and an actual
+        # human-approved contract. Synthetic sessions use a fake transport and
+        # an explicitly labelled synthetic approval record.
         record = self._contract['approval']['record']
-        if not synthetic_test_only or isinstance(transport, UrllibHttpTransport) or record.get('reviewer') != 'synthetic-test-only':
-            raise ValueError('v3 live execution remains gated pending credential and runtime integration')
+        if synthetic_test_only:
+            if isinstance(transport, UrllibHttpTransport) or record.get('reviewer') != 'synthetic-test-only':
+                raise ValueError('synthetic v3 session requires synthetic transport and approval label')
+        else:
+            from chaosatlas.oracles.runtime_binding import LeaseRuntime
+            if not isinstance(runtime, LeaseRuntime) or not isinstance(transport, UrllibHttpTransport) or record.get('reviewer') == 'synthetic-test-only':
+                raise ValueError('v3 live execution requires verified LeaseRuntime and actual human approval')
         self.transport, self.runtime, self.ledger, self.journal = transport, runtime, ledger, journal
         self._sleep, self._monotonic = sleep, monotonic
+        self._environment_releaser = environment_releaser
         self._fixtures = deepcopy(fixtures)
         specs = self._contract['inputs']
         if set(fixtures) != set(specs):
@@ -195,7 +202,7 @@ class ReplaySession:
                 result = evaluate_assertions(self._contract, self._observations, self._variables)
                 if result['status'] != 'pass':
                     return {'status': 'oracle_failed', 'assertion_result': result['status'], 'cleanup': self._cleanup_locked()}
-                return {'status': 'prepared', 'assertion_result': 'pass', 'claim_scope': 'synthetic_test_only'}
+                return {'status': 'prepared', 'assertion_result': 'pass', 'claim_scope': 'synthetic_test_only' if self._contract['approval']['record'].get('reviewer') == 'synthetic-test-only' else 'real_business_transaction'}
             except BaseException as exc:
                 cleanup = self._cleanup_locked()
                 if not isinstance(exc, Exception):
@@ -212,7 +219,7 @@ class ReplaySession:
             for identifier in self._contract['probe_steps']:
                 observations[identifier] = self._read(self._steps[identifier], self._contract['probe_assertions'])
             result = evaluate_assertions({'assertions': self._contract['probe_assertions']}, observations, self._variables)
-            return {**result, 'phase': phase, 'claim_scope': 'synthetic_test_only'}
+            return {**result, 'phase': phase, 'claim_scope': 'synthetic_test_only' if self._contract['approval']['record'].get('reviewer') == 'synthetic-test-only' else 'real_business_transaction'}
 
     def _cleanup_locked(self):
         errors = []
@@ -265,13 +272,20 @@ class ReplaySession:
             except Exception as exc:
                 errors.append({'operation_id': creator['id'], 'reason_code': type(exc).__name__})
         confirmed = self.ledger.cleanup_confirmed(self._run_id)
+        environment_released = None
         if self._contract['cleanup'].get('environment_release_required'):
-            confirmed = False
-            errors.append({'reason_code': 'verified_environment_release_not_integrated'})
+            try:
+                environment_released = bool(self._environment_releaser and self._environment_releaser())
+            except Exception as exc:
+                errors.append({'reason_code': type(exc).__name__})
+            if not environment_released:
+                errors.append({'reason_code': 'verified_environment_release_required'})
+            confirmed = confirmed and environment_released is True
         if confirmed:
             self.ledger.close_run(self._run_id)
         return {'status': 'cleaned' if confirmed else 'cleanup_failed', 'cleanup_confirmed': confirmed,
-                'environment_released': None, 'errors': errors, 'claim_scope': 'synthetic_test_only'}
+                'environment_released': environment_released, 'errors': errors,
+                'claim_scope': 'synthetic_test_only' if self._contract['approval']['record'].get('reviewer') == 'synthetic-test-only' else 'real_business_transaction'}
 
     def cleanup(self):
         if self._run_id is None:

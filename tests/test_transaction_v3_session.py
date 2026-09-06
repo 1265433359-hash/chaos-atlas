@@ -142,7 +142,7 @@ def test_intent_persistence_failure_blocks_send(tmp_path, monkeypatch):
 
 
 def test_synthetic_approval_cannot_enable_default_execution(tmp_path):
-    with pytest.raises(ValueError, match='live execution remains gated'):
+    with pytest.raises(ValueError, match='verified LeaseRuntime'):
         TransactionReplayer(frozen(), Transport(), credential_headers=lambda _: {}, fixtures={},
                             runtime=Runtime(), ledger=RecoveryLedger(tmp_path), journal=lambda _: None)
 

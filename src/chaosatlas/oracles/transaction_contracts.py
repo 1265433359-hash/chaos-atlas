@@ -170,6 +170,15 @@ def make_draft(payload: dict[str, Any]) -> dict[str, Any]:
     return with_hash(value, "contract_sha256")
 
 
+def make_v3_draft(payload: dict[str, Any]) -> dict[str, Any]:
+    """Create a v3 draft from a structured generator; no executable code fields."""
+    if not isinstance(payload, dict):
+        raise ValueError('v3 draft payload must be an object')
+    value = {"schema_version": V3_SCHEMA, **deepcopy(payload), "status": "draft"}
+    value.setdefault("approval", {"required": True, "record": None})
+    return with_hash(value, "contract_sha256")
+
+
 def _json_path(value: Any, path: str) -> Any:
     if not isinstance(path, str) or not JSON_PATH.fullmatch(path):
         raise ValueError("invalid JSON path")

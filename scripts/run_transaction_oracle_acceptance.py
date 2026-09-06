@@ -1,4 +1,9 @@
-"""Run one approved transaction Oracle against a real HTTP origin."""
+"""Thin v3 transaction acceptance entry point.
+
+It consumes a frozen, actually approved contract and a verified IsolationManager
+lease. It cannot accept base URLs or credential values from an ad-hoc runtime
+JSON file, and it never turns a synthetic contract into real evidence.
+"""
 
 from __future__ import annotations
 
@@ -12,112 +17,94 @@ from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from chaosatlas.oracles.replay import TransactionReplayer, UrllibHttpTransport
+from chaosatlas.isolation.contracts import validate_plan
+from chaosatlas.isolation.lease_store import LeaseStore
+from chaosatlas.isolation.manager import IsolationManager
+from chaosatlas.isolation.providers import KubernetesIsolationProvider, ProviderRegistry
+from chaosatlas.oracles.replay import TransactionWorkflowOracle
+from chaosatlas.oracles.replay_session import ReplaySession
+from chaosatlas.oracles.secret_headers import SecretHeaders
+from chaosatlas.oracles.runtime_binding import LeaseRuntime
+from chaosatlas.oracles.transaction_contracts import validate_transaction_contract
+from chaosatlas.oracles.recovery_ledger import RecoveryLedger
+from chaosatlas.workspace import is_within
 
 
-SYNTHETIC_PNG = (
-    b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01"
-    b"\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\rIDAT\x08\xd7c\xf8\xcf\xc0\xf0\x1f\x00\x05\x00\x01\xff\x89\x99=\x1d\x00\x00\x00\x00IEND\xaeB`\x82"
-)
-
-
-def _read_object(path: Path) -> dict[str, Any]:
+def _read(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8-sig"))
     if not isinstance(value, dict):
         raise ValueError(f"JSON object required: {path}")
     return value
 
 
-def _outside_repository(path: Path, repository_root: Path) -> bool:
-    try:
-        path.resolve().relative_to(repository_root.resolve())
-        return False
-    except ValueError:
-        return True
-
-
 def run(args: argparse.Namespace) -> dict[str, Any]:
-    repository_root = Path(__file__).resolve().parents[1]
+    repository = Path(__file__).resolve().parents[1]
+    contract_path = Path(args.contract).resolve()
     evidence_root = Path(args.evidence_root).resolve()
-    runtime_input_path = Path(args.runtime_input).resolve()
-    if not _outside_repository(evidence_root, repository_root) or not _outside_repository(runtime_input_path, repository_root):
-        raise ValueError("runtime inputs and evidence must stay outside the repository")
-    if evidence_root.exists() and any(evidence_root.iterdir()):
-        raise ValueError("evidence root must be new or empty")
-    evidence_root.mkdir(parents=True, exist_ok=True)
-
-    contract = _read_object(Path(args.contract).resolve())
-    runtime_input = _read_object(runtime_input_path)
-    headers_by_ref = runtime_input.get("headers_by_ref")
-    if not isinstance(headers_by_ref, dict):
-        raise ValueError("runtime input requires headers_by_ref")
-    fixtures = dict(runtime_input.get("fixtures") or {})
-    fixtures.setdefault("synthetic_png", SYNTHETIC_PNG)
-    fixtures.setdefault("fixture_sha256", hashlib.sha256(SYNTHETIC_PNG).hexdigest())
-    fixtures.setdefault("fixture_timestamp", datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z"))
-
+    fixtures_path = Path(args.fixtures).resolve() if args.fixtures else None
+    if not is_within(contract_path, repository / "projects"):
+        raise ValueError("contract must be an in-project reviewed artifact")
+    if is_within(evidence_root, repository) or (fixtures_path and is_within(fixtures_path, repository)):
+        raise ValueError("runtime evidence and fixture inputs must stay external")
+    contract = _read(contract_path)
+    errors = validate_transaction_contract(contract)
+    record = (contract.get("approval") or {}).get("record") or {}
+    if errors or contract.get("status") != "frozen" or record.get("reviewer") == "synthetic-test-only":
+        raise ValueError("only a valid frozen contract with actual human approval may run")
+    fixtures = _read(fixtures_path) if fixtures_path else {}
+    evidence_root.mkdir(parents=True, exist_ok=False)
+    store = LeaseStore(args.lease_store)
+    lease = store.load(args.lease_id)
+    provider = KubernetesIsolationProvider(name=lease["provider"], level=lease["isolation_level"])
+    manager = IsolationManager(store=store, providers=ProviderRegistry([provider]))
+    runtime = LeaseRuntime(manager, args.lease_id, service=args.service, port=args.port,
+                           principal_id=args.principal_id, project_revision=contract["project_revision"])
     journal_path = evidence_root / "transaction-journal.jsonl"
-
-    def append_journal(event: dict[str, Any]) -> None:
-        with journal_path.open("a", encoding="utf-8", newline="\n") as handle:
-            handle.write(json.dumps(event, ensure_ascii=True, sort_keys=True) + "\n")
-
-    replayer = TransactionReplayer(
-        contract,
-        UrllibHttpTransport(args.base_url),
-        credential_headers=lambda reference: dict(headers_by_ref.get(reference) or {}),
-        fixtures=fixtures,
-        journal=append_journal,
-    )
-    prepared: dict[str, Any] = {"status": "not_run"}
-    probe: dict[str, Any] = {"status": "not_run"}
-    cleanup: dict[str, Any]
+    def journal(event: dict[str, Any]) -> None:
+        with journal_path.open("a", encoding="utf-8", newline="\n") as stream:
+            stream.write(json.dumps(event, ensure_ascii=True, sort_keys=True) + "\n")
+    transport = runtime.open()
+    resolver = SecretHeaders(runtime, contract["credential_refs"])
+    replay = ReplaySession(contract, transport, credential_headers=resolver, fixtures=fixtures,
+                           runtime=runtime, ledger=RecoveryLedger(Path(args.lease_store).resolve().parent / "transactions"), journal=journal,
+                           synthetic_test_only=False)
+    workflow = TransactionWorkflowOracle(replay)
+    prepared = probe = cleanup = None
     try:
-        prepared = replayer.prepare(run_id=args.run_id)
-        if prepared.get("status") == "prepared":
-            probe = replayer.probe("baseline")
-    except Exception as exc:
-        probe = {"status": "failed", "error_type": type(exc).__name__}
+        prepared = workflow.prepare_fixture({"run_id": args.run_id})
+        probe = workflow.probe("baseline", {"run_id": args.run_id}) if prepared.get("status") == "prepared" else {"status": "not_run"}
     finally:
-        cleanup = prepared.get("cleanup") if isinstance(prepared.get("cleanup"), dict) else replayer.cleanup()
-    status = "passed" if prepared.get("status") == "prepared" and probe.get("status") == "pass" and cleanup.get("cleanup_confirmed") else "failed"
+        cleanup = workflow.cleanup_fixture({"run_id": args.run_id}) if replay._run_id else {"status": "not_required", "cleanup_confirmed": True}
+        runtime.close()
+    status = "passed" if prepared and prepared.get("status") == "prepared" and probe and probe.get("status") == "pass" and cleanup and cleanup.get("cleanup_confirmed") else "failed"
     summary = {
-        "schema_version": "chaosatlas-transaction-acceptance-v1",
-        "status": status,
-        "claim_scope": "real_business_transaction",
-        "project_id": contract["project_id"],
-        "project_revision": contract["project_revision"],
-        "oracle_id": contract["oracle_id"],
-        "contract_sha256": contract["contract_sha256"],
-        "run_id": args.run_id,
-        "base_origin": UrllibHttpTransport(args.base_url).base_url,
-        "prepared": prepared,
-        "baseline_probe": probe,
-        "cleanup": cleanup,
+        "schema_version": "chaosatlas-transaction-acceptance-v2", "status": status,
+        "claim_scope": "real_business_transaction", "project_id": contract["project_id"],
+        "project_revision": contract["project_revision"], "oracle_id": contract["oracle_id"],
+        "contract_sha256": contract["contract_sha256"], "run_id": args.run_id,
+        "prepared": prepared, "baseline_probe": probe, "cleanup": cleanup,
         "completed_at": datetime.now(timezone.utc).isoformat(),
     }
-    summary_path = evidence_root / "acceptance-summary.json"
-    summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
-    serialized_evidence = "\n".join(path.read_text(encoding="utf-8") for path in evidence_root.glob("*.json*"))
-    secret_values = [str(value) for headers in headers_by_ref.values() if isinstance(headers, dict) for value in headers.values() if len(str(value)) >= 8]
-    if any(value in serialized_evidence for value in secret_values):
-        summary["status"] = "failed_sensitive_evidence"
-        summary_path.write_text(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
+    (evidence_root / "acceptance-summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
     return summary
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--contract", required=True)
-    parser.add_argument("--base-url", required=True)
-    parser.add_argument("--runtime-input", required=True)
+    parser.add_argument("--lease-store", required=True)
+    parser.add_argument("--lease-id", required=True)
+    parser.add_argument("--service", required=True)
+    parser.add_argument("--port", type=int, required=True)
+    parser.add_argument("--principal-id", required=True)
+    parser.add_argument("--fixtures")
     parser.add_argument("--evidence-root", required=True)
     parser.add_argument("--run-id", required=True)
     args = parser.parse_args()
     try:
         summary = run(args)
     except Exception as exc:
-        print(json.dumps({"status": "blocked", "error_type": type(exc).__name__}, ensure_ascii=True))
+        print(json.dumps({"status": "blocked", "reason_code": type(exc).__name__}, ensure_ascii=True))
         return 2
     print(json.dumps({"status": summary["status"], "project_id": summary["project_id"], "evidence_root": str(Path(args.evidence_root).resolve())}, ensure_ascii=True))
     return 0 if summary["status"] == "passed" else 2

@@ -14,6 +14,8 @@
 原有 `ProbeWorkflowOracle` 仍保持兼容；事务 Oracle 可通过同一 hooks 进入，不新增项目专用实验主链。
 准备业务夹具失败会在注入前阻断；业务清理失败会降低最终 cleanup 结果；基线失败也会执行已准备夹具的清理。
 
+`OracleBuilder.build_v3()` 现在提供结构化生成入口。它只接受受限 v3 JSON，所有请求、变量、所有权和清理字段仍由确定性验证器审查；任意 Python/shell/未声明请求会被拒绝。
+
 `tests/test_kubernetes_lifecycle_workflow.py` 已验证调用顺序、注入前阻断和无重复清理。
 
 ### P5 可独立推进的只读能力盘点
@@ -34,6 +36,11 @@
 本轮另收集了真实 Service UID、selector、端口、Pod UID、ready 状态和 imageID，只读 API 部署证据：
 `%LOCALAPPDATA%/ChaosAtlas/runs/h3-readonly-20260906/api-deployment-evidence.json`。
 报告明确标注固定版本 API 语义仍 unknown，避免把 Kubernetes 部署事实当作事务证据。
+
+另外对每个真实 Service 做了临时本地端口转发，只发送固定 GET，保存状态码、响应大小、顶层键和 body hash：
+`%LOCALAPPDATA%/ChaosAtlas/runs/h3-readonly-20260906/api-surface-evidence.json`。
+观测结果为：Immich ping `200`、其 openapi 路径 `404`；Medusa regions/products 在无 key 时均 `400`；Rocket.Chat info `404`、settings.public `200`；ERPNext 两个候选路径 `404`。
+这些结果只说明当前路径/认证组合的 HTTP 行为，不能证明接口不存在或业务能力不支持；原始业务响应没有落盘。
 
 ## 测试证据
 
