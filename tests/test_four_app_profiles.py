@@ -89,7 +89,7 @@ def test_four_app_dry_run_selects_the_business_oracle_owner(app: str, tmp_path: 
     ]
 
 
-@pytest.mark.parametrize("app", ["medusa", "rocketchat"])
+@pytest.mark.parametrize("app", ["medusa", "rocketchat", "erpnext"])
 def test_disposable_l2_profiles_compile_and_route_kubernetes_api_faults(app: str) -> None:
     profile_path = APP_ROOT / app / "profile.json"
     expected_faults = {"secret_rotation", "image_pull_failure", "pod_unschedulable"}

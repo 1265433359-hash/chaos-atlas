@@ -1,0 +1,194 @@
+{
+  "resources": [
+    {
+      "apiVersion": "v1",
+      "kind": "Secret",
+      "metadata": {"name": "erpnext-runtime-secrets"},
+      "runtimeGenerate": {"keys": ["mariadb-root-password", "admin-password"]}
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {"name": "erpnext-mariadb-config"},
+      "data": {
+        "my.cnf": "[mysqld]\nskip-character-set-client-handshake\nskip-innodb-read-only-compressed\ncharacter-set-server=utf8mb4\ncollation-server=utf8mb4_unicode_ci\n"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {"name": "erpnext-sites"},
+      "spec": {
+        "accessModes": ["ReadWriteOnce"],
+        "resources": {"requests": {"storage": "1Gi"}}
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "erpnext-mariadb-sts"},
+      "spec": {
+        "clusterIP": "None",
+        "publishNotReadyAddresses": true,
+        "selector": {"app": "erpnext-mariadb"},
+        "ports": [{"name": "mariadb", "port": 3306, "targetPort": "mariadb"}]
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "erpnext-valkey-cache"},
+      "spec": {"selector": {"app": "erpnext-valkey-cache"}, "ports": [{"name": "redis", "port": 6379, "targetPort": "redis"}]}
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "erpnext-valkey-queue"},
+      "spec": {"selector": {"app": "erpnext-valkey-queue"}, "ports": [{"name": "redis", "port": 6379, "targetPort": "redis"}]}
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "erpnext-gunicorn"},
+      "spec": {"selector": {"app": "erpnext-gunicorn"}, "ports": [{"name": "http", "port": 8000, "targetPort": "http"}]}
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "erpnext-socketio"},
+      "spec": {"selector": {"app": "erpnext-socketio"}, "ports": [{"name": "socketio", "port": 9000, "targetPort": "socketio"}]}
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "erpnext"},
+      "spec": {"selector": {"app": "erpnext-nginx"}, "ports": [{"name": "http", "port": 8080, "targetPort": "http"}]}
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "StatefulSet",
+      "metadata": {"name": "erpnext-mariadb-sts"},
+      "spec": {
+        "serviceName": "erpnext-mariadb-sts",
+        "replicas": 1,
+        "selector": {"matchLabels": {"app": "erpnext-mariadb"}},
+        "template": {
+          "metadata": {"labels": {"app": "erpnext-mariadb"}},
+          "spec": {
+            "containers": [
+              {
+                "name": "mariadb",
+                "image": "docker.io/library/mariadb:10.6",
+                "env": [
+                  {"name": "MARIADB_ROOT_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "erpnext-runtime-secrets", "key": "mariadb-root-password"}}},
+                  {"name": "MARIADB_ROOT_HOST", "value": "%"}
+                ],
+                "ports": [{"name": "mariadb", "containerPort": 3306}],
+                "readinessProbe": {
+                  "exec": {"command": ["bash", "-ec", "mariadb-admin ping -h 127.0.0.1 -uroot -p\"$MARIADB_ROOT_PASSWORD\" --silent"]},
+                  "initialDelaySeconds": 10,
+                  "periodSeconds": 5,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 24
+                },
+                "resources": {"requests": {"cpu": "50m", "memory": "128Mi"}, "limits": {"cpu": "1000m", "memory": "1Gi"}},
+                "volumeMounts": [
+                  {"name": "data", "mountPath": "/var/lib/mysql"},
+                  {"name": "config", "mountPath": "/etc/mysql/conf.d/my.cnf", "subPath": "my.cnf"}
+                ]
+              }
+            ],
+            "volumes": [
+              {"name": "data", "emptyDir": {}},
+              {"name": "config", "configMap": {"name": "erpnext-mariadb-config"}}
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "erpnext-valkey-cache"},
+      "spec": {
+        "replicas": 1,
+        "selector": {"matchLabels": {"app": "erpnext-valkey-cache"}},
+        "template": {"metadata": {"labels": {"app": "erpnext-valkey-cache"}}, "spec": {"containers": [{"name": "valkey", "image": "docker.io/valkey/valkey:7.2", "command": ["valkey-server"], "args": ["--save", "", "--appendonly", "no"], "ports": [{"name": "redis", "containerPort": 6379}], "readinessProbe": {"exec": {"command": ["valkey-cli", "ping"]}, "initialDelaySeconds": 2, "periodSeconds": 3}, "resources": {"requests": {"cpu": "10m", "memory": "32Mi"}, "limits": {"cpu": "250m", "memory": "256Mi"}}}]}}
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "erpnext-valkey-queue"},
+      "spec": {
+        "replicas": 1,
+        "selector": {"matchLabels": {"app": "erpnext-valkey-queue"}},
+        "template": {"metadata": {"labels": {"app": "erpnext-valkey-queue"}}, "spec": {"containers": [{"name": "valkey", "image": "docker.io/valkey/valkey:7.2", "command": ["valkey-server"], "args": ["--save", "", "--appendonly", "no"], "ports": [{"name": "redis", "containerPort": 6379}], "readinessProbe": {"exec": {"command": ["valkey-cli", "ping"]}, "initialDelaySeconds": 2, "periodSeconds": 3}, "resources": {"requests": {"cpu": "10m", "memory": "32Mi"}, "limits": {"cpu": "250m", "memory": "256Mi"}}}]}}
+      }
+    },
+    {
+      "apiVersion": "batch/v1",
+      "kind": "Job",
+      "metadata": {"name": "erpnext-configure", "annotations": {"chaosatlas.dev/wait-before-next": "true"}},
+      "spec": {
+        "backoffLimit": 2,
+        "template": {
+          "metadata": {"labels": {"app": "erpnext-configure"}},
+          "spec": {
+            "restartPolicy": "OnFailure",
+            "initContainers": [{"name": "ownership", "image": "docker.io/frappe/erpnext:v16.34.1", "command": ["sh", "-c"], "args": ["chown -R 1000:1000 /home/frappe/frappe-bench/sites"], "securityContext": {"runAsUser": 0}, "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}]}],
+            "containers": [{"name": "configure", "image": "docker.io/frappe/erpnext:v16.34.1", "command": ["bash", "-ec"], "args": ["ls -1 apps > sites/apps.txt; [[ -f sites/common_site_config.json ]] || echo '{}' > sites/common_site_config.json; bench set-config -gp db_port 3306; bench set-config -g db_host erpnext-mariadb-sts; bench set-config -g redis_cache redis://erpnext-valkey-cache:6379; bench set-config -g redis_queue redis://erpnext-valkey-queue:6379; bench set-config -g redis_socketio redis://erpnext-valkey-queue:6379; bench set-config -gp socketio_port 9000"], "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}]}],
+            "volumes": [{"name": "sites", "persistentVolumeClaim": {"claimName": "erpnext-sites"}}]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "batch/v1",
+      "kind": "Job",
+      "metadata": {"name": "erpnext-create-site", "annotations": {"chaosatlas.dev/wait-before-next": "true"}},
+      "spec": {
+        "backoffLimit": 0,
+        "template": {
+          "metadata": {"labels": {"app": "erpnext-create-site"}},
+          "spec": {
+            "restartPolicy": "OnFailure",
+            "initContainers": [{"name": "wait-for-dependencies", "image": "docker.io/frappe/erpnext:v16.34.1", "command": ["bash", "-ec"], "args": ["until (echo > /dev/tcp/erpnext-mariadb-sts/3306) >/dev/null 2>&1; do sleep 2; done; until (echo > /dev/tcp/erpnext-valkey-cache/6379) >/dev/null 2>&1; do sleep 2; done; until (echo > /dev/tcp/erpnext-valkey-queue/6379) >/dev/null 2>&1; do sleep 2; done"]}],
+            "containers": [{"name": "create-site", "image": "docker.io/frappe/erpnext:v16.34.1", "command": ["bash", "-ec"], "args": ["bench new-site erpnext.local --mariadb-user-host-login-scope='%' --db-root-username root --db-root-password \"$MARIADB_ROOT_PASSWORD\" --admin-password \"$ADMIN_PASSWORD\" --install-app erpnext --set-default"], "env": [{"name": "MARIADB_ROOT_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "erpnext-runtime-secrets", "key": "mariadb-root-password"}}}, {"name": "ADMIN_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "erpnext-runtime-secrets", "key": "admin-password"}}}], "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}]}],
+            "volumes": [{"name": "sites", "persistentVolumeClaim": {"claimName": "erpnext-sites"}}]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "erpnext-gunicorn"},
+      "spec": {"replicas": 1, "selector": {"matchLabels": {"app": "erpnext-gunicorn"}}, "template": {"metadata": {"labels": {"app": "erpnext-gunicorn"}}, "spec": {"securityContext": {"fsGroup": 1000}, "containers": [{"name": "gunicorn", "image": "docker.io/frappe/erpnext:v16.34.1", "ports": [{"name": "http", "containerPort": 8000}], "resources": {"requests": {"cpu": "25m", "memory": "128Mi"}, "limits": {"cpu": "750m", "memory": "768Mi"}}, "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}, {"name": "logs", "mountPath": "/home/frappe/frappe-bench/logs"}]}], "volumes": [{"name": "sites", "persistentVolumeClaim": {"claimName": "erpnext-sites"}}, {"name": "logs", "emptyDir": {}}]}}}
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "erpnext-socketio"},
+      "spec": {"replicas": 1, "selector": {"matchLabels": {"app": "erpnext-socketio"}}, "template": {"metadata": {"labels": {"app": "erpnext-socketio"}}, "spec": {"securityContext": {"fsGroup": 1000}, "containers": [{"name": "socketio", "image": "docker.io/frappe/erpnext:v16.34.1", "args": ["node", "/home/frappe/frappe-bench/apps/frappe/socketio.js"], "ports": [{"name": "socketio", "containerPort": 9000}], "resources": {"requests": {"cpu": "25m", "memory": "64Mi"}, "limits": {"cpu": "500m", "memory": "512Mi"}}, "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}, {"name": "logs", "mountPath": "/home/frappe/frappe-bench/logs"}]}], "volumes": [{"name": "sites", "persistentVolumeClaim": {"claimName": "erpnext-sites"}}, {"name": "logs", "emptyDir": {}}]}}}
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "erpnext-scheduler"},
+      "spec": {"replicas": 1, "selector": {"matchLabels": {"app": "erpnext-scheduler"}}, "template": {"metadata": {"labels": {"app": "erpnext-scheduler"}}, "spec": {"securityContext": {"fsGroup": 1000}, "containers": [{"name": "scheduler", "image": "docker.io/frappe/erpnext:v16.34.1", "args": ["bench", "schedule"], "resources": {"requests": {"cpu": "25m", "memory": "64Mi"}, "limits": {"cpu": "500m", "memory": "512Mi"}}, "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}, {"name": "logs", "mountPath": "/home/frappe/frappe-bench/logs"}]}], "volumes": [{"name": "sites", "persistentVolumeClaim": {"claimName": "erpnext-sites"}}, {"name": "logs", "emptyDir": {}}]}}}
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "erpnext-worker"},
+      "spec": {"replicas": 1, "selector": {"matchLabels": {"app": "erpnext-worker"}}, "template": {"metadata": {"labels": {"app": "erpnext-worker"}}, "spec": {"securityContext": {"fsGroup": 1000}, "containers": [{"name": "worker", "image": "docker.io/frappe/erpnext:v16.34.1", "args": ["bench", "worker", "--queue", "short,default,long"], "resources": {"requests": {"cpu": "25m", "memory": "64Mi"}, "limits": {"cpu": "500m", "memory": "512Mi"}}, "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}, {"name": "logs", "mountPath": "/home/frappe/frappe-bench/logs"}]}], "volumes": [{"name": "sites", "persistentVolumeClaim": {"claimName": "erpnext-sites"}}, {"name": "logs", "emptyDir": {}}]}}}
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "erpnext-nginx"},
+      "spec": {"replicas": 1, "selector": {"matchLabels": {"app": "erpnext-nginx"}}, "template": {"metadata": {"labels": {"app": "erpnext-nginx"}}, "spec": {"securityContext": {"fsGroup": 1000}, "containers": [{"name": "nginx", "image": "docker.io/frappe/erpnext:v16.34.1", "args": ["nginx-entrypoint.sh"], "env": [{"name": "BACKEND", "value": "erpnext-gunicorn:8000"}, {"name": "SOCKETIO", "value": "erpnext-socketio:9000"}, {"name": "UPSTREAM_REAL_IP_ADDRESS", "value": "127.0.0.1"}, {"name": "UPSTREAM_REAL_IP_RECURSIVE", "value": "off"}, {"name": "UPSTREAM_REAL_IP_HEADER", "value": "X-Forwarded-For"}, {"name": "FRAPPE_SITE_NAME_HEADER", "value": "$host"}, {"name": "PROXY_READ_TIMEOUT", "value": "120"}, {"name": "CLIENT_MAX_BODY_SIZE", "value": "50m"}], "ports": [{"name": "http", "containerPort": 8080}], "readinessProbe": {"httpGet": {"path": "/api/method/ping", "port": "http", "httpHeaders": [{"name": "Host", "value": "erpnext.local"}]}, "initialDelaySeconds": 10, "periodSeconds": 5, "timeoutSeconds": 10, "failureThreshold": 24}, "resources": {"requests": {"cpu": "25m", "memory": "64Mi"}, "limits": {"cpu": "500m", "memory": "512Mi"}}, "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}]}], "volumes": [{"name": "sites", "persistentVolumeClaim": {"claimName": "erpnext-sites"}}]}}}
+    }
+  ]
+}
