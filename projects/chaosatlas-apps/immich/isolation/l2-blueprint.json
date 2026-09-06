@@ -1,0 +1,167 @@
+{
+  "resources": [
+    {
+      "apiVersion": "v1",
+      "kind": "Secret",
+      "metadata": {"name": "immich-db"},
+      "runtimeGenerate": {"keys": ["password"]}
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "immich-postgres"},
+      "spec": {
+        "selector": {"app": "immich-postgres"},
+        "ports": [{"name": "postgres", "port": 5432, "targetPort": "postgres"}]
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "immich-valkey"},
+      "spec": {
+        "selector": {"app": "immich-valkey"},
+        "ports": [{"name": "redis", "port": 6379, "targetPort": "redis"}]
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "immich-server"},
+      "spec": {
+        "selector": {"app": "immich-server"},
+        "ports": [{"name": "http", "port": 2283, "targetPort": "http"}]
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "StatefulSet",
+      "metadata": {"name": "immich-postgres"},
+      "spec": {
+        "serviceName": "immich-postgres",
+        "replicas": 1,
+        "selector": {"matchLabels": {"app": "immich-postgres"}},
+        "template": {
+          "metadata": {"labels": {"app": "immich-postgres"}},
+          "spec": {
+            "containers": [
+              {
+                "name": "postgres",
+                "image": "tensorchord/pgvecto-rs:pg14-v0.2.0",
+                "env": [
+                  {"name": "POSTGRES_DB", "value": "immich"},
+                  {"name": "POSTGRES_USER", "value": "immich"},
+                  {"name": "POSTGRES_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "immich-db", "key": "password"}}}
+                ],
+                "ports": [{"name": "postgres", "containerPort": 5432}],
+                "readinessProbe": {
+                  "exec": {"command": ["sh", "-c", "pg_isready -U immich -d immich"]},
+                  "initialDelaySeconds": 5,
+                  "periodSeconds": 5,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 24
+                },
+                "resources": {
+                  "requests": {"cpu": "25m", "memory": "128Mi"},
+                  "limits": {"cpu": "1000m", "memory": "1Gi"}
+                },
+                "volumeMounts": [{"name": "data", "mountPath": "/var/lib/postgresql/data"}]
+              }
+            ],
+            "volumes": [{"name": "data", "emptyDir": {}}]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "immich-valkey"},
+      "spec": {
+        "replicas": 1,
+        "selector": {"matchLabels": {"app": "immich-valkey"}},
+        "template": {
+          "metadata": {"labels": {"app": "immich-valkey"}},
+          "spec": {
+            "containers": [
+              {
+                "name": "valkey",
+                "image": "docker.io/valkey/valkey:9.1-alpine@sha256:34f4f659e02a67cfdf3995d11ae432219c936005055b2cd39a042e86280e053e",
+                "ports": [{"name": "redis", "containerPort": 6379}],
+                "readinessProbe": {
+                  "exec": {"command": ["sh", "-c", "valkey-cli ping | grep PONG"]},
+                  "initialDelaySeconds": 2,
+                  "periodSeconds": 3,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 24
+                },
+                "resources": {
+                  "requests": {"cpu": "10m", "memory": "32Mi"},
+                  "limits": {"cpu": "250m", "memory": "256Mi"}
+                },
+                "volumeMounts": [{"name": "data", "mountPath": "/data"}]
+              }
+            ],
+            "volumes": [{"name": "data", "emptyDir": {}}]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "immich-server"},
+      "spec": {
+        "replicas": 1,
+        "selector": {"matchLabels": {"app": "immich-server"}},
+        "template": {
+          "metadata": {"labels": {"app": "immich-server"}},
+          "spec": {
+            "initContainers": [
+              {
+                "name": "wait-for-dependencies",
+                "image": "ghcr.io/immich-app/immich-server:v2.6.3",
+                "command": ["bash", "-ec"],
+                "args": ["until getent hosts immich-postgres >/dev/null 2>&1 && (echo > /dev/tcp/immich-postgres/5432) >/dev/null 2>&1; do sleep 2; done; until getent hosts immich-valkey >/dev/null 2>&1 && (echo > /dev/tcp/immich-valkey/6379) >/dev/null 2>&1; do sleep 2; done"]
+              }
+            ],
+            "containers": [
+              {
+                "name": "server",
+                "image": "ghcr.io/immich-app/immich-server:v2.6.3",
+                "env": [
+                  {"name": "DB_DATABASE_NAME", "value": "immich"},
+                  {"name": "DB_HOSTNAME", "value": "immich-postgres"},
+                  {"name": "DB_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "immich-db", "key": "password"}}},
+                  {"name": "DB_PORT", "value": "5432"},
+                  {"name": "DB_USERNAME", "value": "immich"},
+                  {"name": "IMMICH_MACHINE_LEARNING_URL", "value": "http://synthetic.invalid:3003"},
+                  {"name": "REDIS_HOSTNAME", "value": "immich-valkey"}
+                ],
+                "ports": [{"name": "http", "containerPort": 2283}],
+                "startupProbe": {
+                  "httpGet": {"path": "/api/server/ping", "port": "http"},
+                  "periodSeconds": 5,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 60
+                },
+                "readinessProbe": {
+                  "httpGet": {"path": "/api/server/ping", "port": "http"},
+                  "periodSeconds": 5,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 24
+                },
+                "resources": {
+                  "requests": {"cpu": "50m", "memory": "256Mi"},
+                  "limits": {"cpu": "1500m", "memory": "2Gi"}
+                },
+                "volumeMounts": [{"name": "data", "mountPath": "/data"}]
+              }
+            ],
+            "volumes": [{"name": "data", "emptyDir": {}}]
+          }
+        }
+      }
+    }
+  ]
+}

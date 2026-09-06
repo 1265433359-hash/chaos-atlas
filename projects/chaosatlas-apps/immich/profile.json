@@ -19,6 +19,18 @@
       "dedicated_test_replica": true,
       "namespace": "chaosatlas-immich"
     },
+    "l2": {
+      "mode": "ephemeral-target",
+      "ready_timeout_s": 420,
+      "cleanup_timeout_s": 180,
+      "resource_budget": {"cpu": "4", "memory": "5Gi", "pods": 8},
+      "blueprint_ref": "isolation/l2-blueprint.json"
+    },
+    "fault_routes": {
+      "secret_rotation": {"level": "L2", "backend": "kubernetes_api"},
+      "image_pull_failure": {"level": "L2", "backend": "kubernetes_api"},
+      "pod_unschedulable": {"level": "L2", "backend": "kubernetes_api"}
+    },
     "synthetic_data_only": true
   },
   "source": {
@@ -68,5 +80,10 @@
       "status": "supported",
       "reason": "generic Kubernetes lifecycle verified on 2026-09-05 with baseline, confirmed injection, degraded service observation, replacement recovery, and zero-residue cleanup; one run is not a stable application finding"
     }
+  },
+  "fault_defaults": {
+    "secret_rotation": {"secret_name": "immich-db", "key": "password"},
+    "image_pull_failure": {"image": "chaosatlas.invalid/not-found:test"},
+    "pod_unschedulable": {"node_selector_key": "chaosatlas.invalid/never", "node_selector_value": "true"}
   }
 }
