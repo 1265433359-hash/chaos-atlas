@@ -8,12 +8,22 @@ import pytest
 from chaosatlas.oracles.recovery_ledger import RecoveryLedger
 from chaosatlas.oracles.replay import HttpObservation, ResponseLost, TransactionReplayer
 from chaosatlas.oracles.transaction_contracts import make_draft, validate_draft, record_human_approval, freeze_approved_contract
-from test_transaction_v3_validation import write_contract
+from test_transaction_v3_validation import lease_exclusive_contract, write_contract
 
 
 def frozen():
     value = write_contract()
     value.update(oracle_id='synthetic-v3', project_id='synthetic', project_revision='synthetic-test-only',
+                 credential_refs=[], evidence_sources=['synthetic-test-only'], ownership={'synthetic_only': True})
+    return freeze_approved_contract(record_human_approval(validate_draft(make_draft(value)), {
+        'decision': 'approved', 'reviewer': 'synthetic-test-only', 'reviewed_at': '2020-01-01T00:00:00+00:00',
+        'decision_reference': 'synthetic-test-only:no-real-authorization',
+    }))
+
+
+def frozen_lease_exclusive():
+    value = lease_exclusive_contract()
+    value.update(oracle_id='synthetic-lease-v3', project_id='synthetic', project_revision='synthetic-test-only',
                  credential_refs=[], evidence_sources=['synthetic-test-only'], ownership={'synthetic_only': True})
     return freeze_approved_contract(record_human_approval(validate_draft(make_draft(value)), {
         'decision': 'approved', 'reviewer': 'synthetic-test-only', 'reviewed_at': '2020-01-01T00:00:00+00:00',
@@ -217,6 +227,64 @@ def test_new_session_cannot_bypass_project_pending_gate(tmp_path):
     with pytest.raises(ValueError, match='project has an active transaction'):
         session(tmp_path, transport=second_transport).prepare(run_id='new-run')
     assert second_transport.calls == []
+
+
+def test_lease_exclusive_normal_write_closes_only_after_environment_release(tmp_path):
+    transport, runtime = Transport(), Runtime()
+    releases = []
+    replay = TransactionReplayer(
+        frozen_lease_exclusive(), transport, credential_headers=lambda _: {}, fixtures={},
+        runtime=runtime, ledger=RecoveryLedger(tmp_path), journal=lambda _: None,
+        synthetic_test_only=True, environment_releaser=lambda: releases.append('released') or True,
+    )
+    assert replay.prepare(run_id='run-lease')['status'] == 'prepared'
+    assert replay.cleanup()['cleanup_confirmed'] is True
+    assert releases == ['released']
+    assert replay.ledger.load('run-lease')['lifecycle'] == 'closed'
+
+
+def test_lease_exclusive_lost_response_is_resolved_by_verified_release(tmp_path):
+    transport, runtime = Transport(create_fault='lost'), Runtime()
+    replay = TransactionReplayer(
+        frozen_lease_exclusive(), transport, credential_headers=lambda _: {}, fixtures={},
+        runtime=runtime, ledger=RecoveryLedger(tmp_path), journal=lambda _: None,
+        synthetic_test_only=True, environment_releaser=lambda: True,
+    )
+    result = replay.prepare(run_id='run-lost')
+    assert result['status'] == 'prepare_failed'
+    assert result['cleanup']['cleanup_confirmed'] is True
+    assert replay.ledger.load('run-lost')['lifecycle'] == 'closed'
+
+
+def test_lease_exclusive_followup_mutation_reuses_creator_identity(tmp_path):
+    value = lease_exclusive_contract()
+    value['allowed_requests'].append({
+        'id': 'update', 'method': 'PATCH', 'path': '/objects/{object_id}', 'effect': 'write',
+    })
+    value['steps'].insert(1, {
+        'id': 'update', 'request_id': 'update', 'json_body': {'value': 2},
+        'success': {'statuses': [200]},
+        'on_response_loss': {'strategy': 'disposable_environment'},
+        'owned_operation': 'create',
+    })
+    value.update(oracle_id='synthetic-lease-update-v3', project_id='synthetic',
+                 project_revision='synthetic-test-only', credential_refs=[],
+                 evidence_sources=['synthetic-test-only'], ownership={'synthetic_only': True})
+    approved = freeze_approved_contract(record_human_approval(validate_draft(make_draft(value)), {
+        'decision': 'approved', 'reviewer': 'synthetic-test-only',
+        'reviewed_at': '2020-01-01T00:00:00+00:00',
+        'decision_reference': 'synthetic-test-only:no-real-authorization',
+    }))
+    transport = Transport()
+    replay = TransactionReplayer(
+        approved, transport, credential_headers=lambda _: {}, fixtures={}, runtime=Runtime(),
+        ledger=RecoveryLedger(tmp_path), journal=lambda _: None, synthetic_test_only=True,
+        environment_releaser=lambda: True,
+    )
+    assert replay.prepare(run_id='run-update')['status'] == 'prepared'
+    ledger = replay.ledger.load('run-update')
+    assert ledger['operations']['update']['identity'] == {'object_id': 'owned-1'}
+    assert replay.cleanup()['cleanup_confirmed'] is True
 
 
 def test_crashed_before_first_write_requires_recovery_and_close(tmp_path):

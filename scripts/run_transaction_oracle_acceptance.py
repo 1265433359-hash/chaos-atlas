@@ -67,7 +67,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     resolver = SecretHeaders(runtime, contract["credential_refs"])
     replay = ReplaySession(contract, transport, credential_headers=resolver, fixtures=fixtures,
                            runtime=runtime, ledger=RecoveryLedger(Path(args.lease_store).resolve().parent / "transactions"), journal=journal,
-                           synthetic_test_only=False)
+                           synthetic_test_only=False, environment_releaser=runtime.release)
     workflow = TransactionWorkflowOracle(replay)
     prepared = probe = cleanup = None
     try:

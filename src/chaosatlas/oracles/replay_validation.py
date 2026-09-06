@@ -202,13 +202,23 @@ def _validate_v3(contract: dict[str, Any]) -> list[str]:
                     reject('capture must be bounded string identity')
         return set(captures)
 
-    def ownership_spec(spec: Any, known: set[str], captures: set[str]) -> None:
-        if not fields(spec, {'object_type', 'lookup', 'selection', 'match', 'marker_path', 'principal_path', 'parent_paths', 'preflight_absent'}, 'ownership'):
-            return
+    def ownership_spec(spec: Any, known: set[str], captures: set[str]) -> str:
+        if not fields(spec, {'mode', 'object_type', 'lookup', 'selection', 'match', 'marker_path', 'principal_path', 'parent_paths', 'preflight_absent'}, 'ownership'):
+            return 'invalid'
+        mode = spec.get('mode', 'exact_lookup')
+        if mode not in {'exact_lookup', 'lease_exclusive'}:
+            reject('ownership requires a supported mode')
+            return 'invalid'
         if not isinstance(spec.get('object_type'), str) or not NAME.fullmatch(spec['object_type']):
             reject('ownership requires a bounded object type')
         if spec.get('preflight_absent') is not True:
             reject('ownership requires preflight absence evidence')
+        if mode == 'lease_exclusive':
+            if set(spec) != {'mode', 'object_type', 'preflight_absent'}:
+                reject('lease-exclusive ownership cannot include object lookup fields')
+            if not captures:
+                reject('lease-exclusive creation requires bounded response identity')
+            return mode
         match = spec.get('match')
         if not isinstance(match, dict) or not match or len(match) > 16:
             reject('ownership requires bounded exact match evidence')
@@ -258,10 +268,12 @@ def _validate_v3(contract: dict[str, Any]) -> list[str]:
             validate_step(lookup, known, 'ownership lookup')
             if request_map.get(lookup.get('request_id'), {}).get('effect') != 'read':
                 reject('ownership lookup must be an approved read request')
+        return mode
 
     steps = contract.get('steps')
     step_ids = ids(steps, 'steps')
     owned: dict[str, set[str]] = {}
+    ownership_modes: dict[str, str] = {}
     for step in steps if isinstance(steps, list) else []:
         captures = validate_step(step, available, 'step')
         if not isinstance(step, dict):
@@ -274,7 +286,7 @@ def _validate_v3(contract: dict[str, Any]) -> list[str]:
             if 'ownership' in step:
                 if 'owned_operation' in step:
                     reject('write has conflicting ownership sources')
-                ownership_spec(step['ownership'], available, captures)
+                ownership_modes[str(step.get('id'))] = ownership_spec(step['ownership'], available, captures)
                 owned[str(step.get('id'))] = captures
             elif step.get('owned_operation') not in owned or captures:
                 reject('write requires proven object ownership or earlier owned operation')
@@ -322,4 +334,14 @@ def _validate_v3(contract: dict[str, Any]) -> list[str]:
             reject('each owned creation requires cleanup')
         if cleanup.get('strategy') == 'disposable_environment' and (cleanup.get('environment_release_required') is not True or not isinstance(scope, dict) or scope.get('mode') != 'disposable'):
             reject('disposable cleanup requires a disposable runtime and verified release')
+        lease_owned = {identifier for identifier, mode in ownership_modes.items() if mode == 'lease_exclusive'}
+        if lease_owned and (
+            cleanup.get('strategy') != 'disposable_environment'
+            or cleanup.get('environment_release_required') is not True
+            or not isinstance(scope, dict)
+            or scope.get('mode') != 'disposable'
+            or cleanup_steps
+            or lease_owned != set(owned)
+        ):
+            reject('lease-exclusive writes require sole ownership and whole disposable environment release')
     return sorted(set(errors))

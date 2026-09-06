@@ -102,6 +102,56 @@ def test_reviewable_exact_write_contract():
     assert validate_v3(write_contract()) == []
 
 
+def lease_exclusive_contract():
+    value = contract()
+    value['runtime_scope']['mode'] = 'disposable'
+    value['allowed_requests'].append({'id': 'create', 'method': 'POST', 'path': '/objects', 'effect': 'write'})
+    value['steps'].insert(0, {
+        'id': 'create', 'request_id': 'create', 'json_body': {'marker': '{run_id}'},
+        'capture': {'object_id': {'path': '$.id', 'type': 'string', 'max_length': 64}},
+        'success': {'statuses': [201]},
+        'on_response_loss': {'strategy': 'disposable_environment'},
+        'ownership': {'mode': 'lease_exclusive', 'object_type': 'test-object', 'preflight_absent': True},
+    })
+    value['cleanup'] = {
+        'strategy': 'disposable_environment', 'on_every_exit': True,
+        'environment_release_required': True, 'steps': [],
+        'reason': 'The synthetic-empty lease is the complete ownership and cleanup boundary.',
+    }
+    return value
+
+
+def test_reviewable_lease_exclusive_write_contract():
+    assert validate_v3(lease_exclusive_contract()) == []
+
+
+def test_lease_exclusive_contract_accepts_followup_mutation_of_created_object():
+    value = lease_exclusive_contract()
+    value['allowed_requests'].append({
+        'id': 'update', 'method': 'PATCH', 'path': '/objects/{object_id}', 'effect': 'write',
+    })
+    value['steps'].insert(1, {
+        'id': 'update', 'request_id': 'update', 'json_body': {'value': 2},
+        'success': {'statuses': [200]},
+        'on_response_loss': {'strategy': 'disposable_environment'},
+        'owned_operation': 'create',
+    })
+    assert validate_v3(value) == []
+
+
+@pytest.mark.parametrize('mutation', [
+    lambda c: c['runtime_scope'].update(mode='dedicated'),
+    lambda c: c['cleanup'].update(environment_release_required=False),
+    lambda c: c['cleanup'].update(strategy='exact_owned_ids'),
+    lambda c: c['steps'][0]['ownership'].update(preflight_absent=False),
+    lambda c: c['steps'][0]['ownership'].update(match={'$.marker': '{run_id}'}),
+])
+def test_lease_exclusive_write_requires_disposable_release_boundary(mutation):
+    value = lease_exclusive_contract()
+    mutation(value)
+    assert validate_v3(value)
+
+
 @pytest.mark.parametrize('mutation', [
     lambda c: c['steps'][0].pop('ownership'),
     lambda c: c['steps'][0]['ownership'].update(preflight_absent=False),

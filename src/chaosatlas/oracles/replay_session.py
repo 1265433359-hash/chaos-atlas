@@ -156,6 +156,42 @@ class ReplaySession:
     def _write(self, step):
         creator = self._creator(step)
         spec = creator['ownership']
+        if spec.get('mode') == 'lease_exclusive':
+            if self._contract['runtime_scope'].get('mode') != 'disposable':
+                raise OwnershipUncertain('lease-exclusive ownership requires a disposable runtime')
+            identity = {}
+            if step is not creator:
+                creator_entry = self.ledger.load(self._run_id)['operations'].get(creator['id'], {})
+                if creator_entry.get('state') != 'owned_confirmed' or not creator_entry.get('identity'):
+                    raise OwnershipUncertain('lease-owned object missing before mutation')
+                identity = deepcopy(creator_entry['identity'])
+                self._variables.update(identity)
+            self.ledger.intent(
+                self._run_id, step['id'], object_type=spec['object_type'],
+                marker_sha256=canonical_hash({
+                    'lease_id': self._variables['lease_id'], 'run_id': self._run_id,
+                    'creator_id': creator['id'], 'identity': identity,
+                }),
+            )
+            self.ledger.transition(self._run_id, step['id'], 'outcome_unknown')
+            observation = self._send(step)
+            if step is creator:
+                for name, capture in step.get('capture', {}).items():
+                    actual = _json_path(observation['json'], capture['path'])
+                    if type(actual) is not str or not actual or len(actual) > capture['max_length']:
+                        raise OwnershipUncertain('response lacks bounded lease-owned identity')
+                    identity[name] = actual
+                if not identity:
+                    raise OwnershipUncertain('lease-exclusive creation requires response identity')
+            self.ledger.transition(
+                self._run_id, step['id'], 'owned_confirmed', identity=identity,
+                ownership_sha256=canonical_hash({
+                    'mode': 'lease_exclusive', 'lease_id': self._variables['lease_id'],
+                    'run_id': self._run_id, 'creator_id': creator['id'], 'identity': identity,
+                }),
+            )
+            self._variables.update(identity)
+            return observation
         if step is creator:
             if self._select(creator)['status'] != 'not_found':
                 raise OwnershipUncertain('preexisting object does not grant deletion ownership')
@@ -280,7 +316,16 @@ class ReplaySession:
                 errors.append({'reason_code': type(exc).__name__})
             if not environment_released:
                 errors.append({'reason_code': 'verified_environment_release_required'})
-            confirmed = confirmed and environment_released is True
+            if environment_released is True:
+                release_sha256 = canonical_hash({
+                    'lease_id': self._variables.get('lease_id'), 'run_id': self._run_id,
+                    'environment_released': True,
+                })
+                operations = self.ledger.load(self._run_id)['operations']
+                for key, entry in operations.items():
+                    if entry['state'] not in {'not_sent', 'absent_confirmed'}:
+                        self.ledger.transition(self._run_id, key, 'absent_confirmed', absence_sha256=release_sha256)
+            confirmed = self.ledger.cleanup_confirmed(self._run_id) and environment_released is True
         if confirmed:
             self.ledger.close_run(self._run_id)
         return {'status': 'cleaned' if confirmed else 'cleanup_failed', 'cleanup_confirmed': confirmed,
