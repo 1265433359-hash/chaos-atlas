@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from copy import deepcopy
 import hashlib
 import json
+import math
 import re
 import time
 from typing import Any, Callable, Protocol
 from urllib.error import HTTPError
-from urllib.parse import urlencode, urlsplit
+from urllib.parse import quote, urlencode, urlsplit
 from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
 
 from chaosatlas.oracles.transaction_contracts import SCHEMA, evaluate_assertions, validate_transaction_contract
@@ -65,9 +67,15 @@ class UrllibHttpTransport:
     """Origin-pinned HTTP transport with proxies and redirects disabled."""
 
     def __init__(self, base_url: str, *, max_response_bytes: int = 4 * 1024 * 1024) -> None:
-        parsed = urlsplit(str(base_url).rstrip("/"))
-        if parsed.scheme not in {"http", "https"} or not parsed.netloc or parsed.path not in {"", "/"}:
+        if any(ord(c) < 33 or c == '\\' for c in base_url):
+            raise ValueError('unsafe HTTP origin')
+        parsed = urlsplit(str(base_url))
+        if parsed.scheme not in {"http", "https"} or not parsed.hostname or parsed.path not in {"", "/"} or parsed.username is not None or parsed.password is not None or parsed.query or parsed.fragment or '?' in base_url or '#' in base_url:
             raise ValueError("base_url must be an HTTP(S) origin without a path")
+        if parsed.port is not None and not 1 <= parsed.port <= 65535:
+            raise ValueError('invalid origin port')
+        if type(max_response_bytes) is not int or not 1 <= max_response_bytes <= 4194304:
+            raise ValueError('invalid response bound')
         self.base_url = f"{parsed.scheme}://{parsed.netloc}"
         self.max_response_bytes = int(max_response_bytes)
         self._opener = build_opener(ProxyHandler({}), _NoRedirect())
@@ -77,6 +85,8 @@ class UrllibHttpTransport:
         boundary = "----chaosatlas-oracle-boundary"
         chunks: list[bytes] = []
         for name, value in fields.items():
+            if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_-]{0,63}', name):
+                raise ValueError('unsafe multipart field name')
             chunks.append(f"--{boundary}\r\n".encode())
             if isinstance(value, bytes):
                 chunks.append(f'Content-Disposition: form-data; name="{name}"; filename="synthetic.png"\r\n'.encode())
@@ -99,29 +109,59 @@ class UrllibHttpTransport:
         headers: dict[str, str],
         timeout_s: float,
     ) -> HttpObservation:
-        if not path.startswith("/") or path.startswith("//") or "://" in path:
+        if not path.startswith("/") or any(x in path for x in ('//', '://', '\\', '?', '#', '{', '}')) or any(ord(x) < 33 for x in path) or any(x in {'.', '..'} for x in path.split('/')):
             raise ValueError("request path escaped the frozen origin")
+        if type(timeout_s) not in {float, int} or not math.isfinite(timeout_s) or not 0 < timeout_s <= 30:
+            raise ValueError('invalid HTTP timeout')
+        validate_auth_headers(headers)
         suffix = "?" + urlencode(query, doseq=True) if query else ""
         body: bytes | None = None
         request_headers = dict(headers)
         if json_body is not None:
-            body = json.dumps(json_body, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+            body = json.dumps(json_body, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")
             request_headers["Content-Type"] = "application/json"
         elif multipart:
             body, content_type = self._multipart(multipart)
             request_headers["Content-Type"] = content_type
+        if body is not None and len(body) > 4194304:
+            raise ValueError('request exceeded bounded Oracle limit')
         request = Request(self.base_url + path + suffix, data=body, headers=request_headers, method=method)
         try:
             response = self._opener.open(request, timeout=float(timeout_s))
-            response_body = response.read(self.max_response_bytes + 1)
+            with response:
+                response_body = response.read(self.max_response_bytes + 1)
             if len(response_body) > self.max_response_bytes:
                 raise ValueError("response exceeded bounded Oracle limit")
             return HttpObservation(int(response.status), response_body, dict(response.headers.items()))
         except HTTPError as exc:
-            response_body = exc.read(self.max_response_bytes + 1)
+            with exc:
+                response_body = exc.read(self.max_response_bytes + 1)
+            if len(response_body) > self.max_response_bytes:
+                raise ValueError('error response exceeded bounded Oracle limit')
             return HttpObservation(int(exc.code), response_body, dict(exc.headers.items()))
         except (OSError, TimeoutError) as exc:
             raise ResponseLost("request outcome is unknown") from exc
+
+
+def validate_auth_headers(headers: dict[str, str]) -> None:
+    allowed = {'authorization', 'x-api-key', 'x-auth-token', 'x-user-id', 'x-publishable-api-key'}
+    if len({k.lower() for k in headers}) != len(headers):
+        raise ValueError('duplicate authentication header')
+    for name, value in headers.items():
+        if name.lower() not in allowed or not isinstance(value, str) or not value or len(value) > 8192 or any(ord(c) < 32 or ord(c) == 127 for c in value):
+            raise ValueError('invalid or reserved authentication header')
+
+
+def render_path(path: str, variables: dict[str, Any]) -> str:
+    def segment(match: re.Match[str]) -> str:
+        value = variables.get(match.group(1))
+        if not isinstance(value, str) or not value or len(value) > 256 or value in {'.', '..'} or any(c in value for c in '/\\%?#') or any(ord(c) < 33 for c in value):
+            raise ValueError('invalid single path-segment identity')
+        return quote(value, safe='')
+    rendered = _VARIABLE.sub(segment, path)
+    if '{' in rendered or '}' in rendered:
+        raise ValueError('unresolved path placeholder')
+    return rendered
 
 
 def _render(value: Any, variables: dict[str, Any], fixtures: dict[str, Any]) -> Any:
@@ -166,16 +206,23 @@ class TransactionReplayer:
             raise ValueError("invalid transaction Oracle: " + "; ".join(errors))
         if contract.get("schema_version") != SCHEMA or contract.get("status") != "frozen":
             raise ValueError("deterministic replay requires a frozen v2 Oracle")
+        if isinstance(transport, UrllibHttpTransport):
+            raise ValueError('v2 live replay disabled: v3 ownership ledger and runtime binding required')
+        contract = deepcopy(contract)
         self.contract = contract
         self.transport = transport
-        self.fixtures = dict(fixtures)
+        captured = {key for step in contract['steps'] for key in (step.get('capture') or {})}
+        reserved = captured | {'run_id', 'lease_id', 'principal_id', 'attempt_id'}
+        if reserved.intersection(fixtures):
+            raise ValueError('fixture cannot supply reserved identity or capture variables')
+        self.fixtures = deepcopy(fixtures)
         self.journal = journal or (lambda _event: None)
         self.environment_releaser = environment_releaser
         self._sleep = sleep
         self._monotonic = monotonic
         self.variables: dict[str, Any] = {}
         self.observations: dict[str, dict[str, Any]] = {}
-        self._uncertain_write = False
+        self._write_states: dict[str, str] = {}
         self._requests = {str(item["id"]): item for item in contract["allowed_requests"]}
         self._steps = {str(item["id"]): item for item in contract["steps"]}
         headers: dict[str, str] = {}
@@ -184,6 +231,7 @@ class TransactionReplayer:
             if not isinstance(resolved, dict) or not resolved:
                 raise ValueError(f"credential ref did not resolve to headers: {reference['id']}")
             headers.update({str(key): str(value) for key, value in resolved.items()})
+        validate_auth_headers(headers)
         self._headers = headers
 
     def _emit(self, event: str, step: dict[str, Any], **fields: Any) -> None:
@@ -208,11 +256,13 @@ class TransactionReplayer:
         request = self._requests.get(str(step.get("request_id") or ""))
         if request is None:
             raise ValueError("step references a request outside the frozen allow-list")
-        path = _render(request["path"], self.variables, self.fixtures)
+        path = render_path(request["path"], self.variables)
         query = _render(step.get("query") or {}, self.variables, self.fixtures)
         json_body = _render(step.get("json_body"), self.variables, self.fixtures)
         multipart = _render(step.get("multipart") or {}, self.variables, self.fixtures)
         self._emit("request_intent", step, path_sha256=hashlib.sha256(path.encode()).hexdigest())
+        if request['method'] != 'GET':
+            self._write_states[str(step['id'])] = 'outcome_unknown'
         response = self.transport.send(
             method=str(request["method"]),
             path=str(path),
@@ -245,7 +295,6 @@ class TransactionReplayer:
                 raise ResponseLost("exact ownership lookup did not recover the response")
             self._capture(lookup, observation)
             return observation, True
-        self._uncertain_write = True
         raise ResponseLost("write outcome requires disposable environment cleanup")
 
     def _execute_step(self, step: dict[str, Any]) -> dict[str, Any]:
@@ -256,6 +305,8 @@ class TransactionReplayer:
             observation, captured_by_recovery = self._recover_response_loss(step)
         if not captured_by_recovery:
             self._capture(step, observation)
+        if 200 <= int(observation['status']) < 300 and str(step['id']) in self._write_states:
+            self._write_states[str(step['id'])] = 'cleanup_pending'
         self.observations[str(step["id"])] = observation
         return observation
 
@@ -278,6 +329,8 @@ class TransactionReplayer:
     def prepare(self, *, run_id: str) -> dict[str, Any]:
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]{0,62}", run_id):
             raise ValueError("unsafe transaction run_id")
+        if self._write_states:
+            raise ValueError('existing write operations require recovery before a new prepare')
         self.variables = {"run_id": run_id, **{key: value for key, value in self.fixtures.items() if not isinstance(value, bytes)}}
         self.observations = {}
         try:
@@ -288,8 +341,10 @@ class TransactionReplayer:
                 cleanup = self.cleanup()
                 return {"status": "oracle_failed", "assertion_result": evaluated["status"], "assertions": evaluated["assertions"], "failed_assertions": evaluated["failed_assertions"], "cleanup": cleanup}
             return {"status": "prepared", "assertion_result": evaluated["status"], "assertions": evaluated["assertions"], "failed_assertions": evaluated["failed_assertions"]}
-        except Exception as exc:
+        except BaseException as exc:
             cleanup = self.cleanup()
+            if not isinstance(exc, Exception):
+                raise
             return {"status": "prepare_failed", "error_type": type(exc).__name__, "cleanup": cleanup}
 
     def probe(self, phase: str) -> dict[str, Any]:
@@ -299,12 +354,12 @@ class TransactionReplayer:
         return {"status": evaluated["status"], "phase": phase, **evaluated}
 
     def cleanup(self) -> dict[str, Any]:
-        errors: list[str] = []
+        errors: list[str] = [f'unresolved write: {key}' for key, state in self._write_states.items() if state == 'outcome_unknown']
         executed: list[str] = []
         for step in (self.contract.get("cleanup") or {}).get("steps") or []:
             required = {str(item) for item in step.get("required_variables") or []}
             if not required.issubset(self.variables):
-                if self._uncertain_write:
+                if any(state == 'outcome_unknown' for state in self._write_states.values()):
                     errors.append(f"missing ownership variables for {step['id']}")
                 continue
             try:
