@@ -6,6 +6,7 @@ from copy import deepcopy
 from typing import Any
 
 from chaosatlas.oracles.transaction_contracts import make_draft, make_v3_draft, validate_draft
+from chaosatlas.oracles.project_v3 import project_v3_payload
 
 
 def _request(identifier: str, method: str, path: str) -> dict[str, str]:
@@ -85,3 +86,11 @@ class OracleBuilder:
         payload['project_revision'] = project_revision
         payload.setdefault('approval', {'required': True, 'record': None})
         return validate_draft(make_v3_draft(payload))
+
+    def build_project_v3(self, *, project_id: str, project_revision: str) -> dict[str, Any]:
+        """Build a review-only project draft through the same strict v3 path."""
+        return self.build_v3(
+            project_id=project_id,
+            project_revision=project_revision,
+            structured_payload=project_v3_payload(project_id),
+        )

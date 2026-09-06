@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from datetime import datetime, timezone
+import json
 import re
 import subprocess
 import threading
@@ -18,7 +19,7 @@ class LeaseRuntime:
     # A verified target is not proof that a business transaction ran successfully.
 
     def __init__(self, manager: IsolationManager, lease_id: str, *, service: str, port: int,
-                 principal_id: str, project_revision: str):
+                 principal_id: str | None = None, project_revision: str):
         if not isinstance(manager, IsolationManager):
             raise ValueError('public IsolationManager required')
         if not re.fullmatch(r'[a-z0-9][a-z0-9-]{0,62}', service) or type(port) is not int or not 1 <= port <= 65535:
@@ -32,6 +33,71 @@ class LeaseRuntime:
         self._binding: dict[str, str] | None = None
         self._tunnel: subprocess.Popen | None = None
 
+    def bind_principal(self, references: list[dict[str, Any]]) -> dict[str, Any]:
+        """Derive the runtime principal from Secret metadata owned by this lease.
+
+        The caller cannot choose a v3 principal ID.  Values are deliberately not
+        decoded here; SecretHeaders performs the later exact key/value read.
+        """
+        if self._binding is not None or self._tunnel is not None:
+            raise ValueError('principal must be bound before the runtime tunnel opens')
+        lease = self._lease()
+        if lease['plan'].get('mode') == 'adopted-test-replica':
+            raise ValueError('lease-owned principal requires a disposable lease')
+        if not isinstance(references, list) or not references:
+            raise ValueError('lease-owned credential references required')
+        namespace = str(lease.get('target_name') or '')
+        provider = self.manager.providers.get(lease['provider'])
+        principals: set[str] = set()
+        bindings: list[dict[str, str]] = []
+        for reference in references:
+            if (
+                not isinstance(reference, dict)
+                or reference.get('source') != 'lease_owned_secret_ref'
+                or not isinstance(reference.get('secret_name'), str)
+                or not isinstance(reference.get('principal_role'), str)
+            ):
+                raise ValueError('runtime principal requires logical lease-owned credentials')
+            name = reference['secret_name']
+            registered = [item for item in lease.get('resources') or []
+                          if item.get('kind') == 'Secret'
+                          and item.get('namespace') == namespace
+                          and item.get('name') == name]
+            value, error = provider._json(
+                lease['plan'], ['-n', namespace, 'get', 'secret', name], lease=lease,
+            )
+            metadata = (value or {}).get('metadata') or {}
+            labels = metadata.get('labels') or {}
+            annotations = metadata.get('annotations') or {}
+            principal = annotations.get('chaosatlas.dev/principal-id')
+            if (
+                error
+                or len(registered) != 1
+                or not registered[0].get('actual_uid')
+                or metadata.get('uid') != registered[0]['actual_uid']
+                or metadata.get('namespace') != namespace
+                or metadata.get('name') != name
+                or any(labels.get(key) != str(expected) for key, expected in (lease.get('owner_labels') or {}).items())
+                or annotations.get('chaosatlas.dev/principal-role') != reference['principal_role']
+                or not isinstance(principal, str)
+                or not principal
+                or len(principal) > 256
+                or any(ord(character) < 33 or ord(character) == 127 for character in principal)
+            ):
+                raise ValueError('runtime principal Secret is outside the verified lease binding')
+            principals.add(principal)
+            bindings.append({
+                'secret_name': name, 'secret_uid': registered[0]['actual_uid'],
+                'principal_role': reference['principal_role'],
+            })
+        if len(principals) != 1:
+            raise ValueError('credential references do not identify one runtime principal')
+        principal_id = principals.pop()
+        if self.principal_id is not None and self.principal_id != principal_id:
+            raise ValueError('caller principal differs from lease-owned principal')
+        self.principal_id = principal_id
+        return {'principal_id': principal_id, 'credential_bindings': bindings}
+
     def _lease(self):
         lease = self.manager.store.load(self.lease_id)
         if validate_lease(lease) or lease['state'] != 'ready':
@@ -43,6 +109,8 @@ class LeaseRuntime:
         return lease
 
     def _read_identity(self, lease):
+        if not isinstance(self.principal_id, str) or not self.principal_id:
+            raise ValueError('runtime principal has not been bound')
         provider = self.manager.providers.get(lease['provider'])
         if not isinstance(provider, KubernetesIsolationProvider):
             raise ValueError('transaction requires a Kubernetes application lease, not a cluster parent lease')
@@ -147,7 +215,13 @@ class LeaseRuntime:
         # Releasing an adopted namespace does not destroy its business objects.
         if self._lease()['plan']['mode'] == 'adopted-test-replica':
             raise ValueError('adopted release cannot prove object destruction')
-        audit = self.manager.release(self.lease_id)
+        released = self.manager.release(self.lease_id)
+        attempt = int(released.get('cleanup_attempts') or 0)
+        audit_path = self.manager.store.audits / self.lease_id / f'cleanup-{attempt}.json'
+        try:
+            audit = json.loads(audit_path.read_text(encoding='utf-8-sig'))
+        except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+            raise ValueError('environment release audit is unavailable') from exc
         if not verify_hash(audit, 'audit_sha256') or audit.get('lease_id') != self.lease_id or audit.get('status') != 'cleanup_verified':
             raise ValueError('environment release lacks verified isolation audit')
         return audit

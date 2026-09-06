@@ -8,6 +8,18 @@
     },
     {
       "apiVersion": "v1",
+      "kind": "Secret",
+      "metadata": {
+        "name": "erpnext-transaction-auth",
+        "annotations": {
+          "chaosatlas.dev/principal-role": "transaction-todo-user",
+          "chaosatlas.dev/principal-id": "pending-bootstrap"
+        }
+      },
+      "runtimeGenerate": {"keys": ["authorization"]}
+    },
+    {
+      "apiVersion": "v1",
       "kind": "ConfigMap",
       "metadata": {"name": "erpnext-mariadb-config"},
       "data": {

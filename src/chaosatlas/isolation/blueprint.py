@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import re
 from typing import Any
 
 
@@ -46,6 +47,12 @@ def _validate_resource(resource: dict[str, Any], declared: dict[str, set[str]]) 
         templates = generated.get("templates") if isinstance(generated, dict) else None
         if templates is not None and (not isinstance(templates, dict) or any(not isinstance(key, str) or not isinstance(value, str) for key, value in templates.items())):
             errors.append("runtimeGenerate.templates must map keys to string templates")
+        elif isinstance(templates, dict):
+            generated_keys = set(generated.get("keys") or [])
+            for key, template in templates.items():
+                references = set(re.findall(r"\$\{([^{}]+)\}", template))
+                if not key or len(key) > 128 or not references or not references.issubset(generated_keys):
+                    errors.append("runtimeGenerate.templates must reference declared generated keys")
     if kind == "PersistentVolumeClaim":
         spec = resource.get("spec") if isinstance(resource.get("spec"), dict) else {}
         if any(spec.get(key) not in (None, "", {}, []) for key in ("dataSource", "dataSourceRef", "selector", "volumeName")):

@@ -1,0 +1,230 @@
+{
+  "allowed_requests": [
+    {
+      "effect": "write",
+      "id": "create-cart",
+      "method": "POST",
+      "path": "/store/carts"
+    },
+    {
+      "effect": "write",
+      "id": "add-line",
+      "method": "POST",
+      "path": "/store/carts/{cart_id}/line-items"
+    },
+    {
+      "effect": "read",
+      "id": "read-cart",
+      "method": "GET",
+      "path": "/store/carts/{cart_id}"
+    }
+  ],
+  "approval": {
+    "record": null,
+    "required": true
+  },
+  "assertions": [
+    {
+      "expected_from": "cart_id",
+      "id": "cart-id",
+      "operator": "json_path_equals",
+      "path": "$.cart.id",
+      "step_id": "read-cart"
+    },
+    {
+      "expected": 1,
+      "id": "one-line",
+      "operator": "count_equals",
+      "path": "$.cart.items",
+      "step_id": "read-cart"
+    },
+    {
+      "expected_from": "synthetic_variant_id",
+      "id": "variant",
+      "operator": "json_path_equals",
+      "path": "$.cart.items[0].variant_id",
+      "step_id": "read-cart"
+    },
+    {
+      "expected": 1,
+      "id": "quantity",
+      "operator": "json_path_equals",
+      "path": "$.cart.items[0].quantity",
+      "step_id": "read-cart"
+    },
+    {
+      "expected_from": "fixture_currency",
+      "id": "currency",
+      "operator": "json_path_equals",
+      "path": "$.cart.currency_code",
+      "step_id": "read-cart"
+    },
+    {
+      "expected_from": "fixture_unit_price",
+      "id": "unit-price",
+      "operator": "json_path_equals",
+      "path": "$.cart.items[0].unit_price",
+      "step_id": "read-cart"
+    }
+  ],
+  "cleanup": {
+    "environment_release_required": true,
+    "on_every_exit": true,
+    "reason": "The Store API has no approved cart deletion; the fresh database is destroyed with its lease.",
+    "steps": [],
+    "strategy": "disposable_environment"
+  },
+  "contract_sha256": "2b620457689f8ff213b8877a4f5689cab15a5fbfd6822d1c53cc4542111d420b",
+  "credential_refs": [
+    {
+      "header_keys": {
+        "X-Publishable-Api-Key": "x-publishable-api-key"
+      },
+      "id": "medusa-transaction-auth",
+      "principal_role": "transaction-sales-channel",
+      "secret_name": "medusa-transaction-auth",
+      "source": "lease_owned_secret_ref"
+    }
+  ],
+  "evidence_sources": [
+    "image:docker.io/chaosatlas/medusa-backend:2.20.1@sha256:1bf4cc153e58a99cf34d92ee970d5494bf0d599899ee2481d691a849cba53464",
+    "source:projects/chaosatlas-apps/medusa/medusa/apps/backend/src/migration-scripts/initial-data-seed.ts",
+    "api:https://docs.medusajs.com/api/store#carts"
+  ],
+  "inputs": {
+    "fixture_currency": {
+      "max_length": 8,
+      "type": "string"
+    },
+    "fixture_unit_price": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "type": "number"
+    },
+    "synthetic_region_id": {
+      "max_length": 128,
+      "type": "string"
+    },
+    "synthetic_variant_id": {
+      "max_length": 128,
+      "type": "string"
+    }
+  },
+  "interpreter_version": "transaction-http-3.0",
+  "oracle_id": "medusa-cart-lineitem-v3",
+  "ownership": {
+    "boundary": "lease_exclusive_disposable_environment",
+    "delete_scope": "verified_whole_lease_release",
+    "synthetic_only": true
+  },
+  "probe_assertions": [
+    {
+      "expected": 1,
+      "id": "fresh-one-line",
+      "operator": "count_equals",
+      "path": "$.cart.items",
+      "step_id": "read-cart"
+    },
+    {
+      "expected_from": "synthetic_variant_id",
+      "id": "fresh-variant",
+      "operator": "json_path_equals",
+      "path": "$.cart.items[0].variant_id",
+      "step_id": "read-cart"
+    },
+    {
+      "expected": 1,
+      "id": "fresh-quantity",
+      "operator": "json_path_equals",
+      "path": "$.cart.items[0].quantity",
+      "step_id": "read-cart"
+    },
+    {
+      "expected_from": "fixture_currency",
+      "id": "fresh-currency",
+      "operator": "json_path_equals",
+      "path": "$.cart.currency_code",
+      "step_id": "read-cart"
+    },
+    {
+      "expected_from": "fixture_unit_price",
+      "id": "fresh-unit-price",
+      "operator": "json_path_equals",
+      "path": "$.cart.items[0].unit_price",
+      "step_id": "read-cart"
+    }
+  ],
+  "probe_steps": [
+    "read-cart"
+  ],
+  "project_id": "medusa",
+  "project_revision": "52c3aa27333530c946e3b2c1b025c988c432283257b053cb61269c5ab2da6334",
+  "runtime_scope": {
+    "image_digest": "sha256:1bf4cc153e58a99cf34d92ee970d5494bf0d599899ee2481d691a849cba53464",
+    "mode": "disposable",
+    "service": "medusa-backend",
+    "source_revision": "2.20.1"
+  },
+  "schema_version": "chaosatlas-transaction-oracle-v3",
+  "status": "validated",
+  "steps": [
+    {
+      "capture": {
+        "cart_id": {
+          "max_length": 128,
+          "path": "$.cart.id",
+          "type": "string"
+        }
+      },
+      "id": "create-cart",
+      "json_body": {
+        "region_id": "{synthetic_region_id}"
+      },
+      "on_response_loss": {
+        "strategy": "disposable_environment"
+      },
+      "ownership": {
+        "mode": "lease_exclusive",
+        "object_type": "medusa-cart",
+        "preflight_absent": true
+      },
+      "request_id": "create-cart",
+      "success": {
+        "statuses": [
+          200
+        ]
+      }
+    },
+    {
+      "id": "add-synthetic-variant",
+      "json_body": {
+        "quantity": 1,
+        "variant_id": "{synthetic_variant_id}"
+      },
+      "on_response_loss": {
+        "strategy": "disposable_environment"
+      },
+      "owned_operation": "create-cart",
+      "request_id": "add-line",
+      "success": {
+        "statuses": [
+          200
+        ]
+      }
+    },
+    {
+      "id": "read-cart",
+      "request_id": "read-cart",
+      "success": {
+        "statuses": [
+          200
+        ]
+      }
+    }
+  ],
+  "timeouts": {
+    "eventual_s": 60,
+    "poll_interval_s": 2,
+    "request_s": 10
+  }
+}

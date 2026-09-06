@@ -6,6 +6,7 @@ import re
 from copy import deepcopy
 from typing import Any
 
+from chaosatlas.isolation.blueprint import compile_blueprint
 from chaosatlas.isolation.contracts import ISOLATION_LEVELS, canonical_hash, redact_sensitive, sensitive_paths, with_hash
 
 
@@ -88,9 +89,32 @@ class IsolationPlanner:
         project_id = str(profile.get("project_id") or "")
         if not project_id:
             blockers.append("project_id_required")
-        exposed = sensitive_paths({"config": config, "target": target})
+        blueprint = config.get("blueprint") if isinstance(config.get("blueprint"), dict) else None
+        blueprint_valid = False
+        if blueprint is not None:
+            try:
+                compile_blueprint(
+                    blueprint,
+                    namespace="ca-l2-blueprint-validation",
+                    owner_labels={"chaosatlas.dev/managed": "true"},
+                )
+                blueprint_valid = True
+            except ValueError:
+                blockers.append("invalid_sandbox_blueprint")
+        scan_config = deepcopy(config)
+        if blueprint_valid:
+            for resource in (scan_config.get("blueprint") or {}).get("resources") or []:
+                if isinstance(resource, dict) and resource.get("kind") == "Secret":
+                    resource.pop("runtimeGenerate", None)
+        exposed = sensitive_paths({"config": scan_config, "target": target})
         blockers.extend(f"sensitive_material_detected:{path}" for path in exposed)
         safe_config = redact_sensitive(config)
+        if blueprint_valid:
+            safe_resources = (safe_config.get("blueprint") or {}).get("resources") or []
+            source_resources = blueprint.get("resources") or []
+            for index, resource in enumerate(source_resources):
+                if isinstance(resource, dict) and resource.get("kind") == "Secret":
+                    safe_resources[index]["runtimeGenerate"] = deepcopy(resource["runtimeGenerate"])
         safe_target = redact_sensitive(target)
         identity = {
             "project_id": project_id,

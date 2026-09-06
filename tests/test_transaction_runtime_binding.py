@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from chaosatlas.isolation.manager import IsolationManager
+from chaosatlas.isolation.contracts import with_hash
 from chaosatlas.isolation.providers import KubernetesIsolationProvider, ProviderRegistry
 from chaosatlas.oracles.runtime_binding import LeaseRuntime
 
@@ -66,6 +67,32 @@ def test_adopted_release_never_proves_destruction(tmp_path, monkeypatch):
         runtime.release()
 
 
+def test_disposable_release_reads_the_matching_verified_cleanup_audit(tmp_path, monkeypatch):
+    runtime, lease, objects, calls = setup_runtime(tmp_path)
+    lease['plan']['mode'] = 'ephemeral-target'
+    monkeypatch.setattr(runtime, '_lease', lambda: lease)
+    released = {'cleanup_attempts': 2}
+    monkeypatch.setattr(runtime.manager, 'release', lambda lease_id: released)
+    audit = with_hash({
+        'schema_version': 'chaosatlas-isolation-audit-v1',
+        'lease_id': 'lease-test', 'status': 'cleanup_verified',
+        'checked_at': '2026-09-06T00:00:00+00:00', 'checks': {}, 'errors': [],
+    }, 'audit_sha256')
+    path = runtime.manager.store.audits / 'lease-test' / 'cleanup-2.json'
+    path.parent.mkdir(parents=True)
+    path.write_text(json.dumps(audit), encoding='utf-8')
+    assert runtime.release() == audit
+
+
+def test_disposable_release_rejects_missing_or_unverified_cleanup_audit(tmp_path, monkeypatch):
+    runtime, lease, objects, calls = setup_runtime(tmp_path)
+    lease['plan']['mode'] = 'ephemeral-target'
+    monkeypatch.setattr(runtime, '_lease', lambda: lease)
+    monkeypatch.setattr(runtime.manager, 'release', lambda lease_id: {'cleanup_attempts': 1})
+    with pytest.raises(ValueError, match='audit is unavailable'):
+        runtime.release()
+
+
 def test_target_change_after_open_is_rejected(tmp_path, monkeypatch):
     runtime, lease, objects, calls = setup_runtime(tmp_path)
     monkeypatch.setattr(runtime, '_lease', lambda: lease)
@@ -100,3 +127,93 @@ def test_selected_image_is_verified_and_selector_change_rejected(tmp_path, monke
     objects['service']['spec']['selector']['app'] = 'foreign'
     with pytest.raises(ValueError, match='target changed'):
         runtime.verify(scope, transport)
+
+
+def test_disposable_runtime_binds_principal_from_lease_owned_secret(tmp_path, monkeypatch):
+    runtime, lease, objects, calls = setup_runtime(tmp_path)
+    lease['plan']['mode'] = 'ephemeral-target'
+    lease['target_name'] = 'test-ns'
+    lease['owner_labels'] = {'chaosatlas.dev/lease-id': 'lease-test'}
+    lease['resources'].append({
+        'kind': 'Secret', 'namespace': 'test-ns', 'name': 'test-auth',
+        'actual_uid': 'secret-uid', 'cleanup_policy': 'namespace',
+    })
+    runtime.principal_id = None
+    monkeypatch.setattr(runtime, '_lease', lambda: lease)
+    provider = runtime.manager.providers.get('test')
+    original = provider._json
+    def query(plan, args, **kwargs):
+        if 'secret' in args:
+            return {'metadata': {
+                'name': 'test-auth', 'namespace': 'test-ns', 'uid': 'secret-uid',
+                'labels': deepcopy(lease['owner_labels']),
+                'annotations': {
+                    'chaosatlas.dev/principal-role': 'transaction-test-user',
+                    'chaosatlas.dev/principal-id': 'runtime-user-id',
+                },
+            }}, None
+        return original(plan, args, **kwargs)
+    monkeypatch.setattr(provider, '_json', query)
+    audit = runtime.bind_principal([{
+        'id': 'test-auth', 'source': 'lease_owned_secret_ref', 'secret_name': 'test-auth',
+        'principal_role': 'transaction-test-user',
+        'header_keys': {'Authorization': 'authorization-header'},
+    }])
+    assert runtime.principal_id == 'runtime-user-id'
+    assert audit == {
+        'principal_id': 'runtime-user-id',
+        'credential_bindings': [{
+            'principal_role': 'transaction-test-user',
+            'secret_name': 'test-auth', 'secret_uid': 'secret-uid',
+        }],
+    }
+
+
+@pytest.mark.parametrize('mutation', [
+    lambda lease, secret, refs: secret['metadata'].update(uid='replacement'),
+    lambda lease, secret, refs: secret['metadata']['labels'].update({'chaosatlas.dev/lease-id': 'foreign'}),
+    lambda lease, secret, refs: secret['metadata']['annotations'].update({'chaosatlas.dev/principal-role': 'admin'}),
+    lambda lease, secret, refs: lease.update(resources=[]),
+    lambda lease, secret, refs: refs.append({
+        'id': 'other', 'source': 'lease_owned_secret_ref', 'secret_name': 'other-auth',
+        'principal_role': 'transaction-test-user',
+        'header_keys': {'X-Api-Key': 'api-key'},
+    }),
+])
+def test_disposable_runtime_rejects_untrusted_principal_binding(tmp_path, monkeypatch, mutation):
+    runtime, lease, objects, calls = setup_runtime(tmp_path)
+    lease['plan']['mode'] = 'ephemeral-target'
+    lease['target_name'] = 'test-ns'
+    lease['owner_labels'] = {'chaosatlas.dev/lease-id': 'lease-test'}
+    lease['resources'].extend([
+        {'kind': 'Secret', 'namespace': 'test-ns', 'name': 'test-auth', 'actual_uid': 'secret-uid'},
+        {'kind': 'Secret', 'namespace': 'test-ns', 'name': 'other-auth', 'actual_uid': 'other-uid'},
+    ])
+    runtime.principal_id = None
+    monkeypatch.setattr(runtime, '_lease', lambda: lease)
+    refs = [{
+        'id': 'test-auth', 'source': 'lease_owned_secret_ref', 'secret_name': 'test-auth',
+        'principal_role': 'transaction-test-user',
+        'header_keys': {'Authorization': 'authorization-header'},
+    }]
+    secrets = {
+        'test-auth': {'metadata': {
+            'name': 'test-auth', 'namespace': 'test-ns', 'uid': 'secret-uid',
+            'labels': deepcopy(lease['owner_labels']),
+            'annotations': {'chaosatlas.dev/principal-role': 'transaction-test-user',
+                            'chaosatlas.dev/principal-id': 'runtime-user-id'},
+        }},
+        'other-auth': {'metadata': {
+            'name': 'other-auth', 'namespace': 'test-ns', 'uid': 'other-uid',
+            'labels': deepcopy(lease['owner_labels']),
+            'annotations': {'chaosatlas.dev/principal-role': 'transaction-test-user',
+                            'chaosatlas.dev/principal-id': 'different-user-id'},
+        }},
+    }
+    mutation(lease, secrets['test-auth'], refs)
+    provider = runtime.manager.providers.get('test')
+    monkeypatch.setattr(provider, '_json', lambda plan, args, **kwargs: (
+        deepcopy(secrets[args[-1]]), None
+    ) if 'secret' in args else (deepcopy(objects['namespace']), None))
+    with pytest.raises(ValueError):
+        runtime.bind_principal(refs)

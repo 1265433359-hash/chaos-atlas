@@ -37,6 +37,25 @@ def _read(path: Path) -> dict[str, Any]:
     return value
 
 
+def _load_fixtures(path: Path | None, specs: dict[str, Any], repository: Path) -> dict[str, Any]:
+    values = _read(path) if path else {}
+    for name, spec in specs.items():
+        if spec.get("type") != "bytes" or name not in values:
+            continue
+        descriptor = values[name]
+        if not isinstance(descriptor, dict) or set(descriptor) != {"source", "path"} or descriptor.get("source") != "file":
+            raise ValueError("byte fixture requires an exact external file reference")
+        candidate = Path(str(descriptor["path"]))
+        candidate = (path.parent / candidate).resolve() if path and not candidate.is_absolute() else candidate.resolve()
+        if is_within(candidate, repository) or not candidate.is_file():
+            raise ValueError("byte fixture file must exist outside the repository")
+        size = candidate.stat().st_size
+        if size <= 0 or size > int(spec["max_length"]):
+            raise ValueError("byte fixture file exceeds its approved bound")
+        values[name] = candidate.read_bytes()
+    return values
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     repository = Path(__file__).resolve().parents[1]
     contract_path = Path(args.contract).resolve()
@@ -51,14 +70,15 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     record = (contract.get("approval") or {}).get("record") or {}
     if errors or contract.get("status") != "frozen" or record.get("reviewer") == "synthetic-test-only":
         raise ValueError("only a valid frozen contract with actual human approval may run")
-    fixtures = _read(fixtures_path) if fixtures_path else {}
+    fixtures = _load_fixtures(fixtures_path, contract["inputs"], repository)
     evidence_root.mkdir(parents=True, exist_ok=False)
     store = LeaseStore(args.lease_store)
     lease = store.load(args.lease_id)
     provider = KubernetesIsolationProvider(name=lease["provider"], level=lease["isolation_level"])
     manager = IsolationManager(store=store, providers=ProviderRegistry([provider]))
     runtime = LeaseRuntime(manager, args.lease_id, service=args.service, port=args.port,
-                           principal_id=args.principal_id, project_revision=contract["project_revision"])
+                           project_revision=contract["project_revision"])
+    principal_binding = runtime.bind_principal(contract["credential_refs"])
     journal_path = evidence_root / "transaction-journal.jsonl"
     def journal(event: dict[str, Any]) -> None:
         with journal_path.open("a", encoding="utf-8", newline="\n") as stream:
@@ -83,6 +103,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "project_revision": contract["project_revision"], "oracle_id": contract["oracle_id"],
         "contract_sha256": contract["contract_sha256"], "run_id": args.run_id,
         "prepared": prepared, "baseline_probe": probe, "cleanup": cleanup,
+        "principal_binding": principal_binding,
         "completed_at": datetime.now(timezone.utc).isoformat(),
     }
     (evidence_root / "acceptance-summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8")
@@ -96,7 +117,6 @@ def main() -> int:
     parser.add_argument("--lease-id", required=True)
     parser.add_argument("--service", required=True)
     parser.add_argument("--port", type=int, required=True)
-    parser.add_argument("--principal-id", required=True)
     parser.add_argument("--fixtures")
     parser.add_argument("--evidence-root", required=True)
     parser.add_argument("--run-id", required=True)

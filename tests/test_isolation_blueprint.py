@@ -58,6 +58,18 @@ def test_blueprint_allows_only_lease_local_config_secret_and_empty_claim_referen
     assert "stringData" not in compiled[1]
 
 
+def test_blueprint_runtime_template_must_derive_from_a_declared_random_key():
+    secret = {
+        "apiVersion": "v1", "kind": "Secret", "metadata": {"name": "credentials"},
+        "runtimeGenerate": {"keys": ["random"], "templates": {"password": "hardcoded"}},
+    }
+    with pytest.raises(ValueError, match="reference declared generated keys"):
+        compile_blueprint({"resources": [secret]}, namespace="ca-l2-x", owner_labels=LABELS)
+    secret["runtimeGenerate"]["templates"]["password"] = "Aa1!${unknown}"
+    with pytest.raises(ValueError, match="reference declared generated keys"):
+        compile_blueprint({"resources": [secret]}, namespace="ca-l2-x", owner_labels=LABELS)
+
+
 def test_blueprint_rejects_guard_weakening_and_foreign_references():
     with pytest.raises(ValueError, match="unsupported blueprint kind"):
         compile_blueprint({"resources": [{"apiVersion": "networking.k8s.io/v1", "kind": "NetworkPolicy", "metadata": {"name": "allow-all"}, "spec": {"podSelector": {}, "ingress": [{}]}}]}, namespace="ca-l2-x", owner_labels=LABELS)

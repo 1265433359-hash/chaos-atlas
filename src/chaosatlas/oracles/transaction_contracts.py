@@ -38,7 +38,14 @@ def validate_transaction_contract(contract: dict[str, Any]) -> list[str]:
         errors.append("unsafe oracle_id")
     if contract.get("status") not in STATES:
         errors.append("invalid Oracle status")
-    if sensitive_paths(contract):
+    sensitive_view = deepcopy(contract)
+    # v3 credential references contain only validated locator metadata.  Their
+    # field names intentionally include "secret" and "header_keys"; scan the
+    # rest of the contract for material and let validate_v3 strictly validate
+    # the reference shape and allowed authentication headers.
+    if contract.get("schema_version") == V3_SCHEMA:
+        sensitive_view["credential_refs"] = []
+    if sensitive_paths(sensitive_view):
         errors.append("credential material is forbidden; use credential_refs")
     requests = contract.get("allowed_requests") if isinstance(contract.get("allowed_requests"), list) else []
     request_ids: set[str] = set()

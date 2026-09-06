@@ -114,6 +114,20 @@ def test_planner_blocks_sensitive_material_without_copying_its_value_to_reason()
     assert plan["blueprint"]["resources"][0]["data"]["api_token"] == "<redacted>"
 
 
+def test_planner_preserves_valid_runtime_generated_secret_templates():
+    blueprint = {"resources": [{
+        "apiVersion": "v1", "kind": "Secret", "metadata": {"name": "generated"},
+        "runtimeGenerate": {
+            "keys": ["random"],
+            "templates": {"admin-password": "Aa1!${random}"},
+        },
+    }]}
+    profile = _profile("l2", {"mode": "ephemeral-target", "blueprint": blueprint})
+    plan = IsolationPlanner().plan(profile=profile, capability=_capability("L2"), target={})
+    assert plan["status"] == "ready"
+    assert plan["blueprint"] == blueprint
+
+
 def test_planner_covers_all_32_plus_9_catalog_defaults():
     safe_workload = {"apiVersion": "apps/v1", "kind": "Deployment", "metadata": {"name": "sandbox"}, "spec": {"selector": {"matchLabels": {"app": "sandbox"}}, "template": {"metadata": {"labels": {"app": "sandbox"}}, "spec": {"containers": [{"name": "sandbox", "image": "registry.k8s.io/pause:3.9"}]}}}}
     profile = {

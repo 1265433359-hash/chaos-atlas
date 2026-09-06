@@ -1,0 +1,212 @@
+{
+  "allowed_requests": [
+    {
+      "effect": "write",
+      "id": "create-room",
+      "method": "POST",
+      "path": "/api/v1/channels.create"
+    },
+    {
+      "effect": "write",
+      "id": "post-message",
+      "method": "POST",
+      "path": "/api/v1/chat.postMessage"
+    },
+    {
+      "effect": "read",
+      "id": "read-messages",
+      "method": "GET",
+      "path": "/api/v1/channels.messages"
+    }
+  ],
+  "approval": {
+    "record": null,
+    "required": true
+  },
+  "assertions": [
+    {
+      "expected_from": "room_id",
+      "id": "message-room",
+      "operator": "json_path_equals",
+      "path": "$.messages[0].rid",
+      "step_id": "poll-messages"
+    },
+    {
+      "expected_from": "principal_id",
+      "id": "message-sender",
+      "operator": "json_path_equals",
+      "path": "$.messages[0].u._id",
+      "step_id": "poll-messages"
+    },
+    {
+      "expected": "ChaosAtlas synthetic {run_id}",
+      "id": "message-body",
+      "operator": "json_path_equals",
+      "path": "$.messages[0].msg",
+      "step_id": "poll-messages"
+    },
+    {
+      "assertion_ref": "message-body",
+      "id": "message-visible",
+      "operator": "eventually",
+      "step_id": "poll-messages"
+    }
+  ],
+  "cleanup": {
+    "environment_release_required": true,
+    "on_every_exit": true,
+    "reason": "The channel, message and synthetic account are destroyed with the fresh Rocket.Chat lease.",
+    "steps": [],
+    "strategy": "disposable_environment"
+  },
+  "contract_sha256": "ea28dff40c01a3e973e3a6bdeb06b592f7f3e2501d5b75af2250349244faf738",
+  "credential_refs": [
+    {
+      "header_keys": {
+        "X-Auth-Token": "x-auth-token",
+        "X-User-Id": "x-user-id"
+      },
+      "id": "rocketchat-transaction-auth",
+      "principal_role": "transaction-test-user",
+      "secret_name": "rocketchat-transaction-auth",
+      "source": "lease_owned_secret_ref"
+    }
+  ],
+  "evidence_sources": [
+    "image:registry.rocket.chat/rocketchat/rocket.chat:8.6.1@sha256:c8ee1044c2c0503eddc1abc212240012ec9ba73e2cfa80d001cd23d582ec7c51",
+    "api:https://developer.rocket.chat/apidocs/create-channel",
+    "api:https://developer.rocket.chat/apidocs/post-message",
+    "api:https://developer.rocket.chat/apidocs/get-channel-messages"
+  ],
+  "inputs": {},
+  "interpreter_version": "transaction-http-3.0",
+  "oracle_id": "rocketchat-message-roundtrip-v3",
+  "ownership": {
+    "boundary": "lease_exclusive_disposable_environment",
+    "delete_scope": "verified_whole_lease_release",
+    "synthetic_only": true
+  },
+  "probe_assertions": [
+    {
+      "expected_from": "room_id",
+      "id": "fresh-message-room",
+      "operator": "json_path_equals",
+      "path": "$.messages[0].rid",
+      "step_id": "poll-messages"
+    },
+    {
+      "expected_from": "principal_id",
+      "id": "fresh-message-sender",
+      "operator": "json_path_equals",
+      "path": "$.messages[0].u._id",
+      "step_id": "poll-messages"
+    },
+    {
+      "expected": "ChaosAtlas synthetic {run_id}",
+      "id": "fresh-message-body",
+      "operator": "json_path_equals",
+      "path": "$.messages[0].msg",
+      "step_id": "poll-messages"
+    },
+    {
+      "assertion_ref": "fresh-message-body",
+      "id": "fresh-message-visible",
+      "operator": "eventually",
+      "step_id": "poll-messages"
+    }
+  ],
+  "probe_steps": [
+    "poll-messages"
+  ],
+  "project_id": "rocketchat",
+  "project_revision": "5f9f0b3332fa175da829a92dca7f86e5d6223b1581d2c4372838133e929b8bf4",
+  "runtime_scope": {
+    "image_digest": "sha256:c8ee1044c2c0503eddc1abc212240012ec9ba73e2cfa80d001cd23d582ec7c51",
+    "mode": "disposable",
+    "service": "rocketchat-rocketchat",
+    "source_revision": "8.6.1"
+  },
+  "schema_version": "chaosatlas-transaction-oracle-v3",
+  "status": "validated",
+  "steps": [
+    {
+      "capture": {
+        "room_id": {
+          "max_length": 128,
+          "path": "$.channel._id",
+          "type": "string"
+        }
+      },
+      "id": "create-owned-room",
+      "json_body": {
+        "name": "ca-{run_id}"
+      },
+      "on_response_loss": {
+        "strategy": "disposable_environment"
+      },
+      "ownership": {
+        "mode": "lease_exclusive",
+        "object_type": "rocketchat-room",
+        "preflight_absent": true
+      },
+      "request_id": "create-room",
+      "success": {
+        "checks": [
+          {
+            "expected": true,
+            "id": "room-success",
+            "operator": "json_path_equals",
+            "path": "$.success"
+          }
+        ],
+        "statuses": [
+          200
+        ]
+      }
+    },
+    {
+      "id": "post-owned-message",
+      "json_body": {
+        "parseUrls": false,
+        "roomId": "{room_id}",
+        "text": "ChaosAtlas synthetic {run_id}"
+      },
+      "on_response_loss": {
+        "strategy": "disposable_environment"
+      },
+      "owned_operation": "create-owned-room",
+      "request_id": "post-message",
+      "success": {
+        "checks": [
+          {
+            "expected": true,
+            "id": "message-success",
+            "operator": "json_path_equals",
+            "path": "$.success"
+          }
+        ],
+        "statuses": [
+          200
+        ]
+      }
+    },
+    {
+      "id": "poll-messages",
+      "query": {
+        "count": 20,
+        "roomId": "{room_id}"
+      },
+      "request_id": "read-messages",
+      "success": {
+        "statuses": [
+          200
+        ]
+      }
+    }
+  ],
+  "timeouts": {
+    "eventual_s": 60,
+    "poll_interval_s": 2,
+    "request_s": 10
+  }
+}

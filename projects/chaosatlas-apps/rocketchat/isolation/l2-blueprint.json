@@ -13,6 +13,30 @@
     },
     {
       "apiVersion": "v1",
+      "kind": "Secret",
+      "metadata": {"name": "rocketchat-bootstrap-identity"},
+      "runtimeGenerate": {
+        "keys": ["admin-random", "user-random"],
+        "templates": {
+          "admin-password": "Aa1!${admin-random}",
+          "user-password": "Aa1!${user-random}"
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Secret",
+      "metadata": {
+        "name": "rocketchat-transaction-auth",
+        "annotations": {
+          "chaosatlas.dev/principal-role": "transaction-test-user",
+          "chaosatlas.dev/principal-id": "pending-bootstrap"
+        }
+      },
+      "runtimeGenerate": {"keys": ["x-auth-token", "x-user-id"]}
+    },
+    {
+      "apiVersion": "v1",
       "kind": "Service",
       "metadata": {"name": "rocketchat-mongodb"},
       "spec": {
@@ -98,7 +122,11 @@
                   {"name": "DEPLOY_PLATFORM", "value": "chaosatlas-disposable"},
                   {"name": "MONGO_URL", "valueFrom": {"secretKeyRef": {"name": "rocketchat-runtime-secrets", "key": "mongo-uri"}}},
                   {"name": "ROOT_URL", "value": "http://rocketchat-rocketchat"},
-                  {"name": "PORT", "value": "3000"}
+                  {"name": "PORT", "value": "3000"},
+                  {"name": "ADMIN_USERNAME", "value": "chaosatlas-admin"},
+                  {"name": "ADMIN_PASS", "valueFrom": {"secretKeyRef": {"name": "rocketchat-bootstrap-identity", "key": "admin-password"}}},
+                  {"name": "ADMIN_EMAIL", "value": "chaosatlas-admin@invalid"},
+                  {"name": "OVERWRITE_SETTING_Show_Setup_Wizard", "value": "completed"}
                 ],
                 "ports": [{"name": "http", "containerPort": 3000}],
                 "readinessProbe": {
