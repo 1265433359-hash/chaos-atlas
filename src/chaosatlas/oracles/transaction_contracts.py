@@ -8,14 +8,16 @@ import re
 from typing import Any
 
 from chaosatlas.isolation.contracts import SAFE_ID, canonical_hash, sensitive_paths, verify_hash, with_hash
+from chaosatlas.oracles.replay_validation import V3_SCHEMA, validate_v3
 
 
 LEGACY_SCHEMA = "chaosatlas-transaction-oracle-v1"
 SCHEMA = "chaosatlas-transaction-oracle-v2"
-SCHEMAS = {LEGACY_SCHEMA, SCHEMA}
+SCHEMAS = {LEGACY_SCHEMA, SCHEMA, V3_SCHEMA}
 STATES = {"draft", "validated", "approved", "frozen"}
 METHODS = {"GET", "POST", "PUT", "PATCH", "DELETE"}
 ASSERTIONS = {"status_equals", "status_in", "json_path_equals", "json_path_exists", "sha256_equals", "count_equals", "eventually", "body_contains"}
+JSON_PATH = re.compile(r"\$(?:\.[A-Za-z_][A-Za-z0-9_-]*|\[(?:0|[1-9][0-9]*)\])*")
 
 
 def approval_subject_sha256(contract: dict[str, Any]) -> str:
@@ -26,6 +28,8 @@ def approval_subject_sha256(contract: dict[str, Any]) -> str:
 
 
 def validate_transaction_contract(contract: dict[str, Any]) -> list[str]:
+    if not isinstance(contract, dict):
+        return ['transaction contract must be an object']
     required = ("schema_version", "oracle_id", "project_id", "project_revision", "status", "evidence_sources", "credential_refs", "allowed_requests", "steps", "assertions", "ownership", "cleanup", "approval", "contract_sha256")
     errors = [f"missing {key}" for key in required if key not in contract]
     if contract.get("schema_version") not in SCHEMAS:
@@ -52,6 +56,10 @@ def validate_transaction_contract(contract: dict[str, Any]) -> list[str]:
     assertions = contract.get("assertions") if isinstance(contract.get("assertions"), list) else []
     if not assertions or any(not isinstance(item, dict) or item.get("operator") not in ASSERTIONS or item.get("step_id") not in step_ids for item in assertions):
         errors.append("invalid or missing assertions")
+    for item in assertions:
+        if isinstance(item, dict) and item.get("operator") in {"json_path_equals", "json_path_exists", "count_equals"}:
+            if not isinstance(item.get("path"), str) or not JSON_PATH.fullmatch(item["path"]):
+                errors.append("invalid JSON path in assertion")
     cleanup = contract.get("cleanup") if isinstance(contract.get("cleanup"), dict) else {}
     if cleanup.get("strategy") not in {"exact_owned_ids", "disposable_environment"} or not cleanup.get("on_every_exit"):
         errors.append("cleanup must be exact_owned_ids or disposable_environment on every exit")
@@ -110,6 +118,8 @@ def validate_transaction_contract(contract: dict[str, Any]) -> list[str]:
             errors.append("approved/frozen Oracle requires a matching human approval record")
     if not verify_hash(contract, "contract_sha256"):
         errors.append("contract hash mismatch")
+    if contract.get('schema_version') == V3_SCHEMA:
+        errors.extend(validate_v3(contract))
     return sorted(set(errors))
 
 
@@ -161,9 +171,18 @@ def make_draft(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def _json_path(value: Any, path: str) -> Any:
+    if not isinstance(path, str) or not JSON_PATH.fullmatch(path):
+        raise ValueError("invalid JSON path")
     current = value
     for key, index in re.findall(r"\.([A-Za-z0-9_-]+)|\[([0-9]+)\]", path.removeprefix("$")):
-        current = current[int(index)] if index else current[key]
+        if index:
+            if not isinstance(current, list):
+                raise ValueError("JSON index requires array")
+            current = current[int(index)]
+        else:
+            if not isinstance(current, dict):
+                raise ValueError("JSON key requires object")
+            current = current[key]
     return current
 
 
@@ -183,6 +202,10 @@ def evaluate_assertions(contract: dict[str, Any], observations: dict[str, dict[s
                 expected,
             )
         try:
+            if "expected_from" in assertion and assertion["expected_from"] not in variables:
+                raise ValueError("missing expected variable")
+            if isinstance(expected, str) and re.search(r"\{[A-Za-z][A-Za-z0-9_-]*\}", expected):
+                raise ValueError("unresolved expected variable")
             if operator == "status_equals":
                 passed = observation.get("status") == expected
             elif operator == "status_in":
