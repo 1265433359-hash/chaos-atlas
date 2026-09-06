@@ -72,3 +72,19 @@ def test_api_server_delay_uses_verified_platform_evidence_as_canary_boundary():
     api = next(item for item in assess_core_capabilities(_profile(), [_node()], runtime) if item["fault_id"] == "api_server_delay")
     assert api["capability_status"] == "canary_required"
     assert api["evidence_grade"] == "E1"
+
+
+def test_declared_owned_isolation_route_makes_kubernetes_api_fault_canary_eligible():
+    profile = _profile(isolation={
+        "synthetic_data_only": True,
+        "l2": {"mode": "ephemeral-target", "blueprint_ref": "isolation/l2-blueprint.json"},
+        "fault_routes": {"secret_rotation": {"level": "L2", "backend": "kubernetes_api"}},
+    })
+
+    record = next(
+        item for item in assess_core_capabilities(profile, [_node()], _runtime())
+        if item["fault_id"] == "secret_rotation"
+    )
+
+    assert record["capability_status"] == "canary_required"
+    assert "disposable_target" not in record["prerequisites"]

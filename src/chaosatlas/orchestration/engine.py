@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import shutil
 import sys
 import traceback
@@ -85,6 +86,9 @@ class RunRequest:
     policy_state_path: Path | None = None
     policy_context: dict[str, Any] | None = None
     policy_budget: int = 20
+    isolation_fault: str | None = None
+    approve_isolation: bool = False
+    isolation_ttl_minutes: int = 60
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "profile_path", Path(self.profile_path))
@@ -105,6 +109,16 @@ class RunRequest:
             raise ValueError("max_candidates must be a positive integer")
         if self.mode == "dry-run" and (self.all_candidates or self.max_candidates is not None):
             raise ValueError("dry-run candidate batching is not supported")
+        if self.isolation_fault and self.mode != "live":
+            raise ValueError("isolated execution is supported only in live mode")
+        if self.approve_isolation and not self.isolation_fault:
+            raise ValueError("approve_isolation requires isolation_fault")
+        if self.isolation_fault and not re.fullmatch(r"[a-z0-9][a-z0-9._-]{1,79}", self.isolation_fault):
+            raise ValueError("isolation_fault is invalid")
+        if isinstance(self.isolation_ttl_minutes, bool) or not 1 <= int(self.isolation_ttl_minutes) <= 240:
+            raise ValueError("isolation_ttl_minutes must be between 1 and 240")
+        if self.isolation_fault and (self.all_candidates or (self.max_candidates is not None and self.max_candidates != 1)):
+            raise ValueError("one isolated lease may execute exactly one candidate")
 
 
 @dataclass(frozen=True)
@@ -1957,6 +1971,54 @@ class RunEngine:
     def run(self, request: RunRequest) -> dict[str, Any]:
         if request.mode == "live":
             from chaosatlas.orchestration.batch import run_live_batch
+
+            if request.isolation_fault:
+                if not request.approve_live:
+                    return {
+                        "status": "environment_blocked",
+                        "reason": "approve_live_required",
+                        "injection_performed": False,
+                    }
+                if not request.approve_isolation:
+                    return {
+                        "status": "environment_blocked",
+                        "reason": "approve_isolation_required",
+                        "injection_performed": False,
+                    }
+                from chaosatlas.orchestration.isolated_run import run_isolated_live
+
+                def execute_isolated(profile_path: Path, output_root: Path, kube_context: str | None) -> dict[str, Any]:
+                    return run_live_batch(
+                        profile_path=profile_path,
+                        output_root=output_root,
+                        candidate_ids=[request.candidate_id] if request.candidate_id else None,
+                        max_candidates=1,
+                        approve_live=request.approve_live,
+                        kube_context=kube_context,
+                        resume=False,
+                        policy_mode="legacy",
+                        policy_budget=1,
+                        knowledge_root=request.knowledge_root,
+                        knowledge_write_root=request.knowledge_write_root,
+                        seed=request.seed,
+                        oracle_registry=self.dependencies.oracle_registry,
+                        live_executor=self.dependencies.live_executor,
+                        live_adapter=None,
+                        live_evidence_collector=self.dependencies.live_evidence_collector,
+                        live_preflight=self.dependencies.live_preflight,
+                        candidate_runner=self._run_candidate,
+                        advisory_provider=request.advisory_provider,
+                        defense_history_root=request.defense_history_root,
+                        registry_shadow=request.registry_shadow,
+                    )
+
+                return run_isolated_live(
+                    profile_path=request.profile_path,
+                    output_root=request.output_root,
+                    fault_id=request.isolation_fault,
+                    ttl_minutes=request.isolation_ttl_minutes,
+                    execute=execute_isolated,
+                )
 
             candidate_ids = [request.candidate_id] if request.candidate_id else None
             max_candidates = request.max_candidates

@@ -115,6 +115,18 @@ def _backend_available(runtime: dict[str, Any], backend: str) -> bool:
     return bool(mesh.get("ready")) and crd.get("available") is True
 
 
+def _declared_isolation_route(profile: dict[str, Any], fault_id: str, level: str) -> bool:
+    isolation = profile.get("isolation") if isinstance(profile.get("isolation"), dict) else {}
+    routes = isolation.get("fault_routes") if isinstance(isolation.get("fault_routes"), dict) else {}
+    raw_route = routes.get(fault_id)
+    route_level = raw_route if isinstance(raw_route, str) else raw_route.get("level") if isinstance(raw_route, dict) else None
+    config = isolation.get(level.lower()) if isinstance(isolation.get(level.lower()), dict) else {}
+    blueprint_declared = isinstance(config.get("blueprint"), dict) or (
+        isinstance(config.get("blueprint_ref"), str) and bool(config.get("blueprint_ref").strip())
+    )
+    return route_level == level and blueprint_declared and isolation.get("synthetic_data_only") is True
+
+
 def _assess_target(
     profile: dict[str, Any],
     fault_id: str,
@@ -144,6 +156,7 @@ def _assess_target(
     has_oracle = any(isinstance(item, dict) and item.get("id") for item in profile.get("business_oracles") or [])
     has_recovery = isinstance(profile.get("recovery"), dict) and bool(profile.get("cleanup"))
     disposable = bool(resources.get("disposable_target") or capabilities.get("disposable_target"))
+    disposable_route = _declared_isolation_route(profile, fault_id, isolation_for_core_fault(fault_id))
     prerequisites: list[str] = []
 
     if not containers:
@@ -173,7 +186,7 @@ def _assess_target(
         if capabilities.get("native_http") is not True:
             prerequisites.append("native_http_control_contract")
     if fault_id in KUBERNETES_API_L2:
-        if not disposable:
+        if not disposable and not disposable_route:
             prerequisites.append("disposable_target")
         if fault_id == "secret_rotation" and int(resources.get("secret_count") or 0) < 1:
             prerequisites.append("test_secret")

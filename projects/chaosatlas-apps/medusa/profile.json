@@ -18,6 +18,17 @@
       "dedicated_test_replica": true,
       "namespace": "chaosatlas-medusa"
     },
+    "l2": {
+      "mode": "ephemeral-target",
+      "ready_timeout_s": 420,
+      "resource_budget": {"cpu": "3", "memory": "4Gi", "pods": 12},
+      "blueprint_ref": "isolation/l2-blueprint.json"
+    },
+    "fault_routes": {
+      "secret_rotation": {"level": "L2", "backend": "kubernetes_api"},
+      "image_pull_failure": {"level": "L2", "backend": "kubernetes_api"},
+      "pod_unschedulable": {"level": "L2", "backend": "kubernetes_api"}
+    },
     "synthetic_data_only": true
   },
   "source": {
@@ -67,5 +78,10 @@
       "status": "supported",
       "reason": "generic Kubernetes lifecycle verified on 2026-09-05 with baseline, confirmed injection, degraded service observation, replacement recovery, and zero-residue cleanup; one run is not a stable application finding"
     }
+  },
+  "fault_defaults": {
+    "secret_rotation": {"secret_name": "medusa-runtime-secrets", "key": "jwt-secret"},
+    "image_pull_failure": {"image": "chaosatlas.invalid/not-found:test"},
+    "pod_unschedulable": {"node_selector_key": "chaosatlas.invalid/never", "node_selector_value": "true"}
   }
 }

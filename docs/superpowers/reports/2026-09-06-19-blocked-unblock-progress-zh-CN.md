@@ -4,7 +4,7 @@
 
 ## 结论
 
-本轮没有把任何项目能力直接改写为 `supported`。新增了统一的外部 runtime evidence 接口，并执行了真实 canary；`api_server_delay` 已在平台级别从 `blocked` 进入 `canary_required`。另外，Medusa 的真实可销毁副本已完成 `secret_rotation`、`image_pull_failure`、`pod_unschedulable` 三项机制 canary，但它们尚未接入四项目静态矩阵的自动隔离绑定，且未执行事务 Oracle，因此四项目矩阵仍保持现有证据等级。
+本轮没有手工把能力改写为 `supported`。新增了统一的外部 runtime evidence 接口，并执行了真实 canary；`api_server_delay` 已在平台级别从 `blocked` 进入 `canary_required`。随后把可销毁环境的申请、绑定、执行和释放下沉到统一 RunEngine；Medusa 的 `secret_rotation`、`image_pull_failure`、`pod_unschedulable` 已由真实证据索引从 `blocked` 提升为 `supported/E2`。该等级表示存在有效运行生命周期证据，不表示已经得到三次稳定复现或业务缺陷结论。
 
 ## 已实现
 
@@ -21,10 +21,14 @@
 - Minikube 隔离 Provider 支持经过严格校验、无凭据的容器运行时代理参数，用于可销毁节点拉取系统镜像；代理地址不会写入项目 profile。
 - runtime preflight 只在所选故障确实使用 Chaos Mesh 时要求其 CRD，原生 Kubernetes API 故障不再被错误阻断。
 - HTTPChaos daemon 前置探针使用实际发现的 Chaos Mesh namespace，不再硬编码 `chaos-testing`。
+- `chaosatlas run` 新增显式 `--isolation-fault`、`--approve-isolation` 和隔离 TTL：RunEngine 根据项目 `fault_routes` 解析本地 blueprint，申请拥有所有权的租约，生成只绑定该租约的 runtime profile，执行一个候选，并在 `finally` 中验证释放。
+- 普通 live profile 仍只暴露原有安全故障；隔离故障只有在显式双重批准后才会进入候选发现。一次租约只允许一个候选，清理失败会把整体状态降为 `partial/failed`。
+- `secret_rotation` 执行器现在与镜像拉取失败、不可调度一致，强制要求 `ca-l1-*`/`ca-l2-*` 等拥有所有权的隔离命名空间。
+- Medusa 增加无静态凭据的 L2 blueprint；数据库、JWT 和 cookie 值在运行时生成，数据卷为 `emptyDir`，每次运行均从合成空数据开始。
 
 ## 已测试
 
-完整仓库测试：`483 passed in 15.61s`。覆盖新增的故障效果确认、负向 fail-closed、恢复业务探针、短路径、Minikube 代理校验、preflight 路由、HTTPChaos namespace 和 disposable canary 汇总逻辑。
+最终完整仓库测试：`491 passed in 14.85s`。覆盖故障效果确认、负向 fail-closed、恢复业务探针、短路径、Minikube 代理校验、preflight 路由、HTTPChaos namespace、disposable canary 汇总、blueprint 路径边界、双重批准、单候选限制和清理失败降级。
 
 ## 真实证据
 
@@ -66,12 +70,28 @@
 
 早期真实尝试留下了两类负向诊断：Calico 镜像和 kindnet 镜像在当前网络下无法直接拉取，完整副本未 Ready；相应父子资源均已释放。后续使用受校验的无凭据节点代理后才取得上述正向证据，失败尝试不计为能力通过。
 
+### 统一 RunEngine 自动隔离（Medusa）
+
+证据目录：
+
+- `%LOCALAPPDATA%/ChaosAtlas/runs/isolated-run-medusa-secret-20260906-a`
+- `%LOCALAPPDATA%/ChaosAtlas/runs/isolated-run-medusa-image-20260906-a`
+- `%LOCALAPPDATA%/ChaosAtlas/runs/isolated-run-medusa-unsched-20260906-a`
+
+这三次不是专用验收脚本外层拼接，而是直接调用统一 `chaosatlas run --mode live --isolation-fault ... --approve-isolation`。每次均独立创建完整 Medusa L2，RunEngine 状态为 `completed`，隔离 lifecycle 为 `verified`，具体机制分别为 `secret_value_reflected`、`pod_image_pull_waiting`、`pod_scheduling_condition`，恢复和故障清理为 true，租约为 released，事后 Kubernetes 查询确认三个命名空间均 NotFound，且集群中无 `chaosatlas.dev/managed=true` 的残留命名空间。
+
+只读矩阵重算目录：`%LOCALAPPDATA%/ChaosAtlas/runs/capability-medusa-isolated-20260906-a`
+
+- Medusa 当前汇总为 `blocked 15 / canary_required 17 / inapplicable 5 / supported 4`；
+- 相比上一轮 `blocked 18 / canary_required 18 / inapplicable 5 / supported 0`，三项 Kubernetes API L2 能力已由真实外部证据提升；原有 `pod_kill` 也由历史证据保持 supported；
+- 三项故障的 target 级证据均为 E2，但 `stable_reproduction_count` 为 1，Secret rotation 为 2，尚未达到三次稳定复现门槛。
+
 ## 当前仍 blocked 的主要原因
 
 1. HTTPChaos 6 项：需要同 context 的 tproxy/ebtables 正向注入证据；
 2. native HTTP 2 项：四项目没有已验证的 native HTTP 控制契约；
 3. native resource 3 项：没有项目级隔离资源 Agent；
-4. Secret rotation、image pull failure、pod unschedulable：Medusa 已有独立机制 canary；四项目正式 profile 仍缺少由 RunEngine 自动申请、绑定和释放 disposable target 的通用路由，其他三个项目也尚无对应真实副本证据；
+4. Secret rotation、image pull failure、pod unschedulable：Medusa 已完成 RunEngine 自动申请、绑定和释放并进入 `supported/E2`；Immich、ERPNext、Rocket.Chat 仍缺少相应真实副本 blueprint 与运行证据；
 5. extension time/queue/pool/runtime：缺少对应 disposable Agent 或控制契约；
 6. API Server delay：平台级已解除 blocked，四个项目仍是 `canary_required`，需要各项目业务路径 canary 才能进一步提升证据等级。
 
@@ -81,7 +101,7 @@
 
 ## 下一步
 
-1. 把 disposable target 的申请、profile 绑定和释放从专用验收脚本下沉到统一 RunEngine，消除手工外层编排；
-2. 为 Immich、ERPNext、Rocket.Chat 生成同等真实副本 blueprint，并分别完成三项 Kubernetes API 机制 canary；
-3. 在四项目已批准的事务契约上执行 baseline、注入期、恢复期 Oracle，之后才把相应矩阵项从 `blocked` 提升为 `canary_required`；
+1. 为 Immich、ERPNext、Rocket.Chat 生成同等真实副本 blueprint，并分别完成三项 Kubernetes API 机制 canary；
+2. 在四项目已批准的事务契约上执行 baseline、注入期、恢复期 Oracle，区分“机制 supported”和“业务结论已验证”；
+3. 继续为 native resource、native HTTP 和 extension Agent 建立同样的自动隔离 route；
 4. HTTPChaos 改在具备 ebtables/broute 的 Linux 节点或远程测试集群验收，当前 WSL2 环境不继续做无效重试。

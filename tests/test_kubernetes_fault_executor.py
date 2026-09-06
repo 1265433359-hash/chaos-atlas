@@ -43,6 +43,29 @@ def test_config_drift_rejects_empty_drift_value():
         raise AssertionError("empty config drift value must fail closed")
 
 
+def test_secret_rotation_requires_owned_disposable_namespace():
+    executor = KubernetesApiFaultExecutor(
+        namespace="shared-lab",
+        allowed_namespaces={"shared-lab"},
+        allow_live=True,
+        isolated=False,
+        runner=lambda *_args, **_kwargs: (_ for _ in ()).throw(AssertionError("runtime must not be touched")),
+    )
+
+    result = executor({
+        "kind": "ChaosAtlasKubernetesFault",
+        "metadata": {"name": "secret-fault", "namespace": "shared-lab"},
+        "spec": {
+            "faultFamily": "secret_rotation",
+            "targetRef": {"kind": "Secret", "name": "runtime-secrets"},
+            "parameters": {"key": "token", "value": "chaosatlas-test-placeholder"},
+        },
+    })
+
+    assert result["status"] == "environment_blocked"
+    assert result["injection_confirmed"] is False
+
+
 def test_executor_restores_config_annotations_and_accepts_confirmed_outage_as_evidence():
     state = _deployment()
 

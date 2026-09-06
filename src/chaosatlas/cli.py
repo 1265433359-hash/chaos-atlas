@@ -234,6 +234,9 @@ def _run_live(args: argparse.Namespace) -> tuple[dict, int]:
         policy_state_path=Path(args.policy_state) if args.policy_state else None,
         policy_context=policy_context,
         policy_budget=args.policy_budget,
+        isolation_fault=args.isolation_fault,
+        approve_isolation=bool(args.approve_isolation),
+        isolation_ttl_minutes=args.isolation_ttl_minutes,
     ))
     status = str(result.get("status") or "method_invalid")
     return result, 0 if status in {"live_completed", "completed"} else 2
@@ -272,6 +275,9 @@ def _parser() -> argparse.ArgumentParser:
     run.add_argument("--policy-state")
     run.add_argument("--policy-context")
     run.add_argument("--policy-budget", type=int, default=20)
+    run.add_argument("--isolation-fault", help="prepare an owned isolation route for exactly one live fault family")
+    run.add_argument("--approve-isolation", action="store_true", help="approve creation and verified cleanup of the declared isolation route")
+    run.add_argument("--isolation-ttl-minutes", type=int, default=60)
 
     inventory = subparsers.add_parser("inventory", help="Build a repository inventory.")
     inventory.add_argument("--root", default=".")

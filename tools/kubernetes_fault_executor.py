@@ -341,7 +341,19 @@ class KubernetesApiFaultExecutor:
         name = str((spec.get("targetRef") or {}).get("name") or "")
         target_kind = str((spec.get("targetRef") or {}).get("kind") or "Deployment")
         family = str(spec.get("faultFamily") or (fault or {}).get("kind") or "")
-        base = {"schema_version": "chaosatlas-kubernetes-api-lifecycle-v1", "action_id": action_id, "fault_family": family, "status": "blocked", "lifecycle": ["preflight"], "errors": []}
+        base = {
+            "schema_version": "chaosatlas-kubernetes-api-lifecycle-v1",
+            "action_id": action_id,
+            "fault_family": family,
+            "status": "blocked",
+            "lifecycle": ["preflight"],
+            "errors": [],
+            "injection_confirmed": False,
+            "injected_count": 0,
+            "recovery_confirmed": False,
+            "cleanup_confirmed": False,
+            "promotion_allowed": False,
+        }
         if manifest.get("kind") != "ChaosAtlasKubernetesFault":
             return {**base, "status": "method_invalid", "errors": ["Kubernetes API executor requires ChaosAtlasKubernetesFault"]}
         if not name or not family:
@@ -349,7 +361,7 @@ class KubernetesApiFaultExecutor:
         if namespace != self.namespace or namespace not in self.allowed_namespaces:
             return {**base, "status": "environment_blocked", "errors": ["mutation namespace is outside the allow-list"]}
         owned_disposable_namespace = self.namespace.startswith(("chaosatlas-run-", "ca-l1-", "ca-l2-"))
-        if family in {"pod_unschedulable", "image_pull_failure"} and (not self.isolated or not owned_disposable_namespace):
+        if family in {"secret_rotation", "pod_unschedulable", "image_pull_failure"} and (not self.isolated or not owned_disposable_namespace):
             return {**base, "status": "environment_blocked", "errors": [f"{family} requires a disposable isolated namespace"]}
         if family == "api_server_delay":
             return {**base, "status": "environment_blocked", "errors": ["api_server_delay requires a disposable cluster control-plane executor"]}
