@@ -46,7 +46,9 @@ def build_plan(*, repo: Path, profile: str, namespace: str, output: Path, image:
     ]
 
 
-def _fixture(namespace: str, image: str) -> str:
+def _fixture(namespace: str, image: str, *, command: list[str] | None = None, args: list[str] | None = None) -> str:
+    command_yaml = "" if not command else "\n          command:\n" + "".join(f"            - {json.dumps(item)}\n" for item in command)
+    args_yaml = "" if not args else "\n          args:\n" + "".join(f"            - {json.dumps(item)}\n" for item in args)
     return f'''apiVersion: v1
 kind: Namespace
 metadata:
@@ -76,6 +78,7 @@ spec:
         - name: canary
           image: {image}
           imagePullPolicy: IfNotPresent
+{command_yaml}{args_yaml}
           ports:
             - name: http
               containerPort: 8080
@@ -101,7 +104,7 @@ spec:
 '''
 
 
-def _profile(namespace: str, profile: str) -> dict[str, Any]:
+def _profile(namespace: str, profile: str, *, expected_body: str = "chaosatlas-resource-canary") -> dict[str, Any]:
     return {
         "schema_version": "chaosatlas-project-profile-v1",
         "project_id": "resource-canary-api-delay",
@@ -109,7 +112,7 @@ def _profile(namespace: str, profile: str) -> dict[str, Any]:
         "revision_kind": "fixture",
         "source": {"manifest_roots": ["workloads/resource-canary"], "source_roots": ["workloads/resource-canary"]},
         "namespace_policy": {"allowed_namespaces": [namespace], "isolation_required": True, "disposable_cluster": True, "cluster_profile": profile},
-        "business_oracles": [{"id": "resource-canary-http", "kind": "http", "service": "resource-canary", "remote_port": 80, "entrypoint": "/", "success_contract": "http_200_and_expected_body", "expected_status": 200, "expected_body": "chaosatlas-resource-canary", "timeout_s": 5, "count": 3, "baseline_retry_window_s": 15, "observation_window_s": 30, "probe_retry_interval_s": 1}],
+        "business_oracles": [{"id": "resource-canary-http", "kind": "http", "service": "resource-canary", "remote_port": 80, "entrypoint": "/", "success_contract": "http_200_and_expected_body", "expected_status": 200, "expected_body": expected_body, "timeout_s": 5, "count": 3, "baseline_retry_window_s": 15, "observation_window_s": 30, "probe_retry_interval_s": 1}],
         "observability": {"logs": {"enabled": True}, "events": {"enabled": True}},
         "recovery": {"deadline_s": 120, "require_business_probe": True, "require_cleanup": True},
         "cleanup": {"owner": "chaosatlas", "must_be_empty": True},
@@ -125,6 +128,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--profile", default="chaosatlas-api-delay-20260828")
     parser.add_argument("--namespace", default="chaosatlas-run-api-delay")
     parser.add_argument("--image", default="chaosatlas/resource-canary:20260827")
+    parser.add_argument("--expected-body", default="chaosatlas-resource-canary")
+    parser.add_argument("--command", action="append", help="optional container command entry; repeat for multiple entries")
+    parser.add_argument("--args", dest="container_args", action="append", help="optional container argument; repeat for multiple entries")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--approve-live", action="store_true")
     args = parser.parse_args(argv)
@@ -134,8 +140,8 @@ def main(argv: list[str] | None = None) -> int:
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     plan = build_plan(repo=repo, profile=args.profile, namespace=args.namespace, output=output, image=args.image)
-    (output / "resource-canary.yaml").write_text(_fixture(args.namespace, args.image), encoding="utf-8")
-    (output / "profile.json").write_text(json.dumps(_profile(args.namespace, args.profile), indent=2) + "\n", encoding="utf-8")
+    (output / "resource-canary.yaml").write_text(_fixture(args.namespace, args.image, command=args.command, args=args.container_args), encoding="utf-8")
+    (output / "profile.json").write_text(json.dumps(_profile(args.namespace, args.profile, expected_body=args.expected_body), indent=2) + "\n", encoding="utf-8")
     exit_codes: dict[str, int] = {}
     failed = False
     for item in plan:

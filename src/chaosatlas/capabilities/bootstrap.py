@@ -6,6 +6,7 @@ import hashlib
 import json
 from collections import Counter, defaultdict
 from copy import deepcopy
+from pathlib import Path
 from typing import Any
 
 from chaosatlas.capabilities.contracts import (
@@ -71,10 +72,11 @@ def _aggregate(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
 class CapabilityBootstrapper:
     """Build a complete target matrix without mutating Kubernetes or profiles."""
 
-    def __init__(self, *, profile: dict[str, Any], adapter: Any, evidence_index: CapabilityEvidenceIndex | None = None) -> None:
+    def __init__(self, *, profile: dict[str, Any], adapter: Any, evidence_index: CapabilityEvidenceIndex | None = None, runtime_evidence_root: str | Path | None = None) -> None:
         self.profile = deepcopy(profile)
         self.adapter = adapter
         self.evidence_index = evidence_index or CapabilityEvidenceIndex.empty()
+        self.runtime_evidence_root = runtime_evidence_root
 
     def run(self) -> dict[str, Any]:
         inventory = self.adapter.inventory()
@@ -104,6 +106,7 @@ class CapabilityBootstrapper:
         runtime = probe_runtime_backends(
             runner=self.adapter.runner,
             kube_context=kube_context,
+            evidence_root=self.runtime_evidence_root,
         )
         core = assess_core_capabilities(self.profile, nodes, runtime)
         extensions = assess_extension_capabilities(

@@ -117,7 +117,12 @@ def _run_capabilities(args: argparse.Namespace) -> tuple[dict, int]:
                 raise ValueError("profile project_id is required")
             kube_context = args.kube_context or str(((profile.get("runtime_contract") or {}).get("kube_context")) or "").strip() or None
             adapter = KubernetesProjectAdapter(profile=profile, kube_context=kube_context)
-            result = CapabilityBootstrapper(profile=profile, adapter=adapter, evidence_index=evidence_index).run()
+            result = CapabilityBootstrapper(
+                profile=profile,
+                adapter=adapter,
+                evidence_index=evidence_index,
+                runtime_evidence_root=args.runtime_evidence,
+            ).run()
         except (OSError, UnicodeError, json.JSONDecodeError, ValueError, TypeError, RuntimeError, KeyError) as exc:
             project_id = str(profile.get("project_id") or profile_path.stem or f"profile-{index}")
             result = {
@@ -282,6 +287,7 @@ def _parser() -> argparse.ArgumentParser:
     capabilities.add_argument("--output", default=str(default_run_output("capability-bootstrap")), help="external, empty output directory")
     capabilities.add_argument("--kube-context")
     capabilities.add_argument("--evidence-root", help="optional external root containing verified live run evidence")
+    capabilities.add_argument("--runtime-evidence", help="optional external root containing verified runtime canary evidence")
 
     isolation = subparsers.add_parser("isolation", help="Plan and manage fault-free L1/L2/L3 isolation environments.")
     isolation_commands = isolation.add_subparsers(dest="isolation_command", required=True)

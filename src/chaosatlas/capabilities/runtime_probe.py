@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any, Callable
 
 
@@ -39,7 +40,48 @@ def _ready(pod: dict[str, Any]) -> bool:
     )
 
 
-def probe_runtime_backends(*, runner: Runner, kube_context: str | None) -> dict[str, Any]:
+def _load_httpchaos_evidence(root: str | Path | None, kube_context: str | None) -> dict[str, Any]:
+    """Load a separately produced, secret-free HTTPChaos canary attestation.
+
+    Discovery remains read-only and conservative: the runtime flag becomes true
+    only when an external artifact explicitly records a verified canary in the
+    same Kubernetes context.  A CRD/controller probe alone is never sufficient.
+    """
+    if root is None:
+        return {"verified": False, "reason": "no external HTTPChaos evidence root"}
+    evidence_root = Path(root).expanduser().resolve()
+    path = evidence_root / "httpchaos-runtime-evidence.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        return {"verified": False, "reason": f"evidence unavailable: {type(exc).__name__}"}
+    if not isinstance(payload, dict):
+        return {"verified": False, "reason": "evidence root must be an object"}
+    if payload.get("schema_version") != "chaosatlas-httpchaos-runtime-evidence-v1":
+        return {"verified": False, "reason": "unsupported HTTPChaos evidence schema"}
+    if str(payload.get("kube_context") or "") != str(kube_context or ""):
+        return {"verified": False, "reason": "evidence Kubernetes context mismatch"}
+    canaries = payload.get("canaries")
+    if not isinstance(canaries, list) or not canaries:
+        return {"verified": False, "reason": "evidence has no canary records"}
+    valid = []
+    for item in canaries:
+        if not isinstance(item, dict):
+            continue
+        attestation = item.get("attestation") if isinstance(item.get("attestation"), dict) else {}
+        effect = item.get("effect") if isinstance(item.get("effect"), dict) else {}
+        if attestation.get("valid") is True and effect.get("confirmed") is True:
+            valid.append(item)
+    return {
+        "verified": bool(valid),
+        "reason": "verified live HTTPChaos canary evidence" if valid else "no canary has valid lifecycle and effect evidence",
+        "canary_count": len(canaries),
+        "valid_canary_count": len(valid),
+        "evidence_ref": str(path),
+    }
+
+
+def probe_runtime_backends(*, runner: Runner, kube_context: str | None, evidence_root: str | Path | None = None) -> dict[str, Any]:
     crds: dict[str, dict[str, Any]] = {}
     for backend, resource in CORE_CRDS.items():
         code, stdout, stderr = _run(runner, ["get", "crd", resource], context=kube_context)
@@ -90,6 +132,7 @@ def probe_runtime_backends(*, runner: Runner, kube_context: str | None) -> dict[
     if selected_namespace is None and partial_mesh is not None:
         selected_namespace, mesh_pods = partial_mesh
 
+    http_evidence = _load_httpchaos_evidence(evidence_root, kube_context)
     return {
         "schema_version": "chaosatlas-runtime-capability-probe-v1",
         "checked_at": datetime.now(timezone.utc).isoformat(),
@@ -101,8 +144,8 @@ def probe_runtime_backends(*, runner: Runner, kube_context: str | None) -> dict[
             "errors": [] if mesh_ready else mesh_error,
         },
         "crds": crds,
-        # HTTPChaos still requires its execution-time tproxy/ebtables gate.
-        "httpchaos_runtime_verified": False,
+        "httpchaos_runtime_verified": http_evidence.get("verified") is True,
+        "httpchaos_runtime_evidence": http_evidence,
         "read_only": True,
         "injection_performed": False,
     }
