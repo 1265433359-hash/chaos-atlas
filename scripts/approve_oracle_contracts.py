@@ -9,56 +9,20 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from chaosatlas.oracles.transaction_contracts import (
-    freeze_approved_contract,
-    record_human_approval,
-    validate_transaction_contract,
-)
-
-
-APPS = ("immich", "medusa", "rocketchat", "erpnext")
-
-
-def approve(root: Path, reviewer: str, reviewed_at: str, decision_reference: str, oracle_version: str) -> list[Path]:
-    paths: list[Path] = []
-    for app in APPS:
-        drafts = sorted((root / "projects" / "chaosatlas-apps" / app / "oracle-drafts").glob(f"*-{oracle_version}.json"))
-        if len(drafts) != 1:
-            raise ValueError(f"expected exactly one {app} Oracle draft, found {len(drafts)}")
-        contract = json.loads(drafts[0].read_text(encoding="utf-8"))
-        errors = validate_transaction_contract(contract)
-        if errors or contract.get("status") != "validated":
-            raise ValueError(f"{app} draft is not valid and reviewable: {errors}")
-        approved = record_human_approval(
-            contract,
-            {
-                "decision": "approved",
-                "reviewer": reviewer,
-                "reviewed_at": reviewed_at,
-                "decision_reference": decision_reference,
-            },
-        )
-        frozen = freeze_approved_contract(approved)
-        output = drafts[0].parent.parent / "oracle-contracts" / drafts[0].name
-        output.parent.mkdir(parents=True, exist_ok=True)
-        serialized = json.dumps(frozen, indent=2, ensure_ascii=False, sort_keys=True) + "\n"
-        if output.exists() and output.read_text(encoding="utf-8") != serialized:
-            raise FileExistsError(f"refusing to replace a different frozen contract: {output}")
-        output.write_text(serialized, encoding="utf-8")
-        paths.append(output)
-    return paths
+from chaosatlas.oracles.approval_batch import publish_approval
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", default=".")
     parser.add_argument("--reviewer", required=True)
-    parser.add_argument("--reviewed-at", required=True, help="ISO-8601 timestamp including timezone")
+    parser.add_argument("--reviewed-at", required=True, help="Known actual human decision time with timezone; do not invent")
     parser.add_argument("--decision-reference", required=True)
-    parser.add_argument("--oracle-version", required=True, choices=("v1", "v2"))
+    parser.add_argument("--manifest", required=True, help="Exact reviewed paths, file hashes and contract hashes (v1/v2/v3)")
     args = parser.parse_args()
-    for path in approve(Path(args.root).resolve(), args.reviewer, args.reviewed_at, args.decision_reference, args.oracle_version):
-        print(path)
+    manifest = json.loads(Path(args.manifest).read_text(encoding="utf-8"))
+    print(publish_approval(Path(args.root), manifest, reviewer=args.reviewer,
+                          reviewed_at=args.reviewed_at, decision_reference=args.decision_reference))
     return 0
 
 
