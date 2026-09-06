@@ -1,4 +1,5 @@
 import json
+import re
 
 import pytest
 
@@ -140,6 +141,29 @@ def test_l2_creates_owned_sandbox_and_proves_zero_residue(tmp_path):
     assert not runner.objects
     delete_calls = [call for call in runner.calls if "delete" in call]
     assert len(delete_calls) == 1 and namespace in delete_calls[0]
+
+
+def test_runtime_generated_secrets_are_portable_hex_and_templates_use_them(tmp_path):
+    runner = FakeKubernetes()
+    profile = {
+        "project_id": "fixture",
+        "project_commit": "r",
+        "runtime_contract": {"kube_context": "test"},
+        "isolation": {"synthetic_data_only": True, "l2": {"mode": "ephemeral-target", "blueprint": {"resources": [
+            {"apiVersion": "v1", "kind": "Secret", "metadata": {"name": "runtime"}, "runtimeGenerate": {"keys": ["password"], "templates": {"uri": "scheme://user:${password}@service/db"}}},
+            {"apiVersion": "apps/v1", "kind": "Deployment", "metadata": {"name": "sandbox"}, "spec": {"replicas": 1, "selector": {"matchLabels": {"app": "sandbox"}}, "template": {"metadata": {"labels": {"app": "sandbox"}}, "spec": {"containers": [{"name": "sandbox", "image": "pause:3.9"}]}}}},
+        ]}}},
+    }
+    capability = {"fault_id": "secret_rotation", "target_id": "n1", "required_isolation": "L2", "capability_status": "canary_required"}
+    plan = IsolationPlanner().plan(profile=profile, capability=capability)
+    manager = IsolationManager(store=LeaseStore(tmp_path), providers=ProviderRegistry([KubernetesIsolationProvider(name="kubernetes-l2", level="L2", runner=runner)]))
+
+    lease = manager.prepare(plan)
+    secret = runner.objects[("secret", lease["target_name"], "runtime")]["stringData"]
+
+    assert re.fullmatch(r"[0-9a-f]{64}", secret["password"])
+    assert secret["uri"] == f"scheme://user:{secret['password']}@service/db"
+    assert manager.release(lease["lease_id"])["state"] == "released"
 
 
 def test_l2_refuses_cleanup_when_namespace_uid_changes(tmp_path):

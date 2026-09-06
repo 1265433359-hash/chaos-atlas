@@ -6,7 +6,9 @@ from pathlib import Path
 import pytest
 
 from chaosatlas.oracles import DEFAULT_ORACLE_REGISTRY
+from chaosatlas.isolation.blueprint import compile_blueprint
 from chaosatlas.orchestration.engine import RunEngine, RunRequest
+from chaosatlas.orchestration.isolated_run import resolve_isolation_profile
 from tools.chaosatlas_adapters import OfflineProjectAdapter
 from tools.project_onboarding import validate_project_profile
 
@@ -85,3 +87,21 @@ def test_four_app_dry_run_selects_the_business_oracle_owner(app: str, tmp_path: 
     assert result["selected_candidate_ids"] == [
         f"server:deployment:{app}:{EXPECTED_ORACLE_TARGETS[app]}:pod_kill"
     ]
+
+
+@pytest.mark.parametrize("app", ["medusa", "rocketchat"])
+def test_disposable_l2_profiles_compile_and_route_kubernetes_api_faults(app: str) -> None:
+    profile_path = APP_ROOT / app / "profile.json"
+    expected_faults = {"secret_rotation", "image_pull_failure", "pod_unschedulable"}
+
+    for fault_id in expected_faults:
+        profile, route = resolve_isolation_profile(profile_path, fault_id)
+        assert route["level"] == "L2"
+        assert route["backend"] == "kubernetes_api"
+        compiled = compile_blueprint(
+            profile["isolation"]["l2"]["blueprint"],
+            namespace=f"ca-l2-{app}-fixture",
+            owner_labels={"chaosatlas.dev/managed": "true"},
+        )
+        assert compiled
+        assert all(item["metadata"]["namespace"] == f"ca-l2-{app}-fixture" for item in compiled)

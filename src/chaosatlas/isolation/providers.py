@@ -173,7 +173,9 @@ class KubernetesIsolationProvider:
             if kind == "Secret":
                 generated = apply_resource.pop("runtimeGenerate", {})
                 keys = generated.get("keys") if isinstance(generated, dict) else []
-                values = {str(key): secrets.token_urlsafe(32) for key in keys}
+                # Hex keeps 256 bits of entropy while remaining valid in strict
+                # consumers such as MongoDB keyfiles and unescaped URI fields.
+                values = {str(key): secrets.token_hex(32) for key in keys}
                 templates = generated.get("templates") if isinstance(generated, dict) and isinstance(generated.get("templates"), dict) else {}
                 for key, template in templates.items():
                     rendered = str(template)

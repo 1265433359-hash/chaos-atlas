@@ -1,0 +1,130 @@
+{
+  "resources": [
+    {
+      "apiVersion": "v1",
+      "kind": "Secret",
+      "metadata": {"name": "rocketchat-runtime-secrets"},
+      "runtimeGenerate": {
+        "keys": ["mongodb-root-password", "mongodb-replica-set-key", "mongodb-password"],
+        "templates": {
+          "mongo-uri": "mongodb://rocketchat:${mongodb-password}@rocketchat-mongodb:27017/rocketchat?replicaSet=rs0&authSource=rocketchat"
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "rocketchat-mongodb"},
+      "spec": {
+        "clusterIP": "None",
+        "publishNotReadyAddresses": true,
+        "selector": {"app": "rocketchat-mongodb"},
+        "ports": [{"name": "mongodb", "port": 27017, "targetPort": "mongodb"}]
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {"name": "rocketchat-rocketchat"},
+      "spec": {
+        "selector": {"app": "rocketchat-rocketchat"},
+        "ports": [{"name": "http", "port": 80, "targetPort": "http"}]
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "StatefulSet",
+      "metadata": {"name": "rocketchat-mongodb"},
+      "spec": {
+        "serviceName": "rocketchat-mongodb",
+        "replicas": 1,
+        "selector": {"matchLabels": {"app": "rocketchat-mongodb"}},
+        "template": {
+          "metadata": {"labels": {"app": "rocketchat-mongodb"}},
+          "spec": {
+            "securityContext": {"fsGroup": 1001},
+            "containers": [
+              {
+                "name": "mongodb",
+                "image": "docker.io/bitnamilegacy/mongodb:8.0.13-debian-12-r0",
+                "env": [
+                  {"name": "MONGODB_REPLICA_SET_MODE", "value": "primary"},
+                  {"name": "MONGODB_REPLICA_SET_NAME", "value": "rs0"},
+                  {"name": "MONGODB_ADVERTISED_HOSTNAME", "valueFrom": {"fieldRef": {"fieldPath": "status.podIP"}}},
+                  {"name": "MONGODB_ROOT_USER", "value": "root"},
+                  {"name": "MONGODB_ROOT_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "rocketchat-runtime-secrets", "key": "mongodb-root-password"}}},
+                  {"name": "MONGODB_REPLICA_SET_KEY", "valueFrom": {"secretKeyRef": {"name": "rocketchat-runtime-secrets", "key": "mongodb-replica-set-key"}}},
+                  {"name": "MONGODB_USERNAME", "value": "rocketchat"},
+                  {"name": "MONGODB_PASSWORD", "valueFrom": {"secretKeyRef": {"name": "rocketchat-runtime-secrets", "key": "mongodb-password"}}},
+                  {"name": "MONGODB_DATABASE", "value": "rocketchat"},
+                  {"name": "ALLOW_EMPTY_PASSWORD", "value": "no"}
+                ],
+                "ports": [{"name": "mongodb", "containerPort": 27017}],
+                "readinessProbe": {
+                  "exec": {"command": ["bash", "-ec", "mongosh --quiet --host 127.0.0.1 --username root --password \"$MONGODB_ROOT_PASSWORD\" --authenticationDatabase admin --eval 'quit(db.runCommand({ping:1}).ok ? 0 : 2)' "]},
+                  "initialDelaySeconds": 10,
+                  "periodSeconds": 5,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 12
+                },
+                "resources": {
+                  "requests": {"cpu": "50m", "memory": "128Mi"},
+                  "limits": {"cpu": "1000m", "memory": "1Gi"}
+                },
+                "volumeMounts": [{"name": "data", "mountPath": "/bitnami/mongodb"}]
+              }
+            ],
+            "volumes": [{"name": "data", "emptyDir": {}}]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {"name": "rocketchat-rocketchat"},
+      "spec": {
+        "replicas": 1,
+        "selector": {"matchLabels": {"app": "rocketchat-rocketchat"}},
+        "template": {
+          "metadata": {"labels": {"app": "rocketchat-rocketchat"}},
+          "spec": {
+            "securityContext": {"fsGroup": 65533, "runAsUser": 65533},
+            "containers": [
+              {
+                "name": "rocketchat",
+                "image": "registry.rocket.chat/rocketchat/rocket.chat:8.6.1",
+                "env": [
+                  {"name": "DEPLOY_PLATFORM", "value": "chaosatlas-disposable"},
+                  {"name": "MONGO_URL", "valueFrom": {"secretKeyRef": {"name": "rocketchat-runtime-secrets", "key": "mongo-uri"}}},
+                  {"name": "ROOT_URL", "value": "http://rocketchat-rocketchat"},
+                  {"name": "PORT", "value": "3000"}
+                ],
+                "ports": [{"name": "http", "containerPort": 3000}],
+                "readinessProbe": {
+                  "httpGet": {"path": "/health", "port": "http"},
+                  "initialDelaySeconds": 20,
+                  "periodSeconds": 5,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 24
+                },
+                "resources": {
+                  "requests": {"cpu": "50m", "memory": "256Mi"},
+                  "limits": {"cpu": "1500m", "memory": "2Gi"}
+                },
+                "volumeMounts": [
+                  {"name": "uploads", "mountPath": "/app/uploads"},
+                  {"name": "tmp", "mountPath": "/tmp"}
+                ]
+              }
+            ],
+            "volumes": [
+              {"name": "uploads", "emptyDir": {}},
+              {"name": "tmp", "emptyDir": {}}
+            ]
+          }
+        }
+      }
+    }
+  ]
+}
