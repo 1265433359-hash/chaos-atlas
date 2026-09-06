@@ -80,6 +80,12 @@ def _validate_resource(resource: dict[str, Any], declared: dict[str, set[str]]) 
         claim = mapping.get("persistentVolumeClaim")
         if isinstance(claim, dict) and str(claim.get("claimName") or "") not in declared["PersistentVolumeClaim"]:
             errors.append("persistentVolumeClaim must reference a resource created by this lease")
+        config_volume = mapping.get("configMap")
+        if isinstance(config_volume, dict) and str(config_volume.get("name") or "") not in declared["ConfigMap"]:
+            errors.append("configMap volume must reference a resource created by this lease")
+        secret_volume = mapping.get("secret")
+        if isinstance(secret_volume, dict) and str(secret_volume.get("secretName") or "") not in declared["Secret"]:
+            errors.append("Secret volume must reference a resource created by this lease")
         if mapping.get("hostPort") not in (None, 0, ""):
             errors.append("hostPort is forbidden")
         security = mapping.get("securityContext") if isinstance(mapping.get("securityContext"), dict) else {}

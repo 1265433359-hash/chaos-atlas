@@ -78,6 +78,22 @@ def test_blueprint_rejects_guard_weakening_and_foreign_references():
         compile_blueprint({"resources": [deployment]}, namespace="ca-l2-x", owner_labels=LABELS)
 
 
+@pytest.mark.parametrize("volume", [
+    {"name": "foreign", "configMap": {"name": "foreign"}},
+    {"name": "foreign", "secret": {"secretName": "foreign"}},
+])
+def test_blueprint_rejects_foreign_configmap_and_secret_volumes(volume):
+    deployment = {
+        "apiVersion": "apps/v1", "kind": "Deployment", "metadata": {"name": "app"},
+        "spec": {"selector": {"matchLabels": {"app": "x"}}, "template": {
+            "metadata": {"labels": {"app": "x"}},
+            "spec": {"containers": [{"name": "app", "image": "app:1"}], "volumes": [volume]},
+        }},
+    }
+    with pytest.raises(ValueError, match="volume must reference"):
+        compile_blueprint({"resources": [deployment]}, namespace="ca-l2-x", owner_labels=LABELS)
+
+
 def test_l2_derivation_keeps_only_safe_container_facts_and_adds_test_volume():
     target = {"extensions": {"container_blueprints": [{"name": "web", "image": "app:1", "ports": [{"containerPort": 8080}], "resources": {"limits": {"memory": "256Mi"}}, "secret": "ignored"}]}}
     blueprint = derive_l2_blueprint(target, "fixture")

@@ -62,9 +62,9 @@ def test_bootstrap_immich_binds_new_user_api_key_without_reporting_credentials()
         responses=[
             (200, {"isInitialized": False}),
             (201, {"id": "admin"}),
-            (200, {"accessToken": "admin-token"}),
+            (201, {"accessToken": "admin-token"}),
             (201, {"id": "user-1"}),
-            (200, {"userId": "user-1", "accessToken": "user-token"}),
+            (201, {"userId": "user-1", "accessToken": "user-token"}),
             (201, {"secret": "api-key-value"}),
         ],
     )
@@ -81,11 +81,9 @@ def test_bootstrap_immich_binds_new_user_api_key_without_reporting_credentials()
 def test_bootstrap_rocketchat_binds_synthetic_user_without_reporting_credentials():
     environment = FakeEnvironment(
         secrets={
-            ("rocketchat-bootstrap-identity", "admin-password"): "admin-password-value",
             ("rocketchat-bootstrap-identity", "user-password"): "user-password-value",
         },
         responses=[
-            (200, {"data": {"authToken": "admin-token", "userId": "admin-id"}}),
             (200, {"user": {"_id": "user-1"}}),
             (200, {"data": {"authToken": "user-token", "userId": "user-1"}}),
         ],
@@ -96,18 +94,17 @@ def test_bootstrap_rocketchat_binds_synthetic_user_without_reporting_credentials
         "rocketchat-transaction-auth", "transaction-test-user", "user-1",
         {"x-auth-token": "user-token", "x-user-id": "user-1"},
     )]
-    _assert_report_has_no_values(report, "admin-password-value", "user-password-value", "admin-token", "user-token")
+    assert environment.requests[0][1] == "/api/v1/users.register"
+    _assert_report_has_no_values(report, "user-password-value", "user-token")
 
 
-def test_bootstrap_erpnext_binds_token_and_keeps_session_out_of_report(monkeypatch):
-    values = iter(("api-key-value", "api-secret-value"))
-    monkeypatch.setattr("chaosatlas.oracles.identity_bootstrap.secrets.token_hex", lambda _size: next(values))
+def test_bootstrap_erpnext_binds_token_and_keeps_session_out_of_report():
     environment = FakeEnvironment(
         secrets={("erpnext-runtime-secrets", "admin-password"): "admin-password-value"},
         responses=[
             (200, {"message": "Logged In", "__cookie": "sid=session-value"}),
-            (200, {"data": {"name": "chaosatlas-oracle@invalid"}}),
-            (200, {"data": {"name": "chaosatlas-oracle@invalid"}}),
+            (200, {"data": {"name": "chaosatlas-oracle@example.com"}}),
+            (200, {"message": {"api_key": "api-key-value", "api_secret": "api-secret-value"}}),
             (200, {"data": []}),
         ],
     )
@@ -115,10 +112,31 @@ def test_bootstrap_erpnext_binds_token_and_keeps_session_out_of_report(monkeypat
     assert fixtures == {}
     authorization = "token api-key-value:api-secret-value"
     assert environment.bindings == [(
-        "erpnext-transaction-auth", "transaction-todo-user", "chaosatlas-oracle@invalid",
+        "erpnext-transaction-auth", "transaction-todo-user", "chaosatlas-oracle@example.com",
         {"authorization": authorization},
     )]
     _assert_report_has_no_values(report, "admin-password-value", "session-value", authorization)
+
+
+def test_bootstrap_erpnext_retries_only_the_read_only_authorization_check(monkeypatch):
+    monkeypatch.setattr("chaosatlas.oracles.identity_bootstrap.time.sleep", lambda _seconds: None)
+    environment = FakeEnvironment(
+        secrets={("erpnext-runtime-secrets", "admin-password"): "admin-password-value"},
+        responses=[
+            (200, {"message": "Logged In", "__cookie": "sid=session-value"}),
+            (200, {"data": {"name": "chaosatlas-oracle@example.com"}}),
+            (200, {"message": {"api_key": "api-key-value", "api_secret": "api-secret-value"}}),
+            (401, {}),
+            (200, {"data": []}),
+        ],
+    )
+    bootstrap_erpnext(environment)
+    methods_and_paths = [(method, path) for method, path, _kwargs in environment.requests]
+    assert methods_and_paths[-2:] == [
+        ("GET", "/api/resource/ToDo"),
+        ("GET", "/api/resource/ToDo"),
+    ]
+    assert methods_and_paths.count(("POST", "/api/method/frappe.core.doctype.user.user.generate_keys")) == 1
 
 
 def test_bootstrap_medusa_binds_seed_channel_and_emits_only_business_fixtures():

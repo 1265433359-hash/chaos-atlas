@@ -7,9 +7,10 @@ from copy import deepcopy
 from dataclasses import dataclass
 import json
 import re
-import secrets
+import socket
 import subprocess
 import threading
+import time
 from typing import Any, Protocol
 from urllib.error import HTTPError
 from urllib.parse import urlencode
@@ -28,6 +29,8 @@ class BootstrapResponse:
     status: int
     json: dict[str, Any]
     headers: dict[str, str]
+    method: str = ""
+    path: str = ""
 
 
 class IdentityEnvironment(Protocol):
@@ -42,7 +45,8 @@ class IdentityEnvironment(Protocol):
 
 def _body(response: BootstrapResponse, *statuses: int) -> dict[str, Any]:
     if response.status not in statuses or not isinstance(response.json, dict):
-        raise ValueError(f"identity bootstrap HTTP status was {response.status}")
+        location = f" for {response.method} {response.path}" if response.method and response.path else ""
+        raise ValueError(f"identity bootstrap HTTP status was {response.status}{location}")
     return response.json
 
 
@@ -61,7 +65,7 @@ def bootstrap_immich(environment: IdentityEnvironment) -> tuple[dict[str, Any], 
         }), 201)
     admin_login = _body(environment.request("POST", "/api/auth/login", body={
         "email": admin_email, "password": admin_password,
-    }), 200)
+    }), 201)
     admin_token = str(admin_login.get("accessToken") or "")
     created = environment.request("POST", "/api/admin/users", headers=_bearer(admin_token), body={
         "email": user_email, "password": user_password, "name": "ChaosAtlas Oracle",
@@ -70,7 +74,7 @@ def bootstrap_immich(environment: IdentityEnvironment) -> tuple[dict[str, Any], 
         _body(created, 201)
     user_login = _body(environment.request("POST", "/api/auth/login", body={
         "email": user_email, "password": user_password,
-    }), 200)
+    }), 201)
     principal_id = str(user_login.get("userId") or "")
     user_token = str(user_login.get("accessToken") or "")
     key = _body(environment.request("POST", "/api/api-keys", headers=_bearer(user_token), body={
@@ -91,26 +95,18 @@ def bootstrap_immich(environment: IdentityEnvironment) -> tuple[dict[str, Any], 
 
 
 def bootstrap_rocketchat(environment: IdentityEnvironment) -> tuple[dict[str, Any], dict[str, Any]]:
-    admin_password = environment.read_secret("rocketchat-bootstrap-identity", "admin-password")
     user_password = environment.read_secret("rocketchat-bootstrap-identity", "user-password")
-    admin = _body(environment.request("POST", "/api/v1/login", body={
-        "user": "chaosatlas-admin", "password": admin_password,
-    }), 200).get("data") or {}
-    admin_headers = {"X-Auth-Token": str(admin.get("authToken") or ""), "X-User-Id": str(admin.get("userId") or "")}
-    created = environment.request("POST", "/api/v1/users.create", headers=admin_headers, body={
-        "name": "ChaosAtlas Oracle", "email": "chaosatlas-oracle@invalid",
-        "username": "chaosatlas-oracle", "password": user_password,
-        "roles": ["user"], "joinDefaultChannels": False, "requirePasswordChange": False,
-        "sendWelcomeEmail": False, "verified": True,
-    })
-    if created.status not in {200, 400}:
-        _body(created, 200)
+    created = _body(environment.request("POST", "/api/v1/users.register", body={
+        "name": "ChaosAtlas Oracle", "email": "chaosatlas-oracle@example.com",
+        "username": "chaosatlas-oracle", "pass": user_password,
+    }), 200)
+    registered_id = str((created.get("user") or {}).get("_id") or "")
     user = _body(environment.request("POST", "/api/v1/login", body={
         "user": "chaosatlas-oracle", "password": user_password,
     }), 200).get("data") or {}
     principal_id = str(user.get("userId") or "")
     token = str(user.get("authToken") or "")
-    if not principal_id or not token:
+    if not principal_id or principal_id != registered_id or not token:
         raise ValueError("Rocket.Chat did not return a bounded user token")
     binding = environment.bind_secret(
         "rocketchat-transaction-auth", "transaction-test-user", principal_id,
@@ -124,7 +120,7 @@ def bootstrap_rocketchat(environment: IdentityEnvironment) -> tuple[dict[str, An
 
 
 def bootstrap_erpnext(environment: IdentityEnvironment) -> tuple[dict[str, Any], dict[str, Any]]:
-    principal_id = "chaosatlas-oracle@invalid"
+    principal_id = "chaosatlas-oracle@example.com"
     admin_password = environment.read_secret("erpnext-runtime-secrets", "admin-password")
     login = _body(environment.request("POST", "/api/method/login", body={
         "usr": "Administrator", "pwd": admin_password,
@@ -139,13 +135,25 @@ def bootstrap_erpnext(environment: IdentityEnvironment) -> tuple[dict[str, Any],
     })
     if created.status not in {200, 409}:
         _body(created, 200)
-    api_key, api_secret = secrets.token_hex(16), secrets.token_hex(32)
-    _body(environment.request("PUT", "/api/resource/User/chaosatlas-oracle%40invalid", headers=session, body={
-        "api_key": api_key, "api_secret": api_secret,
-    }), 200)
+    generated = _body(environment.request(
+        "POST", "/api/method/frappe.core.doctype.user.user.generate_keys",
+        headers=session, body={"user": principal_id},
+    ), 200).get("message") or {}
+    api_key = str(generated.get("api_key") or "")
+    api_secret = str(generated.get("api_secret") or "")
+    if not api_key or not api_secret:
+        raise ValueError("ERPNext did not return a bounded API credential")
     authorization = f"token {api_key}:{api_secret}"
-    _body(environment.request("GET", "/api/resource/ToDo", headers={"Authorization": authorization},
-                              query={"limit_page_length": 1}), 200)
+    authorization_check = None
+    for attempt in range(3):
+        authorization_check = environment.request(
+            "GET", "/api/resource/ToDo", headers={"Authorization": authorization},
+            query={"limit_page_length": 1},
+        )
+        if authorization_check.status != 401 or attempt == 2:
+            break
+        time.sleep(1)
+    _body(authorization_check, 200)
     binding = environment.bind_secret(
         "erpnext-transaction-auth", "transaction-todo-user", principal_id,
         {"authorization": authorization},
@@ -203,7 +211,7 @@ BOOTSTRAPPERS = {
 
 MEDUSA_KEY_QUERY = (
     "select json_build_object('token',a.token,'api_key_id',a.id,'sales_channel_id',l.sales_channel_id)::text "
-    "from api_key a join publishable_api_key_sales_channel l on l.api_key_id=a.id "
+    "from api_key a join publishable_api_key_sales_channel l on l.publishable_key_id=a.id "
     "where a.type='publishable' and a.revoked_at is null and a.deleted_at is null order by a.created_at limit 1"
 )
 
@@ -299,11 +307,14 @@ class KubernetesIdentityEnvironment:
             request_headers["Content-Type"] = "application/json"
         request = Request(url, data=data, headers=request_headers, method=method)
         try:
-            response = self._opener.open(request, timeout=20)
+            response = self._opener.open(request, timeout=60)
         except HTTPError as exc:
             response = exc
+        except (TimeoutError, socket.timeout) as exc:
+            raise ValueError(f"bootstrap request timed out: {method} {path}") from exc
         with response:
             payload = response.read(1048577)
+            cookie_values = response.headers.get_all("Set-Cookie") or []
             response_headers = dict(response.headers.items())
             status = int(response.status)
         if len(payload) > 1048576:
@@ -314,12 +325,12 @@ class KubernetesIdentityEnvironment:
             parsed = {}
         if not isinstance(parsed, dict):
             parsed = {}
-        cookie = response_headers.get("Set-Cookie") or response_headers.get("set-cookie")
-        if cookie:
+        for cookie in cookie_values:
             match = re.search(r"(?:^|[,;]\s*)sid=([^;,\s]+)", cookie)
             if match:
                 parsed["__cookie"] = "sid=" + match.group(1)
-        return BootstrapResponse(status, parsed, response_headers)
+                break
+        return BootstrapResponse(status, parsed, response_headers, method, path)
 
     def postgres_json(self, sql: str) -> dict[str, Any]:
         if self.lease.get("project_id") != "medusa" or sql != MEDUSA_KEY_QUERY:

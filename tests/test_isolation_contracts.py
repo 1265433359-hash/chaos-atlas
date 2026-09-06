@@ -126,6 +126,7 @@ def test_planner_preserves_valid_runtime_generated_secret_templates():
     plan = IsolationPlanner().plan(profile=profile, capability=_capability("L2"), target={})
     assert plan["status"] == "ready"
     assert plan["blueprint"] == blueprint
+    assert validate_plan(plan) == []
 
 
 def test_planner_covers_all_32_plus_9_catalog_defaults():

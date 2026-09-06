@@ -45,7 +45,12 @@ class IsolationManager:
             "state": "planned",
             "created_at": created.isoformat(),
             "expires_at": (created + timedelta(minutes=ttl_minutes)).isoformat(),
-            "owner_labels": {"chaosatlas.dev/managed": "true", "chaosatlas.dev/lease-id": lease_id, "chaosatlas.dev/project": str(plan["project_id"])},
+            "owner_labels": {
+                "chaosatlas.dev/managed": "true",
+                "chaosatlas.dev/lease-id": lease_id,
+                "chaosatlas.dev/project": str(plan["project_id"]),
+                "chaosatlas-managed": "true",
+            },
             "target_name": target_name,
             "runtime_locator": {},
             "plan": deepcopy(plan),

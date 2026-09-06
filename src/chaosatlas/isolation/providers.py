@@ -26,6 +26,16 @@ def _is_not_found(error: str | None) -> bool:
     return "notfound" in normalized
 
 
+def _job_terminal_failure(spec: dict[str, Any], status: dict[str, Any]) -> bool:
+    if any(
+        item.get("type") == "Failed" and item.get("status") == "True"
+        for item in status.get("conditions") or []
+        if isinstance(item, dict)
+    ):
+        return True
+    return int(status.get("failed") or 0) > int(spec.get("backoffLimit") or 0)
+
+
 def default_kubectl_runner(args: list[str], *, timeout: int = 60, input_text: str | None = None, env: dict[str, str] | None = None) -> tuple[int, str, str]:
     try:
         result = subprocess.run(["kubectl", *args], input=input_text, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout, check=False, env=env)
@@ -133,7 +143,7 @@ class KubernetesIsolationProvider:
         return [
             {"apiVersion": "v1", "kind": "ResourceQuota", "metadata": {"name": "chaosatlas-budget", "namespace": namespace, "labels": labels}, "spec": {"hard": {"requests.cpu": str(budget.get("cpu") or "2"), "requests.memory": str(budget.get("memory") or "2Gi"), "pods": str(budget.get("pods") or 20)}}},
             {"apiVersion": "v1", "kind": "LimitRange", "metadata": {"name": "chaosatlas-defaults", "namespace": namespace, "labels": labels}, "spec": {"limits": [{"type": "Container", "default": {"cpu": "500m", "memory": "512Mi"}, "defaultRequest": {"cpu": "10m", "memory": "16Mi"}}]}},
-            {"apiVersion": "networking.k8s.io/v1", "kind": "NetworkPolicy", "metadata": {"name": "chaosatlas-boundary", "namespace": namespace, "labels": labels}, "spec": {"podSelector": {}, "policyTypes": ["Ingress", "Egress"], "ingress": [{"from": [{"namespaceSelector": {"matchLabels": {"kubernetes.io/metadata.name": namespace}}}]}], "egress": [{"to": [{"namespaceSelector": {"matchLabels": {"kubernetes.io/metadata.name": namespace}}}]}, {"to": [{"namespaceSelector": {"matchLabels": {"kubernetes.io/metadata.name": "kube-system"}}}], "ports": [{"protocol": "UDP", "port": 53}, {"protocol": "TCP", "port": 53}]}]}},
+            {"apiVersion": "networking.k8s.io/v1", "kind": "NetworkPolicy", "metadata": {"name": "chaosatlas-boundary", "namespace": namespace, "labels": labels}, "spec": {"podSelector": {}, "policyTypes": ["Ingress", "Egress"], "ingress": [{"from": [{"podSelector": {"matchLabels": {"chaosatlas-managed": "true"}}}]}], "egress": [{"to": [{"podSelector": {"matchLabels": {"chaosatlas-managed": "true"}}}]}, {"to": [{"namespaceSelector": {"matchLabels": {"kubernetes.io/metadata.name": "kube-system"}}}], "ports": [{"protocol": "UDP", "port": 53}, {"protocol": "TCP", "port": 53}]}]}},
         ]
 
     def prepare(self, plan: dict[str, Any], lease: dict[str, Any], mutate: Callable[[str, dict[str, Any]], None]) -> None:
@@ -249,7 +259,10 @@ class KubernetesIsolationProvider:
                     ]
                 pods, pod_error = self._json(plan, ["get", "pods", "-n", namespace], lease=lease)
                 items = [item for item in (pods or {}).get("items") or [] if isinstance(item, dict)]
-                active_pods = [item for item in items if str((item.get("status") or {}).get("phase") or "") != "Succeeded"]
+                active_pods = [
+                    item for item in items
+                    if str((item.get("status") or {}).get("phase") or "") not in {"Succeeded", "Failed"}
+                ]
                 ready = bool(active_pods) and all(
                     str((item.get("status") or {}).get("phase") or "") == "Running"
                     and
@@ -259,6 +272,7 @@ class KubernetesIsolationProvider:
                 )
                 workload_checks = []
                 workloads_ready = bool(expected_workloads)
+                terminal_job_failures = []
                 for expected in expected_workloads:
                     value, workload_error = self._json(plan, ["get", expected["kind"].lower(), expected["name"], "-n", namespace], lease=lease)
                     spec = (value or {}).get("spec") or {}
@@ -276,13 +290,17 @@ class KubernetesIsolationProvider:
                     )
                     if expected["kind"] == "Job":
                         completions = int(spec.get("completions") if spec.get("completions") is not None else 1)
-                        current_ready = not workload_error and int(status.get("succeeded") or 0) >= completions and int(status.get("failed") or 0) == 0
+                        current_ready = not workload_error and int(status.get("succeeded") or 0) >= completions
+                        if not workload_error and _job_terminal_failure(spec, status):
+                            terminal_job_failures.append(f"Job/{expected['name']} reached terminal failure")
                     workload_checks.append({**expected, "desired": desired, "ready": current_ready, "error": workload_error})
                     workloads_ready = workloads_ready and current_ready
                 last = {"namespace": True, "pod_count": len(items), "active_pod_count": len(active_pods), "all_pods_ready": ready, "workloads": workload_checks, "all_workloads_ready": workloads_ready}
                 last_error = pod_error or ("" if ready and workloads_ready else "Pods or expected workloads are not Ready")
                 if ready and workloads_ready and not pod_error:
                     return {"status": "verified", "checks": last, "errors": []}
+                if terminal_job_failures:
+                    return {"status": "blocked", "checks": last, "errors": terminal_job_failures}
             if time.monotonic() >= deadline:
                 return {"status": "blocked", "checks": last, "errors": [last_error]}
             time.sleep(1)

@@ -50,25 +50,25 @@
       "apiVersion": "v1",
       "kind": "Service",
       "metadata": {"name": "erpnext-valkey-cache"},
-      "spec": {"selector": {"app": "erpnext-valkey-cache"}, "ports": [{"name": "redis", "port": 6379, "targetPort": "redis"}]}
+      "spec": {"clusterIP": "None", "selector": {"app": "erpnext-valkey-cache"}, "ports": [{"name": "redis", "port": 6379, "targetPort": "redis"}]}
     },
     {
       "apiVersion": "v1",
       "kind": "Service",
       "metadata": {"name": "erpnext-valkey-queue"},
-      "spec": {"selector": {"app": "erpnext-valkey-queue"}, "ports": [{"name": "redis", "port": 6379, "targetPort": "redis"}]}
+      "spec": {"clusterIP": "None", "selector": {"app": "erpnext-valkey-queue"}, "ports": [{"name": "redis", "port": 6379, "targetPort": "redis"}]}
     },
     {
       "apiVersion": "v1",
       "kind": "Service",
       "metadata": {"name": "erpnext-gunicorn"},
-      "spec": {"selector": {"app": "erpnext-gunicorn"}, "ports": [{"name": "http", "port": 8000, "targetPort": "http"}]}
+      "spec": {"clusterIP": "None", "selector": {"app": "erpnext-gunicorn"}, "ports": [{"name": "http", "port": 8000, "targetPort": "http"}]}
     },
     {
       "apiVersion": "v1",
       "kind": "Service",
       "metadata": {"name": "erpnext-socketio"},
-      "spec": {"selector": {"app": "erpnext-socketio"}, "ports": [{"name": "socketio", "port": 9000, "targetPort": "socketio"}]}
+      "spec": {"clusterIP": "None", "selector": {"app": "erpnext-socketio"}, "ports": [{"name": "socketio", "port": 9000, "targetPort": "socketio"}]}
     },
     {
       "apiVersion": "v1",
@@ -200,7 +200,7 @@
       "apiVersion": "apps/v1",
       "kind": "Deployment",
       "metadata": {"name": "erpnext-nginx"},
-      "spec": {"replicas": 1, "selector": {"matchLabels": {"app": "erpnext-nginx"}}, "template": {"metadata": {"labels": {"app": "erpnext-nginx"}}, "spec": {"securityContext": {"fsGroup": 1000}, "containers": [{"name": "nginx", "image": "docker.io/frappe/erpnext:v16.34.1", "args": ["nginx-entrypoint.sh"], "env": [{"name": "BACKEND", "value": "erpnext-gunicorn:8000"}, {"name": "SOCKETIO", "value": "erpnext-socketio:9000"}, {"name": "UPSTREAM_REAL_IP_ADDRESS", "value": "127.0.0.1"}, {"name": "UPSTREAM_REAL_IP_RECURSIVE", "value": "off"}, {"name": "UPSTREAM_REAL_IP_HEADER", "value": "X-Forwarded-For"}, {"name": "FRAPPE_SITE_NAME_HEADER", "value": "$host"}, {"name": "PROXY_READ_TIMEOUT", "value": "120"}, {"name": "CLIENT_MAX_BODY_SIZE", "value": "50m"}], "ports": [{"name": "http", "containerPort": 8080}], "readinessProbe": {"httpGet": {"path": "/api/method/ping", "port": "http", "httpHeaders": [{"name": "Host", "value": "erpnext.local"}]}, "initialDelaySeconds": 10, "periodSeconds": 5, "timeoutSeconds": 10, "failureThreshold": 24}, "resources": {"requests": {"cpu": "25m", "memory": "64Mi"}, "limits": {"cpu": "500m", "memory": "512Mi"}}, "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}]}], "volumes": [{"name": "sites", "persistentVolumeClaim": {"claimName": "erpnext-sites"}}]}}}
+      "spec": {"replicas": 1, "selector": {"matchLabels": {"app": "erpnext-nginx"}}, "template": {"metadata": {"labels": {"app": "erpnext-nginx"}}, "spec": {"securityContext": {"fsGroup": 1000}, "containers": [{"name": "nginx", "image": "docker.io/frappe/erpnext:v16.34.1", "args": ["nginx-entrypoint.sh"], "env": [{"name": "BACKEND", "value": "erpnext-gunicorn:8000"}, {"name": "SOCKETIO", "value": "erpnext-socketio:9000"}, {"name": "UPSTREAM_REAL_IP_ADDRESS", "value": "127.0.0.1"}, {"name": "UPSTREAM_REAL_IP_RECURSIVE", "value": "off"}, {"name": "UPSTREAM_REAL_IP_HEADER", "value": "X-Forwarded-For"}, {"name": "FRAPPE_SITE_NAME_HEADER", "value": "erpnext.local"}, {"name": "PROXY_READ_TIMEOUT", "value": "120"}, {"name": "CLIENT_MAX_BODY_SIZE", "value": "50m"}], "ports": [{"name": "http", "containerPort": 8080}], "readinessProbe": {"httpGet": {"path": "/api/method/ping", "port": "http", "httpHeaders": [{"name": "Host", "value": "erpnext.local"}]}, "initialDelaySeconds": 10, "periodSeconds": 5, "timeoutSeconds": 10, "failureThreshold": 24}, "resources": {"requests": {"cpu": "25m", "memory": "64Mi"}, "limits": {"cpu": "500m", "memory": "512Mi"}}, "volumeMounts": [{"name": "sites", "mountPath": "/home/frappe/frappe-bench/sites"}]}], "volumes": [{"name": "sites", "persistentVolumeClaim": {"claimName": "erpnext-sites"}}]}}}
     }
   ]
 }

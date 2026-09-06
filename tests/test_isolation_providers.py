@@ -6,7 +6,28 @@ import pytest
 from chaosatlas.isolation.manager import IsolationManager
 from chaosatlas.isolation.lease_store import LeaseStore
 from chaosatlas.isolation.planner import IsolationPlanner
-from chaosatlas.isolation.providers import KubernetesIsolationProvider, MinikubeIsolationProvider, ProviderRegistry
+from chaosatlas.isolation.providers import KubernetesIsolationProvider, MinikubeIsolationProvider, ProviderRegistry, _job_terminal_failure
+
+
+def test_kubernetes_guard_allows_only_same_namespace_pods_and_cluster_dns():
+    resources = KubernetesIsolationProvider._guard_resources(
+        "ca-l2-test", {"chaosatlas.dev/managed": "true"}, {},
+    )
+    policy = next(item for item in resources if item["kind"] == "NetworkPolicy")
+    lease_peer = {"podSelector": {"matchLabels": {"chaosatlas-managed": "true"}}}
+    assert policy["spec"]["ingress"] == [{"from": [lease_peer]}]
+    assert policy["spec"]["egress"][0] == {"to": [lease_peer]}
+    assert policy["spec"]["egress"][1]["to"][0]["namespaceSelector"]["matchLabels"] == {
+        "kubernetes.io/metadata.name": "kube-system",
+    }
+
+
+def test_kubernetes_job_terminal_failure_is_detected_without_waiting_for_timeout():
+    assert _job_terminal_failure(
+        {"backoffLimit": 2},
+        {"failed": 3, "conditions": [{"type": "Failed", "status": "True"}]},
+    ) is True
+    assert _job_terminal_failure({"backoffLimit": 2}, {"failed": 1}) is False
 
 
 class FakeKubernetes:

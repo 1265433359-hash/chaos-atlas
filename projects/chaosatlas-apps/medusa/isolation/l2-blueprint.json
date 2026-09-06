@@ -12,6 +12,16 @@
     },
     {
       "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "medusa-transaction-seed"
+      },
+      "data": {
+        "transaction-seed.ts": "import { MedusaContainer } from \"@medusajs/framework\";\nimport { ContainerRegistrationKeys, ProductStatus } from \"@medusajs/framework/utils\";\nimport { createProductOptionsWorkflow, createProductsWorkflow } from \"@medusajs/medusa/core-flows\";\n\nexport default async function transactionSeed({ container }: { container: MedusaContainer }) {\n  const query = container.resolve(ContainerRegistrationKeys.QUERY);\n  const { data: existing } = await query.graph({ entity: \"product_variant\", fields: [\"id\"], pagination: { take: 1 } });\n  if (existing.length) return;\n  const { data: channels } = await query.graph({ entity: \"sales_channel\", fields: [\"id\"], pagination: { take: 1 } });\n  const { data: profiles } = await query.graph({ entity: \"shipping_profile\", fields: [\"id\"], pagination: { take: 1 } });\n  if (!channels[0] || !profiles[0]) throw new Error(\"synthetic seed prerequisites unavailable\");\n  const { result: options } = await createProductOptionsWorkflow(container).run({ input: { product_options: [{ title: \"Format\", values: [\"Synthetic\"] }] } });\n  await createProductsWorkflow(container).run({ input: { products: [{ title: \"ChaosAtlas Synthetic Product\", handle: \"chaosatlas-synthetic-product\", status: ProductStatus.PUBLISHED, shipping_profile_id: profiles[0].id, options: [{ id: options[0].id }], sales_channels: [{ id: channels[0].id }], variants: [{ title: \"Synthetic\", sku: \"CHAOSATLAS-SYNTHETIC\", manage_inventory: false, options: { Format: \"Synthetic\" }, prices: [{ currency_code: \"eur\", amount: 1000 }] }] }] } });\n}\n"
+      }
+    },
+    {
+      "apiVersion": "v1",
       "kind": "Secret",
       "metadata": {
         "name": "medusa-runtime-secrets"
@@ -142,10 +152,11 @@
                 "image": "docker.io/chaosatlas/medusa-backend:2.20.1",
                 "workingDir": "/app/apps/backend",
                 "command": [
-                  "npx",
-                  "medusa",
-                  "exec",
-                  "./src/migration-scripts/initial-data-seed.ts"
+                  "sh",
+                  "-ec"
+                ],
+                "args": [
+                  "npx medusa exec ./src/migration-scripts/initial-data-seed.ts || true; npx medusa exec ./src/migration-scripts/chaosatlas-transaction-seed.ts"
                 ],
                 "env": [
                   {
@@ -198,6 +209,22 @@
                     "cpu": "1000m",
                     "memory": "1Gi"
                   }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "transaction-seed",
+                    "mountPath": "/app/apps/backend/src/migration-scripts/chaosatlas-transaction-seed.ts",
+                    "subPath": "transaction-seed.ts",
+                    "readOnly": true
+                  }
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "transaction-seed",
+                "configMap": {
+                  "name": "medusa-transaction-seed"
                 }
               }
             ]

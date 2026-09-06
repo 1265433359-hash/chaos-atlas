@@ -134,7 +134,22 @@ def validate_plan(plan: dict[str, Any]) -> list[str]:
         errors.append("synthetic_data_only must be true")
     if not isinstance(plan.get("blockers"), list) or not isinstance(plan.get("required_checks"), list):
         errors.append("blockers and required_checks must be lists")
-    exposed = sensitive_paths({"config": plan.get("config"), "blueprint": plan.get("blueprint"), "target": plan.get("target")})
+    blueprint = deepcopy(plan.get("blueprint"))
+    if isinstance(blueprint, dict):
+        try:
+            from chaosatlas.isolation.blueprint import compile_blueprint
+            compile_blueprint(
+                blueprint,
+                namespace="ca-l2-blueprint-validation",
+                owner_labels={"chaosatlas.dev/managed": "true"},
+            )
+        except ValueError:
+            pass
+        else:
+            for resource in blueprint.get("resources") or []:
+                if isinstance(resource, dict) and resource.get("kind") == "Secret":
+                    resource.pop("runtimeGenerate", None)
+    exposed = sensitive_paths({"config": plan.get("config"), "blueprint": blueprint, "target": plan.get("target")})
     if exposed:
         errors.append("sensitive material detected at " + ",".join(exposed))
     if not verify_hash(plan, "plan_sha256"):
