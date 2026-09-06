@@ -1,0 +1,194 @@
+{
+  "allowed_requests": [
+    {
+      "effect": "write",
+      "id": "create",
+      "method": "POST",
+      "path": "/api/resource/ToDo"
+    },
+    {
+      "effect": "read",
+      "id": "read",
+      "method": "GET",
+      "path": "/api/resource/ToDo/{todo_name}"
+    },
+    {
+      "effect": "write",
+      "id": "update",
+      "method": "PUT",
+      "path": "/api/resource/ToDo/{todo_name}"
+    }
+  ],
+  "approval": {
+    "record": {
+      "approved_subject_sha256": "112d855d45e7ada8f31b7b305709b8f6f44921d564b22206603cc124aa61c118",
+      "decision": "approved",
+      "decision_reference": "conversation:2026-09-06-explicit-four-v3.1-contract-approval",
+      "recorded_at": "2026-09-06T11:34:35.776965+00:00",
+      "reviewed_at": "2026-09-06T11:34:35.1487232Z",
+      "reviewer": "workspace-owner"
+    },
+    "required": true
+  },
+  "assertions": [
+    {
+      "expected": "ChaosAtlas synthetic {run_id}",
+      "id": "description-before",
+      "operator": "json_path_equals",
+      "path": "$.data.description",
+      "step_id": "read-todo"
+    },
+    {
+      "expected": "Open",
+      "id": "status-before",
+      "operator": "json_path_equals",
+      "path": "$.data.status",
+      "step_id": "read-todo"
+    },
+    {
+      "expected": "ChaosAtlas synthetic {run_id}",
+      "id": "description-after",
+      "operator": "json_path_equals",
+      "path": "$.data.description",
+      "step_id": "read-updated-todo"
+    },
+    {
+      "expected": "Closed",
+      "id": "status-after",
+      "operator": "json_path_equals",
+      "path": "$.data.status",
+      "step_id": "read-updated-todo"
+    }
+  ],
+  "cleanup": {
+    "environment_release_required": true,
+    "on_every_exit": true,
+    "reason": "The ToDo, site, database and synthetic user are destroyed with the fresh ERPNext lease.",
+    "steps": [],
+    "strategy": "disposable_environment"
+  },
+  "contract_sha256": "20eb561ff282f3fcdec352b56cd45885cccef0af2f094b6f0e383e910a5f9f84",
+  "credential_refs": [
+    {
+      "header_keys": {
+        "Authorization": "authorization"
+      },
+      "id": "erpnext-transaction-auth",
+      "principal_role": "transaction-todo-user",
+      "secret_name": "erpnext-transaction-auth",
+      "source": "lease_owned_secret_ref"
+    }
+  ],
+  "evidence_sources": [
+    "image:docker.io/frappe/erpnext:v16.34.1@sha256:eee240a179ff494cb82ad067d853c8db3f87171d86324f4b326892654e342144",
+    "runtime:frappe-16.33.0",
+    "api:https://docs.frappe.io/framework/user/en/api/rest"
+  ],
+  "inputs": {},
+  "interpreter_version": "transaction-http-3.1",
+  "oracle_id": "erpnext-todo-crud-v3",
+  "ownership": {
+    "boundary": "lease_exclusive_disposable_environment",
+    "delete_scope": "verified_whole_lease_release",
+    "synthetic_only": true
+  },
+  "probe_assertions": [
+    {
+      "expected": "ChaosAtlas synthetic {run_id}",
+      "id": "fresh-description",
+      "operator": "json_path_equals",
+      "path": "$.data.description",
+      "step_id": "read-updated-todo"
+    },
+    {
+      "expected": "Closed",
+      "id": "fresh-status",
+      "operator": "json_path_equals",
+      "path": "$.data.status",
+      "step_id": "read-updated-todo"
+    }
+  ],
+  "probe_steps": [
+    "read-updated-todo"
+  ],
+  "project_id": "erpnext",
+  "project_revision": "609170a9d174de731d310fefaa6132335f3ab06795a12b09cd1214a29fdc3fe8",
+  "runtime_scope": {
+    "image_digest": "sha256:eee240a179ff494cb82ad067d853c8db3f87171d86324f4b326892654e342144",
+    "mode": "disposable",
+    "service": "erpnext",
+    "source_revision": "erpnext-v16.34.1+frappe-v16.33.0"
+  },
+  "schema_version": "chaosatlas-transaction-oracle-v3",
+  "status": "frozen",
+  "steps": [
+    {
+      "capture": {
+        "todo_name": {
+          "max_length": 128,
+          "path": "$.data.name",
+          "type": "string"
+        }
+      },
+      "id": "create-owned-todo",
+      "json_body": {
+        "description": "ChaosAtlas synthetic {run_id}",
+        "priority": "Low",
+        "status": "Open"
+      },
+      "on_response_loss": {
+        "strategy": "disposable_environment"
+      },
+      "ownership": {
+        "mode": "lease_exclusive",
+        "object_type": "erpnext-todo",
+        "preflight_absent": true
+      },
+      "request_id": "create",
+      "success": {
+        "statuses": [
+          200
+        ]
+      }
+    },
+    {
+      "id": "read-todo",
+      "request_id": "read",
+      "success": {
+        "statuses": [
+          200
+        ]
+      }
+    },
+    {
+      "id": "update-status",
+      "json_body": {
+        "status": "Closed"
+      },
+      "on_response_loss": {
+        "strategy": "disposable_environment"
+      },
+      "owned_operation": "create-owned-todo",
+      "request_id": "update",
+      "success": {
+        "statuses": [
+          200
+        ]
+      }
+    },
+    {
+      "id": "read-updated-todo",
+      "request_id": "read",
+      "success": {
+        "statuses": [
+          200
+        ]
+      }
+    }
+  ],
+  "timeouts": {
+    "eventual_s": 60,
+    "poll_interval_s": 2,
+    "request_s": 10
+  }
+}

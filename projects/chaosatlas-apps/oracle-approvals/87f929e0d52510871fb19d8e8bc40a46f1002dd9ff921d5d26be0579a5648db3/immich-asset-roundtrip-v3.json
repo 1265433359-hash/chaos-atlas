@@ -1,0 +1,179 @@
+{
+  "allowed_requests": [
+    {
+      "effect": "write",
+      "id": "upload",
+      "method": "POST",
+      "path": "/api/assets"
+    },
+    {
+      "effect": "read",
+      "id": "read",
+      "method": "GET",
+      "path": "/api/assets/{asset_id}"
+    },
+    {
+      "effect": "read",
+      "id": "download",
+      "method": "GET",
+      "path": "/api/assets/{asset_id}/original"
+    }
+  ],
+  "approval": {
+    "record": {
+      "approved_subject_sha256": "aa264bec3262f3cac342acc84b73e163c6ebb2997acf536230665d5b8cacdf10",
+      "decision": "approved",
+      "decision_reference": "conversation:2026-09-06-explicit-four-v3.1-contract-approval",
+      "recorded_at": "2026-09-06T11:34:35.776965+00:00",
+      "reviewed_at": "2026-09-06T11:34:35.1487232Z",
+      "reviewer": "workspace-owner"
+    },
+    "required": true
+  },
+  "assertions": [
+    {
+      "expected_from": "asset_id",
+      "id": "asset-id",
+      "operator": "json_path_equals",
+      "path": "$.id",
+      "step_id": "read-metadata"
+    },
+    {
+      "expected_from": "fixture_sha256",
+      "id": "original-byte-hash",
+      "operator": "sha256_equals",
+      "step_id": "download-original"
+    }
+  ],
+  "cleanup": {
+    "environment_release_required": true,
+    "on_every_exit": true,
+    "reason": "The synthetic asset and its storage live only inside the fresh disposable lease.",
+    "steps": [],
+    "strategy": "disposable_environment"
+  },
+  "contract_sha256": "30c4b6e7ec2b3f845668cc98f7778479654616740c30a7978b398cd10a7b3328",
+  "credential_refs": [
+    {
+      "header_keys": {
+        "X-Api-Key": "x-api-key"
+      },
+      "id": "immich-transaction-auth",
+      "principal_role": "transaction-test-user",
+      "secret_name": "immich-transaction-auth",
+      "source": "lease_owned_secret_ref"
+    }
+  ],
+  "evidence_sources": [
+    "image:ghcr.io/immich-app/immich-server:v2.6.3@sha256:f71a3a1f325972f620101773d4e23ad6d6eecb81cc53c464431080d5a1cf9a28",
+    "source:https://github.com/immich-app/immich/blob/v2.6.3/server/src/controllers/asset-media.controller.ts",
+    "source:https://github.com/immich-app/immich/blob/v2.6.3/server/src/controllers/asset.controller.ts"
+  ],
+  "inputs": {
+    "fixture_sha256": {
+      "max_length": 64,
+      "type": "string"
+    },
+    "fixture_timestamp": {
+      "max_length": 64,
+      "type": "string"
+    },
+    "synthetic_png": {
+      "max_length": 1048576,
+      "type": "bytes"
+    }
+  },
+  "interpreter_version": "transaction-http-3.1",
+  "oracle_id": "immich-asset-roundtrip-v3",
+  "ownership": {
+    "boundary": "lease_exclusive_disposable_environment",
+    "delete_scope": "verified_whole_lease_release",
+    "synthetic_only": true
+  },
+  "probe_assertions": [
+    {
+      "expected_from": "asset_id",
+      "id": "fresh-asset-id",
+      "operator": "json_path_equals",
+      "path": "$.id",
+      "step_id": "read-metadata"
+    },
+    {
+      "expected_from": "fixture_sha256",
+      "id": "fresh-original-byte-hash",
+      "operator": "sha256_equals",
+      "step_id": "download-original"
+    }
+  ],
+  "probe_steps": [
+    "read-metadata",
+    "download-original"
+  ],
+  "project_id": "immich",
+  "project_revision": "5cf305a3a239e0619f756a5cdcb380e83e90d6a04f2065adb5e7f1afee5c2629",
+  "runtime_scope": {
+    "image_digest": "sha256:f71a3a1f325972f620101773d4e23ad6d6eecb81cc53c464431080d5a1cf9a28",
+    "mode": "disposable",
+    "service": "immich-server",
+    "source_revision": "v2.6.3"
+  },
+  "schema_version": "chaosatlas-transaction-oracle-v3",
+  "status": "frozen",
+  "steps": [
+    {
+      "capture": {
+        "asset_id": {
+          "max_length": 64,
+          "path": "$.id",
+          "type": "string"
+        }
+      },
+      "id": "upload-synthetic-image",
+      "multipart": {
+        "assetData": "{synthetic_png}",
+        "deviceAssetId": "ca-{run_id}",
+        "deviceId": "chaosatlas",
+        "fileCreatedAt": "{fixture_timestamp}",
+        "fileModifiedAt": "{fixture_timestamp}",
+        "isFavorite": "false"
+      },
+      "on_response_loss": {
+        "strategy": "disposable_environment"
+      },
+      "ownership": {
+        "mode": "lease_exclusive",
+        "object_type": "immich-asset",
+        "preflight_absent": true
+      },
+      "request_id": "upload",
+      "success": {
+        "statuses": [
+          201
+        ]
+      }
+    },
+    {
+      "id": "read-metadata",
+      "request_id": "read",
+      "success": {
+        "statuses": [
+          200
+        ]
+      }
+    },
+    {
+      "id": "download-original",
+      "request_id": "download",
+      "success": {
+        "statuses": [
+          200
+        ]
+      }
+    }
+  ],
+  "timeouts": {
+    "eventual_s": 60,
+    "poll_interval_s": 2,
+    "request_s": 10
+  }
+}
