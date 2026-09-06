@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from chaosatlas.isolation.contracts import SAFE_ID, sensitive_paths, verify_hash, with_hash
+from chaosatlas.isolation.contracts import SAFE_ID, canonical_hash, sensitive_paths, verify_hash, with_hash
 from chaosatlas.isolation.lease_store import LeaseStore
 from chaosatlas.workspace import is_within, state_root
 
@@ -58,8 +58,10 @@ class RecoveryLedger:
     def _validate(self, value: Any) -> None:
         if not isinstance(value, dict) or value.get('schema_version') != SCHEMA or not verify_hash(value, 'ledger_sha256'):
             raise ValueError('transaction ledger integrity failure')
-        if set(value) != {'schema_version', 'run_id', 'attempt_id', 'contract_sha256', 'binding', 'operations', 'sequence', 'ledger_sha256'}:
+        if set(value) != {'schema_version', 'run_id', 'attempt_id', 'project_id', 'lifecycle', 'contract_sha256', 'binding', 'operations', 'sequence', 'ledger_sha256'}:
             raise ValueError('transaction ledger unknown or missing fields')
+        if not isinstance(value['project_id'], str) or not SAFE_ID.fullmatch(value['project_id']) or value['lifecycle'] not in {'active', 'closed'}:
+            raise ValueError('invalid project recovery lifecycle')
         if sensitive_paths(value):
             raise ValueError('credential material forbidden in recovery ledger')
         binding = value['binding']
@@ -79,6 +81,8 @@ class RecoveryLedger:
                 raise ValueError('owned state requires identity and ownership evidence')
             if entry['state'] == 'absent_confirmed' and not entry.get('absence_sha256'):
                 raise ValueError('absent state requires absence evidence')
+            if value['lifecycle'] == 'closed' and entry['state'] not in {'not_sent', 'absent_confirmed'}:
+                raise ValueError('closed transaction cannot contain unresolved operations')
 
     def _save(self, value: dict[str, Any]) -> dict[str, Any]:
         value = with_hash(value, 'ledger_sha256')
@@ -86,14 +90,22 @@ class RecoveryLedger:
         self.store._atomic_write(self._path(value['run_id']), value)
         return deepcopy(value)
 
-    def create(self, run_id: str, *, attempt_id: str, contract_sha256: str, binding: dict[str, str]) -> dict[str, Any]:
+    def create(self, run_id: str, *, project_id: str, attempt_id: str, contract_sha256: str, binding: dict[str, str]) -> dict[str, Any]:
         # Caller holds operation() across the complete transaction/recovery action.
         if self._path(run_id).exists():
             raise FileExistsError('existing transaction requires recovery; cannot prepare again')
-        return self._save({
-            'schema_version': SCHEMA, 'run_id': run_id, 'attempt_id': attempt_id,
-            'contract_sha256': contract_sha256, 'binding': deepcopy(binding), 'operations': {}, 'sequence': 0,
-        })
+        with self.store.operation_lock('project-' + canonical_hash(project_id)[:48]):
+            # Mark active before the first write. An empty operations map can be
+            # a crashed pre-write run, not permission to start another session.
+            for path in (self.root / 'ledgers').glob('*.json'):
+                existing = self.load(path.stem)
+                if existing['project_id'] == project_id and existing['lifecycle'] == 'active':
+                    raise ValueError('project has an active transaction; recover it before preparing another')
+            return self._save({
+                'schema_version': SCHEMA, 'run_id': run_id, 'attempt_id': attempt_id,
+                'project_id': project_id, 'lifecycle': 'active',
+                'contract_sha256': contract_sha256, 'binding': deepcopy(binding), 'operations': {}, 'sequence': 0,
+            })
 
     def assert_binding(self, run_id: str, binding: dict[str, str], contract_sha256: str) -> dict[str, Any]:
         value = self.load(run_id)
@@ -103,6 +115,8 @@ class RecoveryLedger:
 
     def intent(self, run_id: str, operation_id: str, *, object_type: str, marker_sha256: str) -> dict[str, Any]:
         value = self.load(run_id)
+        if value['lifecycle'] != 'active':
+            raise ValueError('closed transaction cannot start a new operation')
         if operation_id in value['operations']:
             raise ValueError('operation already recorded; reconcile before retry')
         value['operations'][operation_id] = {
@@ -127,6 +141,14 @@ class RecoveryLedger:
     def cleanup_confirmed(self, run_id: str) -> bool:
         value = self.load(run_id)
         return all(entry['state'] in {'not_sent', 'absent_confirmed'} for entry in value['operations'].values())
+
+    def close_run(self, run_id: str) -> dict[str, Any]:
+        value = self.load(run_id)
+        if not self.cleanup_confirmed(run_id):
+            raise ValueError('unresolved transaction cannot close')
+        value['lifecycle'] = 'closed'
+        value['sequence'] += 1
+        return self._save(value)
 
     def rebind_local_tunnel(self, run_id: str, binding: dict[str, str], contract_sha256: str) -> dict[str, Any]:
         """After verifying live UIDs, allow only the local ephemeral port to change.

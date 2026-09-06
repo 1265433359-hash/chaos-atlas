@@ -207,3 +207,26 @@ def test_eventual_read_uses_actual_remaining_deadline(tmp_path):
         replay.probe('observe')
     assert now[0] == 2
     assert replay.cleanup()['cleanup_confirmed'] is True
+
+
+def test_new_session_cannot_bypass_project_pending_gate(tmp_path):
+    transport = Transport(create_fault='before-send')
+    replay = session(tmp_path, transport=transport)
+    replay.prepare(run_id='run-test')
+    second_transport = Transport()
+    with pytest.raises(ValueError, match='project has an active transaction'):
+        session(tmp_path, transport=second_transport).prepare(run_id='new-run')
+    assert second_transport.calls == []
+
+
+def test_crashed_before_first_write_requires_recovery_and_close(tmp_path):
+    replay = session(tmp_path)
+    binding = Runtime().binding
+    replay.ledger.create('abandoned-run', project_id='synthetic', attempt_id='attempt-test',
+                         contract_sha256=replay.contract['contract_sha256'], binding=binding)
+    with pytest.raises(ValueError, match='active transaction'):
+        replay.prepare(run_id='new-run')
+    assert replay.recover(run_id='abandoned-run')['cleanup_confirmed']
+    assert replay.ledger.load('abandoned-run')['lifecycle'] == 'closed'
+    assert replay.prepare(run_id='new-run')['status'] == 'prepared'
+    assert replay.cleanup()['cleanup_confirmed']

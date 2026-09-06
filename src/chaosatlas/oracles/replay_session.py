@@ -183,7 +183,7 @@ class ReplaySession:
         binding = self._binding()
         with self.ledger.operation(run_id):
             attempt = 'attempt-' + uuid.uuid4().hex
-            self.ledger.create(run_id, attempt_id=attempt, contract_sha256=self._contract['contract_sha256'], binding=binding)
+            self.ledger.create(run_id, project_id=self._contract['project_id'], attempt_id=attempt, contract_sha256=self._contract['contract_sha256'], binding=binding)
             self._run_id = run_id
             self._variables = {**self._fixtures, 'run_id': run_id, 'attempt_id': attempt,
                                'lease_id': binding['lease_id'], 'principal_id': binding['principal_id']}
@@ -268,6 +268,8 @@ class ReplaySession:
         if self._contract['cleanup'].get('environment_release_required'):
             confirmed = False
             errors.append({'reason_code': 'verified_environment_release_not_integrated'})
+        if confirmed:
+            self.ledger.close_run(self._run_id)
         return {'status': 'cleaned' if confirmed else 'cleanup_failed', 'cleanup_confirmed': confirmed,
                 'environment_released': None, 'errors': errors, 'claim_scope': 'synthetic_test_only'}
 

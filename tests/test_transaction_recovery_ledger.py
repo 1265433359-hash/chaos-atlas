@@ -13,7 +13,7 @@ from chaosatlas.oracles.replay import UrllibHttpTransport, render_path, validate
 
 def create(ledger):
     binding = {key: 'synthetic-' + key for key in BINDING_KEYS}
-    ledger.create('test-run', attempt_id='test-attempt', contract_sha256='a'*64, binding=binding)
+    ledger.create('test-run', project_id='synthetic', attempt_id='test-attempt', contract_sha256='a'*64, binding=binding)
     return binding
 
 
