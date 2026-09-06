@@ -43,3 +43,52 @@ def test_v3_rejects_unreviewable_execution(mutation):
     value = contract()
     mutation(value)
     assert validate_v3(value)
+
+
+def write_contract():
+    value = contract()
+    value['allowed_requests'] += [
+        {'id': 'create', 'method': 'POST', 'path': '/objects', 'effect': 'write'},
+        {'id': 'delete', 'method': 'DELETE', 'path': '/objects/{object_id}', 'effect': 'write'},
+    ]
+    value['steps'].insert(0, {
+        'id': 'create', 'request_id': 'create', 'json_body': {'marker': '{run_id}'},
+        'capture': {'object_id': {'path': '$.id', 'type': 'string', 'max_length': 64}},
+        'success': {'statuses': [201]}, 'on_response_loss': {'strategy': 'exact_lookup'},
+        'ownership': {
+            'object_type': 'test-object', 'preflight_absent': True,
+            'marker_path': '$.marker', 'principal_path': '$.owner',
+            'match': {'$.marker': '{run_id}', '$.owner': '{principal_id}'},
+            'lookup': {'id': 'lookup', 'request_id': 'read', 'query': {'marker': '{run_id}'}, 'success': {'statuses': [200]}},
+            'selection': {'collection_path': '$.items', 'max_items': 10,
+                          'complete': {'path': '$.total', 'operator': 'total_equals_length'},
+                          'identity': {'object_id': '$.id'}},
+        },
+    })
+    value['cleanup']['steps'] = [{'id': 'cleanup', 'request_id': 'delete', 'owned_operation': 'create', 'success': {'statuses': [204]}}]
+    return value
+
+
+def test_reviewable_exact_write_contract():
+    assert validate_v3(write_contract()) == []
+
+
+@pytest.mark.parametrize('mutation', [
+    lambda c: c['steps'][0].pop('ownership'),
+    lambda c: c['steps'][0]['ownership'].update(preflight_absent=False),
+    lambda c: c['steps'][0]['ownership']['match'].update({'$.owner': 'anonymous'}),
+    lambda c: c['steps'][0]['ownership']['selection'].pop('complete'),
+    lambda c: c['steps'][0]['ownership']['selection'].update(max_items=100000),
+    lambda c: c['steps'][0]['ownership']['selection'].update(identity={'other_id': '$.id'}),
+    lambda c: c['steps'][0]['ownership']['lookup'].update(request_id='delete'),
+    lambda c: c['steps'][0]['ownership'].update(shell='hidden command'),
+    lambda c: c['steps'][0]['on_response_loss'].update(strategy='retry_same_request'),
+    lambda c: c['cleanup'].update(steps=[]),
+    lambda c: c['cleanup']['steps'][0].update(owned_operation='foreign'),
+    lambda c: c['cleanup']['steps'].append(deepcopy(c['cleanup']['steps'][0])),
+    lambda c: c['cleanup'].update(strategy='disposable_environment', environment_release_required=True),
+])
+def test_write_ownership_and_cleanup_are_not_silently_ignored(mutation):
+    value = write_contract()
+    mutation(value)
+    assert validate_v3(value)
