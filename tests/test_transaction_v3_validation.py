@@ -23,6 +23,35 @@ def test_v3_valid_minimal_protocol():
     assert validate_v3(contract()) == []
 
 
+def test_v3_accepts_logical_lease_owned_credential_slot():
+    value = contract()
+    value['credential_refs'] = [{
+        'id': 'test-auth', 'source': 'lease_owned_secret_ref',
+        'secret_name': 'test-auth', 'principal_role': 'transaction-test-user',
+        'header_keys': {'Authorization': 'authorization-header'},
+    }]
+    assert validate_v3(value) == []
+
+
+@pytest.mark.parametrize('mutation', [
+    lambda ref: ref.update(secret_uid='must-not-be-frozen'),
+    lambda ref: ref.update(principal_id='must-not-be-frozen'),
+    lambda ref: ref.update(source='runtime_secret_ref'),
+    lambda ref: ref.update(header_keys={'Host': 'authorization-header'}),
+    lambda ref: ref.update(header_keys={'Authorization': 'bad key'}),
+])
+def test_v3_rejects_unsafe_or_instance_pinned_lease_credential_slot(mutation):
+    value = contract()
+    ref = {
+        'id': 'test-auth', 'source': 'lease_owned_secret_ref',
+        'secret_name': 'test-auth', 'principal_role': 'transaction-test-user',
+        'header_keys': {'Authorization': 'authorization-header'},
+    }
+    mutation(ref)
+    value['credential_refs'] = [ref]
+    assert validate_v3(value)
+
+
 @pytest.mark.parametrize('mutation', [
     lambda c: c.update(shell='hidden command'),
     lambda c: c['steps'][0].update(python='hidden expression'),

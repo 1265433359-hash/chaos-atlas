@@ -13,6 +13,7 @@ NAME = re.compile(r'[a-zA-Z][a-zA-Z0-9_-]{0,63}')
 PATH = re.compile(r'\$(?:\.[A-Za-z_][A-Za-z0-9_-]*|\[(?:0|[1-9][0-9]*)\])*')
 VARIABLE = re.compile(r'\{([A-Za-z][A-Za-z0-9_-]*)\}')
 RESERVED = {'run_id', 'lease_id', 'principal_id', 'attempt_id'}
+AUTH_HEADERS = {'authorization', 'x-api-key', 'x-auth-token', 'x-user-id', 'x-publishable-api-key'}
 TOP = set('schema_version oracle_id project_id project_revision status evidence_sources credential_refs allowed_requests steps assertions ownership cleanup approval contract_sha256 timeouts probe_steps interpreter_version inputs runtime_scope probe_assertions'.split())
 STEP = set('id request_id json_body multipart query path_variables capture success on_response_loss ownership owned_operation'.split())
 CHECK = set('id operator path expected expected_from assertion_ref step_id'.split())
@@ -120,6 +121,36 @@ def _validate_v3(contract: dict[str, Any]) -> list[str]:
             available.add(name)
     else:
         reject('inputs must be declared')
+    credential_refs = contract.get('credential_refs', [])
+    credential_ids: set[str] = set()
+    if not isinstance(credential_refs, list) or len(credential_refs) > 16:
+        reject('credential_refs must be a bounded list')
+        credential_refs = []
+    for ref in credential_refs:
+        if not fields(ref, {'id', 'source', 'secret_name', 'principal_role', 'header_keys'}, 'credential_ref'):
+            continue
+        identifier = ref.get('id')
+        if not isinstance(identifier, str) or not NAME.fullmatch(identifier) or identifier in credential_ids:
+            reject('credential_ref requires a unique bounded ID')
+        else:
+            credential_ids.add(identifier)
+        if ref.get('source') != 'lease_owned_secret_ref':
+            reject('v3 credential_ref must use lease-owned runtime binding')
+        if not isinstance(ref.get('secret_name'), str) or not re.fullmatch(r'[a-z0-9][a-z0-9.-]{0,252}', ref['secret_name']):
+            reject('credential_ref requires a safe Secret name')
+        if not isinstance(ref.get('principal_role'), str) or not NAME.fullmatch(ref['principal_role']):
+            reject('credential_ref requires a bounded principal role')
+        header_keys = ref.get('header_keys')
+        if not isinstance(header_keys, dict) or not 1 <= len(header_keys) <= 5:
+            reject('credential_ref requires bounded header keys')
+            header_keys = {}
+        if len({str(key).lower() for key in header_keys}) != len(header_keys):
+            reject('credential_ref has duplicate authentication headers')
+        for header, key in header_keys.items():
+            if not isinstance(header, str) or header.lower() not in AUTH_HEADERS:
+                reject('credential_ref contains a forbidden authentication header')
+            if not isinstance(key, str) or not re.fullmatch(r'[A-Za-z0-9._-]{1,253}', key):
+                reject('credential_ref contains an unsafe Secret data key')
     timeouts = contract.get('timeouts')
     if fields(timeouts, {'request_s', 'eventual_s', 'poll_interval_s'}, 'timeouts'):
         for key, limit in [('request_s', 30), ('eventual_s', 120), ('poll_interval_s', 10)]:
