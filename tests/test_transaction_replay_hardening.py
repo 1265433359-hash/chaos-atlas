@@ -5,6 +5,7 @@ import pytest
 from chaosatlas.isolation.contracts import with_hash
 from chaosatlas.oracles.builder import OracleBuilder
 from chaosatlas.oracles.replay import ResponseLost, TransactionReplayer
+from chaosatlas.oracles.replay_session import _safe_application_error_code
 from chaosatlas.oracles.transaction_contracts import (
     evaluate_assertions, freeze_approved_contract, record_human_approval,
     validate_transaction_contract,
@@ -83,3 +84,10 @@ def test_exact_array_match_ignores_order_but_rejects_duplicates_and_wrong_owner(
     assert evaluate_assertions(contract, observations, variables)["status"] == "fail"
     observations["read"]["json"]["messages"] = [system, {**target, "u": {"_id": "other"}}]
     assert evaluate_assertions(contract, observations, variables)["status"] == "fail"
+
+
+def test_only_bounded_application_error_codes_can_enter_journal():
+    assert _safe_application_error_code({"json": {"errorType": "error-message-size-exceeded"}}) == "error-message-size-exceeded"
+    assert _safe_application_error_code({"json": {"exc_type": "PermissionError"}}) == "PermissionError"
+    assert _safe_application_error_code({"json": {"error": "Request included secret value"}}) is None
+    assert _safe_application_error_code({"json": ["not-an-object"]}) is None

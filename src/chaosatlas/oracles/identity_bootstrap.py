@@ -5,6 +5,7 @@ from __future__ import annotations
 import base64
 from copy import deepcopy
 from dataclasses import dataclass
+import hmac
 import json
 import re
 import socket
@@ -143,21 +144,54 @@ def bootstrap_erpnext(environment: IdentityEnvironment) -> tuple[dict[str, Any],
     api_secret = str(generated.get("api_secret") or "")
     if not api_key or not api_secret:
         raise ValueError("ERPNext did not return a bounded API credential")
-    authorization = f"token {api_key}:{api_secret}"
+    token_authorization = f"token {api_key}:{api_secret}"
+    basic_authorization = "Basic " + base64.b64encode(
+        f"{api_key}:{api_secret}".encode("utf-8")
+    ).decode("ascii")
+    authorization = token_authorization
     authorization_check = None
-    for attempt in range(3):
+    for attempt in range(11):
+        authorization = token_authorization if attempt % 2 == 0 else basic_authorization
         authorization_check = environment.request(
             "GET", "/api/resource/ToDo", headers={"Authorization": authorization},
             query={"limit_page_length": 1},
         )
-        if authorization_check.status != 401 or attempt == 2:
+        if authorization_check.status != 401 or attempt == 10:
             break
-        time.sleep(1)
-    _body(authorization_check, 200)
+        time.sleep(3)
+    if authorization_check.status != 200:
+        diagnostics_response = environment.request(
+            "GET", "/api/resource/User", headers=session,
+            query={
+                "fields": json.dumps(["name", "enabled", "user_type", "api_key"]),
+                "filters": json.dumps([["name", "=", principal_id]]),
+                "limit_page_length": 2,
+            },
+        )
+        diagnostics_body = _body(diagnostics_response, 200)
+        rows = diagnostics_body.get("data") or []
+        user = rows[0] if len(rows) == 1 and isinstance(rows[0], dict) else {}
+        flags = {
+            "user_found": len(rows) == 1,
+            "enabled": user.get("enabled") in {1, True},
+            "system_user": user.get("user_type") == "System User",
+            "api_key_matches": hmac.compare_digest(str(user.get("api_key") or ""), api_key),
+        }
+        details = ",".join(f"{name}={str(value).lower()}" for name, value in flags.items())
+        raise ValueError(
+            f"ERPNext API credential verification failed with HTTP {authorization_check.status} ({details})"
+        )
     binding = environment.bind_secret(
         "erpnext-transaction-auth", "transaction-todo-user", principal_id,
         {"authorization": authorization},
     )
+    persisted_authorization = environment.read_secret("erpnext-transaction-auth", "authorization")
+    if not hmac.compare_digest(persisted_authorization, authorization):
+        raise ValueError("ERPNext transaction credential changed during Secret binding")
+    _body(environment.request(
+        "GET", "/api/resource/ToDo", headers={"Authorization": persisted_authorization},
+        query={"limit_page_length": 1},
+    ), 200)
     return {
         "project_id": "erpnext", "status": "initialized", "principal_id": principal_id,
         "principal_role": "transaction-todo-user", "notifications_enabled": False,

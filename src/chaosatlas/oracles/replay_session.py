@@ -7,6 +7,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 import math
+import re
 import time
 import uuid
 from typing import Any, Callable
@@ -16,6 +17,17 @@ from chaosatlas.oracles.ownership import OwnershipUncertain, select_owned
 from chaosatlas.oracles.recovery_ledger import RecoveryLedger
 from chaosatlas.oracles.replay import UrllibHttpTransport, render_path, validate_auth_headers
 from chaosatlas.oracles.transaction_contracts import _json_path, evaluate_assertions, validate_transaction_contract
+
+
+def _safe_application_error_code(observation: dict[str, Any]) -> str | None:
+    payload = observation.get('json')
+    if not isinstance(payload, dict):
+        return None
+    for key in ('errorType', 'error', 'exc_type'):
+        value = payload.get(key)
+        if isinstance(value, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_.:-]{0,127}', value):
+            return value
+    return None
 
 
 def render(value, variables):
@@ -121,7 +133,11 @@ class ReplaySession:
             headers=dict(self._headers), timeout_s=timeout).as_assertion_value()
         if deadline is not None and self._monotonic() > deadline:
             raise TimeoutError('response arrived after phase deadline')
-        self._emit('response', step, status=observation['status'], body_sha256=observation['body_sha256'])
+        response_fields = {'status': observation['status'], 'body_sha256': observation['body_sha256']}
+        application_error_code = _safe_application_error_code(observation)
+        if application_error_code:
+            response_fields['application_error_code'] = application_error_code
+        self._emit('response', step, **response_fields)
         if observation['status'] not in step['success']['statuses']:
             raise ValueError('step success status not satisfied')
         checks = [{**c, 'step_id': step['id']} for c in step['success'].get('checks', [])]

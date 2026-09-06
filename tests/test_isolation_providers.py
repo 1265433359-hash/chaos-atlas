@@ -9,7 +9,7 @@ from chaosatlas.isolation.planner import IsolationPlanner
 from chaosatlas.isolation.providers import KubernetesIsolationProvider, MinikubeIsolationProvider, ProviderRegistry, _job_terminal_failure
 
 
-def test_kubernetes_guard_allows_only_same_namespace_pods_and_cluster_dns():
+def test_kubernetes_guard_allows_only_same_namespace_pods_and_dns_ports():
     resources = KubernetesIsolationProvider._guard_resources(
         "ca-l2-test", {"chaosatlas.dev/managed": "true"}, {},
     )
@@ -17,8 +17,11 @@ def test_kubernetes_guard_allows_only_same_namespace_pods_and_cluster_dns():
     lease_peer = {"podSelector": {"matchLabels": {"chaosatlas-managed": "true"}}}
     assert policy["spec"]["ingress"] == [{"from": [lease_peer]}]
     assert policy["spec"]["egress"][0] == {"to": [lease_peer]}
-    assert policy["spec"]["egress"][1]["to"][0]["namespaceSelector"]["matchLabels"] == {
-        "kubernetes.io/metadata.name": "kube-system",
+    assert policy["spec"]["egress"][1] == {
+        "ports": [
+            {"protocol": "UDP", "port": 53},
+            {"protocol": "TCP", "port": 53},
+        ],
     }
 
 

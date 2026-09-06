@@ -56,6 +56,16 @@ def _load_fixtures(path: Path | None, specs: dict[str, Any], repository: Path) -
     return values
 
 
+def _finalize_transaction(workflow: TransactionWorkflowOracle, replay: ReplaySession,
+                          run_id: str, prepared: dict[str, Any] | None) -> dict[str, Any]:
+    completed = (prepared or {}).get("cleanup")
+    if isinstance(completed, dict):
+        return completed
+    if replay._run_id:
+        return workflow.cleanup_fixture({"run_id": run_id})
+    return {"status": "not_required", "cleanup_confirmed": True}
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     repository = Path(__file__).resolve().parents[1]
     contract_path = Path(args.contract).resolve()
@@ -94,7 +104,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         prepared = workflow.prepare_fixture({"run_id": args.run_id})
         probe = workflow.probe("baseline", {"run_id": args.run_id}) if prepared.get("status") == "prepared" else {"status": "not_run"}
     finally:
-        cleanup = workflow.cleanup_fixture({"run_id": args.run_id}) if replay._run_id else {"status": "not_required", "cleanup_confirmed": True}
+        cleanup = _finalize_transaction(workflow, replay, args.run_id, prepared)
         runtime.close()
     status = "passed" if prepared and prepared.get("status") == "prepared" and probe and probe.get("status") == "pass" and cleanup and cleanup.get("cleanup_confirmed") else "failed"
     summary = {

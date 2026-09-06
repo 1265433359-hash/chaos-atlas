@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from scripts.run_transaction_oracle_acceptance import _load_fixtures
+from scripts.run_transaction_oracle_acceptance import _finalize_transaction, _load_fixtures
 
 
 def test_external_byte_fixture_reference_is_loaded_without_entering_contract(tmp_path):
@@ -34,3 +34,14 @@ def test_byte_fixture_rejects_ambiguous_or_inline_material(tmp_path, descriptor)
     manifest.write_text(json.dumps({'payload': descriptor}), encoding='utf-8')
     with pytest.raises(ValueError):
         _load_fixtures(manifest, {'payload': {'type': 'bytes', 'max_length': 10}}, tmp_path / 'repository')
+
+
+def test_prepare_failure_reuses_completed_cleanup_instead_of_calling_it_twice():
+    completed = {'status': 'cleaned', 'cleanup_confirmed': True, 'environment_released': True}
+
+    class Workflow:
+        def cleanup_fixture(self, _context):
+            raise AssertionError('cleanup must not be repeated')
+
+    replay = type('Replay', (), {'_run_id': 'run-test'})()
+    assert _finalize_transaction(Workflow(), replay, 'run-test', {'cleanup': completed}) is completed
