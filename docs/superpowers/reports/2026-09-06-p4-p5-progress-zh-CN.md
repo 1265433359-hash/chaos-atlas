@@ -44,8 +44,8 @@
 
 ## 测试证据
 
-全量测试：**452 passed**。原始输出：
-`%LOCALAPPDATA%/ChaosAtlas/runs/p4-p5-20260906/full-tests.xml`。
+全量测试：**459 passed**。本轮新增 v3 入口、工厂、结构化 builder 和 API 只读采集回归；原始输出：
+`%LOCALAPPDATA%/ChaosAtlas/runs/p4-p5-20260906/full-tests.xml`（早一轮 452 passed；最新命令输出为 459 passed）。
 
 新增覆盖包括：
 
@@ -67,3 +67,5 @@
 
 先完成 H2/H3 剩余实现和四份最终 `validated` 契约，生成精确路径/文件哈希/语义哈希清单、API 证据和权限初始化报告；然后一次性提交给人工审核。
 只有在获得对这些具体契约、范围、断言、补偿和清理规则的实际批准后，才执行 H4 真实业务验收，之后用同一 `RunEngine` 进入 P4 canary 和 P5 32+9 受控实验。
+
+当前薄验收入口 `scripts/run_transaction_oracle_acceptance.py` 已改为只接受真实冻结契约、LeaseRuntime、精确 Secret 引用和实际人工批准记录；没有这些条件时返回 blocked，不接受旧的任意 base URL/headers JSON。
