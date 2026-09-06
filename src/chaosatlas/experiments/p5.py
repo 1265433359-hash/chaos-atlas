@@ -320,13 +320,126 @@ def summarize_cost(*, experiments: int = 0, valid_reproductions: int = 0, llm_ca
     return {"schema_version": "chaosatlas-cost-summary-v1", **values, "llm_total_tokens": llm_input_tokens + llm_output_tokens}
 
 
-def build_p5_report(*, plans: Iterable[Mapping[str, Any]], evaluations: Iterable[Mapping[str, Any]] = (), issue_drafts: Iterable[Mapping[str, Any]] = (), costs: Mapping[str, Any] | None = None, real_evidence: bool = False) -> dict[str, Any]:
+def validate_canary_evidence(
+    *,
+    project_id: str,
+    source_ref: str,
+    batch_summary: Mapping[str, Any],
+    isolation_lifecycle: Mapping[str, Any],
+    baseline_result: Mapping[str, Any],
+    execute_result: Mapping[str, Any],
+    observe_result: Mapping[str, Any],
+    cleanup_report: Mapping[str, Any],
+    transaction_binding: Mapping[str, Any],
+    sensitive_review: str,
+) -> dict[str, Any]:
+    """Fail closed when admitting a real unified-engine canary into P5 evidence."""
+
+    if sensitive_review not in {"passed", "failed"}:
+        raise ValueError("sensitive_review must be passed or failed")
+    batch_results = batch_summary.get("results")
+    batch_rows = batch_results if isinstance(batch_results, list) else []
+    child = batch_rows[0] if len(batch_rows) == 1 and isinstance(batch_rows[0], Mapping) else {}
+    execute_payload = execute_result.get("payload") if isinstance(execute_result.get("payload"), Mapping) else {}
+    phases = execute_payload.get("phases") if isinstance(execute_payload.get("phases"), list) else []
+    faults = [
+        fault
+        for phase in phases
+        if isinstance(phase, Mapping)
+        for fault in (phase.get("faults") if isinstance(phase.get("faults"), list) else [])
+        if isinstance(fault, Mapping)
+    ]
+    baseline_payload = baseline_result.get("payload") if isinstance(baseline_result.get("payload"), Mapping) else {}
+    baseline = baseline_payload.get("evidence") if isinstance(baseline_payload.get("evidence"), Mapping) else {}
+    observe_payload = observe_result.get("payload") if isinstance(observe_result.get("payload"), Mapping) else {}
+    observation = observe_payload.get("observation") if isinstance(observe_payload.get("observation"), Mapping) else {}
+    oracle = execute_payload.get("oracle") if isinstance(execute_payload.get("oracle"), Mapping) else {}
+    business_oracle = oracle.get("business") if isinstance(oracle.get("business"), Mapping) else {}
+
+    fault_attestations = [item.get("attestation") for item in faults]
+    gates = {
+        "batch_completed": batch_summary.get("status") == "completed" and len(batch_rows) == 1 and child.get("status") == "live_completed",
+        "isolated_environment_verified": isolation_lifecycle.get("status") == "verified" and isolation_lifecycle.get("prepare_state") == "ready",
+        "environment_released": isolation_lifecycle.get("cleanup_state") == "released",
+        "injection_confirmed": isolation_lifecycle.get("injection_performed") is True
+        and child.get("injection_confirmed") is True
+        and bool(faults)
+        and all(
+            item.get("injection_confirmed") is True
+            and isinstance(item.get("injection_confirmation"), Mapping)
+            and item["injection_confirmation"].get("confirmed") is True
+            and bool(item["injection_confirmation"].get("mechanism"))
+            for item in faults
+        ),
+        "runtime_attestation_valid": bool(fault_attestations) and all(
+            isinstance(item, Mapping)
+            and item.get("valid") is True
+            and item.get("missing") == []
+            and all(item.get(key) is True for key in ("baseline", "injection", "observation", "recovery", "cleanup", "independent_oracle", "comparison_eligible"))
+            for item in fault_attestations
+        ),
+        "business_baseline_passed": baseline.get("claim_scope") == "real_business_transaction" and baseline.get("status") == "pass" and baseline.get("failed_assertions") == [],
+        "business_observation_recorded": observation.get("claim_scope") == "real_business_transaction"
+        and observation.get("status") in {"pass", "fail"}
+        and isinstance(observation.get("failed_assertions"), list)
+        and ((observation.get("status") == "pass") == (observation.get("failed_assertions") == [])),
+        "business_recovery_passed": bool(faults) and all(
+            isinstance(item.get("recovery"), Mapping)
+            and item["recovery"].get("confirmed") is True
+            and isinstance(item["recovery"].get("business_probe"), Mapping)
+            and item["recovery"]["business_probe"].get("claim_scope") == "real_business_transaction"
+            and item["recovery"]["business_probe"].get("status") == "pass"
+            for item in faults
+        ),
+        "fault_cleanup_verified": cleanup_report.get("status") == "verified" and cleanup_report.get("residual_count") == 0 and cleanup_report.get("errors") == [] and cleanup_report.get("action_count") == cleanup_report.get("verified_action_count"),
+        "business_cleanup_verified": bool(faults) and all(
+            isinstance(item.get("cleanup"), Mapping)
+            and item["cleanup"].get("verified") is True
+            and isinstance(item["cleanup"].get("business"), Mapping)
+            and item["cleanup"]["business"].get("cleanup_confirmed") is True
+            and item["cleanup"]["business"].get("environment_released") is True
+            for item in faults
+        ),
+        "frozen_oracle_bound": transaction_binding.get("project_id") == project_id
+        and transaction_binding.get("credential_values_persisted") is False
+        and bool(transaction_binding.get("contract_sha256"))
+        and transaction_binding.get("contract_sha256") == business_oracle.get("approved_contract_sha256"),
+        "sensitive_review": sensitive_review == "passed",
+    }
+    valid = all(gates.values())
+    confirmed_findings = int(batch_summary.get("confirmed_finding_count") or 0)
+    anomaly_observed = observation.get("status") == "fail" or confirmed_findings > 0
+    return {
+        "schema_version": "chaosatlas-p5-canary-evidence-v1",
+        "project_id": _text("project_id", project_id),
+        "source_ref": _text("source_ref", source_ref),
+        "claim_scope": "real_runtime" if valid else "unverified",
+        "fault_id": isolation_lifecycle.get("fault_id"),
+        "run_id": child.get("run_id"),
+        "oracle_id": transaction_binding.get("oracle_id"),
+        "contract_sha256": transaction_binding.get("contract_sha256"),
+        "mechanisms": sorted({str((item.get("injection_confirmation") or {}).get("mechanism")) for item in faults if isinstance(item.get("injection_confirmation"), Mapping)}),
+        "gates": gates,
+        "evidence_valid": valid,
+        "anomaly_observed": anomaly_observed,
+        "confirmed_finding_count": confirmed_findings,
+        "status": ("valid_candidate_anomaly" if anomaly_observed else "valid_no_impact") if valid else "rejected",
+        "rejected_reason_codes": sorted(key for key, value in gates.items() if not value),
+    }
+
+
+def build_p5_report(*, plans: Iterable[Mapping[str, Any]], evaluations: Iterable[Mapping[str, Any]] = (), issue_drafts: Iterable[Mapping[str, Any]] = (), costs: Mapping[str, Any] | None = None, real_evidence: bool = False, canary_evidence: Iterable[Mapping[str, Any]] = ()) -> dict[str, Any]:
     plan_rows = [dict(item) for item in plans if isinstance(item, Mapping)]
     eval_rows = [dict(item) for item in evaluations if isinstance(item, Mapping)]
     drafts = [dict(item) for item in issue_drafts if isinstance(item, Mapping)]
+    canaries = [dict(item) for item in canary_evidence if isinstance(item, Mapping)]
+    valid_canaries = [item for item in canaries if item.get("evidence_valid") is True and item.get("claim_scope") == "real_runtime"]
+    if real_evidence and not valid_canaries:
+        raise ValueError("real_evidence requires at least one validated real canary")
     status_counts: Counter[str] = Counter()
     for plan in plan_rows:
-        status_counts.update(str(key) + ":" + str(value) for key, value in (plan.get("status_counts") or {}).items())
+        for key, value in (plan.get("status_counts") or {}).items():
+            status_counts[str(key)] += int(value)
     report = {
         "schema_version": "chaosatlas-p5-report-v1",
         "created_at": _now(),
@@ -336,14 +449,17 @@ def build_p5_report(*, plans: Iterable[Mapping[str, Any]], evaluations: Iterable
         "capability_denominator": sum(int((item.get("denominators") or {}).get("all_capabilities") or 0) for item in plan_rows),
         "status_counts": dict(sorted(status_counts.items())),
         "evaluation_count": len(eval_rows),
+        "canary_count": len(canaries),
+        "validated_real_canary_count": len(valid_canaries),
         "issue_draft_count": len(drafts),
         "eligible_issue_draft_count": sum(item.get("status") == "pending_human_review" for item in drafts),
         "gates": {
-            "real_fault_execution": bool(real_evidence),
+            "real_fault_execution": bool(real_evidence and valid_canaries),
             "issue_drafts_require_all_gates": True,
             "blocked_inapplicable_unsupported_preserved": True,
         },
         "plans": [{"project_id": item.get("project_id"), "plan_sha256": item.get("plan_sha256"), "status_counts": item.get("status_counts")} for item in plan_rows],
+        "canaries": [{"project_id": item.get("project_id"), "source_ref": item.get("source_ref"), "status": item.get("status"), "evidence_valid": item.get("evidence_valid")} for item in canaries],
         "cost": deepcopy(dict(costs)) if isinstance(costs, Mapping) else summarize_cost(),
     }
     report["report_sha256"] = _hash({key: value for key, value in report.items() if key != "created_at"})
@@ -354,13 +470,13 @@ class P5RunCoordinator:
     """Thin P5 adapter over the existing unified ``RunEngine``.
 
     The coordinator owns no executor and no second lifecycle.  It only applies
-    the P5 approval gate, invokes ``run_candidate`` on the injected engine, and
+    the P5 approval gate, invokes the unified ``run`` entry point, and
     records blocked requests when a frozen Oracle is not available.
     """
 
     def __init__(self, engine: Any) -> None:
-        if not hasattr(engine, "run_candidate"):
-            raise TypeError("engine must expose run_candidate(request)")
+        if not hasattr(engine, "run"):
+            raise TypeError("engine must expose run(request)")
         self.engine = engine
 
     def run(self, plan: Mapping[str, Any], requests: Iterable[Any], *, approved_oracle: bool = False) -> dict[str, Any]:
@@ -370,7 +486,12 @@ class P5RunCoordinator:
         for request in requests:
             mode = str(getattr(request, "mode", "dry-run"))
             candidate_id = getattr(request, "candidate_id", None)
-            if mode == "live" and (not approved_oracle or not isinstance(plan.get("oracle_ref"), Mapping) or plan["oracle_ref"].get("status") != "frozen"):
+            if mode == "live" and (
+                not approved_oracle
+                or not isinstance(plan.get("oracle_ref"), Mapping)
+                or plan["oracle_ref"].get("status") != "frozen"
+                or getattr(request, "oracle_approval_dir", None) is None
+            ):
                 results.append({
                     "candidate_id": candidate_id,
                     "status": "blocked_oracle_approval",
@@ -378,9 +499,11 @@ class P5RunCoordinator:
                     "injection_performed": False,
                 })
                 continue
-            outcome = self.engine.run_candidate(request)
+            outcome = self.engine.run(request)
             if isinstance(outcome, Mapping):
-                results.append(dict(outcome))
+                row = dict(outcome)
+                row.setdefault("claim_scope", "real_runtime" if row.get("injection_performed") is True else "planned")
+                results.append(row)
             else:
                 results.append({"candidate_id": candidate_id, "status": "method_invalid", "claim_scope": "planned"})
         return {
